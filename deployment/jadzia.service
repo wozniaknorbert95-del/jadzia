@@ -1,0 +1,40 @@
+[Unit]
+Description=Jadzia V4 - WordPress Management Agent
+After=network.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=root
+Group=root
+WorkingDirectory=/root/jadzia
+
+# Environment
+Environment="PATH=/root/jadzia/venv/bin:/usr/local/bin:/usr/bin:/bin"
+Environment="PYTHONUNBUFFERED=1"
+EnvironmentFile=/root/jadzia/.env
+
+# Start command
+ExecStart=/root/jadzia/venv/bin/python main.py
+
+# Restart policy
+Restart=always
+RestartSec=10
+StartLimitBurst=5
+StartLimitInterval=300
+
+# Logging
+StandardOutput=append:/root/jadzia/logs/jadzia.log
+StandardError=append:/root/jadzia/logs/jadzia-error.log
+
+# Resource limits
+LimitNOFILE=65536
+MemoryMax=2G
+CPUQuota=200%
+
+# Security hardening
+NoNewPrivileges=true
+PrivateTmp=true
+
+[Install]
+WantedBy=multi-user.target

@@ -1,0 +1,57 @@
+{
+  "id": "op_1768503055",
+  "status": "files_read",
+  "user_input": "Sprawdz czy API dziala",
+  "created_at": "2026-01-15T19:50:55.180273",
+  "updated_at": "2026-01-15T21:22:32.618862",
+  "plan": {
+    "understood_intent": "Użytkownik chce sprawdzić czy API (prawdopodobnie WooCommerce REST API lub custom API) działa poprawnie",
+    "files_to_read": [
+      "wp-config.php",
+      "wp-content/themes/hello-elementor-child/functions.php",
+      ".htaccess",
+      "wp-content/plugins/woocommerce/includes/api/",
+      "wp-content/themes/hello-elementor-child/api-test.php"
+    ],
+    "files_to_modify": [
+      "wp-content/themes/hello-elementor-child/functions.php",
+      "wp-content/themes/hello-elementor-child/api-test.php"
+    ],
+    "steps": [
+      "Krok 1: Przeczytać konfigurację WordPress i sprawdzić ustawienia API",
+      "Krok 2: Sprawdzić czy WooCommerce REST API jest włączone",
+      "Krok 3: Sprawdzić custom funkcje API w functions.php",
+      "Krok 4: Utworzyć lub sprawdzić plik testowy API",
+      "Krok 5: Przetestować endpoints API",
+      "Krok 6: Sprawdzić logi błędów jeśli API nie działa"
+    ],
+    "questions": [
+      "O jakie konkretnie API chodzi - WooCommerce REST API, custom API, czy inne?",
+      "Czy masz jakieś konkretne endpointy które chcesz przetestować?",
+      "Czy API działało wcześniej i przestało, czy to pierwsza konfiguracja?",
+      "Czy masz klucze API/tokeny dostępu które powinienem sprawdzić?"
+    ],
+    "risks": [
+      "Sprawdzanie wp-config.php może ujawnić wrażliwe dane konfiguracyjne",
+      "Testowanie API może generować ruch sieciowy",
+      "Tworzenie plików testowych może zostać zaindeksowane przez wyszukiwarki",
+      "Sprawdzanie API może ujawnić strukturę danych sklepu"
+    ],
+    "user_answers": "Powiedz czesc"
+  },
+  "files_to_modify": [
+    "wp-content/themes/hello-elementor-child/functions.php",
+    "wp-content/themes/hello-elementor-child/api-test.php"
+  ],
+  "files_read": {},
+  "diffs": {},
+  "new_contents": {},
+  "files_written": [],
+  "files_pending": [],
+  "backups": {},
+  "commit_hash": null,
+  "deploy_result": null,
+  "errors": [],
+  "awaiting_response": true,
+  "awaiting_type": "answer_questions"
+}

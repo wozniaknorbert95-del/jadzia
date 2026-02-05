@@ -1,0 +1,14 @@
+venv/
+.venv/
+__pycache__/
+*.pyc
+.env
+.env.*
+*.key
+*.pem
+data/
+*.lock
+*.log
+.vscode/
+.idea/
+temp_export/

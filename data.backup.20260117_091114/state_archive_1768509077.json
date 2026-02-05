@@ -1,0 +1,32 @@
+{
+  "id": "op_1768509070",
+  "status": "planning",
+  "user_input": "Czesc! Kim jestes i co potrafisz?",
+  "created_at": "2026-01-15T21:31:10.580452",
+  "updated_at": "2026-01-15T21:31:17.730991",
+  "plan": {
+    "understood_intent": "Użytkownik chce poznać moje możliwości i tożsamość jako asystent do zarządzania sklepem internetowym",
+    "files_to_read": [],
+    "files_to_modify": [],
+    "steps": [
+      "Krok 1: Przedstawić się jako JADZIA - asystent do zarządzania sklepem internetowym",
+      "Krok 2: Wyjaśnić swoje główne funkcje i możliwości",
+      "Krok 3: Podkreślić zasady bezpieczeństwa i sposób pracy",
+      "Krok 4: Wskazać dostępne obszary pomocy w kontekście WordPress/WooCommerce"
+    ],
+    "questions": [],
+    "risks": []
+  },
+  "files_to_modify": [],
+  "files_read": {},
+  "diffs": {},
+  "new_contents": {},
+  "files_written": [],
+  "files_pending": [],
+  "backups": {},
+  "commit_hash": null,
+  "deploy_result": null,
+  "errors": [],
+  "awaiting_response": false,
+  "awaiting_type": null
+}

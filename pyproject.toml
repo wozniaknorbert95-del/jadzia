@@ -1,0 +1,23 @@
+[project]
+name = "jadzia"
+version = "1.0.0"
+description = "AI agent do zarządzania sklepem internetowym"
+requires-python = ">=3.11"
+dependencies = [
+    "fastapi>=0.109.0",
+    "uvicorn>=0.27.0",
+    "httpx>=0.26.0",
+    "paramiko>=3.4.0",
+    "anthropic>=0.18.0",
+    "python-dotenv>=1.0.0",
+    "pydantic>=2.5.0",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=8.0.0",
+    "pytest-asyncio>=0.23.0",
+]
+
+[tool.pytest.ini_options]
+asyncio_mode = "auto"

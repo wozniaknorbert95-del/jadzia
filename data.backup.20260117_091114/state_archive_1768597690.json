@@ -1,0 +1,46 @@
+{
+  "id": "op_1768597523",
+  "status": "planning",
+  "user_input": "W pliku wp-content/themes/hello-theme-child-master/header.php zmien tytul naglowka na 'Witaj w moim sklepie'",
+  "created_at": "2026-01-16T22:05:23.804898",
+  "updated_at": "2026-01-16T22:06:12.040169",
+  "plan": {
+    "understood_intent": "Użytkownik chce zmienić tytuł nagłówka na 'Witaj w moim sklepie' w pliku header.php child theme",
+    "files_to_read": [
+      "wp-content/themes/hello-theme-child-master/header.php"
+    ],
+    "files_to_modify": [
+      "wp-content/themes/hello-theme-child-master/header.php"
+    ],
+    "steps": [
+      "Krok 1: Przeczytaj aktualny plik wp-content/themes/hello-theme-child-master/header.php",
+      "Krok 2: Znajdź element zawierający tytuł nagłówka (prawdopodobnie tag <title> lub <h1>)",
+      "Krok 3: Zmień znaleziony tytuł na 'Witaj w moim sklepie'",
+      "Krok 4: Pokaż diff z proponowanymi zmianami",
+      "Krok 5: Po potwierdzeniu - zapisz zmodyfikowany plik"
+    ],
+    "questions": [
+      "Czy chodzi o tytuł strony (tag <title>) czy o nagłówek H1 widoczny na stronie?",
+      "Czy zmiana ma dotyczyć tylko strony głównej czy wszystkich stron?"
+    ],
+    "risks": [
+      "Modyfikacja header.php może wpłynąć na SEO strony",
+      "Zmiana może być nadpisana przez aktualizację motywu jeśli nie jest to prawdziwy child theme",
+      "Hardkodowanie tytułu uniemożliwi dynamiczne generowanie tytułów dla różnych stron"
+    ]
+  },
+  "files_to_modify": [
+    "wp-content/themes/hello-theme-child-master/header.php"
+  ],
+  "files_read": {},
+  "diffs": {},
+  "new_contents": {},
+  "files_written": [],
+  "files_pending": [],
+  "backups": {},
+  "commit_hash": null,
+  "deploy_result": null,
+  "errors": [],
+  "awaiting_response": true,
+  "awaiting_type": "answer_questions"
+}
