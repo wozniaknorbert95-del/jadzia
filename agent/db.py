@@ -427,13 +427,15 @@ def db_list_all_sessions() -> List[tuple]:
 def db_get_worker_health_session_counts() -> tuple:
     """
     Return (active_sessions, total_tasks, active_tasks, queued_tasks) for worker health.
-    Matches the semantics of the JSON scan: sessions with tasks, total task count,
-    sessions with active_task_id set, sum of task_queue lengths.
+    active_sessions: sessions with at least one non-terminal task (planning, in_progress, etc.).
+    total_tasks: all tasks. active_tasks: sessions with active_task_id set. queued_tasks: sum of queue lengths.
     """
     conn = get_connection()
     rows = conn.execute("""
         SELECT s.active_task_id, s.task_queue,
-               (SELECT COUNT(*) FROM tasks t WHERE t.chat_id = s.chat_id AND t.source = s.source) AS task_count
+               (SELECT COUNT(*) FROM tasks t WHERE t.chat_id = s.chat_id AND t.source = s.source) AS task_count,
+               (SELECT COUNT(*) FROM tasks t WHERE t.chat_id = s.chat_id AND t.source = s.source
+                AND t.status NOT IN ('completed', 'failed', 'rolled_back')) AS non_terminal_count
         FROM sessions s
     """).fetchall()
     active_sessions = 0
@@ -442,7 +444,8 @@ def db_get_worker_health_session_counts() -> tuple:
     queued_tasks = 0
     for row in rows:
         task_count = row["task_count"] or 0
-        if task_count > 0:
+        non_terminal = row["non_terminal_count"] or 0
+        if non_terminal > 0:
             active_sessions += 1
         total_tasks += task_count
         if row["active_task_id"]:
@@ -515,16 +518,20 @@ def db_get_dashboard_metrics() -> Dict[str, Any]:
         (cutoff_24h,),
     ).fetchone()[0]
 
+    cutoff_7d = (datetime.now(timezone.utc) - timedelta(days=7)).isoformat()
     avg_row = conn.execute(
         """
-        SELECT AVG(
-            (julianday(COALESCE(completed_at, updated_at)) - julianday(created_at)) * 86400
-        ) AS avg_sec
+        SELECT AVG(MIN(
+            (julianday(COALESCE(completed_at, updated_at)) - julianday(created_at)) * 86400,
+            7200
+        )) AS avg_sec
         FROM tasks
         WHERE status IN ('completed', 'failed', 'rolled_back')
           AND created_at IS NOT NULL
           AND (completed_at IS NOT NULL OR updated_at IS NOT NULL)
-        """
+          AND (COALESCE(completed_at, updated_at) >= ?)
+        """,
+        (cutoff_7d,),
     ).fetchone()
     avg_val = avg_row["avg_sec"] if avg_row and avg_row["avg_sec"] is not None else None
     avg_duration_seconds = round(avg_val, 1) if avg_val is not None else None

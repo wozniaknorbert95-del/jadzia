@@ -39,6 +39,7 @@ from agent.state import (
     LockError,
     OperationStatus,
     USE_SQLITE_STATE,
+    cleanup_old_sessions,
 )
 from agent.alerts import send_alert
 from agent.tools import rollback, health_check, test_ssh_connection
@@ -680,6 +681,12 @@ async def startup():
     Path("data").mkdir(exist_ok=True)
     health_metrics["startup_time"] = datetime.now(timezone.utc).isoformat()
     set_health_metrics(health_metrics)
+    try:
+        removed = cleanup_old_sessions(days=7)
+        if removed > 0:
+            print(f"  [startup] cleanup_old_sessions: removed {removed} session(s)")
+    except Exception as e:
+        print(f"  [startup] cleanup_old_sessions failed: {e}")
     print("=" * 50)
     print("  JADZIA API uruchomiona")
     print("  Endpoints: /chat, /status, /rollback, /health")
