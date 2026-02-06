@@ -40,6 +40,7 @@ from agent.state import (
     OperationStatus,
     USE_SQLITE_STATE,
 )
+from agent.alerts import send_alert
 from agent.tools import rollback, health_check, test_ssh_connection
 from agent.db import db_health_check, db_get_dashboard_metrics, db_get_worker_health_session_counts
 from agent.log import get_recent_logs
@@ -207,8 +208,11 @@ async def do_rollback():
     """
     try:
         result = rollback()
+        if result.get("status") == "ok":
+            send_alert("rollback_executed", None, result.get("msg", "OK"))
+        else:
+            send_alert("rollback_failed", None, result.get("msg", "Rollback failed"))
         clear_state()
-        
         return RollbackResponse(
             status=result.get("status", "error"),
             restored=result.get("restored", []),

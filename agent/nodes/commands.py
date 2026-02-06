@@ -7,6 +7,7 @@ from typing import Tuple, Optional
 
 from ..state import load_state, clear_state
 from ..tools import rollback, test_ssh_connection
+from ..alerts import send_alert
 
 
 async def handle_status(
@@ -41,8 +42,10 @@ async def handle_rollback(
     clear_state(chat_id, source)
 
     if result["status"] == "ok":
+        send_alert("rollback_executed", None, result.get("msg", "OK"))
         return (f"✅ Rollback zakonczony.\nPrzywrocono: {', '.join(result.get('restored', []))}", False, None)
     else:
+        send_alert("rollback_failed", None, result.get("msg", "Rollback failed"))
         return (f"⚠️ Rollback: {result['msg']}", False, None)
 
 

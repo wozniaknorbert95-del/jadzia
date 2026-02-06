@@ -22,6 +22,7 @@ from ..log import log_event, EventType
 from ..tools.ssh_orchestrator import write_file
 from ..tools import deploy
 from ..diff import create_change_summary
+from ..alerts import send_alert
 
 
 # Internal marker used only for automated Scenario 3 (rollback verification) in test_mode.
@@ -137,6 +138,7 @@ async def execute_changes(
 
     if errors and not written:
         update_operation_status(OperationStatus.FAILED, chat_id, source, task_id=task_id)
+        send_alert("task_failed", task_id, "\n".join(errors))
         # Do NOT clear_state: keep task in DB with status=failed so client can GET /worker/task/{id} and see error
         return (f"Blad zapisu plikow:\n" + "\n".join(errors), False, None, None)
 
@@ -178,6 +180,12 @@ async def execute_changes(
                 task_id=task_id,
                 chat_id=chat_id,
             )
+            if not task.get("test_mode"):
+                send_alert(
+                    "health_check_failed",
+                    task_id,
+                    health.get("error") or health.get("msg") or "unknown",
+                )
             # Extra marker for automated Scenario 3 rollback verification (visible only in test_mode path).
             if scenario3_force_rollback:
                 log_event(

@@ -21,6 +21,7 @@ from ..context import classify_task_type, get_file_map, get_context_for_task
 from ..prompt import get_planner_prompt, get_simple_response_prompt
 from ..tools.ssh_orchestrator import list_files, list_directory
 from .generate import generate_changes
+from ..alerts import send_alert
 
 
 def parse_plan(response: str) -> Dict:
@@ -231,4 +232,5 @@ async def handle_new_task(
     except Exception as e:
         add_error(str(e), chat_id, source, task_id=tid)
         update_operation_status(OperationStatus.FAILED, chat_id, source, task_id=tid)
+        send_alert("task_failed", tid, str(e))
         raise
