@@ -5,6 +5,7 @@ description = "AI agent do zarządzania sklepem internetowym"
 requires-python = ">=3.11"
 dependencies = [
     "fastapi>=0.109.0",
+    "PyJWT>=2.8.0",
     "uvicorn>=0.27.0",
     "httpx>=0.26.0",
     "paramiko>=3.4.0",

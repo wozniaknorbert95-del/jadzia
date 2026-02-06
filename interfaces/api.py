@@ -8,7 +8,9 @@ api.py — FastAPI endpoints dla JADZIA
 from dotenv import load_dotenv
 load_dotenv()
 
-from fastapi import FastAPI, HTTPException, Query
+import os
+import jwt
+from fastapi import Depends, FastAPI, HTTPException, Query, Request
 from pydantic import BaseModel
 from typing import Optional, List
 from pathlib import Path
@@ -19,6 +21,8 @@ import asyncio
 
 # Ensure logs directory exists at startup
 Path("logs").mkdir(exist_ok=True)
+
+JWT_SECRET = os.getenv("JWT_SECRET")
 
 from agent.agent import process_message
 from agent.state import (
@@ -259,6 +263,24 @@ async def test_ssh():
 # WORKER TASK API (FAZA 1)
 # ============================================================
 
+async def verify_worker_jwt(request: Request):
+    """
+    When JWT_SECRET is set, require valid Authorization: Bearer <token>.
+    When JWT_SECRET is not set, auth is disabled (backward compatible for dev/CI).
+    """
+    if not JWT_SECRET:
+        return None
+    auth = request.headers.get("Authorization")
+    if not auth or not auth.startswith("Bearer "):
+        raise HTTPException(status_code=401, detail="Missing or invalid Authorization header")
+    token = auth[7:].strip()
+    try:
+        payload = jwt.decode(token, JWT_SECRET, algorithms=["HS256"])
+        return payload
+    except jwt.PyJWTError:
+        raise HTTPException(status_code=401, detail="Invalid or expired token")
+
+
 def _task_api_status(internal_status: str) -> str:
     """Map internal status to worker API status."""
     if internal_status == OperationStatus.DIFF_READY:
@@ -298,6 +320,7 @@ def _task_response_from_task_payload(task_id: str, task_payload: dict, position_
 async def worker_create_task(
     request: WorkerTaskRequest,
     dry_run: bool = Query(False, description="Preview mode - don't write files"),
+    _auth=Depends(verify_worker_jwt),
 ):
     """
     Create a new task. If session has active task, queues and returns position_in_queue > 0.
@@ -368,7 +391,7 @@ async def worker_create_task(
 
 
 @app.get("/worker/task/{task_id}")
-async def worker_get_task(task_id: str):
+async def worker_get_task(task_id: str, _auth=Depends(verify_worker_jwt)):
     """
     Get task status by task_id. Returns status, position_in_queue, awaiting_input, operation.
     """
@@ -393,7 +416,9 @@ async def worker_get_task(task_id: str):
 
 
 @app.post("/worker/task/{task_id}/input")
-async def worker_task_input(task_id: str, body: WorkerTaskInputRequest):
+async def worker_task_input(
+    task_id: str, body: WorkerTaskInputRequest, _auth=Depends(verify_worker_jwt)
+):
     """
     Submit user input for a task. Only the active task can receive input.
     """
@@ -561,7 +586,7 @@ def _dashboard_empty_response(sqlite_required: bool = False, error: Optional[str
 
 
 @app.get("/worker/dashboard")
-async def get_worker_dashboard():
+async def get_worker_dashboard(_auth=Depends(verify_worker_jwt)):
     """Dashboard metrics for tasks (requires USE_SQLITE_STATE)."""
     if not USE_SQLITE_STATE:
         return _dashboard_empty_response(sqlite_required=True)
