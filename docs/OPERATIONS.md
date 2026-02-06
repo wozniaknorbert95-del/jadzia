@@ -328,3 +328,38 @@ curl "http://185.243.54.115:8000/costs/estimate?tokens=50000"
 5. **Alerty Discord**
    - Sprawdź kanał Discord czy nie pojawiły się nowe alerty `"task_failed"` / `"rollback_failed"`.
 
+---
+
+## 7. Telegram Bot
+
+Bot jest **wyłączony domyślnie**. Aby go włączyć, ustaw w `.env` zmienną `TELEGRAM_BOT_ENABLED=1` i zrestartuj aplikację. Bez tej flagi router `/telegram` nie jest montowany.
+
+### 7.1. Zmienne środowiskowe
+
+**Wymagane (gdy bot włączony):**
+- `TELEGRAM_WEBHOOK_SECRET` – sekret w nagłówku `X-Webhook-Secret` (weryfikacja żądań z n8n/Telegram)
+- `ALLOWED_TELEGRAM_USERS` – lista ID użytkowników Telegram po przecinku, np. `123456789,987654321`
+- JWT do Worker API: ustaw **albo** `TELEGRAM_BOT_JWT_TOKEN` (gotowy token), **albo** `JWT_SECRET` (token generowany przy starcie)
+
+**Opcjonalne:**
+- `TELEGRAM_BOT_API_BASE_URL` – adres API Jadzia (domyślnie `http://127.0.0.1:8000`)
+
+### 7.2. Komendy (Transfer Protocol V4)
+
+- `/zadanie <treść>` – utworzenie zadania (wywołanie Worker API)
+- `/status` – status bieżącego zadania
+- `/cofnij` – cofnięcie ostatnich zmian (rollback)
+- `/pomoc` – wyświetlenie pomocy
+
+Przy stanie `diff_ready` bot zwraca inline keyboard (Tak/Nie) do zatwierdzenia zmian.
+
+### 7.3. Endpointy (gdy TELEGRAM_BOT_ENABLED=1)
+
+- `POST /telegram/webhook` – webhook od n8n (body: `message`, `chat_id`, `user_id`, `message_id`, opcjonalnie `callback_data`)
+- `GET /telegram/health` – status konfiguracji (webhook secret, whitelist, JWT)
+- `POST /telegram/test` – test formatowania wiadomości (bez wywołań Worker API)
+
+### 7.4. Uruchomienie na produkcji
+
+Do działania na produkcji potrzebny jest **HTTPS** oraz skonfigurowany webhook Telegram (np. przez n8n). Bez HTTPS Telegram nie wywoła webhooka. Konfiguracja webhooka i wdrożenie na produkcji są planowane w kolejnej sesji.
+

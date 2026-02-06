@@ -47,7 +47,7 @@ from agent.db import db_health_check, db_get_dashboard_metrics, db_get_worker_he
 from agent.log import get_recent_logs
 from agent.agent import get_cost_stats, reset_cost_stats
 
-from interfaces.telegram_api import router as telegram_router  # 🆕 NOWE (linia 1)
+from interfaces.telegram_api import router as telegram_router
 
 # ============================================================
 # APP
@@ -59,7 +59,8 @@ app = FastAPI(
     version="1.0.0"
 )
 
-app.include_router(telegram_router)  # 🆕 NOWE (linia 2)
+if os.getenv("TELEGRAM_BOT_ENABLED", "") == "1":
+    app.include_router(telegram_router)
 
 # Global metrics for worker health (updated on startup and by webhooks)
 health_metrics = {

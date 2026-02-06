@@ -11,7 +11,7 @@ Handles:
 import os
 from typing import Optional, Tuple
 from fastapi import Header, HTTPException
-from pydantic import BaseModel, Field, validator
+from pydantic import BaseModel, Field, root_validator, validator
 
 
 # ═══════════════════════════════════════════════════════════════
@@ -37,25 +37,32 @@ ALLOWED_TELEGRAM_USERS = set(
 class TelegramWebhookRequest(BaseModel):
     """
     Expected request structure from n8n webhook.
-    
     n8n forwards Telegram updates in this format.
+    Optional callback_data for inline button presses (e.g. task_id:approve:yes).
     """
-    message: str = Field(..., description="User message text")
+    message: str = Field(default="", description="User message text")
     chat_id: str = Field(..., description="Telegram chat ID")
     user_id: str = Field(..., description="Telegram user ID")
     message_id: int = Field(..., description="Telegram message ID")
-    
-    @validator('message')
-    def message_not_empty(cls, v):
-        if not v or not v.strip():
-            raise ValueError('Message cannot be empty')
-        return v.strip()
-    
-    @validator('user_id')
+    callback_data: Optional[str] = Field(None, description="Inline keyboard callback (e.g. task_id:approve:yes)")
+
+    @validator("message")
+    def message_strip(cls, v):
+        return (v or "").strip()
+
+    @validator("user_id")
     def user_id_not_empty(cls, v):
         if not v or not v.strip():
-            raise ValueError('User ID cannot be empty')
+            raise ValueError("User ID cannot be empty")
         return v.strip()
+
+    @root_validator(skip_on_failure=True)
+    def require_message_or_callback(cls, values):
+        if values.get("callback_data"):
+            return values
+        if not (values.get("message") or "").strip():
+            raise ValueError("Message cannot be empty when callback_data is not provided")
+        return values
 
 
 # ═══════════════════════════════════════════════════════════════
@@ -175,25 +182,12 @@ def validate_telegram_request(
 # ═══════════════════════════════════════════════════════════════
 
 def get_jadzia_chat_id(telegram_user_id: str) -> str:
-    # Strip existing "telegram_" prefix if present
-    if telegram_user_id.startswith("telegram_"):
-        return telegram_user_id
-    return f"telegram_{telegram_user_id}"
     """
     Map Telegram user_id to JADZIA chat_id.
-    
     Format: telegram_{user_id}
-    
-    Args:
-        telegram_user_id: User ID from Telegram
-    
-    Returns:
-        JADZIA-compatible chat_id
-    
-    Example:
-        >>> get_jadzia_chat_id("456789")
-        'telegram_456789'
     """
+    if telegram_user_id.startswith("telegram_"):
+        return telegram_user_id
     return f"telegram_{telegram_user_id}"
 
 

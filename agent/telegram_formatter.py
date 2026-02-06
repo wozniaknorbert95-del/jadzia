@@ -347,24 +347,24 @@ def format_response_for_telegram(
 # ═══════════════════════════════════════════════════════════════
 
 def get_help_message() -> str:
-    """Generate help message for Telegram users"""
+    """Generate help message for Telegram users (Transfer Protocol V4)."""
     help_text = """
 **JADZIA Bot \\- Pomoc**
 
 🤖 **Dostępne komendy:**
+• `/zadanie` \\- nowe zadanie \\(np\\. /zadanie zmień kolor przycisku\\)
 • `/status` \\- sprawdź bieżącą operację
-• `/rollback` \\- cofnij ostatnie zmiany
-• `/clear` \\- anuluj operację
-• `/help` \\- wyświetl tę pomoc
+• `/cofnij` \\- cofnij ostatnie zmiany
+• `/pomoc` \\- wyświetl tę pomoc
 
 💬 **Jak używać:**
-Po prostu napisz co chcesz zrobić, np:
+Użyj /zadanie i treść polecenia, np:
 • "Dodaj komentarz w style\\.css"
 • "Zmień kolor tła na niebieski"
 • "Napraw błąd w functions\\.php"
 
 ✅ **Zatwierdzanie zmian:**
-Po wygenerowaniu kodu odpowiedz:
+Po wygenerowaniu diffu użyj przycisków Tak/Nie lub napisz:
 • `T` / `tak` / `yes` \\- zatwierdź
 • `N` / `nie` / `no` \\- odrzuć
 """
