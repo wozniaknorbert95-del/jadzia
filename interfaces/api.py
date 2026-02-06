@@ -42,7 +42,7 @@ from agent.state import (
 )
 from agent.alerts import send_alert
 from agent.tools import rollback, health_check, test_ssh_connection
-from agent.db import db_health_check, db_get_dashboard_metrics, db_get_worker_health_session_counts
+from agent.db import db_health_check, db_get_dashboard_metrics, db_get_worker_health_session_counts, db_mark_tasks_failed
 from agent.log import get_recent_logs
 from agent.agent import get_cost_stats, reset_cost_stats
 
@@ -122,6 +122,17 @@ class WorkerTaskCreateResponse(BaseModel):
 class WorkerTaskInputRequest(BaseModel):
     approval: Optional[bool] = None
     answer: Optional[str] = None
+
+
+class WorkerTasksCleanupRequest(BaseModel):
+    task_ids: List[str]
+    reason: Optional[str] = None
+
+
+class WorkerTasksCleanupResponse(BaseModel):
+    updated: List[str]
+    skipped_terminal: List[str]
+    not_found: List[str]
 
 
 # ============================================================
@@ -474,6 +485,24 @@ async def worker_task_input(
             position_in_queue = 1 + state["task_queue"].index(task_id)
         print(f"[task_id={task_id}] worker_task_input input_type={input_kind} result status={task_payload.get('status')}")
         return _task_response_from_task_payload(task_id, task_payload, position_in_queue)
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@app.post("/worker/tasks/cleanup", response_model=WorkerTasksCleanupResponse)
+async def worker_tasks_cleanup(
+    body: WorkerTasksCleanupRequest, _auth=Depends(verify_worker_jwt)
+):
+    """
+    Manually mark selected worker tasks as failed (without deleting them).
+    Used to clean up stuck in_progress tasks.
+    """
+    try:
+        reason = body.reason or "manual_cleanup"
+        result = db_mark_tasks_failed(body.task_ids, reason)
+        return WorkerTasksCleanupResponse(**result)
     except HTTPException:
         raise
     except Exception as e:

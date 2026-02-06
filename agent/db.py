@@ -540,6 +540,54 @@ def db_get_dashboard_metrics() -> Dict[str, Any]:
     }
 
 
+def db_mark_tasks_failed(task_ids: List[str], reason: str) -> Dict[str, Any]:
+    """
+    Mark selected tasks as failed (without deleting them).
+
+    Returns dict with:
+        {
+            "updated": [task_ids_marked_failed],
+            "skipped_terminal": [task_ids_already_completed_or_failed],
+            "not_found": [task_ids_not_in_db],
+        }
+    """
+    updated: List[str] = []
+    skipped_terminal: List[str] = []
+    not_found: List[str] = []
+
+    for task_id in task_ids:
+        task = db_get_task(task_id)
+        if not task:
+            not_found.append(task_id)
+            continue
+
+        status = task.get("status")
+        if status in ("completed", "failed", "rolled_back"):
+            skipped_terminal.append(task_id)
+            continue
+
+        errors = task.get("errors") or []
+        if not isinstance(errors, list):
+            errors = [str(errors)]
+
+        msg = f"Marked as failed by cleanup: {reason} (was {status})"
+        errors.append(msg)
+
+        updates: Dict[str, Any] = {
+            "status": "failed",
+            "errors": errors,
+            "completed_at": datetime.now().isoformat(),
+        }
+        db_update_task(task_id, updates)
+        updated.append(task_id)
+
+    return {
+        "updated": updated,
+        "skipped_terminal": skipped_terminal,
+        "not_found": not_found,
+    }
+
+
 # ============================================================================
 # Manual testing
 # ============================================================================
