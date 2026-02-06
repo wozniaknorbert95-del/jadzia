@@ -6,7 +6,7 @@ Phase 1: Create DB operations (no integration yet).
 import sqlite3
 import json
 import os
-from datetime import datetime
+from datetime import datetime, timedelta, timezone
 from typing import Dict, List, Optional, Any
 from contextlib import contextmanager
 import threading
@@ -463,6 +463,81 @@ def db_health_check() -> bool:
         return True
     except Exception:
         return False
+
+
+def db_get_dashboard_metrics() -> Dict[str, Any]:
+    """
+    Return raw dashboard metrics from tasks table (no status mapping; done in API).
+    Used by GET /worker/dashboard.
+    """
+    conn = get_connection()
+
+    total_tasks = conn.execute("SELECT COUNT(*) FROM tasks").fetchone()[0]
+
+    by_status_rows = conn.execute(
+        "SELECT status, COUNT(*) AS cnt FROM tasks GROUP BY status"
+    ).fetchall()
+    by_status_raw = [{"status": row["status"], "count": row["cnt"]} for row in by_status_rows]
+
+    test_mode_tasks = conn.execute(
+        "SELECT COUNT(*) FROM tasks WHERE test_mode = 1"
+    ).fetchone()[0]
+
+    production_tasks = conn.execute(
+        "SELECT COUNT(*) FROM tasks WHERE test_mode = 0"
+    ).fetchone()[0]
+
+    recent_rows = conn.execute(
+        """
+        SELECT task_id, status, test_mode, dry_run, created_at, updated_at, completed_at
+        FROM tasks ORDER BY created_at DESC LIMIT 20
+        """
+    ).fetchall()
+    recent_tasks_raw = [
+        {
+            "task_id": row["task_id"],
+            "status": row["status"],
+            "test_mode": row["test_mode"],
+            "dry_run": row["dry_run"],
+            "created_at": row["created_at"],
+            "updated_at": row["updated_at"],
+            "completed_at": row["completed_at"],
+        }
+        for row in recent_rows
+    ]
+
+    cutoff_24h = (datetime.now(timezone.utc) - timedelta(hours=24)).isoformat()
+    errors_last_24h = conn.execute(
+        """
+        SELECT COUNT(*) FROM tasks
+        WHERE status IN ('failed', 'rolled_back') AND updated_at >= ?
+        """,
+        (cutoff_24h,),
+    ).fetchone()[0]
+
+    avg_row = conn.execute(
+        """
+        SELECT AVG(
+            (julianday(COALESCE(completed_at, updated_at)) - julianday(created_at)) * 86400
+        ) AS avg_sec
+        FROM tasks
+        WHERE status IN ('completed', 'failed', 'rolled_back')
+          AND created_at IS NOT NULL
+          AND (completed_at IS NOT NULL OR updated_at IS NOT NULL)
+        """
+    ).fetchone()
+    avg_val = avg_row["avg_sec"] if avg_row and avg_row["avg_sec"] is not None else None
+    avg_duration_seconds = round(avg_val, 1) if avg_val is not None else None
+
+    return {
+        "total_tasks": total_tasks,
+        "by_status_raw": by_status_raw,
+        "test_mode_tasks": test_mode_tasks,
+        "production_tasks": production_tasks,
+        "recent_tasks_raw": recent_tasks_raw,
+        "errors_last_24h": errors_last_24h,
+        "avg_duration_seconds": avg_duration_seconds,
+    }
 
 
 # ============================================================================

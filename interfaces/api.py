@@ -37,7 +37,7 @@ from agent.state import (
     USE_SQLITE_STATE,
 )
 from agent.tools import rollback, health_check, test_ssh_connection
-from agent.db import db_health_check, db_get_worker_health_session_counts
+from agent.db import db_health_check, db_get_dashboard_metrics, db_get_worker_health_session_counts
 from agent.log import get_recent_logs
 from agent.agent import get_cost_stats, reset_cost_stats
 
@@ -539,6 +539,74 @@ async def get_worker_health():
             "healthy": last_ver.get("healthy"),
             "auto_rollback_count": last_ver.get("auto_rollback_count", 0),
         },
+    }
+
+
+def _dashboard_empty_response(sqlite_required: bool = False, error: Optional[str] = None) -> dict:
+    """Response when USE_SQLITE_STATE is False or DB error."""
+    out = {
+        "total_tasks": 0,
+        "by_status": {"completed": 0, "error": 0, "in_progress": 0, "diff_ready": 0},
+        "test_mode_tasks": 0,
+        "production_tasks": 0,
+        "recent_tasks": [],
+        "errors_last_24h": 0,
+        "avg_duration_seconds": None,
+    }
+    if sqlite_required:
+        out["sqlite_required"] = True
+    if error:
+        out["error"] = error
+    return out
+
+
+@app.get("/worker/dashboard")
+async def get_worker_dashboard():
+    """Dashboard metrics for tasks (requires USE_SQLITE_STATE)."""
+    if not USE_SQLITE_STATE:
+        return _dashboard_empty_response(sqlite_required=True)
+
+    try:
+        raw = db_get_dashboard_metrics()
+    except Exception:
+        return _dashboard_empty_response(error="db_unavailable")
+
+    by_status = {"completed": 0, "error": 0, "in_progress": 0, "diff_ready": 0}
+    for item in raw["by_status_raw"]:
+        api_status = _task_api_status(item["status"])
+        by_status[api_status] = by_status.get(api_status, 0) + item["count"]
+
+    recent_tasks = []
+    for row in raw["recent_tasks_raw"]:
+        created = row["created_at"]
+        end_ts = row["completed_at"] or row["updated_at"]
+        if created and end_ts:
+            try:
+                start = datetime.fromisoformat(created.replace("Z", "+00:00"))
+                end = datetime.fromisoformat(end_ts.replace("Z", "+00:00"))
+                duration_seconds = round((end - start).total_seconds(), 1)
+            except Exception:
+                duration_seconds = 0.0
+        else:
+            duration_seconds = 0.0
+
+        recent_tasks.append({
+            "task_id": row["task_id"],
+            "status": _task_api_status(row["status"]),
+            "test_mode": bool(row["test_mode"]),
+            "dry_run": bool(row["dry_run"]),
+            "created_at": created or "",
+            "duration_seconds": duration_seconds,
+        })
+
+    return {
+        "total_tasks": raw["total_tasks"],
+        "by_status": by_status,
+        "test_mode_tasks": raw["test_mode_tasks"],
+        "production_tasks": raw["production_tasks"],
+        "recent_tasks": recent_tasks,
+        "errors_last_24h": raw["errors_last_24h"],
+        "avg_duration_seconds": raw["avg_duration_seconds"],
     }
 
 

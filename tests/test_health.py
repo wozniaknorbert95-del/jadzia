@@ -45,3 +45,24 @@ async def test_health_shows_ssh_status():
             data = response.json()
 
             assert data["ssh_connection"] == "ok"
+
+
+@pytest.mark.asyncio
+async def test_dashboard_endpoint_structure():
+    """GET /worker/dashboard returns 200 and required keys (structure only)."""
+    transport = ASGITransport(app=app)
+    async with AsyncClient(transport=transport, base_url="http://test") as client:
+        response = await client.get("/worker/dashboard")
+        assert response.status_code == 200
+        data = response.json()
+
+        assert "total_tasks" in data
+        assert "by_status" in data
+        assert "test_mode_tasks" in data
+        assert "production_tasks" in data
+        assert "recent_tasks" in data
+        assert "errors_last_24h" in data
+        assert "avg_duration_seconds" in data
+
+        assert data["by_status"].keys() == {"completed", "error", "in_progress", "diff_ready"}
+        assert isinstance(data["recent_tasks"], list)
