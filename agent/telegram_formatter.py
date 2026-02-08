@@ -19,7 +19,8 @@ from typing import List, Dict, Any
 
 # Characters that need escaping in Telegram MarkdownV2
 # Source: https://core.telegram.org/bots/api#markdownv2-style
-ESCAPE_CHARS = r'_*[]()~`>#+=|{}.!'
+# Full set: _ * [ ] ( ) ~ ` > # + - = | { } . !
+ESCAPE_CHARS = r'_*[]()~`>#+-=|{}.!'
 
 
 def escape_markdown_v2(text: str, preserve_code_blocks: bool = True) -> str:
@@ -327,8 +328,8 @@ def format_response_for_telegram(
     
     # Add confirmation prompt if awaiting input
     if awaiting_input:
-        prompt = "\n\nPotwierdzasz? (Norbi?)"
-        
+        prompt = "\n\n" + escape_markdown_v2("Potwierdzasz? (Norbi?)")
+
         # Append to last message if it's short enough
         if messages and len(messages[-1]["text"]) + len(prompt) < TELEGRAM_MAX_LENGTH:
             messages[-1]["text"] += prompt
@@ -347,26 +348,27 @@ def format_response_for_telegram(
 # ═══════════════════════════════════════════════════════════════
 
 def get_help_message() -> str:
-    """Generate help message for Telegram users (Transfer Protocol V4)."""
+    """Generate help message for Telegram users (Transfer Protocol V4).
+    Returns raw text; format_response_for_telegram() will escape it for MarkdownV2 once."""
     help_text = """
-**JADZIA Bot \\- Pomoc**
+**JADZIA Bot - Pomoc**
 
 🤖 **Dostępne komendy:**
-• `/zadanie` \\- nowe zadanie \\(np\\. /zadanie zmień kolor przycisku\\)
-• `/status` \\- sprawdź bieżącą operację
-• `/cofnij` \\- cofnij ostatnie zmiany
-• `/pomoc` \\- wyświetl tę pomoc
+• `/zadanie` - nowe zadanie (np. /zadanie zmień kolor przycisku)
+• `/status` - sprawdź bieżącą operację
+• `/cofnij` - cofnij ostatnie zmiany
+• `/pomoc` - wyświetl tę pomoc
 
 💬 **Jak używać:**
 Użyj /zadanie i treść polecenia, np:
-• "Dodaj komentarz w style\\.css"
+• "Dodaj komentarz w style.css"
 • "Zmień kolor tła na niebieski"
-• "Napraw błąd w functions\\.php"
+• "Napraw błąd w functions.php"
 
 ✅ **Zatwierdzanie zmian:**
 Po wygenerowaniu diffu użyj przycisków Tak/Nie lub napisz:
-• `T` / `tak` / `yes` \\- zatwierdź
-• `N` / `nie` / `no` \\- odrzuć
+• `T` / `tak` / `yes` - zatwierdź
+• `N` / `nie` / `no` - odrzuć
 """
     return help_text.strip()
 
