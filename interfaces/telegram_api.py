@@ -2,13 +2,20 @@
 Telegram API Router (Transfer Protocol V4).
 Uses Worker API (POST/GET /worker/task, POST /worker/task/{id}/input) with JWT.
 Commands: /zadanie, /status, /cofnij, /pomoc. Inline keyboard for approval (diff_ready).
+When TELEGRAM_BOT_TOKEN is set, replies are sent to Telegram via sendMessage (direct webhook).
 """
 
+import os
 import time
-from typing import Optional, Tuple
+import logging
+from typing import Optional, Tuple, List
 
-from fastapi import APIRouter, Header, HTTPException
-from pydantic import BaseModel
+import httpx
+from fastapi import APIRouter, Header, HTTPException, Request
+from pydantic import BaseModel, ValidationError
+
+TELEGRAM_BOT_TOKEN = os.getenv("TELEGRAM_BOT_TOKEN", "").strip()
+TELEGRAM_API_BASE = "https://api.telegram.org"
 
 from agent.telegram_formatter import (
     format_response_for_telegram,
@@ -17,6 +24,7 @@ from agent.telegram_formatter import (
 )
 from agent.telegram_validator import (
     TelegramWebhookRequest,
+    normalize_telegram_update,
     validate_webhook_secret,
     validate_user_whitelist,
     get_jadzia_chat_id,
@@ -31,6 +39,7 @@ from interfaces.telegram_worker_client import (
 )
 
 router = APIRouter(prefix="/telegram", tags=["telegram"])
+logger = logging.getLogger(__name__)
 
 # In-memory: chat_id -> last task_id (for /status and approval)
 _telegram_chat_to_task_id: dict[str, str] = {}
@@ -41,20 +50,25 @@ def parse_telegram_command(message: str, callback_data: Optional[str] = None) ->
     Parse webhook input into (command, payload).
     command: "zadanie" | "status" | "cofnij" | "pomoc" | "callback" | "approval" | "message"
     payload: instruction text, or callback_data, or "true"/"false" for approval.
+    Normalizes Telegram @BotUsername suffix (e.g. /pomoc@JadziaBot -> /pomoc) for matching.
     """
     if callback_data:
         return "callback", callback_data
     msg = (message or "").strip()
     lower = msg.lower()
-    if lower in ("/status", "status"):
+    # First token only, strip @BotUsername for command matching (Telegram sends /cmd@BotName in groups)
+    cmd_token = msg.split(None, 1)[0] if msg else ""
+    cmd_only = cmd_token.split("@")[0] if "@" in cmd_token else cmd_token
+    cmd_lower = cmd_only.lower()
+    if cmd_lower in ("/status", "status"):
         return "status", ""
-    if lower in ("/cofnij", "cofnij"):
+    if cmd_lower in ("/cofnij", "cofnij"):
         return "cofnij", ""
-    if lower in ("/pomoc", "pomoc", "/help", "help"):
+    if cmd_lower in ("/pomoc", "pomoc", "/help", "help"):
         return "pomoc", ""
-    if msg.startswith("/zadanie"):
-        rest = msg[len("/zadanie"):].strip()
-        return "zadanie", rest
+    if cmd_only.startswith("/zadanie"):
+        payload = msg[len(cmd_token):].strip()
+        return "zadanie", payload
     if lower in ("tak", "nie", "t", "n", "yes", "no"):
         return "approval", "true" if lower in ("tak", "t", "yes") else "false"
     return "message", msg
@@ -88,7 +102,7 @@ def parse_callback_approval(callback_data: str) -> Optional[Tuple[str, bool]]:
 
 
 class TelegramWebhookResponse(BaseModel):
-    """Response for n8n to forward to Telegram."""
+    """Response for n8n or direct Telegram (sendMessage when TELEGRAM_BOT_TOKEN set)."""
     success: bool
     messages: list
     awaiting_input: bool = False
@@ -97,16 +111,157 @@ class TelegramWebhookResponse(BaseModel):
     error: Optional[dict] = None
 
 
-@router.post("/webhook", response_model=TelegramWebhookResponse)
-async def telegram_webhook(
+async def _send_telegram_replies(
+    chat_id: str,
+    response: TelegramWebhookResponse,
+    callback_query_id: Optional[str] = None,
+) -> None:
+    """
+    Send reply messages to Telegram via Bot API (sendMessage).
+    If callback_query_id is set, call answerCallbackQuery first to clear loading state.
+    Does not raise; logs errors.
+    """
+    if not TELEGRAM_BOT_TOKEN:
+        return
+    if not response.messages:
+        print(f"[Telegram] sendMessage skipped: response.messages is empty (chat_id={chat_id})")
+        return
+    url_base = f"{TELEGRAM_API_BASE}/bot{TELEGRAM_BOT_TOKEN}"
+    try:
+        async with httpx.AsyncClient(timeout=10.0) as client:
+            if callback_query_id:
+                await client.post(
+                    f"{url_base}/answerCallbackQuery",
+                    json={"callback_query_id": callback_query_id},
+                )
+            reply_markup = response.reply_markup
+            sent = 0
+            for i, msg in enumerate(response.messages):
+                text = msg.get("text") if isinstance(msg, dict) else None
+                if not text:
+                    continue
+                payload = {"chat_id": chat_id, "text": text}
+                if msg.get("parse_mode"):
+                    payload["parse_mode"] = msg["parse_mode"]
+                if reply_markup and i == 0:
+                    payload["reply_markup"] = reply_markup
+                log_payload = {**payload, "text": (text[:300] + "..." if len(text) > 300 else text)}
+                print(f"[Telegram] sendMessage request: {log_payload}")
+                r = await client.post(f"{url_base}/sendMessage", json=payload)
+                if r.status_code >= 400:
+                    try:
+                        body = r.json()
+                    except Exception:
+                        body = r.text
+                    print(f"[Telegram] sendMessage {r.status_code} response: {body}")
+                r.raise_for_status()
+                sent += 1
+            if sent == 0:
+                print(f"[Telegram] sendMessage skipped: all messages had empty text (chat_id={chat_id})")
+    except Exception as e:
+        print(f"Telegram sendMessage error: {e}")
+
+
+async def send_awaiting_response_to_telegram(
+    chat_id: str,
+    response_text: str,
+    task_id: Optional[str] = None,
+    status: Optional[str] = None,
+    awaiting_input: bool = True,
+) -> None:
+    """
+    Push a response to Telegram from background processing (e.g. worker_loop).
+    Handles awaiting-input (plan_approval, diff_ready) and final responses (completed, failed).
+    Does not raise; logs errors.
+    """
+    # Jadzia session chat_id uses "telegram_{user_id}". Telegram Bot API requires numeric chat_id.
+    numeric_id = chat_id.removeprefix("telegram_") if str(chat_id).startswith("telegram_") else chat_id
+    logger.info(f"[Telegram push] sending to numeric_id={numeric_id} (original={chat_id})")
+    logger.debug(
+        "[Telegram] send_awaiting_response_to_telegram called: chat_id=%r numeric_id=%r task_id=%r status=%r awaiting_input=%r response_len=%d",
+        chat_id,
+        numeric_id,
+        task_id,
+        status,
+        awaiting_input,
+        len(response_text or ""),
+    )
+    if not TELEGRAM_BOT_TOKEN:
+        logger.warning("[Telegram push] skipped: TELEGRAM_BOT_TOKEN not set")
+        return
+    if not chat_id:
+        logger.warning("[Telegram push] skipped: chat_id empty")
+        return
+    if not str(chat_id).startswith("telegram_"):
+        logger.warning("[Telegram push] skipped: chat_id does not start with telegram_ (chat_id=%r)", chat_id)
+        return
+    messages: List[dict] = format_response_for_telegram(response_text, awaiting_input=awaiting_input)
+    if not messages:
+        logger.warning("[Telegram push] skipped: format_response_for_telegram returned empty messages (chat_id=%r)", chat_id)
+        return
+    reply_markup = build_inline_keyboard_approval(task_id) if (status == "diff_ready" and task_id) else None
+    logger.info(
+        "[Telegram push] sending %d message(s) (chat_id=%r numeric_id=%r task_id=%r status=%r)",
+        len(messages),
+        chat_id,
+        numeric_id,
+        task_id,
+        status,
+    )
+    url_base = f"{TELEGRAM_API_BASE}/bot{TELEGRAM_BOT_TOKEN}"
+    try:
+        async with httpx.AsyncClient(timeout=10.0) as client:
+            for i, msg in enumerate(messages):
+                text = msg.get("text") if isinstance(msg, dict) else None
+                if not text:
+                    continue
+                payload = {"chat_id": numeric_id, "text": text}
+                if msg.get("parse_mode"):
+                    payload["parse_mode"] = msg["parse_mode"]
+                if reply_markup and i == 0:
+                    payload["reply_markup"] = reply_markup
+                log_payload = {**payload, "text": (text[:300] + "..." if len(text) > 300 else text)}
+                logger.debug("[Telegram push] sendMessage request: %s", log_payload)
+                r = await client.post(f"{url_base}/sendMessage", json=payload)
+                if r.status_code >= 400:
+                    try:
+                        body = r.json()
+                    except Exception:
+                        body = r.text
+                    logger.error(
+                        "[Telegram push] sendMessage failed status=%s chat_id=%r numeric_id=%r task_id=%r body=%r",
+                        r.status_code,
+                        chat_id,
+                        numeric_id,
+                        task_id,
+                        body,
+                    )
+                r.raise_for_status()
+    except Exception as e:
+        logger.error(
+            "[Telegram push] sendMessage exception chat_id=%r numeric_id=%r task_id=%r status=%r",
+            chat_id,
+            numeric_id,
+            task_id,
+            status,
+            exc_info=True,
+        )
+
+
+async def _handle_webhook_request(
     request: TelegramWebhookRequest,
-    x_webhook_secret: Optional[str] = Header(None),
-):
-    """Main webhook: validate, route command, call Worker API, return formatted messages + optional reply_markup."""
+    x_webhook_secret: Optional[str],
+    *,
+    skip_webhook_secret: bool = False,
+) -> TelegramWebhookResponse:
+    """Process a single webhook request (n8n or normalized Telegram Update).
+    When skip_webhook_secret=True (native Telegram Update), X-Webhook-Secret is not required
+    because Telegram does not send that header."""
     start_time = time.time()
 
     try:
-        validate_webhook_secret(x_webhook_secret)
+        if not skip_webhook_secret:
+            validate_webhook_secret(x_webhook_secret)
         validate_user_whitelist(request.user_id)
     except HTTPException as e:
         if e.status_code == 401:
@@ -168,6 +323,9 @@ async def telegram_webhook(
         if command == "pomoc":
             text = get_help_message()
             messages = format_response_for_telegram(text, awaiting_input=False)
+            # Ensure at least one sendable message (avoid empty/empty-text from MarkdownV2)
+            if not messages or not any(m.get("text") for m in messages):
+                messages = [{"text": "Pomoc: /zadanie, /status, /cofnij, /pomoc", "parse_mode": None}]
             return TelegramWebhookResponse(success=True, messages=messages)
 
         if command == "cofnij":
@@ -203,21 +361,15 @@ async def telegram_webhook(
         task_id = create_res.get("task_id", "")
         _telegram_chat_to_task_id[chat_id] = task_id
 
-        if create_res.get("status") == "queued":
-            pos = create_res.get("position_in_queue", 0)
-            messages = format_response_for_telegram(f"Zadanie dodane do kolejki (pozycja {pos}).", awaiting_input=False)
-            return TelegramWebhookResponse(success=True, messages=messages)
-
-        # processing: get task to retrieve response text (create_task already waited)
-        result = await get_task(task_id, jwt_token, base_url)
-        response_text = result.get("response", "") or "Zadanie w toku."
-        awaiting = result.get("awaiting_input", False)
-        messages = format_response_for_telegram(response_text, awaiting_input=awaiting)
-        reply_markup = build_inline_keyboard_approval(task_id) if (result.get("status") == "diff_ready" and awaiting) else None
-
+        # Quick ACK: task is always enqueued; worker loop will process it and push results to Telegram
+        pos = create_res.get("position_in_queue", 1)
+        messages = format_response_for_telegram(
+            f"Przyjęto zadanie (pozycja w kolejce: {pos}). Wyślę wynik, gdy będzie gotowy.",
+            awaiting_input=False,
+        )
         duration_ms = int((time.time() - start_time) * 1000)
-        print(f"✅ Telegram response: {len(messages)} messages, {duration_ms}ms, awaiting={awaiting}")
-        return TelegramWebhookResponse(success=True, messages=messages, awaiting_input=awaiting, reply_markup=reply_markup)
+        print(f"✅ Telegram quick_ack: task_id={task_id}, position={pos}, {duration_ms}ms")
+        return TelegramWebhookResponse(success=True, messages=messages)
 
     except Exception as e:
         print(f"❌ Telegram webhook error: {e}")
@@ -229,6 +381,39 @@ async def telegram_webhook(
             messages=[{"text": err_msg, "parse_mode": "MarkdownV2"}],
             error={"type": "internal", "message": str(e)},
         )
+
+
+@router.post("/webhook", response_model=TelegramWebhookResponse)
+async def telegram_webhook(
+    raw_request: Request,
+    x_webhook_secret: Optional[str] = Header(None),
+):
+    """Main webhook: accepts Telegram native Update or n8n format; validate, route command, call Worker API; send replies via sendMessage when TELEGRAM_BOT_TOKEN set."""
+    try:
+        body = await raw_request.json()
+    except Exception:
+        return TelegramWebhookResponse(success=False, messages=[], error={"type": "bad_request", "message": "Invalid JSON"})
+    if not isinstance(body, dict):
+        return TelegramWebhookResponse(success=False, messages=[], error={"type": "bad_request", "message": "Body must be object"})
+
+    if body.get("update_id") is not None:
+        normalized = normalize_telegram_update(body)
+        if normalized is None:
+            return TelegramWebhookResponse(success=True, messages=[])
+        response = await _handle_webhook_request(
+            normalized, x_webhook_secret, skip_webhook_secret=True
+        )
+        callback_id = (body.get("callback_query") or {}).get("id") if isinstance(body.get("callback_query"), dict) else None
+        await _send_telegram_replies(normalized.chat_id, response, callback_id)
+        return response
+
+    try:
+        request = TelegramWebhookRequest(**body)
+    except ValidationError as e:
+        raise HTTPException(status_code=422, detail=e.errors())
+    response = await _handle_webhook_request(request, x_webhook_secret, skip_webhook_secret=False)
+    await _send_telegram_replies(request.chat_id, response, None)
+    return response
 
 
 @router.get("/health")

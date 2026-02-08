@@ -341,7 +341,8 @@ Bot jest **wyłączony domyślnie**. Aby go włączyć, ustaw w `.env` zmienną 
 - `ALLOWED_TELEGRAM_USERS` – lista ID użytkowników Telegram po przecinku, np. `123456789,987654321`
 - JWT do Worker API: ustaw **albo** `TELEGRAM_BOT_JWT_TOKEN` (gotowy token), **albo** `JWT_SECRET` (token generowany przy starcie)
 
-**Opcjonalne:**
+**Opcjonalne (odpowiedzi w Telegramie):**
+- `TELEGRAM_BOT_TOKEN` – token bota z @BotFather. Gdy ustawiony, webhook wysyła odpowiedzi do użytkownika przez Telegram Bot API (sendMessage); bez tego webhook zwraca tylko JSON (np. do n8n).
 - `TELEGRAM_BOT_API_BASE_URL` – adres API Jadzia (domyślnie `http://127.0.0.1:8000`)
 
 ### 7.2. Komendy (Transfer Protocol V4)
@@ -355,11 +356,11 @@ Przy stanie `diff_ready` bot zwraca inline keyboard (Tak/Nie) do zatwierdzenia z
 
 ### 7.3. Endpointy (gdy TELEGRAM_BOT_ENABLED=1)
 
-- `POST /telegram/webhook` – webhook od n8n (body: `message`, `chat_id`, `user_id`, `message_id`, opcjonalnie `callback_data`)
+- `POST /telegram/webhook` – webhook: akceptuje natywny Telegram Update lub format n8n (body: `message`, `chat_id`, `user_id`, `message_id`, opcjonalnie `callback_data`). Gdy ustawiony `TELEGRAM_BOT_TOKEN`, odpowiedzi są wysyłane do użytkownika przez sendMessage.
 - `GET /telegram/health` – status konfiguracji (webhook secret, whitelist, JWT)
 - `POST /telegram/test` – test formatowania wiadomości (bez wywołań Worker API)
 
 ### 7.4. Uruchomienie na produkcji
 
-Do działania na produkcji potrzebny jest **HTTPS** oraz skonfigurowany webhook Telegram (np. przez n8n). Bez HTTPS Telegram nie wywoła webhooka. Konfiguracja webhooka i wdrożenie na produkcji są planowane w kolejnej sesji.
+Do działania na produkcji potrzebny jest **HTTPS** oraz skonfigurowany webhook Telegram (np. przez n8n). Bez HTTPS Telegram nie wywoła webhooka. Opcje konfiguracji HTTPS (Cloudflare Tunnel, nginx + Let's Encrypt, ngrok) oraz rekomendacja opisane są w [HTTPS_SETUP_OPTIONS.md](HTTPS_SETUP_OPTIONS.md).
 

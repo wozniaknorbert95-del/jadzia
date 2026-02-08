@@ -43,6 +43,8 @@ from agent.state import (
     OperationStatus,
     USE_SQLITE_STATE,
     cleanup_old_sessions,
+    add_error,
+    is_locked,
 )
 from agent.alerts import send_alert
 from agent.tools import rollback, health_check, test_ssh_connection
@@ -352,72 +354,28 @@ async def worker_create_task(
     _auth=Depends(verify_worker_jwt),
 ):
     """
-    Create a new task. If session has active task, queues and returns position_in_queue > 0.
+    Create a new task (Quick ACK). Always enqueues and returns immediately.
+    Worker loop picks up the task and runs process_message in background.
     """
     chat_id = request.chat_id
     source = "telegram" if (request.chat_id or "").startswith("telegram_") else "http"
     task_id = str(uuid.uuid4())
     test_mode = request.test_mode
     try:
-        with agent_lock(timeout=10, chat_id=chat_id, source=source):
-            state = load_state(chat_id, source)
-            active_id = get_active_task_id(chat_id, source) if state else None
-            task_done = False
-            if active_id and state and state.get("tasks"):
-                t = state["tasks"].get(active_id)
-                if t and t.get("status") in (OperationStatus.COMPLETED, OperationStatus.FAILED, OperationStatus.ROLLED_BACK):
-                    task_done = True
-            if active_id and not task_done:
-                position = add_task_to_queue(
-                    chat_id,
-                    task_id,
-                    request.instruction,
-                    source,
-                    dry_run=dry_run,
-                    webhook_url=request.webhook_url,
-                    test_mode=test_mode,
-                )
-                print(f"[task_id={task_id}] worker_create_task chat_id={chat_id} position_in_queue={position}")
-                return WorkerTaskCreateResponse(
-                    task_id=task_id,
-                    status="queued",
-                    position_in_queue=position,
-                    chat_id=chat_id,
-                    dry_run=dry_run,
-                    test_mode=test_mode,
-                )
-        # Ensure task row exists before process_message so GET /worker/task/{task_id} can find it
-        create_operation(
-            request.instruction,
+        position = add_task_to_queue(
             chat_id,
+            task_id,
+            request.instruction,
             source,
-            task_id=task_id,
-            dry_run=dry_run,
-            test_mode=test_mode,
-            webhook_url=request.webhook_url,
-        )
-        response_text, awaiting_input, input_type = await process_message(
-            user_input=request.instruction,
-            chat_id=chat_id,
-            source=source,
-            task_id=task_id,
             dry_run=dry_run,
             webhook_url=request.webhook_url,
             test_mode=test_mode,
         )
-        with agent_lock(timeout=10, chat_id=chat_id, source=source):
-            update_operation_status(
-                get_current_status(chat_id, source, task_id=task_id),
-                chat_id,
-                source,
-                task_id=task_id,
-                last_response=response_text,
-            )
-        print(f"[task_id={task_id}] worker_create_task chat_id={chat_id} position_in_queue=0")
+        print(f"[task_id={task_id}] worker_create_task (quick_ack) chat_id={chat_id} position_in_queue={position}")
         return WorkerTaskCreateResponse(
             task_id=task_id,
-            status="processing",
-            position_in_queue=0,
+            status="queued",
+            position_in_queue=position,
             chat_id=chat_id,
             dry_run=dry_run,
             test_mode=test_mode,
@@ -717,19 +675,30 @@ async def _run_task_with_timeout(
     mark task as FAILED and advance queue so the next task can run.
     """
     try:
+        # Load per-task flags persisted at enqueue time
+        state = await asyncio.to_thread(load_state, chat_id, source)
+        task_data = ((state or {}).get("tasks") or {}).get(task_id, {}) if state else {}
+        dry_run = bool(task_data.get("dry_run", False))
+        test_mode = bool(task_data.get("test_mode", False))
+        webhook_url = task_data.get("webhook_url") or None
         await asyncio.wait_for(
             process_message(
                 user_input,
                 chat_id=chat_id,
                 source=source,
                 task_id=task_id,
+                dry_run=dry_run,
+                webhook_url=webhook_url,
+                test_mode=test_mode,
                 push_to_telegram=True,
             ),
             timeout=float(timeout_sec),
         )
     except asyncio.TimeoutError:
-        print(f"  [worker_loop] task_id={task_id} timed out after {timeout_sec}s, marking FAILED and advancing queue")
+        reason = f"worker_timeout: process_message timed out after {timeout_sec}s"
+        print(f"  [worker_loop] FAILED_SET task_id={task_id} chat_id={chat_id} source={source} reason={reason}")
         try:
+            await asyncio.to_thread(add_error, reason, chat_id, source, task_id)
             await asyncio.to_thread(
                 update_operation_status,
                 OperationStatus.FAILED,
@@ -748,8 +717,10 @@ async def _run_task_with_timeout(
             import traceback
             traceback.print_exc()
     except asyncio.CancelledError:
-        print(f"  [worker_loop] task_id={task_id} cancelled, marking FAILED and advancing queue")
+        reason = "worker_cancelled: process_message task was cancelled"
+        print(f"  [worker_loop] FAILED_SET task_id={task_id} chat_id={chat_id} source={source} reason={reason}")
         try:
+            await asyncio.to_thread(add_error, reason, chat_id, source, task_id)
             await asyncio.to_thread(
                 update_operation_status,
                 OperationStatus.FAILED,
@@ -763,6 +734,42 @@ async def _run_task_with_timeout(
             import traceback
             traceback.print_exc()
         raise
+
+
+def _parse_timestamp_to_utc(ts_str: str) -> Optional[datetime]:
+    """
+    Parse ISO timestamp string to timezone-aware UTC datetime.
+    Handles:
+    - Aware timestamps (with Z or offset) → converted to UTC.
+    - Naive timestamps (no tz info) → treated as server local time, converted to UTC.
+    Returns None on parse failure.
+    """
+    if not ts_str or not ts_str.strip():
+        return None
+    ts_str = ts_str.strip()
+    try:
+        dt = datetime.fromisoformat(ts_str.replace("Z", "+00:00"))
+        if dt.tzinfo is None:
+            # Naive: assume server local time and convert to UTC
+            dt = dt.astimezone(timezone.utc)
+        else:
+            dt = dt.astimezone(timezone.utc)
+        return dt
+    except (ValueError, TypeError) as e:
+        print(f"  [worker_loop] _parse_timestamp_to_utc failed for {ts_str!r}: {e}")
+        return None
+
+
+def _safe_age_minutes(dt_utc: datetime) -> float:
+    """
+    Calculate age in minutes from a UTC-aware datetime.
+    If age is negative (clock skew / stale local timestamps), clamp to 0 and log warning.
+    """
+    age = datetime.now(timezone.utc) - dt_utc
+    if age.total_seconds() < 0:
+        print(f"  [worker_loop] WARNING negative_age: timestamp={dt_utc.isoformat()} now={datetime.now(timezone.utc).isoformat()} age_sec={age.total_seconds():.1f} — clamped to 0")
+        return 0.0
+    return age.total_seconds() / 60.0
 
 
 def _worker_loop_done_callback(task: asyncio.Task, chat_id: str, source: str, task_id: str) -> None:
@@ -830,6 +837,12 @@ async def _worker_loop():
                         else:
                             task_dict = task or {}
                             status_val = task_dict.get("status", "")
+                            # If session is actively being processed (lock held), skip stale/awaiting checks.
+                            # This prevents marking long-running tasks as FAILED while process_message is still running.
+                            if await asyncio.to_thread(is_locked, chat_id, source):
+                                print(f"  [worker_loop] session {source}/{chat_id}: locked, skipping stale/timeout checks")
+                                # No next_task_id => we effectively wait for the running task to progress/finish.
+                                continue
                             # Awaiting-timeout: only for PLANNING + awaiting_response (user never responded).
                             # Uses created_at for age; threshold WORKER_AWAITING_TIMEOUT_MINUTES so we don't
                             # block the queue indefinitely. Mark FAILED and advance; RUNNING/COMPLETED/FAILED unchanged.
@@ -837,34 +850,26 @@ async def _worker_loop():
                                 awaiting_threshold = WORKER_AWAITING_TIMEOUT_MINUTES
                                 awaiting_timed_out = False
                                 aw_ts_str = (task_dict.get("created_at") or "").strip()
-                                if aw_ts_str:
-                                    aw_field_used = "created_at"
-                                else:
+                                aw_field_used = "created_at" if aw_ts_str else "updated_at"
+                                if not aw_ts_str:
                                     aw_ts_str = (task_dict.get("updated_at") or "").strip()
-                                    aw_field_used = "updated_at"
-                                    print(f"  [worker_loop] session {source}/{chat_id} awaiting timeout check: status=planning created_at missing, using updated_at")
-                                if aw_ts_str and awaiting_threshold > 0:
-                                    try:
-                                        aw_dt = datetime.fromisoformat(aw_ts_str.replace("Z", "+00:00"))
-                                        if aw_dt.tzinfo is None:
-                                            aw_dt = aw_dt.replace(tzinfo=timezone.utc)
-                                        aw_age = datetime.now(timezone.utc) - aw_dt
-                                        aw_age_minutes = aw_age.total_seconds() / 60.0
-                                        if aw_age.total_seconds() < 0:
-                                            awaiting_timed_out = True
-                                        elif aw_age_minutes > awaiting_threshold:
-                                            awaiting_timed_out = True
-                                        else:
-                                            print(f"  [worker_loop] session {source}/{chat_id} awaiting timeout check: status=planning awaiting=True using {aw_field_used} age_minutes={aw_age_minutes:.1f} threshold={awaiting_threshold} (not timed out)")
-                                    except Exception as parse_err:
-                                        print(f"  [worker_loop] session {source}/{chat_id} awaiting timeout check parse {aw_field_used}={aw_ts_str!r}: {parse_err}")
+                                    print(f"  [worker_loop] session {source}/{chat_id} awaiting timeout check: created_at missing, using updated_at")
+                                aw_dt = _parse_timestamp_to_utc(aw_ts_str) if aw_ts_str else None
+                                if aw_dt and awaiting_threshold > 0:
+                                    aw_age_minutes = _safe_age_minutes(aw_dt)
+                                    if aw_age_minutes > awaiting_threshold:
+                                        awaiting_timed_out = True
+                                    else:
+                                        print(f"  [worker_loop] session {source}/{chat_id} awaiting timeout check: using {aw_field_used} age_minutes={aw_age_minutes:.1f} threshold={awaiting_threshold} (not timed out)")
                                 elif not aw_ts_str:
                                     print(f"  [worker_loop] session {source}/{chat_id} awaiting timeout check: no timestamp, cannot determine age")
                                 elif awaiting_threshold <= 0:
                                     print(f"  [worker_loop] session {source}/{chat_id} awaiting timeout check: WORKER_AWAITING_TIMEOUT_MINUTES={awaiting_threshold}, disabled")
                                 if awaiting_timed_out:
-                                    print(f"  [worker_loop] session {source}/{chat_id}: task_id={active_id} awaiting timeout ({aw_field_used}={aw_ts_str}), marking FAILED")
+                                    reason = f"worker_awaiting_timeout: field={aw_field_used} value={aw_ts_str} threshold={awaiting_threshold}min"
+                                    print(f"  [worker_loop] FAILED_SET task_id={active_id} chat_id={chat_id} source={source} reason={reason}")
                                     try:
+                                        await asyncio.to_thread(add_error, reason, chat_id, source, active_id)
                                         await asyncio.to_thread(
                                             update_operation_status,
                                             OperationStatus.FAILED,
@@ -883,46 +888,34 @@ async def _worker_loop():
                             # Stale check only for non-awaiting (planning+awaiting use awaiting timeout only, not 15min stale).
                             if next_task_id is None and not (status_val == "planning" and task_dict.get("awaiting_response", False)):
                                 # Stale-task check: if active task not terminal and too old, mark FAILED and advance.
-                                # For PLANNING we use created_at because updated_at is refreshed on every session save
-                                # (db_update_task always sets updated_at=now), so stuck PLANNING tasks would never
-                                # be detected as stale if we used updated_at. created_at is set once at task creation.
+                                # For PLANNING we use created_at (set once); for other statuses updated_at.
                                 stale_minutes = WORKER_STALE_TASK_MINUTES
                                 is_stale = False
-                                ts_str = None
-                                field_used = None
                                 if status_val == "planning":
                                     ts_str = (task_dict.get("created_at") or "").strip()
-                                    if ts_str:
-                                        field_used = "created_at"
-                                    else:
+                                    field_used = "created_at" if ts_str else "updated_at"
+                                    if not ts_str:
                                         ts_str = (task_dict.get("updated_at") or "").strip()
-                                        field_used = "updated_at"
                                         print(f"  [worker_loop] session {source}/{chat_id} stale check: status=planning created_at missing, using updated_at")
                                 else:
                                     ts_str = (task_dict.get("updated_at") or "").strip()
                                     field_used = "updated_at"
-                                if ts_str and stale_minutes > 0:
-                                    try:
-                                        dt = datetime.fromisoformat(ts_str.replace("Z", "+00:00"))
-                                        if dt.tzinfo is None:
-                                            dt = dt.replace(tzinfo=timezone.utc)
-                                        age = datetime.now(timezone.utc) - dt
-                                        age_minutes = age.total_seconds() / 60.0
-                                        if age.total_seconds() < 0:
-                                            is_stale = True
-                                        elif age_minutes > stale_minutes:
-                                            is_stale = True
-                                        else:
-                                            print(f"  [worker_loop] session {source}/{chat_id} stale check: status={status_val} using {field_used} age_minutes={age_minutes:.1f} threshold={stale_minutes} (not stale)")
-                                    except Exception as parse_err:
-                                        print(f"  [worker_loop] session {source}/{chat_id} stale check parse {field_used}={ts_str!r}: {parse_err}")
+                                dt_utc = _parse_timestamp_to_utc(ts_str) if ts_str else None
+                                if dt_utc and stale_minutes > 0:
+                                    age_minutes = _safe_age_minutes(dt_utc)
+                                    if age_minutes > stale_minutes:
+                                        is_stale = True
+                                    else:
+                                        print(f"  [worker_loop] session {source}/{chat_id} stale check: status={status_val} using {field_used} age_minutes={age_minutes:.1f} threshold={stale_minutes} (not stale)")
                                 elif not ts_str:
-                                    print(f"  [worker_loop] session {source}/{chat_id} stale check: no timestamp (created_at/updated_at empty), cannot determine age")
+                                    print(f"  [worker_loop] session {source}/{chat_id} stale check: no timestamp, cannot determine age")
                                 elif stale_minutes <= 0:
                                     print(f"  [worker_loop] session {source}/{chat_id} stale check: WORKER_STALE_TASK_MINUTES={stale_minutes}, disabled")
                                 if is_stale:
-                                    print(f"  [worker_loop] session {source}/{chat_id}: active_id={active_id} stale ({field_used}={ts_str}), marking FAILED and advancing queue")
+                                    reason = f"worker_stale_task: field={field_used} value={ts_str} threshold={stale_minutes}min status={status_val}"
+                                    print(f"  [worker_loop] FAILED_SET task_id={active_id} chat_id={chat_id} source={source} reason={reason}")
                                     try:
+                                        await asyncio.to_thread(add_error, reason, chat_id, source, active_id)
                                         await asyncio.to_thread(
                                             update_operation_status,
                                             OperationStatus.FAILED,
@@ -946,6 +939,10 @@ async def _worker_loop():
                         )
                         print(f"  [worker_loop] session {source}/{chat_id}: get_next_task_from_queue => next_task_id={next_task_id}")
                     if not next_task_id:
+                        continue
+                    # Race condition guard: skip if session is already locked (another process_message running)
+                    if await asyncio.to_thread(is_locked, chat_id, source):
+                        print(f"  [worker_loop] session {source}/{chat_id} task_id={next_task_id}: session locked, skip this iteration")
                         continue
                     state2 = await asyncio.to_thread(load_state, chat_id, source)
                     user_input = ((state2 or {}).get("tasks") or {}).get(next_task_id, {}).get("user_input") or ""

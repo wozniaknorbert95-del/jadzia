@@ -19,7 +19,7 @@ import os
 import threading
 import time
 from contextlib import contextmanager
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 from pathlib import Path
 from typing import Dict, Optional, Tuple
 import uuid
@@ -231,7 +231,7 @@ def migrate_state_to_multitask(state: dict) -> dict:
     if _is_new_format(state):
         return state
     task_id = state.get("task_id") or str(uuid.uuid4())
-    now = datetime.now().isoformat()
+    now = datetime.now(timezone.utc).isoformat()
     task_payload = {
         "id": state.get("id", f"op_{int(time.time())}"),
         "operation_id": state.get("id", f"op_{int(time.time())}"),
@@ -592,7 +592,7 @@ def add_task_to_queue(
                 }
             if not _is_new_format(state):
                 state = migrate_state_to_multitask(state)
-            now = datetime.now().isoformat()
+            now = datetime.now(timezone.utc).isoformat()
             op_id = f"op_{int(time.time())}_{task_id[:8]}"
             state["tasks"][task_id] = {
                 "id": op_id,
@@ -650,7 +650,7 @@ def mark_task_completed(chat_id: str, task_id: str, source: str = "http") -> Opt
                 return None
             if task_id in state.get("tasks", {}):
                 state["tasks"][task_id]["status"] = OperationStatus.COMPLETED
-                state["tasks"][task_id]["updated_at"] = datetime.now().isoformat()
+                state["tasks"][task_id]["updated_at"] = datetime.now(timezone.utc).isoformat()
             state["active_task_id"] = None
             queue = state.get("task_queue") or []
             next_task_id = None
@@ -706,7 +706,7 @@ def create_operation(
     """
     task_id = task_id or str(uuid.uuid4())
     operation_id = f"op_{int(time.time())}"
-    now = datetime.now().isoformat()
+    now = datetime.now(timezone.utc).isoformat()
     task_payload = {
         "id": operation_id,
         "operation_id": operation_id,
@@ -769,10 +769,20 @@ def update_operation_status(
             if target is None and not _is_new_format(state):
                 target = state
             if target is not None:
+                prev_status = target.get("status", "unknown")
                 target["status"] = status
-                target["updated_at"] = datetime.now().isoformat()
+                target["updated_at"] = datetime.now(timezone.utc).isoformat()
                 for key, value in kwargs.items():
                     target[key] = value
+                # Diagnostic log when setting FAILED — high-value context for debugging
+                if status == OperationStatus.FAILED:
+                    print(
+                        f"[FAILED_SET] task_id={tid} chat_id={chat_id} source={source} "
+                        f"prev_status={prev_status} "
+                        f"created_at={target.get('created_at', '?')} "
+                        f"updated_at={target.get('updated_at', '?')} "
+                        f"awaiting_response={target.get('awaiting_response', '?')}"
+                    )
             save_state(state, chat_id, source)
             if tid:
                 print(f"[task_id={tid}] update_operation_status status={status}")
@@ -800,7 +810,7 @@ def add_error(
                 if errors_list is None or not isinstance(errors_list, list):
                     errors_list = []
                     target["errors"] = errors_list
-                errors_list.append({"timestamp": datetime.now().isoformat(), "message": error})
+                errors_list.append({"timestamp": datetime.now(timezone.utc).isoformat(), "message": error})
                 save_state(state, chat_id, source)
                 if tid:
                     print(f"[task_id={tid}] add_error")
@@ -828,7 +838,7 @@ def mark_file_written(
                 if written is None or not isinstance(written, dict):
                     written = {}
                     target["written_files"] = written
-                written[path] = {"timestamp": datetime.now().isoformat(), "backup_path": backup_path}
+                written[path] = {"timestamp": datetime.now(timezone.utc).isoformat(), "backup_path": backup_path}
                 save_state(state, chat_id, source)
     except LockError:
         raise
@@ -999,7 +1009,7 @@ def cleanup_old_sessions(days: int = 7) -> int:
     Returns:
         Number of sessions removed
     """
-    cutoff = datetime.now() - timedelta(days=days)
+    cutoff = datetime.now(timezone.utc) - timedelta(days=days)
     cutoff_iso = cutoff.isoformat()
     removed = 0
 
@@ -1146,7 +1156,7 @@ def set_pending_plan(
                     "description": plan_description,
                     "files_to_change": files_to_change,
                     "diff_preview": diff_preview,
-                    "created_at": datetime.now().isoformat(),
+                    "created_at": datetime.now(timezone.utc).isoformat(),
                 }
                 target["status"] = OperationStatus.DIFF_READY
                 target["awaiting_response"] = True

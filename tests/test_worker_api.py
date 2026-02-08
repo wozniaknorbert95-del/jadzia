@@ -39,26 +39,20 @@ def clean_worker_state():
 
 
 def test_post_worker_task_then_get():
-    """POST /worker/task returns task_id and status; GET /worker/task/{task_id} returns task state."""
-    async def mock_process_message(user_input: str, chat_id: str, source=None, task_id=None, dry_run=False, webhook_url=None, test_mode: bool = False):
-        create_operation(user_input, chat_id, SOURCE, task_id=task_id)
-        return ("OK", False, None)
-
+    """POST /worker/task returns task_id and status=queued (Quick ACK); GET returns task state."""
     client = TestClient(app)
-    with patch("interfaces.api.process_message", new_callable=AsyncMock) as mock_pm:
-        mock_pm.side_effect = mock_process_message
-        r = client.post(
-            "/worker/task",
-            json={"instruction": "zmień kolor przycisku", "chat_id": WORKER_CHAT_ID},
-        )
+    r = client.post(
+        "/worker/task",
+        json={"instruction": "zmień kolor przycisku", "chat_id": WORKER_CHAT_ID},
+    )
 
     assert r.status_code == 200, r.text
     data = r.json()
     assert "task_id" in data
     assert _is_uuid(data["task_id"]), f"task_id should be UUID, got {data['task_id']}"
-    assert data["status"] in ("created", "processing")
+    assert data["status"] == "queued"
     assert "position_in_queue" in data
-    assert data["position_in_queue"] == 0
+    assert data["position_in_queue"] >= 1
 
     task_id = data["task_id"]
     r2 = client.get(f"/worker/task/{task_id}")
@@ -66,7 +60,6 @@ def test_post_worker_task_then_get():
     data2 = r2.json()
     assert data2["task_id"] == task_id
     assert "status" in data2
-    assert data2["status"] in ("in_progress", "diff_ready", "completed", "error")
     assert "awaiting_input" in data2
     assert "input_type" in data2
     assert "response" in data2
@@ -75,28 +68,30 @@ def test_post_worker_task_then_get():
 
 
 def test_post_worker_task_then_input_then_completed():
-    """POST /worker/task -> POST /worker/task/{id}/input (approval) -> GET shows completed."""
-    call_count = [0]
+    """Create task (Quick ACK) → simulate worker making it active → submit input → GET shows completed."""
+    # Step 1: Quick ACK — task is queued
+    client = TestClient(app)
+    r1 = client.post(
+        "/worker/task",
+        json={"instruction": "zmień kolor przycisku", "chat_id": WORKER_CHAT_ID},
+    )
+    assert r1.status_code == 200, r1.text
+    task_id = r1.json()["task_id"]
+    assert _is_uuid(task_id)
+    assert r1.json()["status"] == "queued"
 
+    # Step 2: Simulate worker loop making task active (create_operation sets active_task_id)
+    from agent.state import get_next_task_from_queue
+    activated = get_next_task_from_queue(WORKER_CHAT_ID, SOURCE)
+    assert activated == task_id
+
+    # Step 3: Submit approval input; mock process_message to mark completed
     async def mock_process_message(user_input: str, chat_id: str, source=None, task_id=None, dry_run=False, webhook_url=None, test_mode: bool = False):
-        call_count[0] += 1
-        if call_count[0] == 1:
-            create_operation(user_input, chat_id, SOURCE, task_id=task_id)
-            return ("Oto zmiany. Zatwierdzić?", True, "approval")
         update_operation_status(OperationStatus.COMPLETED, chat_id, SOURCE, task_id=task_id)
         return ("Zrobione.", False, None)
 
-    client = TestClient(app)
     with patch("interfaces.api.process_message", new_callable=AsyncMock) as mock_pm:
         mock_pm.side_effect = mock_process_message
-        r1 = client.post(
-            "/worker/task",
-            json={"instruction": "zmień kolor przycisku", "chat_id": WORKER_CHAT_ID},
-        )
-        assert r1.status_code == 200, r1.text
-        task_id = r1.json()["task_id"]
-        assert _is_uuid(task_id)
-
         r2 = client.post(
             f"/worker/task/{task_id}/input",
             json={"approval": True},

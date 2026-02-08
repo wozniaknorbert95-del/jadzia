@@ -48,27 +48,21 @@ def clean_concurrent_state():
 
 
 def test_multiple_tasks_queued():
-    """POST two tasks to same session; second returns status queued and position_in_queue > 0."""
-    async def mock_process_message(user_input: str, chat_id: str, source=None, task_id=None, dry_run=False, webhook_url=None, test_mode: bool = False):
-        create_operation(user_input, chat_id, source or "http", task_id=task_id)
-        return ("First task response", True, "approval")
-
+    """POST two tasks to same session; both return status queued (Quick ACK)."""
     client = TestClient(app)
-    with patch("interfaces.api.process_message", new_callable=AsyncMock) as mock_pm:
-        mock_pm.side_effect = mock_process_message
-        r1 = client.post("/worker/task", json={"instruction": "first", "chat_id": CHAT_A})
-        assert r1.status_code == 200, r1.text
-        d1 = r1.json()
-        assert d1["status"] in ("processing", "created")
-        assert d1["position_in_queue"] == 0
-        task_id_1 = d1["task_id"]
+    r1 = client.post("/worker/task", json={"instruction": "first", "chat_id": CHAT_A})
+    assert r1.status_code == 200, r1.text
+    d1 = r1.json()
+    assert d1["status"] == "queued"
+    assert d1["position_in_queue"] >= 1
+    task_id_1 = d1["task_id"]
 
-        r2 = client.post("/worker/task", json={"instruction": "second", "chat_id": CHAT_A})
-        assert r2.status_code == 200, r2.text
-        d2 = r2.json()
-        assert d2["status"] == "queued"
-        assert d2["position_in_queue"] >= 1
-        assert _is_uuid(d2["task_id"])
+    r2 = client.post("/worker/task", json={"instruction": "second", "chat_id": CHAT_A})
+    assert r2.status_code == 200, r2.text
+    d2 = r2.json()
+    assert d2["status"] == "queued"
+    assert d2["position_in_queue"] >= 1
+    assert _is_uuid(d2["task_id"])
 
     r_get = client.get(f"/worker/task/{d2['task_id']}")
     assert r_get.status_code == 200
@@ -92,22 +86,17 @@ def test_task_processing_order():
 
 
 def test_active_task_blocks_new():
-    """With one active task, POST another; assert it is queued, not started immediately."""
-    async def mock_process_message(user_input: str, chat_id: str, source=None, task_id=None, dry_run=False, webhook_url=None, test_mode: bool = False):
-        create_operation(user_input, chat_id, source or "http", task_id=task_id)
-        return ("OK", False, None)
-
+    """POST two tasks; both are queued (Quick ACK), second has higher position."""
     client = TestClient(app)
-    with patch("interfaces.api.process_message", new_callable=AsyncMock) as mock_pm:
-        mock_pm.side_effect = mock_process_message
-        r1 = client.post("/worker/task", json={"instruction": "active", "chat_id": CHAT_A})
-        assert r1.status_code == 200
-        assert r1.json()["position_in_queue"] == 0
+    r1 = client.post("/worker/task", json={"instruction": "active", "chat_id": CHAT_A})
+    assert r1.status_code == 200
+    assert r1.json()["status"] == "queued"
+    assert r1.json()["position_in_queue"] >= 1
 
-        r2 = client.post("/worker/task", json={"instruction": "blocked", "chat_id": CHAT_A})
-        assert r2.status_code == 200
-        assert r2.json()["status"] == "queued"
-        assert r2.json()["position_in_queue"] >= 1
+    r2 = client.post("/worker/task", json={"instruction": "blocked", "chat_id": CHAT_A})
+    assert r2.status_code == 200
+    assert r2.json()["status"] == "queued"
+    assert r2.json()["position_in_queue"] >= 1
 
 
 def test_thread_safe_state_writes():

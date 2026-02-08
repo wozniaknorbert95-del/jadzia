@@ -4,7 +4,7 @@ Returns: (response_text, awaiting_input, input_type, next_task_id)
 """
 
 import asyncio
-from datetime import datetime
+from datetime import datetime, timezone
 from typing import Dict, Tuple, Optional
 
 from ..state import (
@@ -170,7 +170,7 @@ async def execute_changes(
             await asyncio.sleep(2)
             health = await health_check_wordpress("https://zzpackage.flexgrafik.nl", timeout=15)
 
-        timestamp_iso = datetime.now().isoformat()
+        timestamp_iso = datetime.now(timezone.utc).isoformat()
         if not health["healthy"]:
             record_deployment_verification(timestamp_iso, healthy=False, auto_rollback_triggered=True)
             log_event(

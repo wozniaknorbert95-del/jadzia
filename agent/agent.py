@@ -206,6 +206,7 @@ async def process_message(
     dry_run: bool = False,
     webhook_url: Optional[str] = None,
     test_mode: bool = False,
+    push_to_telegram: bool = False,
 ) -> Tuple[str, bool, Optional[str]]:
     """Główny entry point. task_id=None uses active task. On task completion, processes next from queue."""
     if source is None:
@@ -214,6 +215,8 @@ async def process_message(
     try:
         try:
             with agent_lock(timeout=5, chat_id=chat_id, source=source):
+                _tid = task_id or get_active_task_id(chat_id, source)
+                print(f"[process_message] task_id={_tid} acquired lock")
                 result = await route_user_input(
                     user_input,
                     chat_id,
@@ -226,6 +229,7 @@ async def process_message(
                 )
                 response, awaiting, input_type = result[0], result[1], result[2]
                 next_task_id = result[3] if len(result) > 3 else None
+                print(f"[process_message] result: awaiting={awaiting}, input_type={input_type}, next_task_id={next_task_id!r}, push_to_telegram={push_to_telegram}, chat_id={chat_id!r}")
                 if next_task_id:
                     task_payload = find_task_by_id(chat_id, next_task_id, source)
                     next_input = (task_payload or {}).get("user_input", "")
@@ -238,7 +242,24 @@ async def process_message(
                             call_claude_with_retry,
                             task_id=next_task_id,
                         )
-                        return (next_result[0], next_result[1], next_result[2])
+                        nr0, nr1, nr2 = next_result[0], next_result[1], next_result[2]
+                        should_push_next = str(chat_id).startswith("telegram_") and push_to_telegram
+                        print(f"[process_message] push_to_telegram check (next_result branch): nr1={nr1}, chat_id.startswith(telegram_)={str(chat_id).startswith('telegram_')}, push_to_telegram={push_to_telegram} => send={should_push_next}")
+                        if should_push_next:
+                            from interfaces.telegram_api import send_awaiting_response_to_telegram
+                            tid = get_active_task_id(chat_id, source) or next_task_id
+                            status = get_current_status(chat_id, source, task_id=tid)
+                            await send_awaiting_response_to_telegram(chat_id, nr0, task_id=tid, status=status, awaiting_input=nr1)
+                        print(f"[process_message] task_id={next_task_id} releasing lock, awaiting={nr1}")
+                        return (nr0, nr1, nr2)
+                should_push = str(chat_id).startswith("telegram_") and push_to_telegram
+                print(f"[process_message] push_to_telegram check (main branch): awaiting={awaiting}, chat_id.startswith(telegram_)={str(chat_id).startswith('telegram_')}, push_to_telegram={push_to_telegram} => send={should_push}")
+                if should_push:
+                    from interfaces.telegram_api import send_awaiting_response_to_telegram
+                    tid = get_active_task_id(chat_id, source) or task_id
+                    status = get_current_status(chat_id, source, task_id=tid)
+                    await send_awaiting_response_to_telegram(chat_id, response, task_id=tid, status=status, awaiting_input=awaiting)
+                print(f"[process_message] task_id={task_id} releasing lock, awaiting={awaiting}")
                 return (response, awaiting, input_type)
         except LockError:
             return (

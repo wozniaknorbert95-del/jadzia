@@ -11,6 +11,7 @@ from ..state import (
     save_state,
     clear_state,
     create_operation,
+    find_task_by_id,
     update_operation_status,
     set_awaiting_response,
     OperationStatus,
@@ -108,17 +109,24 @@ async def handle_new_task(
         r = await handle_info_request(user_input)
         return (r[0], r[1], r[2], None)
 
-    operation = create_operation(
-        user_input,
-        chat_id,
-        source,
-        task_id=task_id,
-        dry_run=dry_run,
-        test_mode=test_mode,
-        webhook_url=webhook_url,
-    )
-    operation_id = operation["id"]
-    tid = operation.get("task_id") or task_id
+    # Reuse existing task when Worker API already created it (so we don't duplicate)
+    existing = find_task_by_id(chat_id, task_id, source) if task_id else None
+    if existing:
+        operation = {**existing, "task_id": task_id}
+        operation_id = operation.get("id") or operation.get("operation_id", "")
+        tid = task_id
+    else:
+        operation = create_operation(
+            user_input,
+            chat_id,
+            source,
+            task_id=task_id,
+            dry_run=dry_run,
+            test_mode=test_mode,
+            webhook_url=webhook_url,
+        )
+        operation_id = operation["id"]
+        tid = operation.get("task_id") or task_id
 
     log_event(
         EventType.OPERATION_START,
@@ -129,6 +137,7 @@ async def handle_new_task(
 
     try:
         update_operation_status(OperationStatus.PLANNING, chat_id, source, task_id=tid)
+        print(f"[planning] task_id={tid} PLANNING set, calling Claude")
 
         smart_context = None
         try:
@@ -151,6 +160,7 @@ async def handle_new_task(
             plan_prompt = get_planner_prompt(user_input, project_structure)
             plan_response = await call_claude([{"role": "user", "content": plan_prompt}])
 
+        print(f"[planning] task_id={tid} Claude done, parsing plan")
         plan = parse_plan(plan_response)
 
         update_operation_status(
@@ -218,6 +228,7 @@ async def handle_new_task(
                 task_payload = (state.get("tasks") or {}).get(tid) if (tid and state.get("tasks")) else state
                 (task_payload or state)["pending_plan_with_questions"] = plan
                 save_state(state, chat_id, source)
+            print(f"[planning] task_id={tid} setting plan_approval")
             set_awaiting_response(True, "plan_approval", chat_id, source, task_id=tid)
             return (msg, True, "plan_approval", None)
 

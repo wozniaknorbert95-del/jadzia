@@ -155,7 +155,7 @@ def db_create_or_update_session(chat_id: str, source: str = "http") -> None:
         chat_id: Chat identifier
         source: Source type (http/telegram)
     """
-    now = datetime.now().isoformat()
+    now = datetime.now(timezone.utc).isoformat()
 
     with db_transaction() as conn:
         conn.execute("""
@@ -197,7 +197,7 @@ def db_set_active_task(chat_id: str, source: str, task_id: Optional[str]) -> Non
             UPDATE sessions
             SET active_task_id = ?, updated_at = ?
             WHERE chat_id = ? AND source = ?
-        """, (task_id, datetime.now().isoformat(), chat_id, source))
+        """, (task_id, datetime.now(timezone.utc).isoformat(), chat_id, source))
 
 
 def db_update_task_queue(chat_id: str, source: str, task_queue: List[str]) -> None:
@@ -207,7 +207,7 @@ def db_update_task_queue(chat_id: str, source: str, task_queue: List[str]) -> No
             UPDATE sessions
             SET task_queue = ?, updated_at = ?
             WHERE chat_id = ? AND source = ?
-        """, (json.dumps(task_queue), datetime.now().isoformat(), chat_id, source))
+        """, (json.dumps(task_queue), datetime.now(timezone.utc).isoformat(), chat_id, source))
 
 
 # ============================================================================
@@ -221,7 +221,7 @@ def db_create_task(task_data: Dict) -> None:
     Args:
         task_data: Dict with task fields (task_id, chat_id, source, operation_id, status, etc.)
     """
-    now = datetime.now().isoformat()
+    now = datetime.now(timezone.utc).isoformat()
 
     with db_transaction() as conn:
         conn.execute("""
@@ -279,7 +279,7 @@ def db_update_task(task_id: str, updates: Dict) -> None:
         task_id: Task identifier
         updates: Dict of fields to update
     """
-    now = datetime.now().isoformat()
+    now = datetime.now(timezone.utc).isoformat()
 
     # Build SET clause dynamically
     set_parts = ["updated_at = ?"]
@@ -583,7 +583,7 @@ def db_mark_tasks_failed(task_ids: List[str], reason: str) -> Dict[str, Any]:
         updates: Dict[str, Any] = {
             "status": "failed",
             "errors": errors,
-            "completed_at": datetime.now().isoformat(),
+            "completed_at": datetime.now(timezone.utc).isoformat(),
         }
         db_update_task(task_id, updates)
         updated.append(task_id)

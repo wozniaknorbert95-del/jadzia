@@ -7,7 +7,7 @@ Format: JSON Lines (.jsonl) — jeden JSON per linia
 
 import json
 from pathlib import Path
-from datetime import datetime
+from datetime import datetime, timezone
 from typing import Optional, Any, List
 
 # ============================================================
@@ -71,7 +71,7 @@ def log_event(
         except Exception:
             pass
     entry = {
-        "timestamp": datetime.now().isoformat(),
+        "timestamp": datetime.now(timezone.utc).isoformat(),
         "event_type": event_type,
         "message": message,
         "operation_id": operation_id,
@@ -218,7 +218,7 @@ def rotate_logs(max_size_mb: int = 10) -> bool:
         size_mb = LOG_FILE.stat().st_size / (1024 * 1024)
         
         if size_mb > max_size_mb:
-            archive_path = LOGS_DIR / f"agent_{int(datetime.now().timestamp())}.log"
+            archive_path = LOGS_DIR / f"agent_{int(datetime.now(timezone.utc).timestamp())}.log"
             LOG_FILE.rename(archive_path)
             return True
     except Exception as e:

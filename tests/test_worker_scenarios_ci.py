@@ -15,7 +15,8 @@ from unittest.mock import patch, AsyncMock
 import pytest
 from fastapi.testclient import TestClient
 
-from agent.state import clear_state
+from agent.state import clear_state, get_next_task_from_queue, load_state, create_operation
+from agent.agent import process_message
 from agent.log import get_recent_logs
 from interfaces.api import app
 
@@ -50,7 +51,7 @@ def _intent_approval_response():
     return json.dumps({"intent": "APPROVAL", "confidence": 0.9, "reasoning": "test"})
 
 
-def run_worker_task_until_terminal(
+async def run_worker_task_until_terminal(
     client: TestClient,
     chat_id: str,
     instruction: str,
@@ -59,8 +60,9 @@ def run_worker_task_until_terminal(
     max_steps: int = 15,
 ) -> tuple[dict, str]:
     """
-    POST /worker/task, then loop GET /worker/task/{id} and POST /worker/task/{id}/input
-    until status is completed or error. Returns (final_response_body, task_id).
+    POST /worker/task (Quick ACK), simulate worker loop activation,
+    run initial process_message, then loop GET/POST input until terminal.
+    Returns (final_response_body, task_id).
     """
     params = {}
     if dry_run:
@@ -78,6 +80,20 @@ def run_worker_task_until_terminal(
     data = r.json()
     task_id = data["task_id"]
     assert task_id
+
+    # Simulate worker loop: activate the queued task and run initial process_message
+    source = "http"
+    activated = get_next_task_from_queue(chat_id, source)
+    assert activated == task_id, f"Expected {task_id} to be activated, got {activated}"
+
+    await process_message(
+        user_input=instruction,
+        chat_id=chat_id,
+        source=source,
+        task_id=task_id,
+        test_mode=test_mode,
+        dry_run=dry_run,
+    )
 
     for _ in range(max_steps):
         r2 = client.get(f"/worker/task/{task_id}")
@@ -149,7 +165,7 @@ async def test_scenario2_happy_path_test_mode(client, isolate_logs):
                                             "agent.tools.deploy",
                                             return_value={"status": "ok", "msg": "Deploy OK"},
                                         ):
-                                            final, task_id = run_worker_task_until_terminal(
+                                            final, task_id = await run_worker_task_until_terminal(
                                                 client, chat_id, "Zmień kolor przycisku na czerwony", test_mode=True
                                             )
 
@@ -200,7 +216,7 @@ async def test_scenario3_forced_auto_rollback(client, isolate_logs):
                                             new_callable=AsyncMock,
                                             return_value=("Rollback done.", False, None),
                                         ):
-                                            final, task_id = run_worker_task_until_terminal(
+                                            final, task_id = await run_worker_task_until_terminal(
                                                 client, chat_id, instruction, test_mode=True
                                             )
 
@@ -235,7 +251,7 @@ async def test_scenario4_test_mode_dry_run(client, isolate_logs):
                             new_callable=AsyncMock,
                             return_value={"valid": True, "errors": {}, "warnings": {}},
                         ):
-                            final, task_id = run_worker_task_until_terminal(
+                            final, task_id = await run_worker_task_until_terminal(
                                 client,
                                 chat_id,
                                 "Podgląd zmiany koloru",

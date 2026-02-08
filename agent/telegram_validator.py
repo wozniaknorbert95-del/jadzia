@@ -15,6 +15,65 @@ from pydantic import BaseModel, Field, root_validator, validator
 
 
 # ═══════════════════════════════════════════════════════════════
+# TELEGRAM NATIVE MODELS (Bot API)
+# ═══════════════════════════════════════════════════════════════
+
+
+class TelegramUser(BaseModel):
+    """Telegram User object. Extra fields ignored for API evolution."""
+    id: int
+    first_name: str
+    last_name: Optional[str] = None
+    username: Optional[str] = None
+
+    class Config:
+        extra = "ignore"
+
+
+class TelegramChat(BaseModel):
+    """Telegram Chat object."""
+    id: int
+    type: str = "private"
+
+    class Config:
+        extra = "ignore"
+
+
+class TelegramMessage(BaseModel):
+    """Telegram Message object (incoming message)."""
+    message_id: int
+    from_: Optional[TelegramUser] = Field(None, alias="from")
+    chat: TelegramChat
+    date: Optional[int] = None
+    text: Optional[str] = None
+
+    class Config:
+        extra = "ignore"
+
+
+class TelegramCallbackQuery(BaseModel):
+    """Telegram CallbackQuery (inline button press)."""
+    id: str
+    from_: TelegramUser = Field(..., alias="from")
+    message: Optional[TelegramMessage] = None
+    data: Optional[str] = None
+    chat_instance: Optional[str] = None
+
+    class Config:
+        extra = "ignore"
+
+
+class TelegramUpdate(BaseModel):
+    """Telegram Update object (webhook payload)."""
+    update_id: int
+    message: Optional[TelegramMessage] = None
+    callback_query: Optional[TelegramCallbackQuery] = None
+
+    class Config:
+        extra = "ignore"
+
+
+# ═══════════════════════════════════════════════════════════════
 # CONFIGURATION
 # ═══════════════════════════════════════════════════════════════
 
@@ -63,6 +122,52 @@ class TelegramWebhookRequest(BaseModel):
         if not (values.get("message") or "").strip():
             raise ValueError("Message cannot be empty when callback_data is not provided")
         return values
+
+
+def normalize_telegram_update(body: dict) -> Optional[TelegramWebhookRequest]:
+    """
+    Convert Telegram native Update JSON to TelegramWebhookRequest.
+    Returns None if body is not a valid Update with message or callback_query.
+    """
+    if body.get("update_id") is None:
+        return None
+    try:
+        update = TelegramUpdate(**body)
+    except Exception:
+        return None
+    if update.message:
+        if not update.message.from_:
+            return None
+        user_id = str(update.message.from_.id)
+        chat_id = str(update.message.chat.id)
+        message_id = update.message.message_id
+        text = (update.message.text or "").strip()
+        return TelegramWebhookRequest(
+            message=text if text else " ",
+            chat_id=chat_id,
+            user_id=user_id,
+            message_id=message_id,
+            callback_data=None,
+        )
+    if update.callback_query:
+        user_id = str(update.callback_query.from_.id)
+        if update.callback_query.message:
+            chat_id = str(update.callback_query.message.chat.id)
+            message_id = update.callback_query.message.message_id
+        else:
+            chat_id = str(update.callback_query.from_.id)
+            message_id = 0
+        data = (update.callback_query.data or "").strip()
+        if not data:
+            return None
+        return TelegramWebhookRequest(
+            message="",
+            chat_id=chat_id,
+            user_id=user_id,
+            message_id=message_id,
+            callback_data=data,
+        )
+    return None
 
 
 # ═══════════════════════════════════════════════════════════════
