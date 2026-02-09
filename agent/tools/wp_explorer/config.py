@@ -56,7 +56,7 @@ class ExplorerConfig(BaseSettings):
         description="Ścieżka do klucza SSH (fallback: SSH_KEY_PATH)",
     )
     ssh_timeout: int = Field(
-        default=60,
+        default=120,
         description="Timeout połączenia SSH w sekundach",
     )
     ssh_retry_count: int = Field(

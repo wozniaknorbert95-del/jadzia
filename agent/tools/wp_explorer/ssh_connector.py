@@ -12,6 +12,7 @@ from __future__ import annotations
 
 import asyncio
 import logging
+import os
 import shutil
 import tarfile
 import time
@@ -25,6 +26,17 @@ from .config import ExplorerConfig, get_config
 from .models import CommandResult, DownloadResult
 
 logger = logging.getLogger(__name__)
+logger.setLevel(logging.DEBUG)
+
+
+def _sh_quote(value: str) -> str:
+    """
+    Quote a string for POSIX shell using single-quotes.
+    Safe for paths/filenames (prevents spaces and metacharacters from breaking command).
+    """
+    if value is None:
+        return "''"
+    return "'" + value.replace("'", "'\"'\"'") + "'"
 
 
 class SSHConnectionError(Exception):
@@ -90,6 +102,24 @@ class SSHConnector:
         self.config = config or get_config()
         self._client: Optional[paramiko.SSHClient] = None
         self._sftp: Optional[paramiko.SFTPClient] = None
+
+    async def _reset_connection(self) -> None:
+        """Hard reset SSH/SFTP connection (used after transport-level failures)."""
+        try:
+            await self.disconnect()
+        except Exception:
+            logger.exception("Failed to disconnect cleanly during reset")
+        self._client = None
+        self._sftp = None
+
+    async def _ensure_sftp(self) -> None:
+        """Ensure SFTP channel is open (reopens if missing)."""
+        await self.connect()
+        if self._client is None:
+            raise SSHConnectionError("SSH client is not connected")
+        if self._sftp is None:
+            logger.debug("Opening new SFTP session")
+            self._sftp = self._client.open_sftp()
     
     def _validate_path(self, path: str) -> bool:
         """
@@ -150,6 +180,14 @@ class SSHConnector:
                     allow_agent=False,
                     look_for_keys=False,
                 )
+
+                # Transport keepalive reduces risk of silent disconnects mid-transfer.
+                try:
+                    transport = self._client.get_transport()
+                    if transport:
+                        transport.set_keepalive(30)
+                except Exception:
+                    logger.exception("Failed to set SSH keepalive")
                 
                 logger.info("SSH connected successfully")
                 return
@@ -159,7 +197,7 @@ class SSHConnector:
                 raise SSHConnectionError(f"Authentication failed: {e}")
                 
             except paramiko.SSHException as e:
-                logger.warning(f"SSH connection attempt {attempt} failed: {e}")
+                logger.exception(f"SSH connection attempt {attempt} failed")
                 
                 if attempt < self.config.ssh_retry_count:
                     delay = self.config.ssh_retry_delay * attempt
@@ -169,17 +207,23 @@ class SSHConnector:
                     raise SSHConnectionError(f"Failed after {attempt} attempts: {e}")
                     
             except Exception as e:
-                logger.error(f"Unexpected SSH error: {e}")
+                logger.exception("Unexpected SSH error")
                 raise SSHConnectionError(f"Unexpected error: {e}")
     
     async def disconnect(self) -> None:
         """Zamyka połączenie SSH."""
         if self._sftp:
-            self._sftp.close()
+            try:
+                self._sftp.close()
+            except Exception:
+                logger.exception("Failed to close SFTP session cleanly")
             self._sftp = None
             
         if self._client:
-            self._client.close()
+            try:
+                self._client.close()
+            except Exception:
+                logger.exception("Failed to close SSH client cleanly")
             self._client = None
             logger.info("SSH disconnected")
     
@@ -198,6 +242,7 @@ class SSHConnector:
         start_time = time.time()
         
         try:
+            logger.debug(f"[SSH] exec_command: {command}")
             stdin, stdout, stderr = self._client.exec_command(
                 command,
                 timeout=self.config.ssh_timeout
@@ -209,6 +254,12 @@ class SSHConnector:
             exit_code = stdout.channel.recv_exit_status()
             
             duration = time.time() - start_time
+
+            logger.debug(
+                f"[SSH] exec_command completed (exit_code={exit_code}, "
+                f"stdout_len={len(stdout_data)}, stderr_len={len(stderr_data)}, "
+                f"duration={duration:.2f}s)"
+            )
             
             return CommandResult(
                 stdout=stdout_data,
@@ -218,7 +269,7 @@ class SSHConnector:
             )
             
         except Exception as e:
-            logger.error(f"Command execution failed: {e}")
+            logger.exception(f"Command execution failed: {command}")
             raise SSHTimeoutError(f"Command failed: {e}")
     
     async def download_directory_as_tar(
@@ -254,20 +305,17 @@ class SSHConnector:
             # Ensure local directory exists
             local_path.mkdir(parents=True, exist_ok=True)
             
-            await self.connect()
-            
-            # Get SFTP client
-            if self._sftp is None:
-                self._sftp = self._client.open_sftp()
+            await self._ensure_sftp()
             
             # Create tar on remote server
             remote_parent = str(Path(remote_path).parent)
             remote_name = Path(remote_path).name
             
             # Create tar.gz on remote
+            # Do NOT redirect stderr: we want diagnostics in logs.
             tar_command = (
-                f"cd {remote_parent} && "
-                f"tar czf /tmp/{tar_filename} {remote_name} 2>/dev/null"
+                f"tar -czf {_sh_quote(f'/tmp/{tar_filename}')} "
+                f"-C {_sh_quote(remote_parent)} {_sh_quote(remote_name)}"
             )
             
             logger.info(f"Creating tar archive on remote: {tar_command}")
@@ -276,21 +324,70 @@ class SSHConnector:
             if result.exit_code != 0:
                 return DownloadResult(
                     success=False,
-                    error=f"Failed to create tar: {result.stderr}"
+                    error=f"Failed to create tar (exit={result.exit_code}): {result.stderr or result.stdout}"
                 )
             
             # Download tar file
             remote_tar = f"/tmp/{tar_filename}"
-            logger.info(f"Downloading {remote_tar} to {local_tar_path}")
-            self._sftp.get(remote_tar, str(local_tar_path))
+            try:
+                remote_stat = self._sftp.stat(remote_tar)
+                remote_size = int(getattr(remote_stat, "st_size", 0) or 0)
+            except Exception:
+                logger.exception(f"Failed to stat remote tar: {remote_tar}")
+                remote_size = 0
+
+            logger.info(
+                f"Downloading {remote_tar} to {local_tar_path} "
+                f"(remote_size={remote_size} bytes)"
+            )
+
+            # Retry download if transport drops mid-stream.
+            download_ok = False
+            last_exc: Optional[Exception] = None
+            for attempt in range(1, self.config.ssh_retry_count + 1):
+                try:
+                    await self._ensure_sftp()
+                    self._sftp.get(remote_tar, str(local_tar_path))
+                    local_size = local_tar_path.stat().st_size if local_tar_path.exists() else 0
+                    if remote_size and local_size != remote_size:
+                        raise IOError(
+                            f"Downloaded size mismatch (local={local_size}, remote={remote_size})"
+                        )
+                    download_ok = True
+                    break
+                except Exception as e:
+                    last_exc = e
+                    logger.exception(
+                        f"SFTP download attempt {attempt}/{self.config.ssh_retry_count} failed"
+                    )
+                    # reset connection and retry
+                    await self._reset_connection()
+                    await asyncio.sleep(self.config.ssh_retry_delay * attempt)
+
+            if not download_ok:
+                return DownloadResult(
+                    success=False,
+                    error=f"Failed after {self.config.ssh_retry_count} attempts: {last_exc}",
+                    duration_seconds=time.time() - start_time,
+                )
             
             # Cleanup remote tar
-            await self.execute_command(f"rm -f {remote_tar}")
+            try:
+                await self.execute_command(f"rm -f {_sh_quote(remote_tar)}")
+            except Exception:
+                logger.exception(f"Failed to cleanup remote tar: {remote_tar}")
             
             # Extract locally
             logger.info(f"Extracting to {local_path}")
-            with tarfile.open(local_tar_path, 'r:gz') as tar:
-                tar.extractall(local_path)
+            try:
+                with tarfile.open(local_tar_path, 'r:gz') as tar:
+                    tar.extractall(local_path)
+            except Exception:
+                local_size = local_tar_path.stat().st_size if local_tar_path.exists() else 0
+                logger.exception(
+                    f"Extraction failed (local_tar={local_tar_path}, local_size={local_size}, remote_size={remote_size})"
+                )
+                raise
             
             # Count files and size
             extracted_path = local_path / remote_name
@@ -318,7 +415,7 @@ class SSHConnector:
             )
             
         except Exception as e:
-            logger.error(f"Download failed: {e}")
+            logger.exception(f"Download failed for remote_path={remote_path}")
             return DownloadResult(
                 success=False,
                 error=str(e),
