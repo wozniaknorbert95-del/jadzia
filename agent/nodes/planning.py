@@ -4,6 +4,7 @@ Returns: (response_text, awaiting_input, input_type)
 """
 
 import json
+import logging
 from typing import Dict, Tuple, Optional
 
 from ..state import (
@@ -19,10 +20,13 @@ from ..state import (
 )
 from ..log import log_event, log_error, EventType
 from ..context import classify_task_type, get_file_map, get_context_for_task
+from ..context.smart_context import get_project_structure_context
 from ..prompt import get_planner_prompt, get_simple_response_prompt
 from ..tools.ssh_orchestrator import list_files, list_directory
 from .generate import generate_changes
 from ..alerts import send_alert
+
+logger = logging.getLogger(__name__)
 
 
 def parse_plan(response: str) -> Dict:
@@ -141,10 +145,54 @@ async def handle_new_task(
 
         smart_context = None
         try:
+            # --- Nowa ścieżka: project_structure.json (WPExplorer) ---
+            ps_ctx = get_project_structure_context()
+
+            if ps_ctx.available:
+                relevant_files = ps_ctx.get_relevant_files(user_input)
+
+                if relevant_files:
+                    logger.info(
+                        "[planning] Using project_structure context: %d relevant files for task_id=%s",
+                        len(relevant_files), tid,
+                    )
+                    # Buduj planner_context z metadanymi plików
+                    files_context_lines = []
+                    for fp in relevant_files:
+                        info = ps_ctx.get_file_info(fp)
+                        risk = info.get("risk_level", "unknown")
+                        role = info.get("role", "N/A")
+                        size = info.get("size_kb")
+                        size_str = f", {size:.1f} KB" if size else ""
+                        files_context_lines.append(
+                            f"- {fp} (risk: {risk}, role: {role}{size_str})"
+                        )
+
+                    hooks_summary = ps_ctx.get_hooks_summary()
+                    planner_context_str = (
+                        "Relevant files for this task:\n"
+                        + "\n".join(files_context_lines)
+                        + (f"\n\nHooks summary: {hooks_summary}" if hooks_summary else "")
+                    )
+                else:
+                    logger.info(
+                        "[planning] project_structure available but no keyword match, "
+                        "falling back to legacy context for task_id=%s", tid,
+                    )
+                    planner_context_str = None  # sygnał do fallbacku
+
+            else:
+                planner_context_str = None  # sygnał do fallbacku
+
+            # --- Legacy fallback (classify_task_type) ---
             task_type = classify_task_type(user_input)
             file_map = get_file_map("")
             smart_context = get_context_for_task(task_type, file_map)
-            planner_context_str = smart_context["planner_context"] or "Brak listy plikow"
+
+            if planner_context_str is None:
+                # Brak project_structure lub brak dopasowania → legacy planner_context
+                planner_context_str = smart_context["planner_context"] or "Brak listy plikow"
+
             plan_prompt = get_planner_prompt(user_input, planner_context_str)
             plan_response = await call_claude(
                 [{"role": "user", "content": plan_prompt}],

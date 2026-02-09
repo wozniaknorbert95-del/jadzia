@@ -3,14 +3,11 @@ Węzły obsługi komend (status, rollback, help).
 Returns: (response_text, awaiting_input, input_type)
 """
 
-import logging
 from typing import Tuple, Optional
 
 from ..state import load_state, clear_state
 from ..tools import rollback, test_ssh_connection
 from ..alerts import send_alert
-
-logger = logging.getLogger(__name__)
 
 
 async def handle_status(
@@ -52,53 +49,6 @@ async def handle_rollback(
         return (f"⚠️ Rollback: {result['msg']}", False, None)
 
 
-async def handle_scan_command(
-    chat_id: str,
-    source: str,
-) -> Tuple[str, bool, Optional[str]]:
-    """Obsługa /skanuj — uruchamia WPExplorer (manual scan)."""
-    try:
-        from ..tools.wp_explorer import WPExplorer
-
-        explorer = WPExplorer()
-        result = await explorer.scan_project(source="manual")
-
-        if result.success:
-            # Przeładuj cache ProjectStructureContext po udanym skanie
-            try:
-                from ..context.smart_context import invalidate_project_structure_cache
-                invalidate_project_structure_cache()
-                logger.info("Project structure cache invalidated after successful scan")
-            except Exception as e:
-                logger.warning("Failed to invalidate project structure cache: %s", e)
-
-            return (
-                "✅ **SKAN ZAKOŃCZONY**\n\n"
-                f"- Pliki: {result.file_count}\n"
-                f"- Hooki: {result.hook_count} (dynamiczne: {result.dynamic_hook_count})\n"
-                f"- Zależności: {result.dependency_count}\n"
-                f"- Czas: {result.duration_seconds}s\n"
-                f"- Output: {result.structure_path or 'agent/context/project_structure.json'}",
-                False,
-                None,
-            )
-
-        # failure path
-        errors = "\n".join(f"- {e}" for e in (result.errors or [])) or "- (brak szczegółów)"
-        return (
-            "❌ **SKAN NIEUDANY**\n\n"
-            f"{errors}",
-            False,
-            None,
-        )
-
-    except Exception as e:
-        from ..alerts import send_alert
-
-        send_alert("scan_failed", None, str(e))
-        return (f"❌ Skanowanie nie powiodło się: {e}", False, None)
-
-
 def handle_help(
     chat_id: str,
     source: str,
@@ -112,7 +62,6 @@ def handle_help(
         "/rollback - cofnij ostatnie zmiany\n"
         "/clear - wyczysc stan (awaryjne)\n"
         "/test - test polaczenia SSH\n"
-        "/skanuj - zeskanuj strukturę projektu WordPress (WPExplorer)\n"
         "/help - ta pomoc\n\n"
         "**Przyklady polecen:**\n"
         "- 'Zmien kolor przyciskow na niebieski'\n"

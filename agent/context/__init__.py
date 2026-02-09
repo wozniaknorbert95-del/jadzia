@@ -19,6 +19,8 @@ from .smart_context import (
     classify_task_type,
     get_file_map,
     get_context_for_task,
+    get_project_structure_context,
+    invalidate_project_structure_cache,
 )
 
 __all__ = [
@@ -36,4 +38,6 @@ __all__ = [
     "classify_task_type",
     "get_file_map",
     "get_context_for_task",
+    "get_project_structure_context",
+    "invalidate_project_structure_cache",
 ]

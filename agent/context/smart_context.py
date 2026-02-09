@@ -4,6 +4,7 @@ smart_context.py — Kontekst zależny od typu zadania (oszczędność tokenów)
 - classify_task_type(instruction) -> css_only | php_only | template | full
 - get_file_map(base_path) -> List[{path, size, role}]
 - get_context_for_task(task_type, file_map) -> {system_prompt, planner_context, conventions}
+- ProjectStructureContext — integracja z project_structure.json (WPExplorer)
 
 Metryki tokenów (FAZA 3):
 - PRZED (pełny kontekst dla "zmień kolor"): ~3000 input tokenów (planer + 50 plików + get_minimal_context).
@@ -11,7 +12,10 @@ Metryki tokenów (FAZA 3):
 - Pomiar: logi [COST] w agent.py (Input/Output) przy jednym wywołaniu "zmień kolor przycisku".
 """
 
-from typing import List, Dict, Any
+import json
+import logging
+from pathlib import Path
+from typing import List, Dict, Any, Optional
 
 from .project_info import (
     PROJECT_INFO,
@@ -165,3 +169,158 @@ Pliki PHP, hooki, funkcje. Edytuj w child theme (functions.php, szablony).
         "planner_context": planner_context,
         "conventions": conventions,
     }
+
+
+# ============================================================
+# Integration z project_structure.json (WPExplorer)
+# ============================================================
+
+logger = logging.getLogger(__name__)
+
+
+class ProjectStructureContext:
+    """
+    Kontekst oparty o project_structure.json (generowany przez /skanuj).
+
+    Jeśli plik istnieje — używa task_mappings do wyboru relevantnych plików.
+    Jeśli nie — fallback na legacy classify_task_type().
+    """
+
+    STRUCTURE_PATH = Path("agent/context/project_structure.json")
+
+    def __init__(self) -> None:
+        self.structure: Optional[Dict] = None
+        self.available: bool = False
+        self._load()
+
+    # ----------------------------------------------------------
+    # Loading / reloading
+    # ----------------------------------------------------------
+
+    def _load(self) -> None:
+        """Ładuje project_structure.json jeśli istnieje."""
+        if not self.STRUCTURE_PATH.exists():
+            logger.info("project_structure.json not found — using legacy context")
+            self.available = False
+            self.structure = None
+            return
+
+        try:
+            with open(self.STRUCTURE_PATH, "r", encoding="utf-8") as f:
+                self.structure = json.load(f)
+
+            self.available = True
+            logger.info(
+                "Loaded project_structure.json: %d files, %d mappings",
+                self.structure.get("file_count", 0),
+                len(self.structure.get("task_mappings", [])),
+            )
+        except Exception as e:
+            logger.error("Failed to load project_structure.json: %s", e)
+            self.available = False
+            self.structure = None
+
+    def reload(self) -> None:
+        """Wymusza ponowne załadowanie (po /skanuj)."""
+        logger.info("Reloading project_structure.json")
+        self._load()
+
+    # ----------------------------------------------------------
+    # Relevant files for task
+    # ----------------------------------------------------------
+
+    def get_relevant_files(self, user_input: str) -> List[str]:
+        """
+        Zwraca listę plików relevantnych dla zadania.
+
+        Mapuje przez task_mappings[].keywords → files.
+        Fallback: critical_files gdy brak dopasowania.
+        """
+        if not self.available or not self.structure:
+            return []
+
+        user_lower = user_input.lower()
+        matched_files: set[str] = set()
+
+        for mapping in self.structure.get("task_mappings", []):
+            keywords = mapping.get("keywords", [])
+            files = mapping.get("files", [])
+            for keyword in keywords:
+                if keyword.lower() in user_lower:
+                    matched_files.update(files)
+                    logger.debug("Keyword '%s' matched → %s", keyword, files)
+                    break
+
+        if not matched_files:
+            critical = self.structure.get("critical_files", [])
+            matched_files.update(critical)
+            logger.info("No keyword match, using critical_files: %s", critical)
+
+        return list(matched_files)
+
+    # ----------------------------------------------------------
+    # File metadata helpers
+    # ----------------------------------------------------------
+
+    def get_file_info(self, file_path: str) -> Dict:
+        """Zwraca metadane pliku z project_structure.json."""
+        if not self.available or not self.structure:
+            return {}
+        files = self.structure.get("files", {})
+        return files.get(file_path, {})
+
+    def get_risk_level(self, file_path: str) -> str:
+        """Zwraca risk level dla pliku."""
+        info = self.get_file_info(file_path)
+        return info.get("risk_level", "medium")
+
+    def needs_backup(self, file_path: str) -> bool:
+        """Czy plik wymaga backup przed modyfikacją."""
+        if not self.available or not self.structure:
+            return True  # bezpiecznie — zawsze backup
+        backup_files = self.structure.get("backup_required_files", [])
+        return file_path in backup_files
+
+    # ----------------------------------------------------------
+    # Hooks summary (for planner context)
+    # ----------------------------------------------------------
+
+    def get_hooks_summary(self) -> str:
+        """Zwraca krótkie podsumowanie hooków dla kontekstu Claude."""
+        if not self.available or not self.structure:
+            return ""
+
+        hooks = self.structure.get("hooks", {})
+        parts: List[str] = []
+
+        if hooks.get("actions"):
+            parts.append(f"Actions: {len(hooks['actions'])}")
+        if hooks.get("filters"):
+            parts.append(f"Filters: {len(hooks['filters'])}")
+        if hooks.get("ajax_handlers"):
+            parts.append(f"AJAX handlers: {len(hooks['ajax_handlers'])}")
+        if hooks.get("woocommerce_hooks"):
+            parts.append(f"WooCommerce hooks: {len(hooks['woocommerce_hooks'])}")
+
+        return ", ".join(parts) if parts else "No hooks data"
+
+
+# ----------------------------------------------------------
+# Singleton
+# ----------------------------------------------------------
+
+_project_structure_ctx: Optional[ProjectStructureContext] = None
+
+
+def get_project_structure_context() -> ProjectStructureContext:
+    """Zwraca singleton instancję ProjectStructureContext."""
+    global _project_structure_ctx
+    if _project_structure_ctx is None:
+        _project_structure_ctx = ProjectStructureContext()
+    return _project_structure_ctx
+
+
+def invalidate_project_structure_cache() -> None:
+    """Wywołaj po /skanuj aby przeładować strukturę."""
+    ctx = get_project_structure_context()
+    ctx.reload()
