@@ -837,9 +837,13 @@ async def _worker_loop():
                         else:
                             task_dict = task or {}
                             status_val = task_dict.get("status", "")
+                            # FIX: queued task = ready to process, pick it up immediately
+                            if status_val == "queued":
+                                next_task_id = active_id
+                                print(f"  [worker_loop] session {source}/{chat_id}: active task {active_id} is queued, will process")
                             # If session is actively being processed (lock held), skip stale/awaiting checks.
                             # This prevents marking long-running tasks as FAILED while process_message is still running.
-                            if await asyncio.to_thread(is_locked, chat_id, source):
+                            elif await asyncio.to_thread(is_locked, chat_id, source):
                                 print(f"  [worker_loop] session {source}/{chat_id}: locked, skipping stale/timeout checks")
                                 # No next_task_id => we effectively wait for the running task to progress/finish.
                                 continue
