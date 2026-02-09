@@ -681,7 +681,7 @@ async def _run_task_with_timeout(
         dry_run = bool(task_data.get("dry_run", False))
         test_mode = bool(task_data.get("test_mode", False))
         webhook_url = task_data.get("webhook_url") or None
-        await asyncio.wait_for(
+        result = await asyncio.wait_for(
             process_message(
                 user_input,
                 chat_id=chat_id,
@@ -694,6 +694,31 @@ async def _run_task_with_timeout(
             ),
             timeout=float(timeout_sec),
         )
+
+        # Unpack result
+        response_text, awaiting_input, input_type = result
+
+        # If task is one-shot (no user input needed), mark as completed
+        if not awaiting_input:
+            # Mark as completed (prevents worker loop re-run)
+            try:
+                await asyncio.to_thread(
+                    update_operation_status,
+                    OperationStatus.COMPLETED,
+                    chat_id,
+                    source,
+                    task_id=task_id,
+                )
+                # Advance queue
+                await asyncio.to_thread(
+                    mark_task_completed,
+                    chat_id,
+                    task_id,
+                    source
+                )
+                print(f"  [worker_loop] task {task_id} completed (one-shot)")
+            except Exception as e:
+                print(f"  [worker_loop] failed to mark task completed: {e}")
     except asyncio.TimeoutError:
         reason = f"worker_timeout: process_message timed out after {timeout_sec}s"
         print(f"  [worker_loop] FAILED_SET task_id={task_id} chat_id={chat_id} source={source} reason={reason}")
