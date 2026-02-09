@@ -19,7 +19,14 @@ from ..state import (
     is_test_mode,
 )
 from ..diff import create_change_summary
-from .commands import handle_status, handle_rollback, handle_help, handle_clear, handle_test
+from .commands import (
+    handle_status,
+    handle_rollback,
+    handle_help,
+    handle_clear,
+    handle_test,
+    handle_scan_command,
+)
 from .approval import handle_approval
 from .planning import handle_new_task
 from .generate import generate_changes
@@ -194,6 +201,10 @@ async def route_user_input(
 
     if lower_input in ["/test", "test"]:
         r = await handle_test()
+        return (r[0], r[1], r[2], None)
+
+    if lower_input in ["/skanuj", "skanuj", "scan"]:
+        r = await handle_scan_command(chat_id, source)
         return (r[0], r[1], r[2], None)
 
     intent = await classify_intent(message, chat_id, source, call_claude, task_id=task_id)
