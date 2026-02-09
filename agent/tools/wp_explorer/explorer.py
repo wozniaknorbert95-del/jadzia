@@ -11,6 +11,8 @@ from __future__ import annotations
 
 import asyncio
 import logging
+import os
+import sys
 import time
 import uuid
 from datetime import datetime, timezone
@@ -24,6 +26,60 @@ from .ssh_connector import SSHConnector, SSHConnectionError, SSHTimeoutError
 from .structure_builder import StructureBuilder
 
 logger = logging.getLogger(__name__)
+logger.setLevel(logging.DEBUG)
+
+
+def _force_wp_explorer_logging() -> None:
+    """
+    Force WPExplorer logs to stdout (systemd StandardOutput) and to a dedicated file.
+    This bypasses any global INFO-only logging configuration in the main app.
+    """
+    try:
+        root = logging.getLogger()
+        if not getattr(root, "_wp_explorer_forced", False):
+            # Only configure root if it has no handlers yet (avoid duplicate output).
+            if not root.handlers:
+                logging.basicConfig(
+                    level=logging.DEBUG,
+                    format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
+                )
+            setattr(root, "_wp_explorer_forced", True)
+
+        log_file = os.getenv("WP_EXPLORER_LOG_FILE")
+        if not log_file:
+            log_file = "/root/jadzia/logs/wp_explorer.log" if os.name != "nt" else "logs/wp_explorer.log"
+
+        try:
+            Path(log_file).parent.mkdir(parents=True, exist_ok=True)
+        except Exception:
+            pass
+
+        fmt = logging.Formatter("%(asctime)s - %(name)s - %(levelname)s - %(message)s")
+
+        # stdout handler (goes to logs/jadzia.log via systemd StandardOutput)
+        if not any(isinstance(h, logging.StreamHandler) and getattr(h, "stream", None) is sys.stdout for h in logger.handlers):
+            sh = logging.StreamHandler(sys.stdout)
+            sh.setLevel(logging.DEBUG)
+            sh.setFormatter(fmt)
+            logger.addHandler(sh)
+
+        # file handler
+        if log_file:
+            if not any(isinstance(h, logging.FileHandler) and getattr(h, "baseFilename", None) == os.path.abspath(log_file) for h in logger.handlers):
+                fh = logging.FileHandler(log_file)
+                fh.setLevel(logging.DEBUG)
+                fh.setFormatter(fmt)
+                logger.addHandler(fh)
+
+        # Avoid double-logging via root handlers.
+        logger.propagate = False
+        logger.debug("[WP_EXPLORER] Forced logging initialized")
+    except Exception:
+        # Last resort: never fail import due to logging
+        pass
+
+
+_force_wp_explorer_logging()
 
 
 class WPExplorer:

@@ -13,6 +13,7 @@ from __future__ import annotations
 import asyncio
 import logging
 import os
+import sys
 import shutil
 import tarfile
 import time
@@ -27,6 +28,61 @@ from .models import CommandResult, DownloadResult
 
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.DEBUG)
+
+
+def _force_wp_explorer_logging() -> None:
+    """
+    Force WPExplorer logs to stdout (systemd StandardOutput) and to a dedicated file.
+    This bypasses any global INFO-only logging configuration in the main app and makes
+    diagnostics visible in /root/jadzia/logs/jadzia.log and /root/jadzia/logs/wp_explorer.log.
+    """
+    try:
+        root = logging.getLogger()
+        if not getattr(root, "_wp_explorer_forced", False):
+            # Only configure root if it has no handlers yet (avoid duplicate output).
+            if not root.handlers:
+                logging.basicConfig(
+                    level=logging.DEBUG,
+                    format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
+                )
+            setattr(root, "_wp_explorer_forced", True)
+
+        log_file = os.getenv("WP_EXPLORER_LOG_FILE")
+        if not log_file:
+            log_file = "/root/jadzia/logs/wp_explorer.log" if os.name != "nt" else "logs/wp_explorer.log"
+
+        try:
+            Path(log_file).parent.mkdir(parents=True, exist_ok=True)
+        except Exception:
+            pass
+
+        fmt = logging.Formatter("%(asctime)s - %(name)s - %(levelname)s - %(message)s")
+
+        # stdout handler (captured by systemd StandardOutput -> logs/jadzia.log)
+        if not any(isinstance(h, logging.StreamHandler) and getattr(h, "stream", None) is sys.stdout for h in logger.handlers):
+            sh = logging.StreamHandler(sys.stdout)
+            sh.setLevel(logging.DEBUG)
+            sh.setFormatter(fmt)
+            logger.addHandler(sh)
+
+        # file handler
+        if log_file:
+            abs_log_file = os.path.abspath(log_file)
+            if not any(isinstance(h, logging.FileHandler) and getattr(h, "baseFilename", None) == abs_log_file for h in logger.handlers):
+                fh = logging.FileHandler(log_file)
+                fh.setLevel(logging.DEBUG)
+                fh.setFormatter(fmt)
+                logger.addHandler(fh)
+
+        # Avoid double-logging via root handlers.
+        logger.propagate = False
+        logger.debug("[WP_EXPLORER] Forced logging initialized (ssh_connector)")
+    except Exception:
+        # Never fail import due to logging diagnostics
+        pass
+
+
+_force_wp_explorer_logging()
 
 
 def _sh_quote(value: str) -> str:
@@ -165,10 +221,26 @@ class SSHConnector:
                 self._client = paramiko.SSHClient()
                 self._client.set_missing_host_key_policy(paramiko.AutoAddPolicy())
                 
-                # Load private key
-                private_key = paramiko.RSAKey.from_private_key_file(
-                    self.config.ssh_key_path
-                )
+                # Load private key (support RSA / ED25519 / ECDSA)
+                private_key = None
+                key_errors = []
+                for key_cls in (
+                    paramiko.RSAKey,
+                    getattr(paramiko, "Ed25519Key", None),
+                    paramiko.ECDSAKey,
+                ):
+                    if key_cls is None:
+                        continue
+                    try:
+                        private_key = key_cls.from_private_key_file(self.config.ssh_key_path)
+                        break
+                    except Exception as e:
+                        key_errors.append(f"{getattr(key_cls, '__name__', str(key_cls))}: {e}")
+                if private_key is None:
+                    raise SSHConnectionError(
+                        f"Failed to load private key from {self.config.ssh_key_path}. Errors: "
+                        + "; ".join(key_errors)
+                    )
                 
                 # Connect
                 self._client.connect(
@@ -296,6 +368,9 @@ class SSHConnector:
         """
         # Security check
         self._validate_path(remote_path)
+
+        print(f"[WP_EXPLORER] Starting download: {remote_path}")
+        logger.info(f"[WP_EXPLORER] Starting download: {remote_path}")
         
         start_time = time.time()
         tar_filename = f"theme_scan_{uuid.uuid4().hex[:8]}.tar.gz"
@@ -306,6 +381,7 @@ class SSHConnector:
             local_path.mkdir(parents=True, exist_ok=True)
             
             await self._ensure_sftp()
+            print("[WP_EXPLORER] SSH connected (SFTP ready)")
             
             # Create tar on remote server
             remote_parent = str(Path(remote_path).parent)
@@ -319,7 +395,9 @@ class SSHConnector:
             )
             
             logger.info(f"Creating tar archive on remote: {tar_command}")
+            print(f"[WP_EXPLORER] Tar command: {tar_command}")
             result = await self.execute_command(tar_command)
+            print(f"[WP_EXPLORER] Tar result: exit={result.exit_code}, stderr={result.stderr[:200]}")
             
             if result.exit_code != 0:
                 return DownloadResult(
@@ -340,6 +418,7 @@ class SSHConnector:
                 f"Downloading {remote_tar} to {local_tar_path} "
                 f"(remote_size={remote_size} bytes)"
             )
+            print("[WP_EXPLORER] Starting SFTP download")
 
             # Retry download if transport drops mid-stream.
             download_ok = False
@@ -416,6 +495,9 @@ class SSHConnector:
             
         except Exception as e:
             logger.exception(f"Download failed for remote_path={remote_path}")
+            print(f"[WP_EXPLORER] ERROR: {e}")
+            import traceback
+            traceback.print_exc()
             return DownloadResult(
                 success=False,
                 error=str(e),
