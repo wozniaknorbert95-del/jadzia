@@ -4,8 +4,11 @@ Returns: (response_text, awaiting_input, input_type)
 """
 
 import json
+import logging
 import re
 from typing import Dict, Tuple, Optional
+
+_log = logging.getLogger(__name__)
 
 from ..state import (
     load_state,
@@ -125,7 +128,7 @@ async def generate_changes(
     """Generowanie zmian dla plików z planu. Returns (response, awaiting, input_type, next_task_id)."""
     from ..state import get_operation_id
     if task_id:
-        print(f"[task_id={task_id}] generate_changes entry")
+        _log.debug("[task_id=%s] generate_changes entry", task_id)
     operation_id = get_operation_id(chat_id, source, task_id=task_id) or "unknown"
 
     update_operation_status(OperationStatus.READING_FILES, chat_id, source, task_id=task_id)
@@ -194,9 +197,7 @@ async def generate_changes(
         )
 
         if len(old_content) < len(old_content_full):
-            print(f"[OPTYM] Skrócono plik {path}: "
-                  f"{len(old_content_full)} → {len(old_content)} znaków "
-                  f"(oszczędność: {len(old_content_full) - len(old_content)})")
+            _log.debug("[OPTYM] Truncated file %s: %d -> %d chars", path, len(old_content_full), len(old_content))
 
         conventions = smart_context["conventions"] if smart_context else get_minimal_context()
         state_for_prompt = load_state(chat_id, source)

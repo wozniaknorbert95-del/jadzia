@@ -7,6 +7,8 @@ import json
 import logging
 from typing import Dict, Tuple, Optional
 
+_log = logging.getLogger(__name__)
+
 from ..state import (
     load_state,
     save_state,
@@ -103,7 +105,7 @@ async def handle_new_task(
 ) -> Tuple[str, bool, Optional[str], Optional[str]]:
     """Planowanie nowego zadania. Returns (response, awaiting, input_type, next_task_id)."""
     if task_id:
-        print(f"[task_id={task_id}] handle_new_task entry")
+        _log.debug("[task_id=%s] handle_new_task entry", task_id)
 
     info_keywords = ["wylistuj", "pokaz", "lista", "sprawdz", "ile", "jakie", "co jest", "ls", "dir"]
     is_info_request = any(kw in user_input.lower() for kw in info_keywords)
@@ -140,7 +142,7 @@ async def handle_new_task(
 
     try:
         update_operation_status(OperationStatus.PLANNING, chat_id, source, task_id=tid)
-        print(f"[planning] task_id={tid} PLANNING set, calling Claude")
+        _log.debug("[planning] task_id=%s PLANNING set, calling Claude", tid)
 
         smart_context = None
         try:
@@ -207,7 +209,7 @@ async def handle_new_task(
             plan_prompt = get_planner_prompt(user_input, project_structure)
             plan_response = await call_claude([{"role": "user", "content": plan_prompt}])
 
-        print(f"[planning] task_id={tid} Claude done, parsing plan")
+        _log.debug("[planning] task_id=%s Claude done, parsing plan", tid)
         plan = parse_plan(plan_response)
 
         update_operation_status(
@@ -275,7 +277,7 @@ async def handle_new_task(
                 task_payload = (state.get("tasks") or {}).get(tid) if (tid and state.get("tasks")) else state
                 (task_payload or state)["pending_plan_with_questions"] = plan
                 save_state(state, chat_id, source)
-            print(f"[planning] task_id={tid} setting plan_approval")
+            _log.debug("[planning] task_id=%s setting plan_approval", tid)
             set_awaiting_response(True, "plan_approval", chat_id, source, task_id=tid)
             return (msg, True, "plan_approval", None)
 

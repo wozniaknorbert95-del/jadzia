@@ -3,7 +3,10 @@ Klasyfikacja intencji użytkownika (APPROVAL / REJECTION / NEW_TASK / UNCLEAR).
 """
 
 import json
+import logging
 from typing import Optional
+
+_log = logging.getLogger(__name__)
 
 from ..state import load_state, get_pending_plan, get_current_status
 from ..prompt import get_intent_classifier_prompt
@@ -37,11 +40,11 @@ async def classify_intent(
         result = json.loads(response)
         intent = result.get("intent", "UNCLEAR")
         confidence = result.get("confidence", 0.5)
-        print(f"[INTENT] {intent} (confidence: {confidence}) - {result.get('reasoning', '')}")
+        _log.debug("[INTENT] %s (confidence: %s) - %s", intent, confidence, result.get("reasoning", ""))
         return intent
 
     except Exception as e:
-        print(f"[INTENT ERROR] {e} - fallback to keyword matching")
+        _log.warning("[INTENT] %s - fallback to keyword matching", e)
         lower = user_input.lower()
 
         if get_pending_plan(chat_id, source, task_id=task_id):

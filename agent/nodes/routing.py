@@ -3,7 +3,10 @@ Routing użytkownika do odpowiedniego węzła.
 Obsługuje: komendy, intent (approval/rejection), questions answered, user response, new task.
 """
 
+import logging
 from typing import Dict, Tuple, Optional
+
+_log = logging.getLogger(__name__)
 
 from ..state import (
     load_state,
@@ -180,7 +183,7 @@ async def route_user_input(
     """Routing użytkownika do odpowiedniego węzła. task_id=None uses active task."""
     task_id = task_id or get_active_task_id(chat_id, source)
     if task_id:
-        print(f"[task_id={task_id}] route_user_input entry")
+        _log.debug("[task_id=%s] route_user_input entry", task_id)
 
     lower_input = message.strip().lower()
 

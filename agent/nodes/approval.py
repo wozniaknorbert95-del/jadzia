@@ -4,8 +4,11 @@ Returns: (response_text, awaiting_input, input_type, next_task_id)
 """
 
 import asyncio
+import logging
 from datetime import datetime, timezone
 from typing import Dict, Tuple, Optional
+
+_log = logging.getLogger(__name__)
 
 from ..state import (
     clear_state,
@@ -48,7 +51,7 @@ async def handle_approval(
     awaiting_type = task.get("awaiting_type", "")
     operation_id = task.get("id")
     if task_id:
-        print(f"[task_id={task_id}] handle_approval entry approved={approved}")
+        _log.debug("[task_id=%s] handle_approval entry approved=%s", task_id, approved)
 
     if not approved:
         clear_state(chat_id, source)

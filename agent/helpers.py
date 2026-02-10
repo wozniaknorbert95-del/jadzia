@@ -4,8 +4,11 @@ helpers.py — Funkcje pomocnicze dla agenta
 NAPRAWKA #3: Czyszczenie odpowiedzi Claude z markdown code blocks
 """
 
+import logging
 import re
 from typing import Optional
+
+_log = logging.getLogger(__name__)
 
 
 def clean_code_response(response: str, language: Optional[str] = None) -> str:
@@ -40,7 +43,7 @@ def clean_code_response(response: str, language: Optional[str] = None) -> str:
     match = re.search(pattern, cleaned, re.DOTALL | re.MULTILINE)
     if match:
         cleaned = match.group(1)
-        print(f"[DEBUG] Usunięto markdown code block (pattern 1)")
+        _log.debug("Usunięto markdown code block (pattern 1)")
         return cleaned.strip()
     
     # Pattern 2: Tylko ``` na początku i końcu (bez języka)
@@ -49,7 +52,7 @@ def clean_code_response(response: str, language: Optional[str] = None) -> str:
     match2 = re.search(pattern2, cleaned, re.DOTALL | re.MULTILINE)
     if match2:
         cleaned = match2.group(1)
-        print(f"[DEBUG] Usunięto markdown code block (pattern 2)")
+        _log.debug("Usunięto markdown code block (pattern 2)")
         return cleaned.strip()
     
     # Pattern 3: Usuwanie pojedynczych linii z backticks
@@ -59,12 +62,12 @@ def clean_code_response(response: str, language: Optional[str] = None) -> str:
     # Usuń pierwszą linię jeśli to ```język lub ```
     if lines and re.match(r'^```\w*\s*$', lines[0]):
         lines = lines[1:]
-        print(f"[DEBUG] Usunięto pierwszą linię markdown")
+        _log.debug("Usunięto pierwszą linię markdown")
     
     # Usuń ostatnią linię jeśli to ```
     if lines and lines[-1].strip() == '```':
         lines = lines[:-1]
-        print(f"[DEBUG] Usunięto ostatnią linię markdown")
+        _log.debug("Usunięto ostatnią linię markdown")
     
     cleaned = '\n'.join(lines)
     cleaned = _strip_leading_trailing_prose(cleaned.strip(), language)
@@ -117,7 +120,7 @@ def _strip_leading_trailing_prose(text: str, language: Optional[str] = None) -> 
         break
     result = "\n".join(lines[start:end])
     if start > 0 or end < len(lines):
-        print(f"[DEBUG] Stripped leading/trailing prose: lines 0-{start} and {end}-{len(lines)}")
+        _log.debug("Stripped leading/trailing prose: lines 0-%d and %d-%d", start, end, len(lines))
     return result.strip()
 
 
@@ -165,10 +168,10 @@ def clean_code_for_file(response: str, file_path: str) -> str:
     language = detect_language_from_path(file_path)
     cleaned = clean_code_response(response, language)
     
-    print(f"[DEBUG] clean_code_for_file: {file_path}")
-    print(f"[DEBUG]   Wykryty język: {language or 'unknown'}")
-    print(f"[DEBUG]   Długość przed: {len(response)} znaków")
-    print(f"[DEBUG]   Długość po:    {len(cleaned)} znaków")
+    _log.debug("clean_code_for_file: %s", file_path)
+    _log.debug("  Wykryty język: %s", language or "unknown")
+    _log.debug("  Długość przed: %d znaków", len(response))
+    _log.debug("  Długość po:    %d znaków", len(cleaned))
     
     return cleaned
 
@@ -189,24 +192,24 @@ def validate_cleaned_code(original: str, cleaned: str, max_diff_ratio: float = 0
         True jeśli walidacja przeszła
     """
     if not cleaned:
-        print(f"[WARNING] Wyczyszczony kod jest pusty!")
+        _log.warning("Wyczyszczony kod jest pusty!")
         return False
     
     original_len = len(original)
     cleaned_len = len(cleaned)
     
     if cleaned_len > original_len:
-        print(f"[WARNING] Wyczyszczony kod dłuższy od oryginału? ({cleaned_len} > {original_len})")
+        _log.warning("Wyczyszczony kod dłuższy od oryginału? (%d > %d)", cleaned_len, original_len)
         return False
     
     diff_ratio = (original_len - cleaned_len) / original_len
     
     if diff_ratio > max_diff_ratio:
-        print(f"[WARNING] Usunięto {diff_ratio * 100:.1f}% treści - to może być za dużo!")
-        print(f"[DEBUG] Pierwsze 200 znaków oryginału:")
-        print(original[:200])
-        print(f"[DEBUG] Pierwsze 200 znaków po czyszczeniu:")
-        print(cleaned[:200])
+        _log.warning("Usunięto %.1f%% treści - to może być za dużo!", diff_ratio * 100)
+        _log.debug("Pierwsze 200 znaków oryginału:")
+        _log.debug("%s", original[:200])
+        _log.debug("Pierwsze 200 znaków po czyszczeniu:")
+        _log.debug("%s", cleaned[:200])
         return False
     
     return True

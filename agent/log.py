@@ -6,9 +6,12 @@ Format: JSON Lines (.jsonl) — jeden JSON per linia
 """
 
 import json
+import logging
 from pathlib import Path
 from datetime import datetime, timezone
 from typing import Optional, Any, List
+
+_log = logging.getLogger(__name__)
 
 # ============================================================
 # KONFIGURACJA
@@ -82,7 +85,7 @@ def log_event(
         with LOG_FILE.open("a", encoding="utf-8") as f:
             f.write(json.dumps(entry, ensure_ascii=False) + "\n")
     except Exception as e:
-        print(f"[LOG ERROR] Nie można zapisać logu: {e}")
+        _log.error("Nie można zapisać logu: %s", e)
 
 
 def log_change(
@@ -139,7 +142,7 @@ def get_recent_logs(limit: int = 50) -> List[dict]:
         
         return [json.loads(line) for line in recent if line]
     except Exception as e:
-        print(f"[LOG ERROR] Nie można odczytać logów: {e}")
+        _log.error("Nie można odczytać logów: %s", e)
         return []
 
 
@@ -157,7 +160,7 @@ def get_logs_for_operation(operation_id: str) -> List[dict]:
             if entry.get("operation_id") == operation_id:
                 logs.append(entry)
     except Exception as e:
-        print(f"[LOG ERROR] Błąd odczytu: {e}")
+        _log.error("Błąd odczytu: %s", e)
     
     return logs
 
@@ -222,7 +225,7 @@ def rotate_logs(max_size_mb: int = 10) -> bool:
             LOG_FILE.rename(archive_path)
             return True
     except Exception as e:
-        print(f"[LOG ERROR] Nie można zrotować logów: {e}")
+        _log.error("Nie można zrotować logów: %s", e)
     
     return False
 

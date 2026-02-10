@@ -8,8 +8,12 @@ Handles:
 - Request structure validation
 """
 
+import logging
 import os
 from typing import Optional, Tuple
+
+_log = logging.getLogger(__name__)
+
 from fastapi import Header, HTTPException
 from pydantic import BaseModel, Field, root_validator, validator
 
@@ -190,7 +194,7 @@ def validate_webhook_secret(x_webhook_secret: Optional[str] = Header(None)) -> b
     # Check if secret is configured
     if not TELEGRAM_WEBHOOK_SECRET:
         # If no secret configured, log warning but allow (dev mode)
-        print("⚠️ WARNING: TELEGRAM_WEBHOOK_SECRET not configured!")
+        _log.warning("TELEGRAM_WEBHOOK_SECRET not configured!")
         return True
     
     # Check if secret provided in request
@@ -226,7 +230,7 @@ def validate_user_whitelist(user_id: str) -> bool:
     # Check if whitelist is configured
     if not ALLOWED_TELEGRAM_USERS:
         # If no whitelist, log warning but allow (dev mode)
-        print("⚠️ WARNING: ALLOWED_TELEGRAM_USERS not configured! All users allowed.")
+        _log.warning("ALLOWED_TELEGRAM_USERS not configured! All users allowed.")
         return True
     
     # Check if user in whitelist

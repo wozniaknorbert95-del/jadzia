@@ -24,6 +24,7 @@ import asyncio
 Path("logs").mkdir(exist_ok=True)
 
 _log_worker = logging.getLogger("interfaces.api.worker")
+logger = logging.getLogger(__name__)
 JWT_SECRET = os.getenv("JWT_SECRET")
 
 from agent.agent import process_message
@@ -69,6 +70,9 @@ app = FastAPI(
 
 if os.getenv("TELEGRAM_BOT_ENABLED", "") == "1":
     app.include_router(telegram_router)
+
+# Worker loop task reference (for health check)
+_worker_loop_ref: Optional[asyncio.Task] = None
 
 # Global metrics for worker health (updated on startup and by webhooks)
 health_metrics = {
@@ -376,7 +380,7 @@ async def worker_create_task(
             webhook_url=request.webhook_url,
             test_mode=test_mode,
         )
-        print(f"[task_id={task_id}] worker_create_task (quick_ack) chat_id={chat_id} source={source} position_in_queue={position}")
+        logger.info("[task_id=%s] worker_create_task (quick_ack) chat_id=%s source=%s position_in_queue=%s", task_id, chat_id, source, position)
         return WorkerTaskCreateResponse(
             task_id=task_id,
             status="queued",
@@ -400,7 +404,7 @@ async def worker_get_task(task_id: str, _auth=Depends(verify_worker_jwt)):
     """
     session = find_session_by_task_id(task_id)
     if not session:
-        print(f"[task_id={task_id}] GET /worker/task: task not found in DB")
+        logger.warning("[task_id=%s] GET /worker/task: task not found in DB", task_id)
         raise HTTPException(status_code=404, detail="Task not found")
     chat_id, source = session
     task_payload = find_task_by_id(chat_id, task_id, source)
@@ -415,7 +419,7 @@ async def worker_get_task(task_id: str, _auth=Depends(verify_worker_jwt)):
             position_in_queue = 1 + state["task_queue"].index(task_id)
         except ValueError:
             position_in_queue = 0
-    print(f"[task_id={task_id}] worker_get_task status={task_payload.get('status')} position_in_queue={position_in_queue}")
+    logger.debug("[task_id=%s] worker_get_task status=%s position_in_queue=%s", task_id, task_payload.get("status"), position_in_queue)
     return _task_response_from_task_payload(task_id, task_payload, position_in_queue)
 
 
@@ -447,7 +451,7 @@ async def worker_task_input(
     if not session:
         task_after = db_get_task(task_id)
         row_info = (f"chat_id={task_after['chat_id']!r} source={task_after['source']!r}" if task_after else "no row")
-        print(f"[worker_task_input] 404 task_id={task_id} db_get_task_after_retry={task_after is not None} {row_info}")
+        logger.warning("[worker_task_input] 404 task_id=%s db_get_task_after_retry=%s %s", task_id, task_after is not None, row_info)
         raise HTTPException(status_code=404, detail="Task not found")
     chat_id, source = session
     active_id = get_active_task_id(chat_id, source)
@@ -489,7 +493,7 @@ async def worker_task_input(
         )
         # Diagnostic: is task still in DB right after process_message?
         _row = db_get_task(task_id)
-        print(f"[worker_task_input] after process_message task_id={task_id} chat_id={chat_id!r} source={source!r} db_get_task={'yes' if _row else 'no'} row_source={_row.get('source') if _row else None}")
+        logger.debug("[worker_task_input] after process_message task_id=%s chat_id=%r source=%r db_get_task=%s row_source=%s", task_id, chat_id, source, "yes" if _row else "no", _row.get("source") if _row else None)
         current_status = get_current_status(chat_id, source, task_id=task_id)
         if current_status is not None:
             update_operation_status(
@@ -506,13 +510,13 @@ async def worker_task_input(
             if task_row:
                 # Use row even if chat_id/source differ (diagnostic: log mismatch)
                 if task_row.get("chat_id") != chat_id or task_row.get("source") != source:
-                    print(f"[task_id={task_id}] worker_task_input: db row has chat_id={task_row.get('chat_id')!r} source={task_row.get('source')!r} expected chat_id={chat_id!r} source={source!r}")
+                    logger.warning("[task_id=%s] worker_task_input: db row has chat_id=%r source=%r expected chat_id=%r source=%r", task_id, task_row.get("chat_id"), task_row.get("source"), chat_id, source)
                 task_payload = dict(task_row)
                 if "operation_id" in task_payload and "id" not in task_payload:
                     task_payload["id"] = task_payload.get("operation_id")
-                print(f"[task_id={task_id}] worker_task_input: using db_get_task fallback after process_message")
+                logger.info("[task_id=%s] worker_task_input: using db_get_task fallback after process_message", task_id)
             else:
-                print(f"[task_id={task_id}] worker_task_input: task state lost after process_message db_get_task=None (task_id not in tasks table)")
+                logger.error("[task_id=%s] worker_task_input: task state lost after process_message db_get_task=None (task_id not in tasks table)", task_id)
                 raise HTTPException(
                     status_code=404,
                     detail="Task state lost after process_message — task_id no longer in DB. Re-submit with /zadanie.",
@@ -521,13 +525,12 @@ async def worker_task_input(
         position_in_queue = 0
         if state and state.get("task_queue") and task_id in state["task_queue"]:
             position_in_queue = 1 + state["task_queue"].index(task_id)
-        print(f"[task_id={task_id}] worker_task_input input_type={input_kind} result status={task_payload.get('status')}")
+        logger.debug("[task_id=%s] worker_task_input input_type=%s result status=%s", task_id, input_kind, task_payload.get("status"))
         return _task_response_from_task_payload(task_id, task_payload, position_in_queue)
     except HTTPException:
         raise
     except Exception as e:
-        import traceback
-        traceback.print_exc()
+        logger.error("[worker_task_input] unhandled exception task_id=%s: %s", task_id, e, exc_info=True)
         raise HTTPException(status_code=500, detail=str(e))
 
 
@@ -618,11 +621,13 @@ async def get_worker_health():
         except Exception:
             pass
 
-    status = "healthy" if ssh_status == "ok" else "degraded"
+    worker_alive = _worker_loop_ref is not None and not _worker_loop_ref.done()
+    status = "healthy" if ssh_status == "ok" and worker_alive else "degraded"
     last_ver = health_metrics.get("last_deployment_verification") or {}
     return {
         "status": status,
         "uptime_seconds": uptime_seconds,
+        "worker_loop_alive": worker_alive,
         "active_sessions": active_sessions,
         "active_tasks": active_tasks,
         "queue_length": queued_tasks,
@@ -764,7 +769,7 @@ async def _run_task_with_timeout(
                     get_current_status, chat_id, source, task_id
                 )
                 if current and current in TERMINAL_STATUSES:
-                    print(f"  [worker_loop] task {task_id} already terminal ({current}), skipping COMPLETED overwrite")
+                    _log_worker.debug("[worker_loop] task %s already terminal (%s), skipping COMPLETED overwrite", task_id, current)
                     # Still advance queue so next task can run
                     await asyncio.to_thread(mark_task_completed, chat_id, task_id, source)
                 else:
@@ -782,12 +787,12 @@ async def _run_task_with_timeout(
                         task_id,
                         source
                     )
-                    print(f"  [worker_loop] task {task_id} completed (one-shot)")
+                    _log_worker.info("[worker_loop] task %s completed (one-shot)", task_id)
             except Exception as e:
-                print(f"  [worker_loop] failed to mark task completed: {e}")
+                _log_worker.error("[worker_loop] failed to mark task completed: %s", e)
     except asyncio.TimeoutError:
-        reason = f"worker_timeout: process_message timed out after {timeout_sec}s"
-        print(f"  [worker_loop] FAILED_SET task_id={task_id} chat_id={chat_id} source={source} reason={reason}")
+        reason = "worker_timeout: process_message timed out after %ds" % timeout_sec
+        _log_worker.info("[worker_loop] FAILED_SET task_id=%s chat_id=%s source=%s reason=%s", task_id, chat_id, source, reason)
         try:
             await asyncio.to_thread(add_error, reason, chat_id, source, task_id)
             await asyncio.to_thread(
@@ -813,14 +818,12 @@ async def _run_task_with_timeout(
                         task_id=task_id, status="failed", awaiting_input=False,
                     )
                 except Exception as push_err:
-                    print(f"  [worker_loop] failed to push timeout to Telegram: {push_err}")
+                    _log_worker.error("[worker_loop] failed to push timeout to Telegram: %s", push_err)
         except Exception as e:
-            print(f"  [worker_loop] failed to mark task_id={task_id} FAILED after timeout: {e}")
-            import traceback
-            traceback.print_exc()
+            _log_worker.error("[worker_loop] failed to mark task_id=%s FAILED after timeout: %s", task_id, e, exc_info=True)
     except asyncio.CancelledError:
         reason = "worker_cancelled: process_message task was cancelled"
-        print(f"  [worker_loop] FAILED_SET task_id={task_id} chat_id={chat_id} source={source} reason={reason}")
+        _log_worker.info("[worker_loop] FAILED_SET task_id=%s chat_id=%s source=%s reason=%s", task_id, chat_id, source, reason)
         try:
             await asyncio.to_thread(add_error, reason, chat_id, source, task_id)
             await asyncio.to_thread(
@@ -841,11 +844,9 @@ async def _run_task_with_timeout(
                         task_id=task_id, status="failed", awaiting_input=False,
                     )
                 except Exception as push_err:
-                    print(f"  [worker_loop] failed to push cancel to Telegram: {push_err}")
+                    _log_worker.error("[worker_loop] failed to push cancel to Telegram: %s", push_err)
         except Exception as e:
-            print(f"  [worker_loop] failed to mark task_id={task_id} FAILED after cancel: {e}")
-            import traceback
-            traceback.print_exc()
+            _log_worker.error("[worker_loop] failed to mark task_id=%s FAILED after cancel: %s", task_id, e, exc_info=True)
         raise
 
 
@@ -869,7 +870,7 @@ def _parse_timestamp_to_utc(ts_str: str) -> Optional[datetime]:
             dt = dt.astimezone(timezone.utc)
         return dt
     except (ValueError, TypeError) as e:
-        print(f"  [worker_loop] _parse_timestamp_to_utc failed for {ts_str!r}: {e}")
+        _log_worker.warning("[worker_loop] _parse_timestamp_to_utc failed for %r: %s", ts_str, e)
         return None
 
 
@@ -880,7 +881,7 @@ def _safe_age_minutes(dt_utc: datetime) -> float:
     """
     age = datetime.now(timezone.utc) - dt_utc
     if age.total_seconds() < 0:
-        print(f"  [worker_loop] WARNING negative_age: timestamp={dt_utc.isoformat()} now={datetime.now(timezone.utc).isoformat()} age_sec={age.total_seconds():.1f} — clamped to 0")
+        _log_worker.warning("[worker_loop] negative_age: timestamp=%s now=%s age_sec=%.1f — clamped to 0", dt_utc.isoformat(), datetime.now(timezone.utc).isoformat(), age.total_seconds())
         return 0.0
     return age.total_seconds() / 60.0
 
@@ -890,9 +891,7 @@ def _worker_loop_done_callback(task: asyncio.Task, chat_id: str, source: str, ta
     try:
         exc = task.exception()
         if exc is not None:
-            print(f"  [worker_loop] process_message failed chat_id={chat_id} source={source} task_id={task_id}: {exc}")
-            import traceback
-            traceback.print_exception(type(exc), exc, exc.__traceback__)
+            _log_worker.error("[worker_loop] process_message failed chat_id=%s source=%s task_id=%s: %s", chat_id, source, task_id, exc, exc_info=(type(exc), exc, exc.__traceback__))
     except asyncio.CancelledError:
         pass
 
@@ -902,7 +901,7 @@ async def _worker_loop():
     Uses intelligent backoff: short sleep (1-2s) when there was active work, gradual backoff up to 30s when idle."""
     base_interval = int(os.getenv("WORKER_LOOP_INTERVAL_SECONDS", "15") or "0")
     if base_interval <= 0:
-        print("  [worker_loop] disabled (WORKER_LOOP_INTERVAL_SECONDS <= 0)")
+        _log_worker.info("[worker_loop] disabled (WORKER_LOOP_INTERVAL_SECONDS <= 0)")
         return
     busy_sleep = int(os.getenv("WORKER_LOOP_BUSY_SLEEP_SECONDS", "2") or "2")
     max_idle_sleep = 30
@@ -912,17 +911,15 @@ async def _worker_loop():
         iter_num += 1
         had_work = False
         try:
-            print(f"  [worker_loop] iteration {iter_num} start")
+            _log_worker.debug("[worker_loop] iteration %s start", iter_num)
             try:
                 sessions = await asyncio.to_thread(db_list_all_sessions)
             except Exception as e:
-                print(f"  [worker_loop] db_list_all_sessions failed: {e}")
-                import traceback
-                traceback.print_exc()
+                _log_worker.error("[worker_loop] db_list_all_sessions failed: %s", e, exc_info=True)
                 await asyncio.sleep(idle_backoff_sec)
                 continue
             if not sessions:
-                print(f"  [worker_loop] no sessions found")
+                _log_worker.debug("[worker_loop] no sessions found")
             else:
                 _log_worker.debug("  [worker_loop] sessions count=%s list=%s", len(sessions), sessions)
             # Load all session states in parallel to avoid blocking the loop on SQLite I/O
@@ -930,7 +927,7 @@ async def _worker_loop():
             for ((chat_id, source), state) in zip(sessions, states):
                 try:
                     if not state:
-                        print(f"  [worker_loop] session {source}/{chat_id}: no state, skip")
+                        _log_worker.debug("[worker_loop] session %s/%s: no state, skip", source, chat_id)
                         continue
                     queue = state.get("task_queue") or []
                     # INFO only for sessions that have active work (tasks or queue)
@@ -950,65 +947,65 @@ async def _worker_loop():
                         if active_id and task is None:
                             row = db_get_task(active_id)
                             if row and row.get("chat_id") == chat_id and row.get("source") == source:
-                                print(f"  [worker_loop] session {source}/{chat_id}: active_id={active_id} missing from state but exists in DB, skip clear")
+                                _log_worker.debug("[worker_loop] session %s/%s: active_id=%s missing from state but exists in DB, skip clear", source, chat_id, active_id)
                                 continue
-                            print(f"  [worker_loop] session {source}/{chat_id}: ghost active_task_id={active_id} (task data missing), clearing")
+                            _log_worker.warning("[worker_loop] session %s/%s: ghost active_task_id=%s (task data missing), clearing", source, chat_id, active_id)
                             try:
                                 await asyncio.to_thread(clear_active_task_and_advance, chat_id, source)
                                 had_work = True
                             except Exception as e:
-                                print(f"  [worker_loop] session {source}/{chat_id}: failed to clear ghost active_task_id: {e}")
+                                _log_worker.error("[worker_loop] session %s/%s: failed to clear ghost active_task_id: %s", source, chat_id, e)
                             continue
 
                         # Only recover truly stuck tasks (status=queued).
                         # For tasks already in progress or awaiting input, let them be.
                         if active_id and status == "queued":
                             next_task_id = active_id
-                            print(f"  [worker_loop] session {source}/{chat_id}: recovery run for queued active_id={active_id} (empty queue)")
+                            _log_worker.info("[worker_loop] session %s/%s: recovery run for queued active_id=%s (empty queue)", source, chat_id, active_id)
                         elif active_id and status and status in TERMINAL_STATUSES:
                             # Terminal but not cleaned up — advance queue
                             next_task_id = await asyncio.to_thread(
                                 mark_task_completed, chat_id, active_id, source
                             )
-                            print(f"  [worker_loop] session {source}/{chat_id}: terminal active_id={active_id} cleaned up => next_task_id={next_task_id}")
+                            _log_worker.info("[worker_loop] session %s/%s: terminal active_id=%s cleaned up => next_task_id=%s", source, chat_id, active_id, next_task_id)
                         else:
                             # Active task in progress / awaiting input / no active task — skip
                             continue
                     elif active_id:
                         task = (state.get("tasks") or {}).get(active_id)
                         status = (task or {}).get("status")
-                        print(f"  [worker_loop] session {source}/{chat_id}: active_id={active_id} status={status} queue_len={len(queue)}")
+                        _log_worker.debug("[worker_loop] session %s/%s: active_id=%s status=%s queue_len=%s", source, chat_id, active_id, status, len(queue))
 
                         # Ghost active_task_id: task data missing → clear only if not in DB (avoid false ghost)
                         if task is None:
                             row = db_get_task(active_id)
                             if row and row.get("chat_id") == chat_id and row.get("source") == source:
-                                print(f"  [worker_loop] session {source}/{chat_id}: active_id={active_id} missing from state but exists in DB, skip clear")
+                                _log_worker.debug("[worker_loop] session %s/%s: active_id=%s missing from state but exists in DB, skip clear", source, chat_id, active_id)
                                 continue
-                            print(f"  [worker_loop] session {source}/{chat_id}: ghost active_task_id={active_id} (task data missing, queue has {len(queue)} items), clearing")
+                            _log_worker.warning("[worker_loop] session %s/%s: ghost active_task_id=%s (task data missing, queue has %s items), clearing", source, chat_id, active_id, len(queue))
                             try:
                                 next_task_id = await asyncio.to_thread(clear_active_task_and_advance, chat_id, source)
                                 had_work = True
-                                print(f"  [worker_loop] session {source}/{chat_id}: ghost cleared => next_task_id={next_task_id}")
+                                _log_worker.warning("[worker_loop] session %s/%s: ghost cleared => next_task_id=%s", source, chat_id, next_task_id)
                             except Exception as e:
-                                print(f"  [worker_loop] session {source}/{chat_id}: failed to clear ghost: {e}")
+                                _log_worker.error("[worker_loop] session %s/%s: failed to clear ghost: %s", source, chat_id, e)
                                 continue
                         elif status in TERMINAL_STATUSES:
                             next_task_id = await asyncio.to_thread(
                                 mark_task_completed, chat_id, active_id, source
                             )
-                            print(f"  [worker_loop] session {source}/{chat_id}: mark_task_completed => next_task_id={next_task_id}")
+                            _log_worker.info("[worker_loop] session %s/%s: mark_task_completed => next_task_id=%s", source, chat_id, next_task_id)
                         else:
                             task_dict = task or {}
                             status_val = task_dict.get("status", "")
                             # FIX: queued task = ready to process, pick it up immediately
                             if status_val == "queued":
                                 next_task_id = active_id
-                                print(f"  [worker_loop] session {source}/{chat_id}: active task {active_id} is queued, will process")
+                                _log_worker.info("[worker_loop] session %s/%s: active task %s is queued, will process", source, chat_id, active_id)
                             # If session is actively being processed (lock held), skip stale/awaiting checks.
                             # This prevents marking long-running tasks as FAILED while process_message is still running.
                             elif await asyncio.to_thread(is_locked, chat_id, source):
-                                print(f"  [worker_loop] session {source}/{chat_id}: locked, skipping stale/timeout checks")
+                                _log_worker.debug("[worker_loop] session %s/%s: locked, skipping stale/timeout checks", source, chat_id)
                                 # No next_task_id => we effectively wait for the running task to progress/finish.
                                 continue
                             # Awaiting-timeout: only for PLANNING + awaiting_response (user never responded).
@@ -1021,21 +1018,21 @@ async def _worker_loop():
                                 aw_field_used = "created_at" if aw_ts_str else "updated_at"
                                 if not aw_ts_str:
                                     aw_ts_str = (task_dict.get("updated_at") or "").strip()
-                                    print(f"  [worker_loop] session {source}/{chat_id} awaiting timeout check: created_at missing, using updated_at")
+                                    _log_worker.debug("[worker_loop] session %s/%s awaiting timeout check: created_at missing, using updated_at", source, chat_id)
                                 aw_dt = _parse_timestamp_to_utc(aw_ts_str) if aw_ts_str else None
                                 if aw_dt and awaiting_threshold > 0:
                                     aw_age_minutes = _safe_age_minutes(aw_dt)
                                     if aw_age_minutes > awaiting_threshold:
                                         awaiting_timed_out = True
                                     else:
-                                        print(f"  [worker_loop] session {source}/{chat_id} awaiting timeout check: using {aw_field_used} age_minutes={aw_age_minutes:.1f} threshold={awaiting_threshold} (not timed out)")
+                                        _log_worker.debug("[worker_loop] session %s/%s awaiting timeout check: using %s age_minutes=%.1f threshold=%s (not timed out)", source, chat_id, aw_field_used, aw_age_minutes, awaiting_threshold)
                                 elif not aw_ts_str:
-                                    print(f"  [worker_loop] session {source}/{chat_id} awaiting timeout check: no timestamp, cannot determine age")
+                                    _log_worker.debug("[worker_loop] session %s/%s awaiting timeout check: no timestamp, cannot determine age", source, chat_id)
                                 elif awaiting_threshold <= 0:
-                                    print(f"  [worker_loop] session {source}/{chat_id} awaiting timeout check: WORKER_AWAITING_TIMEOUT_MINUTES={awaiting_threshold}, disabled")
+                                    _log_worker.debug("[worker_loop] session %s/%s awaiting timeout check: WORKER_AWAITING_TIMEOUT_MINUTES=%s, disabled", source, chat_id, awaiting_threshold)
                                 if awaiting_timed_out:
-                                    reason = f"worker_awaiting_timeout: field={aw_field_used} value={aw_ts_str} threshold={awaiting_threshold}min"
-                                    print(f"  [worker_loop] FAILED_SET task_id={active_id} chat_id={chat_id} source={source} reason={reason}")
+                                    reason = "worker_awaiting_timeout: field=%s value=%s threshold=%smin" % (aw_field_used, aw_ts_str, awaiting_threshold)
+                                    _log_worker.info("[worker_loop] FAILED_SET task_id=%s chat_id=%s source=%s reason=%s", active_id, chat_id, source, reason)
                                     try:
                                         await asyncio.to_thread(add_error, reason, chat_id, source, active_id)
                                         await asyncio.to_thread(
@@ -1048,11 +1045,9 @@ async def _worker_loop():
                                         next_task_id = await asyncio.to_thread(
                                             mark_task_completed, chat_id, active_id, source
                                         )
-                                        print(f"  [worker_loop] session {source}/{chat_id}: awaiting timeout cleared => next_task_id={next_task_id}")
+                                        _log_worker.info("[worker_loop] session %s/%s: awaiting timeout cleared => next_task_id=%s", source, chat_id, next_task_id)
                                     except Exception as e:
-                                        print(f"  [worker_loop] session {source}/{chat_id}: failed to clear awaiting timeout task: {e}")
-                                        import traceback
-                                        traceback.print_exc()
+                                        _log_worker.error("[worker_loop] session %s/%s: failed to clear awaiting timeout task: %s", source, chat_id, e, exc_info=True)
                             # Stale check only for non-awaiting (planning+awaiting use awaiting timeout only, not 15min stale).
                             if next_task_id is None and not (status_val == "planning" and task_dict.get("awaiting_response", False)):
                                 # Stale-task check: if active task not terminal and too old, mark FAILED and advance.
@@ -1064,7 +1059,7 @@ async def _worker_loop():
                                     field_used = "created_at" if ts_str else "updated_at"
                                     if not ts_str:
                                         ts_str = (task_dict.get("updated_at") or "").strip()
-                                        print(f"  [worker_loop] session {source}/{chat_id} stale check: status=planning created_at missing, using updated_at")
+                                        _log_worker.debug("[worker_loop] session %s/%s stale check: status=planning created_at missing, using updated_at", source, chat_id)
                                 else:
                                     ts_str = (task_dict.get("updated_at") or "").strip()
                                     field_used = "updated_at"
@@ -1074,14 +1069,14 @@ async def _worker_loop():
                                     if age_minutes > stale_minutes:
                                         is_stale = True
                                     else:
-                                        print(f"  [worker_loop] session {source}/{chat_id} stale check: status={status_val} using {field_used} age_minutes={age_minutes:.1f} threshold={stale_minutes} (not stale)")
+                                        _log_worker.debug("[worker_loop] session %s/%s stale check: status=%s using %s age_minutes=%.1f threshold=%s (not stale)", source, chat_id, status_val, field_used, age_minutes, stale_minutes)
                                 elif not ts_str:
-                                    print(f"  [worker_loop] session {source}/{chat_id} stale check: no timestamp, cannot determine age")
+                                    _log_worker.debug("[worker_loop] session %s/%s stale check: no timestamp, cannot determine age", source, chat_id)
                                 elif stale_minutes <= 0:
-                                    print(f"  [worker_loop] session {source}/{chat_id} stale check: WORKER_STALE_TASK_MINUTES={stale_minutes}, disabled")
+                                    _log_worker.debug("[worker_loop] session %s/%s stale check: WORKER_STALE_TASK_MINUTES=%s, disabled", source, chat_id, stale_minutes)
                                 if is_stale:
-                                    reason = f"worker_stale_task: field={field_used} value={ts_str} threshold={stale_minutes}min status={status_val}"
-                                    print(f"  [worker_loop] FAILED_SET task_id={active_id} chat_id={chat_id} source={source} reason={reason}")
+                                    reason = "worker_stale_task: field=%s value=%s threshold=%smin status=%s" % (field_used, ts_str, stale_minutes, status_val)
+                                    _log_worker.info("[worker_loop] FAILED_SET task_id=%s chat_id=%s source=%s reason=%s", active_id, chat_id, source, reason)
                                     try:
                                         await asyncio.to_thread(add_error, reason, chat_id, source, active_id)
                                         await asyncio.to_thread(
@@ -1094,32 +1089,30 @@ async def _worker_loop():
                                         next_task_id = await asyncio.to_thread(
                                             mark_task_completed, chat_id, active_id, source
                                         )
-                                        print(f"  [worker_loop] session {source}/{chat_id}: stale task cleared => next_task_id={next_task_id}")
+                                        _log_worker.info("[worker_loop] session %s/%s: stale task cleared => next_task_id=%s", source, chat_id, next_task_id)
                                     except Exception as e:
-                                        print(f"  [worker_loop] session {source}/{chat_id}: failed to clear stale task: {e}")
-                                        import traceback
-                                        traceback.print_exc()
+                                        _log_worker.error("[worker_loop] session %s/%s: failed to clear stale task: %s", source, chat_id, e, exc_info=True)
                             if next_task_id is None:
-                                print(f"  [worker_loop] session {source}/{chat_id}: active task not terminal, waiting")
+                                _log_worker.debug("[worker_loop] session %s/%s: active task not terminal, waiting", source, chat_id)
                     else:
                         next_task_id = await asyncio.to_thread(
                             get_next_task_from_queue, chat_id, source
                         )
-                        print(f"  [worker_loop] session {source}/{chat_id}: get_next_task_from_queue => next_task_id={next_task_id}")
+                        _log_worker.info("[worker_loop] session %s/%s: get_next_task_from_queue => next_task_id=%s", source, chat_id, next_task_id)
                     if not next_task_id:
                         continue
                     had_work = True  # we have a task to run or to consider (lock/user_input may still skip)
                     # Race condition guard: skip if session is already locked (another process_message running)
                     if await asyncio.to_thread(is_locked, chat_id, source):
-                        print(f"  [worker_loop] session {source}/{chat_id} task_id={next_task_id}: session locked, skip this iteration")
+                        _log_worker.debug("[worker_loop] session %s/%s task_id=%s: session locked, skip this iteration", source, chat_id, next_task_id)
                         continue
                     state2 = await asyncio.to_thread(load_state, chat_id, source)
                     user_input = ((state2 or {}).get("tasks") or {}).get(next_task_id, {}).get("user_input") or ""
                     if not user_input:
-                        print(f"  [worker_loop] session {source}/{chat_id} task_id={next_task_id}: user_input empty, skip")
+                        _log_worker.warning("[worker_loop] session %s/%s task_id=%s: user_input empty, skip", source, chat_id, next_task_id)
                         continue
                     timeout_sec = WORKER_TASK_TIMEOUT_SECONDS
-                    print(f"  [worker_loop] session {source}/{chat_id} task_id={next_task_id}: starting process_message (push_to_telegram=True, timeout={timeout_sec}s) user_input_len={len(user_input)}")
+                    _log_worker.info("[worker_loop] session %s/%s task_id=%s: starting process_message (push_to_telegram=True, timeout=%ss) user_input_len=%s", source, chat_id, next_task_id, timeout_sec, len(user_input))
                     t = asyncio.create_task(
                         _run_task_with_timeout(
                             user_input,
@@ -1131,26 +1124,22 @@ async def _worker_loop():
                     )
                     t.add_done_callback(lambda _t, c=chat_id, s=source, tid=next_task_id: _worker_loop_done_callback(_t, c, s, tid))
                 except LockError as e:
-                    print(f"  [worker_loop] session {source}/{chat_id}: LockError (session busy), skip: {e}")
+                    _log_worker.debug("[worker_loop] session %s/%s: LockError (session busy), skip: %s", source, chat_id, e)
                 except Exception as e:
-                    print(f"  [worker_loop] session {source}/{chat_id}: {type(e).__name__}: {e}")
-                    import traceback
-                    traceback.print_exc()
+                    _log_worker.error("[worker_loop] session %s/%s: %s: %s", source, chat_id, type(e).__name__, e, exc_info=True)
             if had_work:
                 sleep_sec = busy_sleep
                 idle_backoff_sec = busy_sleep  # reset backoff for next idle phase
             else:
                 sleep_sec = idle_backoff_sec
                 idle_backoff_sec = min(idle_backoff_sec + 1, max_idle_sleep)
-            print(f"  [worker_loop] iteration {iter_num} end, sleeping {sleep_sec}s")
+            _log_worker.debug("[worker_loop] iteration %s end, sleeping %ss", iter_num, sleep_sec)
             await asyncio.sleep(sleep_sec)
         except asyncio.CancelledError:
-            print("  [worker_loop] cancelled, exit")
+            _log_worker.info("[worker_loop] cancelled, exit")
             break
         except Exception as e:
-            print(f"  [worker_loop] iteration failed: {type(e).__name__}: {e}")
-            import traceback
-            traceback.print_exc()
+            _log_worker.error("[worker_loop] iteration failed: %s: %s", type(e).__name__, e, exc_info=True)
             await asyncio.sleep(idle_backoff_sec)
 
 
@@ -1169,17 +1158,18 @@ async def startup():
     try:
         removed = cleanup_old_sessions(days=7)
         if removed > 0:
-            print(f"  [startup] cleanup_old_sessions: removed {removed} session(s)")
+            logger.info("[startup] cleanup_old_sessions: removed %s session(s)", removed)
     except Exception as e:
-        print(f"  [startup] cleanup_old_sessions failed: {e}")
+        logger.error("[startup] cleanup_old_sessions failed: %s", e)
     worker_interval = int(os.getenv("WORKER_LOOP_INTERVAL_SECONDS", "15") or "0")
+    global _worker_loop_ref
     if worker_interval > 0:
-        asyncio.create_task(_worker_loop())
-        print(f"  [startup] worker_loop started (interval={worker_interval}s)")
-    print("=" * 50)
-    print("  JADZIA API uruchomiona")
-    print("  Endpoints: /chat, /status, /rollback, /health")
-    print("=" * 50)
+        _worker_loop_ref = asyncio.create_task(_worker_loop())
+        logger.info("[startup] worker_loop started (interval=%ss)", worker_interval)
+    logger.info("=" * 50)
+    logger.info("  JADZIA API uruchomiona")
+    logger.info("  Endpoints: /chat, /status, /rollback, /health")
+    logger.info("=" * 50)
 
 
 # ============================================================
@@ -1187,11 +1177,8 @@ async def startup():
 # ============================================================
 
 # ============================================================
-# ENDPOINT DO MONITORINGU KOSZTÓW
-# Dodaj do interfaces/api.py
+# COSTS MONITORING
 # ============================================================
-
-from agent.agent import get_cost_stats, reset_cost_stats
 
 @app.get("/costs")
 async def get_costs():

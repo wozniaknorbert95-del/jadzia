@@ -221,8 +221,9 @@ class SSHConnector:
         for attempt in range(1, self.config.ssh_retry_count + 1):
             try:
                 logger.info(
-                    f"SSH connecting to {self.config.ssh_host}:{self.config.ssh_port} "
-                    f"(attempt {attempt}/{self.config.ssh_retry_count})"
+                    "SSH connecting to %s:%s (attempt %d/%d)",
+                    self.config.ssh_host, self.config.ssh_port,
+                    attempt, self.config.ssh_retry_count,
                 )
                 
                 self._client = paramiko.SSHClient()
@@ -272,15 +273,15 @@ class SSHConnector:
                 return
                 
             except paramiko.AuthenticationException as e:
-                logger.error(f"SSH authentication failed: {e}")
+                logger.error("SSH authentication failed: %s", e)
                 raise SSHConnectionError(f"Authentication failed: {e}")
                 
             except paramiko.SSHException as e:
-                logger.exception(f"SSH connection attempt {attempt} failed")
+                logger.exception("SSH connection attempt %d failed", attempt)
                 
                 if attempt < self.config.ssh_retry_count:
                     delay = self.config.ssh_retry_delay * attempt
-                    logger.info(f"Retrying in {delay}s...")
+                    logger.info("Retrying in %ss...", delay)
                     await asyncio.sleep(delay)
                 else:
                     raise SSHConnectionError(f"Failed after {attempt} attempts: {e}")
@@ -321,7 +322,7 @@ class SSHConnector:
         start_time = time.time()
         
         try:
-            logger.debug(f"[SSH] exec_command: {command}")
+            logger.debug("[SSH] exec_command: %s", command)
             stdin, stdout, stderr = self._client.exec_command(
                 command,
                 timeout=self.config.ssh_timeout
@@ -335,9 +336,8 @@ class SSHConnector:
             duration = time.time() - start_time
 
             logger.debug(
-                f"[SSH] exec_command completed (exit_code={exit_code}, "
-                f"stdout_len={len(stdout_data)}, stderr_len={len(stderr_data)}, "
-                f"duration={duration:.2f}s)"
+                "[SSH] exec_command completed (exit_code=%s, stdout_len=%d, stderr_len=%d, duration=%.2fs)",
+                exit_code, len(stdout_data), len(stderr_data), duration,
             )
             
             return CommandResult(
@@ -348,7 +348,7 @@ class SSHConnector:
             )
             
         except Exception as e:
-            logger.exception(f"Command execution failed: {command}")
+            logger.exception("Command execution failed: %s", command)
             raise SSHTimeoutError(f"Command failed: {e}")
     
     async def download_directory_as_tar(
@@ -376,8 +376,7 @@ class SSHConnector:
         # Security check
         self._validate_path(remote_path)
 
-        print(f"[WP_EXPLORER] Starting download: {remote_path}")
-        logger.info(f"[WP_EXPLORER] Starting download: {remote_path}")
+        logger.info("[WP_EXPLORER] Starting download: %s", remote_path)
         
         start_time = time.time()
         tar_filename = f"theme_scan_{uuid.uuid4().hex[:8]}.tar.gz"
@@ -388,7 +387,6 @@ class SSHConnector:
             local_path.mkdir(parents=True, exist_ok=True)
             
             await self._ensure_sftp()
-            print("[WP_EXPLORER] SSH connected (SFTP ready)")
             
             # Create tar on remote server
             remote_parent = str(Path(remote_path).parent)
@@ -401,10 +399,9 @@ class SSHConnector:
                 f"-C {_sh_quote(remote_parent)} {_sh_quote(remote_name)}"
             )
             
-            logger.info(f"Creating tar archive on remote: {tar_command}")
-            print(f"[WP_EXPLORER] Tar command: {tar_command}")
+            logger.info("Creating tar archive on remote: %s", tar_command)
             result = await self.execute_command(tar_command)
-            print(f"[WP_EXPLORER] Tar result: exit={result.exit_code}, stderr={result.stderr[:200]}")
+            logger.debug("[WP_EXPLORER] Tar result: exit=%s, stderr=%s", result.exit_code, result.stderr[:200])
             
             if result.exit_code != 0:
                 return DownloadResult(
@@ -418,14 +415,13 @@ class SSHConnector:
                 remote_stat = self._sftp.stat(remote_tar)
                 remote_size = int(getattr(remote_stat, "st_size", 0) or 0)
             except Exception:
-                logger.exception(f"Failed to stat remote tar: {remote_tar}")
+                logger.exception("Failed to stat remote tar: %s", remote_tar)
                 remote_size = 0
 
             logger.info(
-                f"Downloading {remote_tar} to {local_tar_path} "
-                f"(remote_size={remote_size} bytes)"
+                "Downloading %s to %s (remote_size=%d bytes)",
+                remote_tar, local_tar_path, remote_size,
             )
-            print("[WP_EXPLORER] Starting SFTP download")
 
             # Retry download if transport drops mid-stream.
             download_ok = False
@@ -444,7 +440,7 @@ class SSHConnector:
                 except Exception as e:
                     last_exc = e
                     logger.exception(
-                        f"SFTP download attempt {attempt}/{self.config.ssh_retry_count} failed"
+                        "SFTP download attempt %d/%d failed", attempt, self.config.ssh_retry_count,
                     )
                     # reset connection and retry
                     await self._reset_connection()
@@ -461,17 +457,18 @@ class SSHConnector:
             try:
                 await self.execute_command(f"rm -f {_sh_quote(remote_tar)}")
             except Exception:
-                logger.exception(f"Failed to cleanup remote tar: {remote_tar}")
+                logger.exception("Failed to cleanup remote tar: %s", remote_tar)
             
             # Extract locally
-            logger.info(f"Extracting to {local_path}")
+            logger.info("Extracting to %s", local_path)
             try:
                 with tarfile.open(local_tar_path, 'r:gz') as tar:
                     tar.extractall(local_path)
             except Exception:
                 local_size = local_tar_path.stat().st_size if local_tar_path.exists() else 0
                 logger.exception(
-                    f"Extraction failed (local_tar={local_tar_path}, local_size={local_size}, remote_size={remote_size})"
+                    "Extraction failed (local_tar=%s, local_size=%d, remote_size=%d)",
+                    local_tar_path, local_size, remote_size,
                 )
                 raise
             
@@ -488,8 +485,8 @@ class SSHConnector:
             duration = time.time() - start_time
             
             logger.info(
-                f"Download completed: {file_count} files, "
-                f"{total_size / 1024:.1f} KB in {duration:.1f}s"
+                "Download completed: %d files, %.1f KB in %.1fs",
+                file_count, total_size / 1024, duration,
             )
             
             return DownloadResult(
@@ -501,10 +498,7 @@ class SSHConnector:
             )
             
         except Exception as e:
-            logger.exception(f"Download failed for remote_path={remote_path}")
-            print(f"[WP_EXPLORER] ERROR: {e}")
-            import traceback
-            traceback.print_exc()
+            logger.exception("Download failed for remote_path=%s", remote_path)
             return DownloadResult(
                 success=False,
                 error=str(e),
@@ -551,4 +545,4 @@ class SSHConnector:
         """
         if local_path.exists() and str(local_path).startswith('/tmp/'):
             shutil.rmtree(local_path)
-            logger.info(f"Cleaned up {local_path}")
+            logger.info("Cleaned up %s", local_path)
