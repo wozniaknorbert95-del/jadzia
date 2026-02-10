@@ -207,8 +207,10 @@ async def process_message(
     webhook_url: Optional[str] = None,
     test_mode: bool = False,
     push_to_telegram: bool = False,
+    auto_advance: bool = True,
 ) -> Tuple[str, bool, Optional[str]]:
-    """Główny entry point. task_id=None uses active task. On task completion, processes next from queue."""
+    """Główny entry point. task_id=None uses active task.
+    auto_advance=False disables auto-starting next task (worker loop manages queue itself)."""
     if source is None:
         source = detect_session_source(chat_id)
 
@@ -216,7 +218,7 @@ async def process_message(
         try:
             with agent_lock(timeout=5, chat_id=chat_id, source=source):
                 _tid = task_id or get_active_task_id(chat_id, source)
-                print(f"[process_message] task_id={_tid} acquired lock")
+                print(f"[process_message] task_id={_tid} acquired lock (auto_advance={auto_advance})")
                 result = await route_user_input(
                     user_input,
                     chat_id,
@@ -230,7 +232,8 @@ async def process_message(
                 response, awaiting, input_type = result[0], result[1], result[2]
                 next_task_id = result[3] if len(result) > 3 else None
                 print(f"[process_message] result: awaiting={awaiting}, input_type={input_type}, next_task_id={next_task_id!r}, push_to_telegram={push_to_telegram}, chat_id={chat_id!r}")
-                if next_task_id:
+                # Auto-advance: only when NOT called from worker loop (worker loop manages queue itself)
+                if next_task_id and auto_advance:
                     task_payload = find_task_by_id(chat_id, next_task_id, source)
                     next_input = (task_payload or {}).get("user_input", "")
                     if next_input:
@@ -252,6 +255,8 @@ async def process_message(
                             await send_awaiting_response_to_telegram(chat_id, nr0, task_id=tid, status=status, awaiting_input=nr1)
                         print(f"[process_message] task_id={next_task_id} releasing lock, awaiting={nr1}")
                         return (nr0, nr1, nr2)
+                elif next_task_id and not auto_advance:
+                    print(f"[process_message] next_task_id={next_task_id} available but auto_advance=False, worker loop will handle")
                 should_push = str(chat_id).startswith("telegram_") and push_to_telegram
                 print(f"[process_message] push_to_telegram check (main branch): awaiting={awaiting}, chat_id.startswith(telegram_)={str(chat_id).startswith('telegram_')}, push_to_telegram={push_to_telegram} => send={should_push}")
                 if should_push:
@@ -279,7 +284,20 @@ async def process_message(
             wh_url = (task_payload or {}).get("webhook_url")
             if wh_url:
                 await notify_webhook(wh_url, tid, "failed", {"error": str(e)})
-        return await handle_error(e, chat_id, source)
+        error_result = await handle_error(e, chat_id, source)
+        # Push error to Telegram so user doesn't wait forever
+        if str(chat_id).startswith("telegram_") and push_to_telegram:
+            try:
+                from interfaces.telegram_api import send_awaiting_response_to_telegram
+                _tid = tid or task_id
+                await send_awaiting_response_to_telegram(
+                    chat_id, error_result[0], task_id=_tid,
+                    status="failed", awaiting_input=False,
+                )
+                print(f"[process_message] pushed error to Telegram for chat_id={chat_id} task_id={_tid}")
+            except Exception as push_err:
+                print(f"[process_message] failed to push error to Telegram: {push_err}")
+        return error_result
 
 
 # ============================================================

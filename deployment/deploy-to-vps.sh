@@ -50,6 +50,13 @@ if [ ! -f "main.py" ]; then
     exit 1
 fi
 
+# Step 0.5: Ensure SSH key exists (avoid interactive password prompt)
+SCRIPT_DIR="$(cd "$(dirname "$0")/.." && pwd)"
+export SSH_KEY VPS_HOST
+if ! "$SCRIPT_DIR/scripts/check_ssh_key.sh" "$SSH_KEY"; then
+    exit 1
+fi
+
 # Step 1: Check SSH connection
 echo "🔑 Testing SSH connection to VPS..."
 if ! run_ssh "echo 'SSH OK'" > /dev/null 2>&1; then

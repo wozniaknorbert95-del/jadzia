@@ -65,7 +65,7 @@ async def test_execute_changes():
     assert call_args[4] == "http"
     assert "Zapisano" in text
     assert "a.php" in text
-    assert "deploy" in text.lower()
+    assert "strona" in text.lower() and ("działa" in text.lower() or "sprawdź" in text.lower())
     assert input_type == "deploy_approval"
 
 
@@ -81,6 +81,6 @@ async def test_handle_approval_deploy():
                         "chat1", "http", state, True
                     )
     mock_clear.assert_called_once_with("chat1", "http")
-    assert "Deploy zakonczony" in text or "zakonczony" in text
+    assert "Zadanie zakończone" in text or "zakonczony" in text
     assert awaiting is False
     assert input_type is None

@@ -84,7 +84,8 @@ async def _handle_plan_approval(
     task_payload = (state.get("tasks") or {}).get(task_id) if (task_id and state.get("tasks")) else state
     plan = (task_payload or state).get("pending_plan_with_questions") or (task_payload or state).get("plan")
     if not plan:
-        clear_state(chat_id, source)
+        # Do NOT clear_state: it deletes the whole session and all tasks, causing 404 after process_message.
+        # Return message only so the task stays in DB and client gets a valid response.
         return (
             "Przepraszam, straciłem kontekst. Możesz powtórzyć od początku?",
             False, None, None
@@ -212,6 +213,11 @@ async def route_user_input(
     if intent == "APPROVAL":
         state = load_state(chat_id, source)
         if state and has_pending_operation(chat_id, source, task_id=task_id):
+            # plan_approval must go to _handle_plan_approval (needs call_claude); handle_approval has no branch for it and would clear_state.
+            task_payload = (state.get("tasks") or {}).get(task_id) if (task_id and state.get("tasks")) else state
+            awaiting_type = (task_payload or state).get("awaiting_type", "")
+            if awaiting_type == "plan_approval":
+                return await _handle_plan_approval(state, chat_id, source, call_claude, task_id=task_id)
             return await handle_approval(chat_id, source, state, True, task_id=task_id)
         return ("Nie ma żadnego planu do zatwierdzenia. Co mam zrobić?", False, None, None)
 

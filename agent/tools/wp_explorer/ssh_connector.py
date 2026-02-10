@@ -210,7 +210,14 @@ class SSHConnector:
         """
         if self._client is not None:
             return
-        
+
+        key_path = os.path.abspath(os.path.expanduser(self.config.ssh_key_path))
+        if not os.path.isfile(key_path):
+            raise SSHConnectionError(
+                f"SSH key not found: {key_path}. Cannot connect to {self.config.ssh_host} without key. "
+                "Add the key file or set SSH_KEY_PATH / CYBERFOLKS_KEY_PATH. Recommended: chmod 600 for the key."
+            )
+
         for attempt in range(1, self.config.ssh_retry_count + 1):
             try:
                 logger.info(

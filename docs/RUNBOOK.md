@@ -61,14 +61,30 @@ curl "http://185.243.54.115:8000/worker/health"
 
 ### 2.2. Kroki
 
-1. **Zaloguj się na VPS i sprawdź serwis:**
+1. **Przed SSH: upewnij się, że klucz istnieje (unikaj interaktywnego hasła):**
+
+```bash
+# Z repozytorium Jadzia (lokalnie lub na VPS):
+./scripts/check_ssh_key.sh
+# Lub jawnie: ./scripts/check_ssh_key.sh /root/.ssh/cyberfolks_key
+```
+
+   Jeśli klucz brakuje, skrypt zwróci błąd i wyjście 1. **Uprawnienia kluczy** (zalecane 600 dla kluczy prywatnych):
+
+```bash
+chmod 700 ~/.ssh
+chmod 600 ~/.ssh/cyberfolks_key
+# Wszystkie klucze prywatne (bez .pub): for f in ~/.ssh/*; do [ -f "$f" ] && [ "${f%.pub}" = "$f" ] && chmod 600 "$f"; done
+```
+
+2. **Zaloguj się na VPS i sprawdź serwis:**
 
 ```bash
 ssh -i ~/.ssh/cyberfolks_key root@185.243.54.115
 sudo systemctl status jadzia
 ```
 
-2. **Sprawdź logi:**
+3. **Sprawdź logi:**
 
 ```bash
 cd /root/jadzia
@@ -76,7 +92,7 @@ tail -100 logs/jadzia.log
 tail -100 logs/jadzia-error.log
 ```
 
-3. **Jeśli serwis padł / wiesza się – restart:**
+4. **Jeśli serwis padł / wiesza się – restart:**
 
 ```bash
 sudo systemctl restart jadzia
@@ -84,7 +100,7 @@ sleep 5
 curl "http://localhost:8000/worker/health"
 ```
 
-4. **Jeśli po restarcie nadal błędy w logach (np. baza SQLite, env):**
+5. **Jeśli po restarcie nadal błędy w logach (np. baza SQLite, env):**
    - Postępuj zgodnie z sekcjami „Problemy SQLite” i „JWT / 401” w `RECOVERY.md`.
 
 ### 2.3. Weryfikacja

@@ -5,6 +5,7 @@ Commands: /zadanie, /status, /cofnij, /pomoc. Inline keyboard for approval (diff
 When TELEGRAM_BOT_TOKEN is set, replies are sent to Telegram via sendMessage (direct webhook).
 """
 
+import asyncio
 import os
 import time
 import logging
@@ -43,6 +44,55 @@ logger = logging.getLogger(__name__)
 
 # In-memory: chat_id -> last task_id (for /status and approval)
 _telegram_chat_to_task_id: dict[str, str] = {}
+
+# ── Idempotency: dedup Telegram updates by update_id (TTL cache) ──
+_DEDUP_TTL_SECONDS = 300  # 5 minutes
+_processed_updates: dict[int, float] = {}  # update_id -> timestamp
+
+
+def _is_duplicate_update(update_id: int) -> bool:
+    """Return True if this update_id was already processed (within TTL)."""
+    now = time.time()
+    # Evict expired entries (lazy cleanup, max 200 entries kept)
+    if len(_processed_updates) > 200:
+        expired = [uid for uid, ts in _processed_updates.items() if now - ts > _DEDUP_TTL_SECONDS]
+        for uid in expired:
+            _processed_updates.pop(uid, None)
+    if update_id in _processed_updates:
+        age = now - _processed_updates[update_id]
+        if age < _DEDUP_TTL_SECONDS:
+            return True
+    _processed_updates[update_id] = now
+    return False
+
+
+def _get_task_id_for_chat(chat_id: str) -> Optional[str]:
+    """Get active task_id for chat: try in-memory cache first, then fall back to DB.
+    Validates that task exists in DB so we never submit_input with a ghost id (404).
+    """
+    def _task_exists(tid: Optional[str]) -> bool:
+        if not tid:
+            return False
+        try:
+            from agent.state import find_session_by_task_id
+            return find_session_by_task_id(tid) is not None
+        except Exception:
+            return False
+
+    task_id = _telegram_chat_to_task_id.get(chat_id)
+    if task_id and _task_exists(task_id):
+        return task_id
+    if task_id:
+        _telegram_chat_to_task_id.pop(chat_id, None)
+    try:
+        from agent.state import get_active_task_id
+        db_task_id = get_active_task_id(chat_id, "telegram")
+        if db_task_id and _task_exists(db_task_id):
+            _telegram_chat_to_task_id[chat_id] = db_task_id
+            return db_task_id
+    except Exception as e:
+        logger.warning("[Telegram] DB fallback for task_id failed: %s", e)
+    return None
 
 
 def parse_telegram_command(message: str, callback_data: Optional[str] = None) -> Tuple[str, str]:
@@ -297,6 +347,37 @@ async def _handle_webhook_request(
                 msg = format_response_for_telegram("Nieprawidłowy callback.", awaiting_input=False)
                 return TelegramWebhookResponse(success=True, messages=msg)
             task_id, approval = parsed
+            # Resolve task: retry find_session once, then fallback to db_get_task (avoids race after commit)
+            try:
+                from agent.state import find_session_by_task_id
+                from agent.db import db_get_task, db_get_tasks_for_session
+                session = find_session_by_task_id(task_id)
+                if session is None:
+                    await asyncio.sleep(0.2)
+                    session = find_session_by_task_id(task_id)
+                if session is None:
+                    task_row = db_get_task(task_id)
+                    if task_row:
+                        session = (task_row["chat_id"], task_row["source"])
+                if session is None:
+                    session_task_ids = [t["task_id"] for t in db_get_tasks_for_session(chat_id, "telegram")]
+                    logger.warning(
+                        "[Telegram] nie widzę tego zadania: callback chat_id=%s source=telegram task_id=%s session_task_ids=%s",
+                        chat_id, task_id, session_task_ids,
+                    )
+                    _telegram_chat_to_task_id.pop(chat_id, None)
+                    messages = format_response_for_telegram(
+                        "Nie widzę już tego zadania (wygasło lub zostało usunięte).\nWyślij `/zadanie ...` ponownie.",
+                        awaiting_input=False,
+                    )
+                    return TelegramWebhookResponse(success=True, messages=messages)
+            except Exception as e:
+                logger.warning("[Telegram] callback task check failed: %s", e)
+                messages = format_response_for_telegram(
+                    "Nie widzę już tego zadania (wygasło lub zostało usunięte).\nWyślij `/zadanie ...` ponownie.",
+                    awaiting_input=False,
+                )
+                return TelegramWebhookResponse(success=True, messages=messages)
             result = await submit_input(task_id, jwt_token, base_url, approval=approval)
             _telegram_chat_to_task_id[chat_id] = task_id
             response_text = result.get("response", "") or ( "Zatwierdzono." if approval else "Odrzucono." )
@@ -307,10 +388,35 @@ async def _handle_webhook_request(
             return TelegramWebhookResponse(success=True, messages=messages, awaiting_input=awaiting, reply_markup=reply_markup)
 
         if command == "approval":
-            task_id = _telegram_chat_to_task_id.get(chat_id)
+            # chat_id is always get_jadzia_chat_id(request.user_id) — set at start of _handle_webhook_request
+            task_id = _get_task_id_for_chat(chat_id)
             if not task_id:
+                await asyncio.sleep(0.2)
+                task_id = _get_task_id_for_chat(chat_id)
+            if not task_id:
+                from agent.state import get_awaiting_approval_task_id
+                task_id = get_awaiting_approval_task_id(chat_id, "telegram")
+            if not task_id:
+                from agent.db import db_get_last_active_task
+                last_task = db_get_last_active_task(chat_id, "telegram")
+                if last_task:
+                    task_id = last_task.get("task_id")
+            if not task_id:
+                logger.info(
+                    "[Telegram] approval: no task found chat_id=%s source=telegram _get_task_id_for_chat=None get_awaiting_approval_task_id=None db_get_last_active_task=None",
+                    chat_id,
+                )
                 messages = format_response_for_telegram("Brak aktywnego zadania do zatwierdzenia. Użyj /zadanie.", awaiting_input=False)
                 return TelegramWebhookResponse(success=True, messages=messages)
+            # Diagnostic log before submit_input (plan Krok 5)
+            from agent.state import get_active_task_id
+            from agent.db import db_get_task
+            active_id = get_active_task_id(chat_id, "telegram")
+            task_row = db_get_task(task_id)
+            logger.info(
+                "[Telegram] approval: chat_id=%s task_id=%s get_active_task_id=%s db_get_task=%s",
+                chat_id, task_id, active_id, "row" if task_row else "None",
+            )
             approval = payload == "true"
             result = await submit_input(task_id, jwt_token, base_url, approval=approval)
             response_text = result.get("response", "") or ("Zatwierdzono." if approval else "Odrzucono.")
@@ -340,7 +446,7 @@ async def _handle_webhook_request(
             return TelegramWebhookResponse(success=True, messages=messages)
 
         if command == "status":
-            task_id = _telegram_chat_to_task_id.get(chat_id)
+            task_id = _get_task_id_for_chat(chat_id)
             if not task_id:
                 messages = format_response_for_telegram("Brak aktywnego zadania. Użyj /zadanie.", awaiting_input=False)
                 return TelegramWebhookResponse(success=True, messages=messages)
@@ -371,6 +477,47 @@ async def _handle_webhook_request(
         print(f"✅ Telegram quick_ack: task_id={task_id}, position={pos}, {duration_ms}ms")
         return TelegramWebhookResponse(success=True, messages=messages)
 
+    except httpx.HTTPStatusError as e:
+        status_code = e.response.status_code if e.response is not None else 0
+        print(f"❌ Telegram webhook HTTP error {status_code}: {e}")
+        if status_code in (404, 409):
+            # Task no longer exists in DB — clear stale mapping so user can retry
+            logger.warning(
+                "[Telegram] nie widzę tego zadania: HTTP %s chat_id=%s source=telegram (submit_input returned task_gone)",
+                status_code, chat_id,
+            )
+            _telegram_chat_to_task_id.pop(chat_id, None)
+            messages = format_response_for_telegram(
+                "Nie widzę już tego zadania (wygasło lub zostało usunięte).\n"
+                "Wyślij `/zadanie ...` ponownie.",
+                awaiting_input=False,
+            )
+            return TelegramWebhookResponse(success=False, messages=messages, error={"type": "task_gone", "message": str(e)})
+        if status_code in (502, 503, 504):
+            # Transient server error — friendly message
+            messages = format_response_for_telegram(
+                "Serwer chwilowo niedostępny. Spróbuj ponownie za chwilę.",
+                awaiting_input=False,
+            )
+            return TelegramWebhookResponse(success=False, messages=messages, error={"type": "transient", "status_code": status_code, "message": str(e)})
+        # Other HTTP errors — generic internal error
+        err_msg = format_error_for_telegram("internal", operation_id=chat_id)
+        return TelegramWebhookResponse(
+            success=False,
+            messages=[{"text": err_msg, "parse_mode": "MarkdownV2"}],
+            error={"type": "http_error", "status_code": status_code, "message": str(e)},
+        )
+    except (httpx.TimeoutException, httpx.ConnectError) as e:
+        print(f"❌ Telegram webhook transient error: {type(e).__name__}: {e}")
+        messages = format_response_for_telegram(
+            "Połączenie z serwerem nie powiodło się. Spróbuj ponownie za chwilę.",
+            awaiting_input=False,
+        )
+        return TelegramWebhookResponse(
+            success=False,
+            messages=messages,
+            error={"type": "transient", "message": str(e)},
+        )
     except Exception as e:
         print(f"❌ Telegram webhook error: {e}")
         import traceback
@@ -397,6 +544,11 @@ async def telegram_webhook(
         return TelegramWebhookResponse(success=False, messages=[], error={"type": "bad_request", "message": "Body must be object"})
 
     if body.get("update_id") is not None:
+        # Idempotency: skip duplicate Telegram updates (retries after timeout)
+        update_id = body["update_id"]
+        if isinstance(update_id, int) and _is_duplicate_update(update_id):
+            print(f"⏭️ Telegram dedup: skipping duplicate update_id={update_id}")
+            return TelegramWebhookResponse(success=True, messages=[])
         normalized = normalize_telegram_update(body)
         if normalized is None:
             return TelegramWebhookResponse(success=True, messages=[])

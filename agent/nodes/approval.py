@@ -239,11 +239,11 @@ async def execute_changes(
 
     set_awaiting_response(True, "deploy_approval", chat_id, source, task_id=task_id)
 
-    msg = f"✅ Zapisano {len(written)} plikow:\n"
+    msg = f"✅ Zapisano {len(written)} plików:\n"
     msg += "\n".join(f"- {f}" for f in written)
     if errors:
-        msg += f"\n\n⚠️ Bledy:\n" + "\n".join(errors)
-    msg += "\n\n**Wykonac deploy (sprawdzic czy strona dziala)? (Norbi?)**"
+        msg += f"\n\n⚠️ Błędy:\n" + "\n".join(errors)
+    msg += "\n\nSprawdź proszę w przeglądarce, czy strona działa. Gdy potwierdzisz, napisz **Tak** (zadanie zostanie zamknięte)."
 
     return (msg, True, "deploy_approval", None)
 
@@ -254,41 +254,55 @@ async def _execute_deploy(
     state: Dict,
     task_id: Optional[str] = None,
 ) -> Tuple[str, bool, Optional[str], Optional[str]]:
-    """Wykonuje deploy. On completion calls mark_task_completed; returns next_task_id if any."""
+    """Po potwierdzeniu użytkownika: opcjonalny health check, zamknięcie zadania. Nie rzuca – przy błędzie zwraca komunikat i stara się zamknąć task."""
+    import traceback
     task = _task_from_state(state, task_id)
     operation_id = task.get("id")
-    update_operation_status(OperationStatus.COMPLETED, chat_id, source, task_id=task_id)
-
-    result = deploy(operation_id)
-
-    update_operation_status(OperationStatus.COMPLETED, chat_id, source, task_id=task_id, deploy_result=result)
-
     next_task_id = None
-    if task_id:
-        next_task_id = mark_task_completed(chat_id, task_id, source)
-    else:
-        clear_state(chat_id, source)
+    try:
+        update_operation_status(OperationStatus.COMPLETED, chat_id, source, task_id=task_id)
 
-    webhook_url = task.get("webhook_url")
-    if webhook_url:
-        from interfaces.webhooks import notify_webhook
-        diffs = get_stored_diffs(chat_id, source, task_id=task_id)
-        wh_result = {
-            "dry_run": False,
-            "files_modified": list(diffs.keys()) if diffs else [],
-            "operation_id": task.get("id"),
-            "deploy_result": result,
-        }
-        await notify_webhook(webhook_url, task_id, "completed", wh_result)
+        result = deploy(operation_id)
 
-    log_event(EventType.OPERATION_END, "Operacja zakonczona", operation_id=operation_id, task_id=task_id, chat_id=chat_id)
+        update_operation_status(OperationStatus.COMPLETED, chat_id, source, task_id=task_id, deploy_result=result)
 
-    if result["status"] == "ok":
-        return (f"✅ Deploy zakonczony!\n{result['msg']}", False, None, next_task_id)
-    return (
-        f"⚠️ Deploy z ostrzezeniem:\n{result['msg']}\n\nUzyj /rollback jesli cos nie dziala.",
-        False, None, next_task_id
-    )
+        if task_id:
+            next_task_id = mark_task_completed(chat_id, task_id, source)
+        else:
+            clear_state(chat_id, source)
+
+        webhook_url = task.get("webhook_url")
+        if webhook_url:
+            from interfaces.webhooks import notify_webhook
+            diffs = get_stored_diffs(chat_id, source, task_id=task_id)
+            wh_result = {
+                "dry_run": False,
+                "files_modified": list(diffs.keys()) if diffs else [],
+                "operation_id": task.get("id"),
+                "deploy_result": result,
+            }
+            await notify_webhook(webhook_url, task_id, "completed", wh_result)
+
+        log_event(EventType.OPERATION_END, "Operacja zakonczona", operation_id=operation_id, task_id=task_id, chat_id=chat_id)
+
+        if result.get("status") == "ok":
+            return (f"✅ Zadanie zakończone.\n{result.get('msg', '')}", False, None, next_task_id)
+        return (
+            f"✅ Zadanie zakończone.\n⚠️ {result.get('msg', '')}\n\nUżyj /cofnij, jeśli coś nie działa.",
+            False, None, next_task_id
+        )
+    except Exception as e:
+        log_event(EventType.DEPLOY_FAILED, f"_execute_deploy error: {e}", operation_id=None, task_id=task_id, chat_id=chat_id)
+        traceback.print_exc()
+        try:
+            if task_id:
+                next_task_id = mark_task_completed(chat_id, task_id, source)
+        except Exception:
+            pass
+        return (
+            "Zadanie zamknięte. Po stronie weryfikacji wystąpił błąd – sprawdź proszę stronę ręcznie. Jeśli coś nie działa, użyj /cofnij.",
+            False, None, next_task_id
+        )
 
 
 async def _resume_operation(
@@ -310,7 +324,7 @@ async def _resume_operation(
 
     if status == OperationStatus.COMPLETED:
         set_awaiting_response(True, "deploy_approval", chat_id, source, task_id=task_id)
-        return ("Pliki zapisane. **Wykonac deploy? (Norbi?)**", True, "deploy_approval", None)
+        return ("Pliki zapisane. Sprawdź w przeglądarce, czy strona działa. Gdy potwierdzisz, napisz **Tak**.", True, "deploy_approval", None)
 
     clear_state(chat_id, source)
     return ("Nie mozna wznowic operacji. Zaczynam od nowa.", False, None, None)

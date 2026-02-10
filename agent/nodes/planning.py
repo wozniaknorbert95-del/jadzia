@@ -10,7 +10,6 @@ from typing import Dict, Tuple, Optional
 from ..state import (
     load_state,
     save_state,
-    clear_state,
     create_operation,
     find_task_by_id,
     update_operation_status,
@@ -281,7 +280,9 @@ async def handle_new_task(
             return (msg, True, "plan_approval", None)
 
         if not plan.get("files_to_modify") and not plan.get("files_to_read"):
-            clear_state(chat_id, source)
+            # Simple response — mark task completed instead of clearing entire session
+            # (clear_state wipes all tasks including queued ones)
+            update_operation_status(OperationStatus.COMPLETED, chat_id, source, task_id=tid)
             simple_prompt = get_simple_response_prompt(user_input)
             response = await call_claude([{"role": "user", "content": simple_prompt}])
             return (response, False, None, None)

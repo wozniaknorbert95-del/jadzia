@@ -15,7 +15,9 @@ MIGRATION STRATEGY:
 """
 
 import json
+import logging
 import os
+import sqlite3
 import threading
 import time
 from contextlib import contextmanager
@@ -32,6 +34,7 @@ from agent.db import (
     db_set_active_task,
     db_update_task_queue,
     db_find_session_by_task_id,
+    db_get_awaiting_approval_task,
     db_delete_session,
     db_list_all_sessions,
     db_list_sessions_updated_before,
@@ -42,6 +45,8 @@ from agent.log import log_event
 
 # Phase 4: SQLite read switch
 USE_SQLITE_STATE = os.getenv("USE_SQLITE_STATE", "0") == "1"
+
+_log = logging.getLogger("agent.state")
 
 
 # ═══════════════════════════════════════════════════════════════
@@ -65,72 +70,107 @@ LOCKS_DIR.mkdir(parents=True, exist_ok=True)
 BACKUPS_DIR.mkdir(parents=True, exist_ok=True)
 
 
+def _check_invariants(state: dict, chat_id: str, source: str) -> None:
+    """
+    Validate state invariants before save. Logs warnings on violation
+    and auto-repairs safe-to-fix issues (orphan queue entries, ghost active_task_id).
+    """
+    if not state or not _is_new_format(state):
+        return
+    tasks = state.get("tasks") or {}
+    active_id = state.get("active_task_id")
+    queue = state.get("task_queue") or []
+
+    # INV-1: active_task_id must be empty or point to an existing task
+    if active_id and active_id not in tasks:
+        print(
+            f"[INVARIANT] {source}/{chat_id}: active_task_id={active_id} "
+            f"not in tasks (ghost). Auto-clearing."
+        )
+        state["active_task_id"] = None
+
+    # INV-2: every task_id in task_queue must exist in tasks
+    valid_queue = [tid for tid in queue if tid in tasks]
+    if len(valid_queue) != len(queue):
+        removed = set(queue) - set(valid_queue)
+        print(
+            f"[INVARIANT] {source}/{chat_id}: task_queue contained orphan ids "
+            f"{removed}. Auto-removed."
+        )
+        state["task_queue"] = valid_queue
+
+    # INV-3: terminal statuses should not be overwritten (log-only; enforcement in update_operation_status)
+    # (checked at write-time in update_operation_status, not here)
+
+
+def _prepare_db_task(task_id: str, task_data: dict, chat_id: str, source: str) -> dict:
+    """Prepare task dict for DB from in-memory task_data."""
+    return {
+        "task_id": task_id,
+        "chat_id": chat_id,
+        "source": source,
+        "operation_id": task_data.get("operation_id", task_data.get("id", "")),
+        "status": task_data.get("status", "unknown"),
+        "user_input": task_data.get("user_input"),
+        "dry_run": task_data.get("dry_run", False),
+        "test_mode": task_data.get("test_mode", False),
+        "webhook_url": task_data.get("webhook_url"),
+        "created_at": task_data.get("created_at"),
+        "plan": task_data.get("plan"),
+        "diffs": task_data.get("diffs"),
+        "new_contents": task_data.get("new_contents"),
+        "written_files": task_data.get("written_files"),
+        "errors": task_data.get("errors", []),
+        "pending_plan": task_data.get("pending_plan"),
+        "validation_errors": task_data.get("validation_errors"),
+        "retry_count": task_data.get("retry_count", 0),
+        "deploy_result": task_data.get("deploy_result"),
+        "awaiting_response": task_data.get("awaiting_response", False),
+        "awaiting_type": task_data.get("awaiting_type"),
+        "pending_plan_with_questions": task_data.get("pending_plan_with_questions"),
+        "last_response": task_data.get("last_response"),
+        "files_to_modify": task_data.get("files_to_modify"),
+        "completed_at": task_data.get("completed_at"),
+    }
+
+
 def _sync_to_sqlite(chat_id: str, source: str, state: dict) -> None:
     """
-    Synchronize state to SQLite after JSON write.
-    Catches and logs SQLite errors without failing the operation.
-
-    Args:
-        chat_id: Chat identifier
-        source: Source type (http/telegram)
-        state: Full state dict (already saved to JSON)
+    Synchronize state to SQLite atomically in a single transaction (session + tasks).
+    Retries on 'database is locked'. Raises on failure so caller can propagate 500.
+    Ensures readers never see active_task_id set without the corresponding task row updated.
     """
+    from agent.db import (
+        db_transaction_with_retry,
+        _exec_create_or_update_session,
+        _exec_set_active_task,
+        _exec_update_task_queue,
+        _exec_create_task,
+        _exec_update_task,
+    )
+
     try:
-        # Ensure session exists
-        db_create_or_update_session(chat_id, source)
-
-        # Sync active task ID
-        active_task_id = state.get("active_task_id")
-        db_set_active_task(chat_id, source, active_task_id)
-
-        # Sync task queue
-        task_queue = state.get("task_queue", [])
-        db_update_task_queue(chat_id, source, task_queue)
-
-        # Sync all tasks
         tasks = state.get("tasks", {})
-        for task_id, task_data in tasks.items():
-            # Prepare task data for DB
-            db_task = {
-                "task_id": task_id,
-                "chat_id": chat_id,
-                "source": source,
-                "operation_id": task_data.get("operation_id", task_data.get("id", "")),
-                "status": task_data.get("status", "unknown"),
-                "user_input": task_data.get("user_input"),
-                "dry_run": task_data.get("dry_run", False),
-                "test_mode": task_data.get("test_mode", False),
-                "webhook_url": task_data.get("webhook_url"),
-                "created_at": task_data.get("created_at"),
-                "plan": task_data.get("plan"),
-                "diffs": task_data.get("diffs"),
-                "new_contents": task_data.get("new_contents"),
-                "written_files": task_data.get("written_files"),
-                "errors": task_data.get("errors", []),
-                "pending_plan": task_data.get("pending_plan"),
-                "validation_errors": task_data.get("validation_errors"),
-                "retry_count": task_data.get("retry_count", 0),
-                "deploy_result": task_data.get("deploy_result"),
-                "awaiting_response": task_data.get("awaiting_response", False),
-                "awaiting_type": task_data.get("awaiting_type"),
-                "pending_plan_with_questions": task_data.get("pending_plan_with_questions"),
-                "last_response": task_data.get("last_response"),
-                "files_to_modify": task_data.get("files_to_modify"),
-                "completed_at": task_data.get("completed_at"),
-            }
+        task_queue = state.get("task_queue", [])
+        active_task_id = state.get("active_task_id")
 
-            # Try to create (will fail if exists)
-            try:
-                db_create_task(db_task)
-            except Exception:
-                # Task exists, update instead
-                db_update_task(task_id, db_task)
+        def _sync_session_and_tasks(conn):
+            _exec_create_or_update_session(conn, chat_id, source)
+            _exec_set_active_task(conn, chat_id, source, active_task_id)
+            _exec_update_task_queue(conn, chat_id, source, task_queue)
+            for task_id, task_data in tasks.items():
+                db_task = _prepare_db_task(task_id, task_data, chat_id, source)
+                try:
+                    _exec_create_task(conn, db_task)
+                except sqlite3.IntegrityError:
+                    _exec_update_task(conn, task_id, db_task)
 
-        log_event("sqlite_sync", f"[SQLITE] State synced for {chat_id} ({source})")
+        db_transaction_with_retry()(_sync_session_and_tasks)
+
+        log_event("sqlite_sync", f"[SQLITE] State synced for {chat_id} ({source}): {len(tasks)} tasks")
 
     except Exception as e:
         log_event("sqlite_error", f"[SQLITE] Sync failed for {chat_id}: {e}")
-        # Re-raise so caller (save_state) fails and API can return 500 instead of later "Task state lost"
         raise
 
 
@@ -140,18 +180,11 @@ def _sync_to_sqlite(chat_id: str, source: str, state: dict) -> None:
 
 def get_session_filename(chat_id: str, source: str = "http") -> str:
     """
-    Generate session-specific filename.
-    
-    Args:
-        chat_id: User identifier (original chat_id for HTTP, user_id for Telegram)
-        source: 'http' or 'telegram'
-    
-    Returns:
-        Filename like 'http_user123.json' or 'telegram_456789.json'
+    Generate session-specific filename. One file per chat_id (source ignored for path).
     """
     # Sanitize chat_id (remove path separators, special chars)
     safe_chat_id = "".join(c for c in chat_id if c.isalnum() or c in "-_")
-    return f"{source}_{safe_chat_id}.json"
+    return f"{safe_chat_id}.json"
 
 
 def get_session_path(chat_id: str, source: str = "http") -> Path:
@@ -161,8 +194,8 @@ def get_session_path(chat_id: str, source: str = "http") -> Path:
 
 
 def get_lock_path(chat_id: str, source: str = "http") -> Path:
-    """Get full path to session lock file"""
-    filename = get_session_filename(chat_id, source).replace('.json', '.lock')
+    """Get full path to session lock file (one lock per chat_id)."""
+    filename = get_session_filename(chat_id, source).replace(".json", ".lock")
     return LOCKS_DIR / filename
 
 
@@ -212,6 +245,9 @@ class OperationStatus:
     COMPLETED = "completed"
     FAILED = "failed"
     ROLLED_BACK = "rolled_back"
+
+
+TERMINAL_STATUSES = (OperationStatus.COMPLETED, OperationStatus.FAILED, OperationStatus.ROLLED_BACK)
 
 
 # ═══════════════════════════════════════════════════════════════
@@ -270,6 +306,8 @@ def save_state(state: dict, chat_id: str = "default", source: str = "http") -> N
     Save state to SQLite (Phase 5: sole source of truth).
     MUST be called only while holding agent_lock(chat_id=..., source=...).
     """
+    # Auto-repair invariants before persisting
+    _check_invariants(state, chat_id, source)
     try:
         _sync_to_sqlite(chat_id, source, state)
         log_event("state_save", f"[STATE] Saved state for {chat_id} ({source})")
@@ -283,19 +321,22 @@ def _load_state_from_sqlite(chat_id: str, source: str = "http") -> Optional[dict
     Load state from SQLite database.
     Returns dict in same format as JSON load_state() for compatibility.
     Multi-task format: {"tasks": {}, "active_task_id": "", "task_queue": []}
+    Recovery: if session has no active_task_id but has non-terminal tasks, set active_task_id to first such task.
     """
     from agent.db import db_get_session, db_get_tasks_for_session
 
     try:
         session = db_get_session(chat_id, source)
         if not session:
+            _log.debug("[SQLITE] Looking for session chat_id=%s source=%s ... Found: None", chat_id, source)
             return None
 
         tasks = db_get_tasks_for_session(chat_id, source)
+        active_task_id = session.get("active_task_id") or ""
 
         state = {
             "tasks": {},
-            "active_task_id": session.get("active_task_id") or "",
+            "active_task_id": active_task_id,
             "task_queue": session.get("task_queue", []),
         }
 
@@ -303,6 +344,21 @@ def _load_state_from_sqlite(chat_id: str, source: str = "http") -> Optional[dict
             task_id = task["task_id"]
             state["tasks"][task_id] = {**task, "id": task["operation_id"]}
 
+        # Recovery: session has non-empty queue but no active_task_id — set from queue (do not recover from
+        # "first non-terminal task" when queue is empty, that could undo a ghost clear)
+        if not active_task_id and state["tasks"]:
+            queue = state.get("task_queue") or []
+            candidate = queue[0] if queue else None
+            if candidate:
+                db_set_active_task(chat_id, source, candidate)
+                state["active_task_id"] = candidate
+                active_task_id = candidate
+                _log.debug("[SQLITE] Recovery: set active_task_id=%s for %s/%s", candidate, source, chat_id)
+
+        _log.debug(
+            "[SQLITE] Loaded state chat_id=%s source=%s tasks=%s active_task_id=%s",
+            chat_id, source, len(state["tasks"]), active_task_id or "None",
+        )
         log_event("sqlite_read", f"[SQLITE] Loaded state for {chat_id}/{source}: {len(state['tasks'])} tasks")
         return state
 
@@ -441,8 +497,9 @@ def agent_lock(
 ):
     """
     Session-scoped lock context manager (reentrant: same thread can re-enter).
+    Lock is per chat_id (source ignored) so one session per chat_id.
     """
-    key = (chat_id, source)
+    key = chat_id
     holding = _get_holding()
     if key in holding:
         yield
@@ -455,7 +512,7 @@ def agent_lock(
                 mtime = lock_file.stat().st_mtime
                 age = time.time() - mtime
                 if age > 300:
-                    print(f"⚠️ Removing stale lock for {source}_{chat_id} (age: {age:.0f}s)")
+                    print(f"⚠️ Removing stale lock for {chat_id} (age: {age:.0f}s)")
                     lock_file.unlink()
             holding.add(key)
             try:
@@ -463,7 +520,7 @@ def agent_lock(
             finally:
                 holding.discard(key)
     except filelock.Timeout:
-        raise LockError(f"Could not acquire lock for {source}_{chat_id} within {timeout}s")
+        raise LockError(f"Could not acquire lock for {chat_id} within {timeout}s")
     finally:
         try:
             if lock_file.exists():
@@ -524,13 +581,45 @@ def force_unlock(chat_id: str = "default", source: str = "http") -> bool:
 # ═══════════════════════════════════════════════════════════════
 
 def get_active_task_id(chat_id: str = "default", source: str = "http") -> Optional[str]:
-    """Return active_task_id (new format) or task_id (legacy), or None."""
+    """
+    Return active_task_id (new format) or task_id (legacy), or None.
+    If active_task_id is set but the task is not in state['tasks'] (ghost),
+    clears the ghost in DB and returns None so callers don't get 404 on submit.
+    """
     state = load_state(chat_id, source)
     if not state:
+        print(f"[get_active_task_id] Looking for task for user chat_id={chat_id} source={source} status=active ... Found: None (no state)")
         return None
     if _is_new_format(state):
-        return state.get("active_task_id")
-    return state.get("task_id")
+        active_id = state.get("active_task_id")
+        tasks = state.get("tasks") or {}
+        if active_id and active_id not in tasks:
+            # Ghost: session has active_task_id but task not in tasks (e.g. never synced or deleted)
+            try:
+                from agent.db import db_find_session_by_task_id, db_set_active_task
+                if db_find_session_by_task_id(active_id) is None:
+                    db_set_active_task(chat_id, source, None)
+                    print(f"[get_active_task_id] ghost active_task_id={active_id} cleared for {source}/{chat_id}")
+            except Exception as e:
+                log_event("sqlite_error", f"get_active_task_id clear ghost failed: {e}")
+            print(f"[get_active_task_id] Looking for task for user chat_id={chat_id} source={source} status=active ... Found: None (ghost cleared)")
+            return None
+        print(f"[get_active_task_id] Looking for task for user chat_id={chat_id} source={source} status=active ... Found: {active_id or 'None'}")
+        return active_id
+    result = state.get("task_id")
+    print(f"[get_active_task_id] Looking for task for user chat_id={chat_id} source={source} status=active ... Found: {result or 'None'} (legacy)")
+    return result
+
+
+def get_awaiting_approval_task_id(chat_id: str, source: str = "http") -> Optional[str]:
+    """
+    Return task_id for the task in this session that is awaiting approval
+    (status=diff_ready, awaiting_response=True). Used as fallback for Telegram "TAK" flow.
+    """
+    task = db_get_awaiting_approval_task(chat_id, source)
+    task_id = task["task_id"] if task else None
+    print(f"[get_awaiting_approval_task_id] Looking for task for user chat_id={chat_id} source={source} status=awaiting_approval ... Found: {task_id or 'None'}")
+    return task_id
 
 
 def find_task_by_id(
@@ -542,13 +631,15 @@ def find_task_by_id(
     """
     state = load_state(chat_id, source)
     if not state:
+        print(f"[find_task_by_id] Looking for task_id={task_id} chat_id={chat_id} source={source} ... Found: False (no state)")
         return None
     if _is_new_format(state) and task_id in state.get("tasks", {}):
-        print(f"[task_id={task_id}] find_task_by_id: found in session {source}_{chat_id}")
+        print(f"[find_task_by_id] Looking for task_id={task_id} chat_id={chat_id} source={source} ... Found: True")
         return state["tasks"][task_id]
     if not _is_new_format(state) and state.get("task_id") == task_id:
-        print(f"[task_id={task_id}] find_task_by_id: found (legacy) in session {source}_{chat_id}")
+        print(f"[find_task_by_id] Looking for task_id={task_id} chat_id={chat_id} source={source} ... Found: True (legacy)")
         return state
+    print(f"[find_task_by_id] Looking for task_id={task_id} chat_id={chat_id} source={source} ... Found: False")
     return None
 
 
@@ -640,7 +731,8 @@ def get_next_task_from_queue(chat_id: str, source: str = "http") -> Optional[str
 
 def mark_task_completed(chat_id: str, task_id: str, source: str = "http") -> Optional[str]:
     """
-    Set task status to COMPLETED, clear active_task_id, pop next from queue and set active.
+    Finalize task, clear active_task_id, pop next from queue and set active.
+    Does NOT overwrite terminal statuses (FAILED/ROLLED_BACK → keeps them).
     Returns next task_id if any, else None.
     """
     try:
@@ -648,8 +740,12 @@ def mark_task_completed(chat_id: str, task_id: str, source: str = "http") -> Opt
             state = load_state(chat_id, source)
             if not state or not _is_new_format(state):
                 return None
+            prev_status = "?"
             if task_id in state.get("tasks", {}):
-                state["tasks"][task_id]["status"] = OperationStatus.COMPLETED
+                prev_status = state["tasks"][task_id].get("status", "")
+                # Don't overwrite terminal statuses — only mark COMPLETED if non-terminal
+                if prev_status not in TERMINAL_STATUSES:
+                    state["tasks"][task_id]["status"] = OperationStatus.COMPLETED
                 state["tasks"][task_id]["updated_at"] = datetime.now(timezone.utc).isoformat()
             state["active_task_id"] = None
             queue = state.get("task_queue") or []
@@ -659,8 +755,34 @@ def mark_task_completed(chat_id: str, task_id: str, source: str = "http") -> Opt
                 state["task_queue"] = queue
                 state["active_task_id"] = next_task_id
             save_state(state, chat_id, source)
-            print(f"[task_id={task_id}] mark_task_completed chat_id={chat_id} next_task_id={next_task_id}")
+            print(f"[task_id={task_id}] mark_task_completed chat_id={chat_id} prev_status={prev_status} next_task_id={next_task_id}")
             return next_task_id
+    except LockError:
+        raise
+
+
+def clear_active_task_and_advance(chat_id: str, source: str = "http") -> Optional[str]:
+    """
+    Clear active_task_id (ghost cleanup) and advance queue to next task.
+    Does NOT touch any task status — purely queue management.
+    Returns next task_id if any, else None.
+    """
+    try:
+        with agent_lock(chat_id=chat_id, source=source):
+            state = load_state(chat_id, source)
+            if not state or not _is_new_format(state):
+                return None
+            old_active = state.get("active_task_id")
+            state["active_task_id"] = None
+            queue = state.get("task_queue") or []
+            next_task_id = None
+            if queue:
+                next_task_id = queue.pop(0)
+                state["task_queue"] = queue
+                state["active_task_id"] = next_task_id
+            save_state(state, chat_id, source)
+            print(f"[clear_active_task_and_advance] {source}/{chat_id}: cleared ghost active_id={old_active} => next_task_id={next_task_id}")
+            return next_task_id or None
     except LockError:
         raise
 
@@ -770,6 +892,14 @@ def update_operation_status(
                 target = state
             if target is not None:
                 prev_status = target.get("status", "unknown")
+                # Guard: never overwrite terminal statuses with non-terminal ones
+                if prev_status in TERMINAL_STATUSES and status not in TERMINAL_STATUSES:
+                    print(
+                        f"[STATUS_GUARD] task_id={tid} rejecting {prev_status} → {status} "
+                        f"(terminal status protected)"
+                    )
+                    save_state(state, chat_id, source)
+                    return state
                 target["status"] = status
                 target["updated_at"] = datetime.now(timezone.utc).isoformat()
                 for key, value in kwargs.items():

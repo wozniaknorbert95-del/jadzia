@@ -85,24 +85,27 @@ def rollback(operation_id: Optional[str] = None, chat_id: str = "default", sourc
 
 
 def health_check() -> Dict[str, Any]:
-    """Check if site is up."""
-    if not SHOP_URL:
-        return {"status": "warning", "msg": "Brak SHOP_URL w konfiguracji"}
+    """Check if site is up. Never raises; always returns a dict with 'status' and 'msg'."""
     try:
-        import httpx
-        start = time.time()
-        response = httpx.get(SHOP_URL, timeout=30, follow_redirects=True)
-        response_time = time.time() - start
-        log_event(
-            EventType.HEALTH_CHECK,
-            f"Health check: {response.status_code} ({response_time:.2f}s)",
-            data={"status_code": response.status_code, "response_time": response_time, "url": SHOP_URL},
-        )
-        if response.status_code == 200:
-            return {"status": "ok", "msg": f"Strona OK ({response_time:.2f}s)", "response_time": response_time}
-        return {"status": "warning", "msg": f"Strona zwraca {response.status_code}", "response_time": response_time}
+        if not SHOP_URL:
+            return {"status": "warning", "msg": "Brak SHOP_URL w konfiguracji"}
+        try:
+            import httpx
+            start = time.time()
+            response = httpx.get(SHOP_URL, timeout=30, follow_redirects=True)
+            response_time = time.time() - start
+            log_event(
+                EventType.HEALTH_CHECK,
+                f"Health check: {response.status_code} ({response_time:.2f}s)",
+                data={"status_code": response.status_code, "response_time": response_time, "url": SHOP_URL},
+            )
+            if response.status_code == 200:
+                return {"status": "ok", "msg": f"Strona OK ({response_time:.2f}s)", "response_time": response_time}
+            return {"status": "warning", "msg": f"Strona zwraca {response.status_code}", "response_time": response_time}
+        except Exception as e:
+            return {"status": "error", "msg": f"Blad: {e}"}
     except Exception as e:
-        return {"status": "error", "msg": f"Blad: {e}"}
+        return {"status": "error", "msg": str(e)}
 
 
 async def health_check_wordpress(url: str, timeout: int = 10) -> Dict[str, Any]:
@@ -152,20 +155,22 @@ async def health_check_wordpress(url: str, timeout: int = 10) -> Dict[str, Any]:
 
 
 def deploy(operation_id: Optional[str] = None) -> Dict[str, str]:
-    """Deploy (verify health)."""
-    log_event(EventType.DEPLOY_START, "Rozpoczeto deploy", operation_id=operation_id)
+    """Deploy (verify health). Never raises; always returns a dict with 'status' and 'msg'."""
     try:
+        log_event(EventType.DEPLOY_START, "Rozpoczeto deploy", operation_id=operation_id)
         health = health_check()
-        if health["status"] == "ok":
+        status = health.get("status", "error")
+        msg = health.get("msg", "Nieznany blad")
+        if status == "ok":
             log_event(EventType.DEPLOY_SUCCESS, "Deploy zakonczony sukcesem", data=health, operation_id=operation_id)
             return {"status": "ok", "msg": "Zmiany zapisane, strona dziala"}
         log_event(
             EventType.DEPLOY_SUCCESS,
-            f"Deploy z ostrzezeniem: {health['msg']}",
+            f"Deploy z ostrzezeniem: {msg}",
             data=health,
             operation_id=operation_id,
         )
-        return {"status": "warning", "msg": health["msg"]}
+        return {"status": "warning", "msg": msg}
     except Exception as e:
         log_event(EventType.DEPLOY_FAILED, f"Deploy blad: {e}", operation_id=operation_id)
         return {"status": "error", "msg": str(e)}
