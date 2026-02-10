@@ -6,6 +6,8 @@ Also SSHOrchestrator class with verify_deployment for self-healing.
 
 import asyncio
 import os
+import re
+import shlex
 import time
 from pathlib import Path
 from typing import Optional, Tuple, List, Dict, Any
@@ -232,13 +234,29 @@ def list_directory(path: str = "", recursive: bool = False) -> Tuple[bool, List[
     return list_directory_ssh(HOST, PORT, USER, PASSWORD, full_path, recursive=recursive, key_path=KEY_PATH)
 
 
+_SAFE_GLOB_RE = re.compile(r'^[\w\-.*?\[\]/]+$')
+
+
 @with_retry(max_attempts=3)
 def list_files(pattern: str = "*", directory: str = "") -> List[str]:
-    """List files on server matching pattern. Returns relative paths."""
+    """List files on server matching pattern. Returns relative paths.
+
+    Security: ``pattern`` and ``directory`` are shell-quoted via ``shlex.quote``
+    to prevent command injection.  ``pattern`` is additionally validated against
+    a strict allowlist of glob-safe characters.
+    """
+    if not _SAFE_GLOB_RE.match(pattern):
+        raise ValueError(
+            f"Unsafe file pattern rejected: {pattern!r}. "
+            "Only alphanumeric, -, _, ., *, ?, [], / characters are allowed."
+        )
     base = BASE_PATH
     if directory:
-        base = f"{base.rstrip('/')}/{directory.lstrip('/')}"
-    cmd = f"find {base} -name '{pattern}' -type f 2>/dev/null | head -100"
+        safe_dir = get_safe_path(BASE_PATH, directory)
+        if not safe_dir.startswith(BASE_PATH.rstrip("/")):
+            raise PermissionError(f"Directory traversal blocked: {directory!r}")
+        base = safe_dir
+    cmd = f"find {shlex.quote(base)} -name {shlex.quote(pattern)} -type f 2>/dev/null | head -100"
     success, stdout, _ = exec_command_ssh(HOST, PORT, USER, PASSWORD, cmd, KEY_PATH)
     files = stdout.strip().split("\n")
     relative = [

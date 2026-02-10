@@ -269,21 +269,33 @@ class GuardedOperation:
 
 def get_safe_path(base_path: str, relative_path: str) -> str:
     """
-    Zwraca bezpieczną ścieżkę (zapobiega directory traversal).
+    Return a safe absolute path guaranteed to be under ``base_path``.
+
+    Uses ``pathlib.Path.resolve()`` to canonicalize the result and then
+    verifies it remains under the resolved base.  This prevents directory
+    traversal via ``../``, double-encoding, Unicode tricks, and symlinks.
+
+    Raises:
+        PermissionError: if the resolved path escapes ``base_path``.
     """
-    # Normalizuj ścieżkę
-    normalized = relative_path.replace("\\", "/")
-    
-    # Usuń próby wyjścia z katalogu
-    while "../" in normalized:
-        normalized = normalized.replace("../", "")
-    while "..\\" in normalized:
-        normalized = normalized.replace("..\\", "")
-    
-    # Usuń początkowy slash
-    normalized = normalized.lstrip("/")
-    
-    return f"{base_path.rstrip('/')}/{normalized}"
+    if not relative_path:
+        return base_path.rstrip("/")
+
+    # Normalize backslashes and strip leading slash so it's treated as relative
+    normalized = relative_path.replace("\\", "/").lstrip("/")
+
+    base_resolved = Path(base_path).resolve()
+    candidate = (base_resolved / normalized).resolve()
+
+    # Verify the candidate is still under base_path
+    try:
+        candidate.relative_to(base_resolved)
+    except ValueError:
+        raise PermissionError(
+            f"Path traversal blocked: '{relative_path}' resolves outside base path"
+        )
+
+    return str(candidate)
 
 
 def is_allowed_extension(path: str) -> bool:

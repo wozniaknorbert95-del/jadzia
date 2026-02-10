@@ -21,10 +21,13 @@ from pydantic_settings import BaseSettings, SettingsConfigDict
 load_dotenv()
 
 # === Module-level defaults (loaded once) ===
-_SSH_HOST = os.getenv("SSH_HOST") or os.getenv("CYBERFOLKS_HOST") or "s34.cyber-folks.pl"
-_SSH_PORT = int(os.getenv("SSH_PORT") or os.getenv("CYBERFOLKS_PORT") or "222")
-_SSH_USER = os.getenv("SSH_USER") or os.getenv("CYBERFOLKS_USER") or "uhqsycwpjz"
-_SSH_KEY_PATH = os.getenv("SSH_KEY_PATH") or os.getenv("CYBERFOLKS_KEY_PATH") or "/root/.ssh/wordpress_key"
+# SECURITY: No hardcoded production credentials.  All values MUST come from
+# environment variables (SSH_HOST, SSH_PORT, SSH_USER, SSH_KEY_PATH, BASE_PATH).
+# Empty-string defaults will cause explicit, early failures if env is misconfigured.
+_SSH_HOST = os.getenv("SSH_HOST") or os.getenv("CYBERFOLKS_HOST") or ""
+_SSH_PORT = int(os.getenv("SSH_PORT") or os.getenv("CYBERFOLKS_PORT") or "22")
+_SSH_USER = os.getenv("SSH_USER") or os.getenv("CYBERFOLKS_USER") or ""
+_SSH_KEY_PATH = os.getenv("SSH_KEY_PATH") or os.getenv("CYBERFOLKS_KEY_PATH") or ""
 _WORDPRESS_BASE_PATH = os.getenv("BASE_PATH") or os.getenv("CYBERFOLKS_BASE_PATH") or "/home/user/public_html"
 
 
@@ -78,8 +81,8 @@ class ExplorerConfig(BaseSettings):
         description="Ścieżka względna do motywu",
     )
     shop_url: str = Field(
-        default="https://zzpackage.flexgrafik.nl",
-        description="URL sklepu",
+        default_factory=lambda: os.getenv("SHOP_URL", ""),
+        description="URL sklepu (from SHOP_URL env var)",
     )
     
     # === Local Paths ===

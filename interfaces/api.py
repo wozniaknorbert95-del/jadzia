@@ -297,12 +297,25 @@ async def test_ssh():
 # WORKER TASK API (FAZA 1)
 # ============================================================
 
+_jwt_warning_logged = False
+
+
 async def verify_worker_jwt(request: Request):
     """
     When JWT_SECRET is set, require valid Authorization: Bearer <token>.
     When JWT_SECRET is not set, auth is disabled (backward compatible for dev/CI).
     """
+    global _jwt_warning_logged
     if not JWT_SECRET:
+        if not _jwt_warning_logged:
+            _log_worker.warning(
+                "[SECURITY] JWT_SECRET is not set — Worker API authentication is DISABLED. "
+                "Set JWT_SECRET environment variable for production deployments."
+            )
+            print(
+                "[SECURITY] WARNING: JWT_SECRET not set — all Worker API endpoints are unauthenticated!"
+            )
+            _jwt_warning_logged = True
         return None
     auth = request.headers.get("Authorization")
     if not auth or not auth.startswith("Bearer "):
@@ -467,6 +480,19 @@ async def worker_task_input(
                 status_code=400,
                 detail="Task is queued; input only accepted for the active task",
             )
+
+    # ── Idempotency guard: reject input for tasks in terminal states ──
+    # This prevents double-submit of approvals from triggering duplicate writes.
+    # Only blocks terminal tasks (completed/failed/rolled_back). Non-terminal tasks
+    # may legitimately receive input even if not yet in awaiting state.
+    task_check = find_task_by_id(chat_id, task_id, source)
+    if not task_check:
+        task_check = db_get_task(task_id)
+    if task_check:
+        task_status = task_check.get("status", "")
+        if task_status in TERMINAL_STATUSES:
+            print(f"[task_id={task_id}] worker_task_input: REJECTED (task already terminal: {task_status})")
+            return _task_response_from_task_payload(task_id, task_check, 0)
 
     if body.approval is True:
         user_message = "tak"
