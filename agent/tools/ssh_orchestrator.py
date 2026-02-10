@@ -18,6 +18,7 @@ load_dotenv()
 from agent.guardrails import validate_operation, validate_content, check_wordpress_safety, OperationType, get_safe_path
 from agent.state import mark_file_written
 from agent.log import log_event, log_error, EventType
+from agent.circuit_breaker import get_breaker, CircuitOpenError
 
 
 class SecurityError(Exception):
@@ -143,12 +144,23 @@ def get_path_type(path: str) -> str:
 
 @with_retry(max_attempts=3, delay=1.0, backoff=2.0)
 def read_file(path: str) -> str:
-    """Read file from server. Validates operation, then pure SSH read."""
+    """Read file from server. Validates operation, then pure SSH read.
+
+    Protected by the ``ssh`` circuit breaker — raises ``CircuitOpenError``
+    if SSH has been failing repeatedly.
+    """
+    breaker = get_breaker("ssh")
+    if not breaker.is_call_permitted():
+        raise CircuitOpenError("ssh", breaker)
     allowed, msg, _ = validate_operation(OperationType.READ, [path])
     if not allowed:
         raise PermissionError(msg)
     full_path = get_safe_path(BASE_PATH, path)
-    path_type = get_path_type_ssh(HOST, PORT, USER, PASSWORD, full_path, KEY_PATH)
+    try:
+        path_type = get_path_type_ssh(HOST, PORT, USER, PASSWORD, full_path, KEY_PATH)
+    except Exception as e:
+        breaker.record_failure()
+        raise
     if path_type == "directory":
         raise IsADirectoryError(
             f"'{path}' jest katalogiem, nie plikiem. Uzyj list_directory() aby wylistowac zawartosc."
@@ -157,7 +169,12 @@ def read_file(path: str) -> str:
         raise FileNotFoundError(f"Plik nie istnieje: {path}")
     if path_type == "error":
         raise IOError(f"Nie mozna sprawdzic sciezki: {path}")
-    content = read_file_ssh(HOST, PORT, USER, PASSWORD, full_path, KEY_PATH)
+    try:
+        content = read_file_ssh(HOST, PORT, USER, PASSWORD, full_path, KEY_PATH)
+    except Exception as e:
+        breaker.record_failure()
+        raise
+    breaker.record_success()
     log_event(EventType.FILES_READ, f"Odczyt: {path}", data={"path": path})
     return content
 
@@ -171,7 +188,14 @@ def write_file(
     source: str = "http",
     task_id: Optional[str] = None,
 ) -> Optional[str]:
-    """Write file to server with backup. Validates operation and content, then pure SSH write. PHP files get security check."""
+    """Write file to server with backup. Validates operation and content, then pure SSH write.
+
+    Protected by the ``ssh`` circuit breaker — raises ``CircuitOpenError``
+    if SSH has been failing repeatedly.
+    """
+    breaker = get_breaker("ssh")
+    if not breaker.is_call_permitted():
+        raise CircuitOpenError("ssh", breaker)
     allowed, msg, _ = validate_operation(OperationType.WRITE, [path])
     if not allowed:
         raise PermissionError(msg)
@@ -206,7 +230,15 @@ def write_file(
         log_event(EventType.FILE_BACKUP, f"Backup: {path}", operation_id=operation_id, task_id=task_id)
     except FileNotFoundError:
         backup_path = None
-    write_file_ssh(HOST, PORT, USER, PASSWORD, full_path, content, KEY_PATH)
+    except Exception as e:
+        breaker.record_failure()
+        raise
+    try:
+        write_file_ssh(HOST, PORT, USER, PASSWORD, full_path, content, KEY_PATH)
+    except Exception as e:
+        breaker.record_failure()
+        raise
+    breaker.record_success()
     log_event(
         EventType.FILE_WRITE,
         f"Zapisano: {path}",

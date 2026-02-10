@@ -52,6 +52,7 @@ from agent.state import (
 from agent.alerts import send_alert
 from agent.tools import rollback, health_check, test_ssh_connection
 from agent.db import db_health_check, db_get_dashboard_metrics, db_get_worker_health_session_counts, db_mark_tasks_failed, db_list_all_sessions, db_get_task
+from agent.circuit_breaker import get_breaker, get_all_breakers, CircuitOpenError
 from agent.log import get_recent_logs
 from agent.agent import get_cost_stats, reset_cost_stats
 
@@ -644,7 +645,13 @@ async def get_worker_health():
         except Exception:
             pass
 
-    status = "healthy" if ssh_status == "ok" else "degraded"
+    # Determine overall status considering circuit breakers
+    breakers = get_all_breakers()
+    any_circuit_open = any(b["state"] == "open" for b in breakers.values())
+    if ssh_status != "ok" or any_circuit_open:
+        status = "degraded"
+    else:
+        status = "healthy"
     last_ver = health_metrics.get("last_deployment_verification") or {}
     return {
         "status": status,
@@ -663,6 +670,7 @@ async def get_worker_health():
             "healthy": last_ver.get("healthy"),
             "auto_rollback_count": last_ver.get("auto_rollback_count", 0),
         },
+        "circuit_breakers": breakers,
     }
 
 
@@ -844,6 +852,31 @@ async def _run_task_with_timeout(
             print(f"  [worker_loop] failed to mark task_id={task_id} FAILED after timeout: {e}")
             import traceback
             traceback.print_exc()
+    except CircuitOpenError as coe:
+        reason = f"circuit_breaker_open: {coe}"
+        print(f"  [worker_loop] FAILED_SET task_id={task_id} chat_id={chat_id} source={source} reason={reason}")
+        try:
+            await asyncio.to_thread(add_error, reason, chat_id, source, task_id)
+            await asyncio.to_thread(
+                update_operation_status,
+                OperationStatus.FAILED,
+                chat_id,
+                source,
+                task_id=task_id,
+            )
+            await asyncio.to_thread(mark_task_completed, chat_id, task_id, source)
+            if str(chat_id).startswith("telegram_"):
+                try:
+                    from interfaces.telegram_api import send_awaiting_response_to_telegram
+                    await send_awaiting_response_to_telegram(
+                        chat_id,
+                        "❌ Połączenie SSH jest niestabilne (circuit breaker aktywny). Zadanie wstrzymane — spróbuj ponownie za kilka minut.",
+                        task_id=task_id, status="failed", awaiting_input=False,
+                    )
+                except Exception as push_err:
+                    print(f"  [worker_loop] failed to push circuit-open to Telegram: {push_err}")
+        except Exception as e:
+            print(f"  [worker_loop] failed to mark task_id={task_id} FAILED after circuit-open: {e}")
     except asyncio.CancelledError:
         reason = "worker_cancelled: process_message task was cancelled"
         print(f"  [worker_loop] FAILED_SET task_id={task_id} chat_id={chat_id} source={source} reason={reason}")

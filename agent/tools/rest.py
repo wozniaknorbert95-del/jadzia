@@ -15,6 +15,7 @@ load_dotenv()
 from agent.guardrails import get_safe_path
 from agent.state import get_backups
 from agent.log import log_event, log_error, EventType
+from agent.circuit_breaker import get_breaker
 from agent.tools.ssh_pure import (
     ConnectionError,
     with_retry,
@@ -126,12 +127,16 @@ async def health_check_wordpress(url: str, timeout: int = 10) -> Dict[str, Any]:
     """
     import httpx
 
+    breaker = get_breaker(f"http:{url}")
     result: Dict[str, Any] = {
         "healthy": False,
         "status_code": None,
         "response_time": 0.0,
         "error": None,
     }
+    if not breaker.is_call_permitted():
+        result["error"] = f"Circuit breaker OPEN for {url}"
+        return result
     try:
         start = time.perf_counter()
         async with httpx.AsyncClient(follow_redirects=True, timeout=float(timeout)) as client:
@@ -140,17 +145,22 @@ async def health_check_wordpress(url: str, timeout: int = 10) -> Dict[str, Any]:
         result["status_code"] = response.status_code
         if 200 <= response.status_code < 300:
             result["healthy"] = True
+            breaker.record_success()
             return result
         result["error"] = f"HTTP {response.status_code}"
+        breaker.record_failure()
         return result
     except httpx.TimeoutException as e:
         result["error"] = f"Timeout: {e}"
+        breaker.record_failure()
         return result
     except httpx.ConnectError as e:
         result["error"] = f"Connection error: {e}"
+        breaker.record_failure()
         return result
     except Exception as e:
         result["error"] = str(e)
+        breaker.record_failure()
         return result
 
 
