@@ -53,6 +53,7 @@ from agent.alerts import send_alert
 from agent.tools import rollback, health_check, test_ssh_connection
 from agent.db import db_health_check, db_get_dashboard_metrics, db_get_worker_health_session_counts, db_mark_tasks_failed, db_list_all_sessions, db_get_task
 from agent.circuit_breaker import get_breaker, get_all_breakers, CircuitOpenError
+from agent.telemetry import record_event as telem_event, get_metrics as telem_metrics
 from agent.log import get_recent_logs
 from agent.agent import get_cost_stats, reset_cost_stats
 
@@ -84,6 +85,15 @@ health_metrics = {
         "auto_rollback_count": 0,
     },
 }
+
+# Wake event: signals worker loop to check queues immediately on new work
+_worker_wake: Optional[asyncio.Event] = None
+
+
+def _signal_worker_wake() -> None:
+    """Signal the worker loop to wake up immediately (non-blocking, safe from sync code)."""
+    if _worker_wake is not None:
+        _worker_wake.set()
 
 
 # ============================================================
@@ -390,6 +400,8 @@ async def worker_create_task(
             webhook_url=request.webhook_url,
             test_mode=test_mode,
         )
+        telem_event("task_enqueued", task_id=task_id, chat_id=chat_id, source=source)
+        _signal_worker_wake()
         print(f"[task_id={task_id}] worker_create_task (quick_ack) chat_id={chat_id} source={source} position_in_queue={position}")
         return WorkerTaskCreateResponse(
             task_id=task_id,
@@ -507,6 +519,7 @@ async def worker_task_input(
             detail="Provide either 'approval' (true/false) or 'answer' (string)",
         )
 
+    _signal_worker_wake()
     input_kind = "approval" if body.approval is not None else "answer"
     try:
         response_text, awaiting_input, input_type = await process_message(
@@ -671,6 +684,7 @@ async def get_worker_health():
             "auto_rollback_count": last_ver.get("auto_rollback_count", 0),
         },
         "circuit_breakers": breakers,
+        "telemetry": telem_metrics(),
     }
 
 
@@ -765,6 +779,7 @@ async def _run_task_with_timeout(
     Run process_message with a global timeout. On TimeoutError or CancelledError,
     mark task as FAILED and advance queue so the next task can run.
     """
+    telem_event("task_started", task_id=task_id, chat_id=chat_id, source=source)
     try:
         # Load per-task flags persisted at enqueue time
         state = await asyncio.to_thread(load_state, chat_id, source)
@@ -816,11 +831,13 @@ async def _run_task_with_timeout(
                         task_id,
                         source
                     )
+                    telem_event("task_completed", task_id=task_id, chat_id=chat_id, source=source)
                     print(f"  [worker_loop] task {task_id} completed (one-shot)")
             except Exception as e:
                 print(f"  [worker_loop] failed to mark task completed: {e}")
     except asyncio.TimeoutError:
         reason = f"worker_timeout: process_message timed out after {timeout_sec}s"
+        telem_event("task_failed", task_id=task_id, chat_id=chat_id, source=source, data={"reason": "timeout"})
         print(f"  [worker_loop] FAILED_SET task_id={task_id} chat_id={chat_id} source={source} reason={reason}")
         try:
             await asyncio.to_thread(add_error, reason, chat_id, source, task_id)
@@ -854,6 +871,8 @@ async def _run_task_with_timeout(
             traceback.print_exc()
     except CircuitOpenError as coe:
         reason = f"circuit_breaker_open: {coe}"
+        telem_event("task_failed", task_id=task_id, chat_id=chat_id, source=source, data={"reason": "circuit_open"})
+        telem_event("circuit_opened", task_id=task_id, chat_id=chat_id, source=source)
         print(f"  [worker_loop] FAILED_SET task_id={task_id} chat_id={chat_id} source={source} reason={reason}")
         try:
             await asyncio.to_thread(add_error, reason, chat_id, source, task_id)
@@ -879,6 +898,7 @@ async def _run_task_with_timeout(
             print(f"  [worker_loop] failed to mark task_id={task_id} FAILED after circuit-open: {e}")
     except asyncio.CancelledError:
         reason = "worker_cancelled: process_message task was cancelled"
+        telem_event("task_failed", task_id=task_id, chat_id=chat_id, source=source, data={"reason": "cancelled"})
         print(f"  [worker_loop] FAILED_SET task_id={task_id} chat_id={chat_id} source={source} reason={reason}")
         try:
             await asyncio.to_thread(add_error, reason, chat_id, source, task_id)
@@ -1202,7 +1222,15 @@ async def _worker_loop():
                 sleep_sec = idle_backoff_sec
                 idle_backoff_sec = min(idle_backoff_sec + 1, max_idle_sleep)
             print(f"  [worker_loop] iteration {iter_num} end, sleeping {sleep_sec}s")
-            await asyncio.sleep(sleep_sec)
+            # Use wake event for instant dispatch when new work arrives
+            if _worker_wake is not None:
+                _worker_wake.clear()
+                try:
+                    await asyncio.wait_for(_worker_wake.wait(), timeout=sleep_sec)
+                except asyncio.TimeoutError:
+                    pass  # Normal: no wake signal within sleep window
+            else:
+                await asyncio.sleep(sleep_sec)
         except asyncio.CancelledError:
             print("  [worker_loop] cancelled, exit")
             break
@@ -1233,8 +1261,10 @@ async def startup():
         print(f"  [startup] cleanup_old_sessions failed: {e}")
     worker_interval = int(os.getenv("WORKER_LOOP_INTERVAL_SECONDS", "15") or "0")
     if worker_interval > 0:
+        global _worker_wake
+        _worker_wake = asyncio.Event()
         asyncio.create_task(_worker_loop())
-        print(f"  [startup] worker_loop started (interval={worker_interval}s)")
+        print(f"  [startup] worker_loop started (interval={worker_interval}s, wake_event=enabled)")
     print("=" * 50)
     print("  JADZIA API uruchomiona")
     print("  Endpoints: /chat, /status, /rollback, /health")
