@@ -12,10 +12,13 @@ NAPRAWIONE:
 
 import os
 import asyncio
+import logging
 from typing import Optional, Tuple, Dict, List
 from dotenv import load_dotenv
 
 load_dotenv()
+
+logger = logging.getLogger(__name__)
 
 from .prompt import get_system_prompt, get_error_recovery_prompt
 from .state import agent_lock, LockError, load_state, find_task_by_id, get_current_status, get_active_task_id
@@ -100,10 +103,10 @@ async def call_claude(
         # POZIOM 2: Wybór modelu
         if task_complexity == "simple":
             model = MODEL_HAIKU
-            print(f"[MODEL] Zadanie: simple → Haiku (80% taniej!)")
+            logger.debug("[MODEL] Zadanie: simple -> Haiku (80%% taniej!)")
         else:
             model = MODEL_SONNET
-            print(f"[MODEL] Zadanie: complex → Sonnet")
+            logger.debug("[MODEL] Zadanie: complex -> Sonnet")
 
         def _call():
             system_content = system or get_system_prompt()
@@ -149,10 +152,9 @@ async def call_claude(
             call_cost = input_cost + output_cost + cached_cost
             TOKEN_STATS["cost"] += call_cost
 
-            print(f"[COST] Wywołanie: ${call_cost:.4f} | "
-                  f"Input: {usage.input_tokens} | "
-                  f"Output: {usage.output_tokens} | "
-                  f"Cached: {getattr(usage, 'cache_read_input_tokens', 0)}")
+            logger.debug("[COST] Wywołanie: $%.4f | Input: %s | Output: %s | Cached: %s",
+                         call_cost, usage.input_tokens, usage.output_tokens,
+                         getattr(usage, 'cache_read_input_tokens', 0))
 
             return response.content[0].text
 
@@ -218,7 +220,7 @@ async def process_message(
         try:
             with agent_lock(timeout=5, chat_id=chat_id, source=source):
                 _tid = task_id or get_active_task_id(chat_id, source)
-                print(f"[process_message] task_id={_tid} acquired lock (auto_advance={auto_advance})")
+                logger.debug("[process_message] task_id=%s acquired lock (auto_advance=%s)", _tid, auto_advance)
                 result = await route_user_input(
                     user_input,
                     chat_id,
@@ -231,13 +233,13 @@ async def process_message(
                 )
                 response, awaiting, input_type = result[0], result[1], result[2]
                 next_task_id = result[3] if len(result) > 3 else None
-                print(f"[process_message] result: awaiting={awaiting}, input_type={input_type}, next_task_id={next_task_id!r}, push_to_telegram={push_to_telegram}, chat_id={chat_id!r}")
+                logger.debug("[process_message] result: awaiting=%s, input_type=%s, next_task_id=%r, push_to_telegram=%s, chat_id=%r", awaiting, input_type, next_task_id, push_to_telegram, chat_id)
                 # Auto-advance: only when NOT called from worker loop (worker loop manages queue itself)
                 if next_task_id and auto_advance:
                     task_payload = find_task_by_id(chat_id, next_task_id, source)
                     next_input = (task_payload or {}).get("user_input", "")
                     if next_input:
-                        print(f"[task_id={next_task_id}] task_completion_triggers_next auto-starting")
+                        logger.debug("[task_id=%s] task_completion_triggers_next auto-starting", next_task_id)
                         next_result = await route_user_input(
                             next_input,
                             chat_id,
@@ -247,24 +249,24 @@ async def process_message(
                         )
                         nr0, nr1, nr2 = next_result[0], next_result[1], next_result[2]
                         should_push_next = str(chat_id).startswith("telegram_") and push_to_telegram
-                        print(f"[process_message] push_to_telegram check (next_result branch): nr1={nr1}, chat_id.startswith(telegram_)={str(chat_id).startswith('telegram_')}, push_to_telegram={push_to_telegram} => send={should_push_next}")
+                        logger.debug("[process_message] push_to_telegram check (next_result branch): nr1=%s, chat_id.startswith(telegram_)=%s, push_to_telegram=%s => send=%s", nr1, str(chat_id).startswith("telegram_"), push_to_telegram, should_push_next)
                         if should_push_next:
                             from interfaces.telegram_api import send_awaiting_response_to_telegram
                             tid = get_active_task_id(chat_id, source) or next_task_id
                             status = get_current_status(chat_id, source, task_id=tid)
                             await send_awaiting_response_to_telegram(chat_id, nr0, task_id=tid, status=status, awaiting_input=nr1)
-                        print(f"[process_message] task_id={next_task_id} releasing lock, awaiting={nr1}")
+                        logger.debug("[process_message] task_id=%s releasing lock, awaiting=%s", next_task_id, nr1)
                         return (nr0, nr1, nr2)
                 elif next_task_id and not auto_advance:
-                    print(f"[process_message] next_task_id={next_task_id} available but auto_advance=False, worker loop will handle")
+                    logger.debug("[process_message] next_task_id=%s available but auto_advance=False, worker loop will handle", next_task_id)
                 should_push = str(chat_id).startswith("telegram_") and push_to_telegram
-                print(f"[process_message] push_to_telegram check (main branch): awaiting={awaiting}, chat_id.startswith(telegram_)={str(chat_id).startswith('telegram_')}, push_to_telegram={push_to_telegram} => send={should_push}")
+                logger.debug("[process_message] push_to_telegram check (main branch): awaiting=%s, chat_id.startswith(telegram_)=%s, push_to_telegram=%s => send=%s", awaiting, str(chat_id).startswith("telegram_"), push_to_telegram, should_push)
                 if should_push:
                     from interfaces.telegram_api import send_awaiting_response_to_telegram
                     tid = get_active_task_id(chat_id, source) or task_id
                     status = get_current_status(chat_id, source, task_id=tid)
                     await send_awaiting_response_to_telegram(chat_id, response, task_id=tid, status=status, awaiting_input=awaiting)
-                print(f"[process_message] task_id={task_id} releasing lock, awaiting={awaiting}")
+                logger.debug("[process_message] task_id=%s releasing lock, awaiting=%s", task_id, awaiting)
                 return (response, awaiting, input_type)
         except LockError:
             return (
@@ -273,7 +275,7 @@ async def process_message(
                 None
             )
     except Exception as e:
-        print(f"[MAIN ERROR] {type(e).__name__}: {e}")
+        logger.error("[MAIN ERROR] %s: %s", type(e).__name__, e, exc_info=True)
         log_error(str(e))
         from interfaces.webhooks import notify_webhook, record_task_failure
         record_task_failure(str(e))
@@ -294,9 +296,9 @@ async def process_message(
                     chat_id, error_result[0], task_id=_tid,
                     status="failed", awaiting_input=False,
                 )
-                print(f"[process_message] pushed error to Telegram for chat_id={chat_id} task_id={_tid}")
+                logger.debug("[process_message] pushed error to Telegram for chat_id=%s task_id=%s", chat_id, _tid)
             except Exception as push_err:
-                print(f"[process_message] failed to push error to Telegram: {push_err}")
+                logger.debug("[process_message] failed to push error to Telegram: %s", push_err)
         return error_result
 
 

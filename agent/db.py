@@ -107,7 +107,8 @@ def _init_schema(conn: sqlite3.Connection):
             )
     except Exception as e:
         # Surface a clear error; caller will decide how to handle it.
-        print(f"[DB MIGRATION] Failed to ensure test_mode column on tasks: {e}")
+        import logging
+        logging.getLogger(__name__).error("[DB] Migration failed to ensure test_mode column: %s", e)
         raise
 
     # Indexes
@@ -168,7 +169,8 @@ def db_transaction_with_retry(max_retries: int = 3, retry_delay: float = 0.1):
             except sqlite3.OperationalError as e:
                 if "locked" in str(e).lower() and attempt < max_retries - 1:
                     delay = retry_delay * (2 ** attempt)
-                    print(f"[DB] database locked, retry {attempt + 1}/{max_retries} after {delay:.2f}s")
+                    import logging
+                    logging.getLogger(__name__).warning("[DB] database locked, retry %d/%d after %.2fs", attempt + 1, max_retries, delay)
                     _time.sleep(delay)
                     last_err = e
                     continue
@@ -419,6 +421,16 @@ def db_get_tasks_for_session(chat_id: str, source: str = "http") -> List[Dict]:
     """, (chat_id, source)).fetchall()
 
     return [_row_to_task_dict(row) for row in rows]
+
+
+def db_get_active_task(chat_id: str, source: str = "http") -> Optional[str]:
+    """Return active_task_id for session from sessions table. Single source of truth."""
+    conn = get_connection()
+    row = conn.execute(
+        "SELECT active_task_id FROM sessions WHERE chat_id = ?",
+        (chat_id,),
+    ).fetchone()
+    return row["active_task_id"] if row and row["active_task_id"] else None
 
 
 def db_get_awaiting_approval_task(chat_id: str, source: str = "http") -> Optional[Dict]:

@@ -83,9 +83,9 @@ def _check_invariants(state: dict, chat_id: str, source: str) -> None:
 
     # INV-1: active_task_id must be empty or point to an existing task
     if active_id and active_id not in tasks:
-        print(
-            f"[INVARIANT] {source}/{chat_id}: active_task_id={active_id} "
-            f"not in tasks (ghost). Auto-clearing."
+        _log.warning(
+            "[INVARIANT] %s/%s: active_task_id=%s not in tasks (ghost). Auto-clearing.",
+            source, chat_id, active_id,
         )
         state["active_task_id"] = None
 
@@ -93,9 +93,9 @@ def _check_invariants(state: dict, chat_id: str, source: str) -> None:
     valid_queue = [tid for tid in queue if tid in tasks]
     if len(valid_queue) != len(queue):
         removed = set(queue) - set(valid_queue)
-        print(
-            f"[INVARIANT] {source}/{chat_id}: task_queue contained orphan ids "
-            f"{removed}. Auto-removed."
+        _log.warning(
+            "[INVARIANT] %s/%s: task_queue contained orphan ids %s. Auto-removed.",
+            source, chat_id, removed,
         )
         state["task_queue"] = valid_queue
 
@@ -220,9 +220,9 @@ def migrate_legacy_state() -> None:
             _sync_to_sqlite("default", "http", legacy_state)
             backup_path = LEGACY_STATE_FILE.with_suffix('.json.migrated')
             LEGACY_STATE_FILE.rename(backup_path)
-            print("✅ Migrated legacy state to SQLite (http/default)")
+            _log.info("Migrated legacy state to SQLite (http/default)")
         except Exception as e:
-            print(f"⚠️ Migration failed: {e}")
+            _log.warning("Migration failed: %s", e)
     MIGRATION_MARKER.touch()
 
 
@@ -394,7 +394,7 @@ def load_state(chat_id: str = "default", source: str = "http") -> Optional[dict]
         with open(state_file, 'r', encoding='utf-8') as f:
             state = json.load(f)
     except Exception as e:
-        print(f"⚠️ [chat_id={chat_id}] Error loading state for {source}_{chat_id}: {e}")
+        _log.warning("[chat_id=%s] Error loading state for %s_%s: %s", chat_id, source, chat_id, e)
         return None
     if state and not _is_new_format(state):
         state = migrate_state_to_multitask(state)
@@ -408,13 +408,13 @@ def clear_state(chat_id: str = "default", source: str = "http") -> None:
             try:
                 db_delete_session(chat_id, source)
             except Exception as e:
-                print(f"⚠️ [chat_id={chat_id}] Error clearing SQLite state for {source}_{chat_id}: {e}")
+                _log.warning("[chat_id=%s] Error clearing SQLite state for %s_%s: %s", chat_id, source, chat_id, e)
             state_file = get_session_path(chat_id, source)
             if state_file.exists():
                 try:
                     state_file.unlink()
                 except Exception as e:
-                    print(f"⚠️ [chat_id={chat_id}] Error clearing state file for {source}_{chat_id}: {e}")
+                    _log.warning("[chat_id=%s] Error clearing state file for %s_%s: %s", chat_id, source, chat_id, e)
     except LockError:
         raise
 
@@ -437,7 +437,7 @@ def archive_state(chat_id: str = "default", source: str = "http") -> None:
     except LockError:
         raise
     except Exception as e:
-        print(f"⚠️ Error archiving state: {e}")
+        _log.warning("Error archiving state: %s", e)
 
 
 def has_pending_operation(
@@ -512,7 +512,7 @@ def agent_lock(
                 mtime = lock_file.stat().st_mtime
                 age = time.time() - mtime
                 if age > 300:
-                    print(f"⚠️ Removing stale lock for {chat_id} (age: {age:.0f}s)")
+                    _log.warning("Removing stale lock for %s (age: %.0fs)", chat_id, age)
                     lock_file.unlink()
             holding.add(key)
             try:
@@ -570,7 +570,7 @@ def force_unlock(chat_id: str = "default", source: str = "http") -> bool:
             lock_file.unlink()
             return True
         except Exception as e:
-            print(f"⚠️ Failed to force unlock: {e}")
+            _log.warning("Failed to force unlock: %s", e)
             return False
     
     return False
@@ -588,7 +588,7 @@ def get_active_task_id(chat_id: str = "default", source: str = "http") -> Option
     """
     state = load_state(chat_id, source)
     if not state:
-        print(f"[get_active_task_id] Looking for task for user chat_id={chat_id} source={source} status=active ... Found: None (no state)")
+        _log.debug("[get_active_task_id] Looking for task for user chat_id=%s source=%s status=active ... Found: None (no state)", chat_id, source)
         return None
     if _is_new_format(state):
         active_id = state.get("active_task_id")
@@ -599,15 +599,15 @@ def get_active_task_id(chat_id: str = "default", source: str = "http") -> Option
                 from agent.db import db_find_session_by_task_id, db_set_active_task
                 if db_find_session_by_task_id(active_id) is None:
                     db_set_active_task(chat_id, source, None)
-                    print(f"[get_active_task_id] ghost active_task_id={active_id} cleared for {source}/{chat_id}")
+                    _log.debug("[get_active_task_id] ghost active_task_id=%s cleared for %s/%s", active_id, source, chat_id)
             except Exception as e:
                 log_event("sqlite_error", f"get_active_task_id clear ghost failed: {e}")
-            print(f"[get_active_task_id] Looking for task for user chat_id={chat_id} source={source} status=active ... Found: None (ghost cleared)")
+            _log.debug("[get_active_task_id] Looking for task for user chat_id=%s source=%s status=active ... Found: None (ghost cleared)", chat_id, source)
             return None
-        print(f"[get_active_task_id] Looking for task for user chat_id={chat_id} source={source} status=active ... Found: {active_id or 'None'}")
+        _log.debug("[get_active_task_id] Looking for task for user chat_id=%s source=%s status=active ... Found: %s", chat_id, source, active_id or "None")
         return active_id
     result = state.get("task_id")
-    print(f"[get_active_task_id] Looking for task for user chat_id={chat_id} source={source} status=active ... Found: {result or 'None'} (legacy)")
+    _log.debug("[get_active_task_id] Looking for task for user chat_id=%s source=%s status=active ... Found: %s (legacy)", chat_id, source, result or "None")
     return result
 
 
@@ -618,7 +618,7 @@ def get_awaiting_approval_task_id(chat_id: str, source: str = "http") -> Optiona
     """
     task = db_get_awaiting_approval_task(chat_id, source)
     task_id = task["task_id"] if task else None
-    print(f"[get_awaiting_approval_task_id] Looking for task for user chat_id={chat_id} source={source} status=awaiting_approval ... Found: {task_id or 'None'}")
+    _log.debug("[get_awaiting_approval_task_id] Looking for task for user chat_id=%s source=%s status=awaiting_approval ... Found: %s", chat_id, source, task_id or "None")
     return task_id
 
 
@@ -631,15 +631,15 @@ def find_task_by_id(
     """
     state = load_state(chat_id, source)
     if not state:
-        print(f"[find_task_by_id] Looking for task_id={task_id} chat_id={chat_id} source={source} ... Found: False (no state)")
+        _log.debug("[find_task_by_id] Looking for task_id=%s chat_id=%s source=%s ... Found: False (no state)", task_id, chat_id, source)
         return None
     if _is_new_format(state) and task_id in state.get("tasks", {}):
-        print(f"[find_task_by_id] Looking for task_id={task_id} chat_id={chat_id} source={source} ... Found: True")
+        _log.debug("[find_task_by_id] Looking for task_id=%s chat_id=%s source=%s ... Found: True", task_id, chat_id, source)
         return state["tasks"][task_id]
     if not _is_new_format(state) and state.get("task_id") == task_id:
-        print(f"[find_task_by_id] Looking for task_id={task_id} chat_id={chat_id} source={source} ... Found: True (legacy)")
+        _log.debug("[find_task_by_id] Looking for task_id=%s chat_id=%s source=%s ... Found: True (legacy)", task_id, chat_id, source)
         return state
-    print(f"[find_task_by_id] Looking for task_id={task_id} chat_id={chat_id} source={source} ... Found: False")
+    _log.debug("[find_task_by_id] Looking for task_id=%s chat_id=%s source=%s ... Found: False", task_id, chat_id, source)
     return None
 
 
@@ -701,7 +701,7 @@ def add_task_to_queue(
             state.setdefault("task_queue", []).append(task_id)
             save_state(state, chat_id, source)
             pos = len(state["task_queue"])
-            print(f"[task_id={task_id}] add_task_to_queue chat_id={chat_id} position_in_queue={pos}")
+            _log.debug("[task_id=%s] add_task_to_queue chat_id=%s position_in_queue=%s", task_id, chat_id, pos)
             return pos
     except LockError:
         raise
@@ -723,7 +723,7 @@ def get_next_task_from_queue(chat_id: str, source: str = "http") -> Optional[str
             state["task_queue"] = queue
             state["active_task_id"] = task_id
             save_state(state, chat_id, source)
-            print(f"[task_id={task_id}] get_next_task_from_queue chat_id={chat_id}")
+            _log.debug("[task_id=%s] get_next_task_from_queue chat_id=%s", task_id, chat_id)
             return task_id
     except LockError:
         raise
@@ -755,7 +755,7 @@ def mark_task_completed(chat_id: str, task_id: str, source: str = "http") -> Opt
                 state["task_queue"] = queue
                 state["active_task_id"] = next_task_id
             save_state(state, chat_id, source)
-            print(f"[task_id={task_id}] mark_task_completed chat_id={chat_id} prev_status={prev_status} next_task_id={next_task_id}")
+            _log.debug("[task_id=%s] mark_task_completed chat_id=%s prev_status=%s next_task_id=%s", task_id, chat_id, prev_status, next_task_id)
             return next_task_id
     except LockError:
         raise
@@ -781,7 +781,7 @@ def clear_active_task_and_advance(chat_id: str, source: str = "http") -> Optiona
                 state["task_queue"] = queue
                 state["active_task_id"] = next_task_id
             save_state(state, chat_id, source)
-            print(f"[clear_active_task_and_advance] {source}/{chat_id}: cleared ghost active_id={old_active} => next_task_id={next_task_id}")
+            _log.info("[clear_active_task_and_advance] %s/%s: cleared ghost active_id=%s => next_task_id=%s", source, chat_id, old_active, next_task_id)
             return next_task_id or None
     except LockError:
         raise
@@ -860,7 +860,7 @@ def create_operation(
             state["active_task_id"] = task_id
             state.setdefault("task_queue", [])
             save_state(state, chat_id, source)
-            print(f"[task_id={task_id}] create_operation chat_id={chat_id}")
+            _log.debug("[task_id=%s] create_operation chat_id=%s", task_id, chat_id)
     except LockError:
         raise
     return {"id": operation_id, "task_id": task_id, **task_payload}
@@ -894,9 +894,9 @@ def update_operation_status(
                 prev_status = target.get("status", "unknown")
                 # Guard: never overwrite terminal statuses with non-terminal ones
                 if prev_status in TERMINAL_STATUSES and status not in TERMINAL_STATUSES:
-                    print(
-                        f"[STATUS_GUARD] task_id={tid} rejecting {prev_status} → {status} "
-                        f"(terminal status protected)"
+                    _log.warning(
+                        "[STATUS_GUARD] task_id=%s rejecting %s -> %s (terminal status protected)",
+                        tid, prev_status, status,
                     )
                     save_state(state, chat_id, source)
                     return state
@@ -906,16 +906,17 @@ def update_operation_status(
                     target[key] = value
                 # Diagnostic log when setting FAILED — high-value context for debugging
                 if status == OperationStatus.FAILED:
-                    print(
-                        f"[FAILED_SET] task_id={tid} chat_id={chat_id} source={source} "
-                        f"prev_status={prev_status} "
-                        f"created_at={target.get('created_at', '?')} "
-                        f"updated_at={target.get('updated_at', '?')} "
-                        f"awaiting_response={target.get('awaiting_response', '?')}"
+                    _log.warning(
+                        "[FAILED_SET] task_id=%s chat_id=%s source=%s prev_status=%s "
+                        "created_at=%s updated_at=%s awaiting_response=%s",
+                        tid, chat_id, source, prev_status,
+                        target.get("created_at", "?"),
+                        target.get("updated_at", "?"),
+                        target.get("awaiting_response", "?"),
                     )
             save_state(state, chat_id, source)
             if tid:
-                print(f"[task_id={tid}] update_operation_status status={status}")
+                _log.debug("[task_id=%s] update_operation_status status=%s", tid, status)
     except LockError:
         raise
     return state
@@ -943,7 +944,7 @@ def add_error(
                 errors_list.append({"timestamp": datetime.now(timezone.utc).isoformat(), "message": error})
                 save_state(state, chat_id, source)
                 if tid:
-                    print(f"[task_id={tid}] add_error")
+                    _log.debug("[task_id=%s] add_error", tid)
     except LockError:
         raise
 
@@ -1011,7 +1012,7 @@ def set_awaiting_response(
                 target["awaiting_type"] = response_type
                 save_state(state, chat_id, source)
                 if tid:
-                    print(f"[task_id={tid}] set_awaiting_response awaiting={awaiting}")
+                    _log.debug("[task_id=%s] set_awaiting_response awaiting=%s", tid, awaiting)
     except LockError:
         raise
 
@@ -1066,7 +1067,7 @@ def store_diffs(
                 target["diffs"] = diffs
                 save_state(state, chat_id, source)
                 if tid:
-                    print(f"[task_id={tid}] store_diffs")
+                    _log.debug("[task_id=%s] store_diffs", tid)
     except LockError:
         raise
 
@@ -1150,9 +1151,9 @@ def cleanup_old_sessions(days: int = 7) -> int:
                     db_delete_session(chat_id, source)
                     removed += 1
                 except Exception as e:
-                    print(f"⚠️ Error cleaning SQLite session {source}_{chat_id}: {e}")
+                    _log.warning("Error cleaning SQLite session %s_%s: %s", source, chat_id, e)
         except Exception as e:
-            print(f"⚠️ Error listing old sessions from SQLite: {e}")
+            _log.warning("Error listing old sessions from SQLite: %s", e)
 
     for session_file in SESSIONS_DIR.glob("*.json"):
         try:
@@ -1166,7 +1167,7 @@ def cleanup_old_sessions(days: int = 7) -> int:
                 if lock_file.exists():
                     lock_file.unlink()
         except Exception as e:
-            print(f"⚠️ Error cleaning {session_file}: {e}")
+            _log.warning("Error cleaning %s: %s", session_file, e)
 
     return removed
 
@@ -1203,7 +1204,7 @@ def list_active_sessions() -> list:
                     "is_locked": is_locked(chat_id, source),
                 })
         except Exception as e:
-            print(f"⚠️ Error listing sessions from SQLite: {e}")
+            _log.warning("Error listing sessions from SQLite: %s", e)
         return sessions
 
     for session_file in SESSIONS_DIR.glob("*.json"):
@@ -1228,7 +1229,7 @@ def list_active_sessions() -> list:
                 "is_locked": is_locked(chat_id, source),
             })
         except Exception as e:
-            print(f"⚠️ Error reading {session_file}: {e}")
+            _log.warning("Error reading %s: %s", session_file, e)
     return sessions
 
 
@@ -1251,13 +1252,13 @@ def find_session_by_task_id(task_id: str) -> Optional[Tuple[str, str]]:
         try:
             state = json.loads(session_file.read_text(encoding='utf-8'))
             if _is_new_format(state) and task_id in state.get("tasks", {}):
-                print(f"[task_id={task_id}] find_session_by_task_id: {state.get('chat_id')} {state.get('source', 'http')}")
+                _log.debug("[task_id=%s] find_session_by_task_id: %s %s", task_id, state.get("chat_id"), state.get("source", "http"))
                 return (state["chat_id"], state.get("source", "http"))
             if not _is_new_format(state) and state.get("task_id") == task_id:
-                print(f"[task_id={task_id}] find_session_by_task_id (legacy): {state.get('chat_id')} {state.get('source', 'http')}")
+                _log.debug("[task_id=%s] find_session_by_task_id (legacy): %s %s", task_id, state.get("chat_id"), state.get("source", "http"))
                 return (state["chat_id"], state.get("source", "http"))
         except Exception as e:
-            print(f"⚠️ Error reading {session_file}: {e}")
+            _log.warning("Error reading %s: %s", session_file, e)
     return None
 
 
@@ -1293,7 +1294,7 @@ def set_pending_plan(
                 target["awaiting_type"] = "approval"
                 save_state(state, chat_id, source)
                 if tid:
-                    print(f"[task_id={tid}] set_pending_plan")
+                    _log.debug("[task_id=%s] set_pending_plan", tid)
     except LockError:
         raise
 
