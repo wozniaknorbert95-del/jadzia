@@ -1,0 +1,16 @@
+---
+description: Guardrails for jadzia-core (AI operations) module
+globs:
+  - "**/*.py"
+  - "**/*.md"
+  - "todo.json"
+  - "brain.md"
+---
+
+# jadzia-core guardrails
+
+- Canonical module brain is `brain.md`. Canonical backlog is `todo.json`.
+- Any schema/data changes must be reflected in the module docs before code changes.
+- Deploy is manual-only by Dowodca (Zasada 11).
+- End each meaningful session with a handoff note in `docs/handoffs/`.
+

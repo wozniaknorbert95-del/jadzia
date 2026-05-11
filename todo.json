@@ -1,4 +1,8 @@
 {
   "project": "jadzia-core",
-  "tasks": []
+  "last_updated": "2026-02-27",
+  "current_agent": null,
+  "tasks": [],
+  "completed": [],
+  "blocked_by": null
 }

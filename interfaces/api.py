@@ -11,6 +11,8 @@ load_dotenv()
 import os
 import jwt
 from fastapi import Depends, FastAPI, HTTPException, Query, Request
+from fastapi.middleware.cors import CORSMiddleware
+from agent.customer_agent import process_customer_message
 from pydantic import BaseModel
 from typing import Optional, List
 from pathlib import Path
@@ -62,10 +64,28 @@ from interfaces.telegram_api import router as telegram_router
 # APP
 # ============================================================
 
+from agent.customer_agent import process_customer_message
+
 app = FastAPI(
     title="JADZIA API",
     description="AI Agent do zarzadzania sklepem internetowym",
     version="1.0.0"
+)
+
+app.add_middleware(
+ CORSMiddleware,
+ allow_origins=[
+     "https://flexgrafik.nl", 
+     "https://www.flexgrafik.nl", 
+     "https://app.flexgrafik.nl", 
+     "https://zzpackage.flexgrafik.nl",
+     "https://api.zzpackage.flexgrafik.nl",
+     "http://localhost:3000",
+     "http://localhost:5173"
+ ],
+ allow_credentials=True,
+ allow_methods=["*"],
+ allow_headers=["*"],
 )
 
 if os.getenv("TELEGRAM_BOT_ENABLED", "") == "1":
@@ -102,6 +122,15 @@ class ChatResponse(BaseModel):
     response: str
     awaiting_input: bool
     input_type: Optional[str] = None
+
+
+class CustomerChatRequest(BaseModel):
+    session_id: str
+    message: str
+
+class CustomerChatResponse(BaseModel):
+    reply: str
+    lead: dict
 
 
 class StatusResponse(BaseModel):
@@ -1232,3 +1261,16 @@ async def estimate_cost(tokens: int = 1000):
 if __name__ == "__main__":
     import uvicorn
     uvicorn.run(app, host="0.0.0.0", port=8000)
+
+@app.post("/api/v1/widget/chat", response_model=CustomerChatResponse)
+async def customer_widget_chat(request: CustomerChatRequest):
+    try:
+        result = await process_customer_message(session_id=request.session_id, user_input=request.message)
+        if "error" in result:
+            from fastapi import HTTPException
+            raise HTTPException(status_code=500, detail=result["error"])
+        return CustomerChatResponse(reply=result.get("reply", ""), lead=result.get("lead", {}))
+    except Exception as e:
+        from fastapi import HTTPException
+        logger.error(f"[Widget] Blad /api/v1/widget/chat: {e}")
+        raise HTTPException(status_code=500, detail="Błąd sztucznej inteligencji AI.")

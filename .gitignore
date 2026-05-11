@@ -12,3 +12,8 @@ data/
 .vscode/
 .idea/
 temp_export/
+*.tar.gz
+*.zip
+*.bak
+ngrok.exe
+scratch/
