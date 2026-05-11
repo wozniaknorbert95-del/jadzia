@@ -1,8 +1,31 @@
 {
-  "project": "jadzia-core",
-  "last_updated": "2026-02-27",
-  "current_agent": null,
-  "tasks": [],
-  "completed": [],
-  "blocked_by": null
+  "project": "Jadzia-Core",
+  "last_updated": "2026-05-11",
+  "status": "active",
+  "tasks": [
+    {
+      "id": "CHAT-001",
+      "task": "Naprawa backendu czatbota (endpoint /api/v1/widget/chat)",
+      "status": "completed",
+      "priority": "critical",
+      "assigned_to": "Antigravity"
+    },
+    {
+      "id": "DEPLOY-001",
+      "task": "Wdrożenie poprawek na VPS",
+      "status": "completed",
+      "priority": "high",
+      "assigned_to": "Antigravity"
+    }
+  ],
+  "backlog": [
+    {
+      "task": "Monitorowanie logów agent.log pod kątem interakcji użytkowników",
+      "priority": "medium"
+    },
+    {
+      "task": "Implementacja zaawansowanego Lead Scoringu w oparciu o dane z WooCommerce",
+      "priority": "low"
+    }
+  ]
 }
