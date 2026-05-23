@@ -1,0 +1,5 @@
+default_agent: jadzia-builder
+agents:
+  - jadzia-builder
+deploy_policy:
+  autonomous: false

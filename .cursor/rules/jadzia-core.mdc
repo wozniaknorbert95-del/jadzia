@@ -1,5 +1,5 @@
 ---
-description: Guardrails for jadzia-core (AI operations) module
+description: Guardrails and CORE skill index for jadzia-core (AI operations)
 globs:
   - "**/*.py"
   - "**/*.md"
@@ -10,7 +10,22 @@ globs:
 # jadzia-core guardrails
 
 - Canonical module brain is `brain.md`. Canonical backlog is `todo.json`.
-- Any schema/data changes must be reflected in the module docs before code changes.
-- Deploy is manual-only by Dowodca (Zasada 11).
+- Any schema/data changes must be reflected in module docs before code changes.
+- Deploy is manual-only by Dowódca (Zasada 11).
 - End each meaningful session with a handoff note in `docs/handoffs/`.
 
+## CORE slash skills (Stage 2)
+
+| Skill | Workflow |
+|-------|----------|
+| `/vibe-init` | `.agents/workflows/vibe-init.md` |
+| `/blast` | `.agents/workflows/blast.md` |
+| `/debug` | `.agents/workflows/debug.md` |
+| `/audit-red-team` | `.agents/workflows/audit-red-team.md` |
+| `/handoff` | `.agents/workflows/handoff.md` |
+| `/context-reset` | `.agents/workflows/context-reset.md` |
+| `/jadzia-migrate` | `.agents/workflows/jadzia-migrate.md` |
+| `/jadzia-test` | `.agents/workflows/jadzia-test.md` |
+| `/jadzia-deploy` | `.agents/workflows/jadzia-deploy.md` |
+
+OpenCode: `.opencode/agents/jadzia-builder.yaml` — deploy_policy autonomous: false.
