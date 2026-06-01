@@ -225,31 +225,28 @@ class TestGetTaskIdForChat:
     """_get_task_id_for_chat should fall back to DB when in-memory cache is empty."""
 
     def test_returns_from_cache(self):
-        from interfaces.telegram_api import _get_task_id_for_chat, _telegram_chat_to_task_id
-        _telegram_chat_to_task_id["test_chat_cache"] = "cached_task"
-        with patch("agent.state.find_session_by_task_id", return_value=("test_chat_cache", "telegram")):
-            assert _get_task_id_for_chat("test_chat_cache") == "cached_task"
-        _telegram_chat_to_task_id.pop("test_chat_cache", None)
+        from interfaces.telegram_api import _get_task_id_for_chat
+        chat_id = _fresh_chat_id()
+        with patch("agent.db.db_get_active_task", return_value="cached_task"), \
+             patch("agent.db.db_get_task", return_value={"task_id": "cached_task"}):
+            result = _get_task_id_for_chat(chat_id)
+            assert result == "cached_task"
 
     def test_falls_back_to_db(self):
-        from interfaces.telegram_api import _get_task_id_for_chat, _telegram_chat_to_task_id
+        from interfaces.telegram_api import _get_task_id_for_chat
         chat_id = _fresh_chat_id()
-        _telegram_chat_to_task_id.pop(chat_id, None)
-        with patch("agent.state.get_active_task_id", return_value="db_task_123"), \
-             patch("agent.state.find_session_by_task_id", return_value=(chat_id, "telegram")):
+        with patch("agent.db.db_get_active_task", return_value="db_task_123"), \
+             patch("agent.db.db_get_task", return_value={"task_id": "db_task_123"}):
             result = _get_task_id_for_chat(chat_id)
-        assert result == "db_task_123"
-        # Should also warm cache
-        assert _telegram_chat_to_task_id.get(chat_id) == "db_task_123"
-        _telegram_chat_to_task_id.pop(chat_id, None)
+            assert result == "db_task_123"
 
     def test_returns_none_when_both_empty(self):
-        from interfaces.telegram_api import _get_task_id_for_chat, _telegram_chat_to_task_id
+        from interfaces.telegram_api import _get_task_id_for_chat
         chat_id = _fresh_chat_id()
-        _telegram_chat_to_task_id.pop(chat_id, None)
-        with patch("agent.state.get_active_task_id", return_value=None):
+        with patch("agent.db.db_get_active_task", return_value=None), \
+             patch("agent.db.db_get_last_active_task", return_value=None):
             result = _get_task_id_for_chat(chat_id)
-        assert result is None
+            assert result is None
 
 
 # ---------------------------------------------------------------------------

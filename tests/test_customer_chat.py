@@ -11,9 +11,9 @@ from agent.customer_agent import _customer_sessions_cache
 @pytest.fixture(autouse=True)
 async def clear_cache():
     """Fixture to clear the customer session cache before each test."""
-    await _customer_sessions_cache.clear()
+    _customer_sessions_cache.clear()
     yield
-    await _customer_sessions_cache.clear()
+    _customer_sessions_cache.clear()
 
 def test_customer_chat_endpoint_success():
     """
@@ -55,7 +55,7 @@ async def test_customer_chat_caching():
         result1 = await process_customer_message("test-session-cache", "First message")
 
         # Check if the history was stored in the cache
-        history1 = await _customer_sessions_cache.get("test-session-cache")
+        history1 = _customer_sessions_cache.get("test-session-cache")
         assert len(history1) == 2 # user message + assistant reply
         assert history1[0]["content"] == "First message"
         
@@ -63,8 +63,8 @@ async def test_customer_chat_caching():
         mock_create.return_value.content = [AsyncMock(text='{"reply": "Second reply", "lead": {}}')]
         result2 = await process_customer_message("test-session-cache", "Second message")
 
-        # Check history again, it should be longer
-        history2 = await _customer_sessions_cache.get("test-session-cache")
+# Check history again, it should be longer
+        history2 = _customer_sessions_cache.get("test-session-cache")
         assert len(history2) == 4
         assert history2[2]["content"] == "Second message"
         

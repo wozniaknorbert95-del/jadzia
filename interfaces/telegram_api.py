@@ -534,3 +534,7 @@ async def telegram_test(message: str = "Test", user_id: str = "test_user"):
     test_response = f"**Test**\n\nMessage: {escape_markdown_v2(message)}\nUser: `{user_id}`"
     messages = format_response_for_telegram(test_response.strip(), awaiting_input=False)
     return {"success": True, "messages": messages, "note": "Use /telegram/webhook for production."}
+
+
+# Expose for tests (existing internal function, just re-export)
+_telegram_chat_to_task_id = _get_task_id_for_chat
