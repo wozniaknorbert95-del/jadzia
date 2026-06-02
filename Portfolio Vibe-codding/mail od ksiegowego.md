@@ -1,0 +1,14 @@
+Drogi Norbercie,
+
+Dziękuję za otwartą i szczerą wiadomość. Doceniam, że napisał Pan wprost, jak wygląda Pana obecna sytuacja — to pozwala mi podejść do sprawy realnie, a nie tylko od strony formalnej, i właśnie takiej rozmowy Pan teraz potrzebuje.
+Chciałbym od razu zaproponować spotkanie w naszym biurze w Rotterdamie w przyszłym tygodniu, w wymiarze około 30 minut. Wolę porozmawiać z Panem na żywo, z dokumentami przed sobą, niż wymieniać się ogólnikami mailowo — Pana sytuacja zasługuje na rzetelną analizę, a nie szybką odpowiedź.
+Na spotkaniu omówimy całościowo:
+1. Pana sytuację podatkową za 2025 i bieżący 2026 — przejdę z Panem przez to, jakie ulgi i schematy realnie wchodzą w grę przy Pana strukturze przychodów i kosztów, a których niestety nie da się zastosować. Wolę powiedzieć Panu wprost, co Panu przysługuje, niż obiecywać coś, co potem mogłoby się okazać niemożliwe.
+2. Krótką prognozę finansową na najbliższe miesiące — przygotuję ją na podstawie Pana danych z Exact, w uproszczonej formie, tak żeby było dla Pana jasne, czego można się spodziewać i jaki jest realny obraz.
+3. Możliwości wsparcia finansowego z gminy — chcę być z Panem uczciwy: nasze biuro nie jest specjalistą od spraw socjalnych i nie prowadzimy w ramach abonamentu wniosków do gminy. Natomiast warto, żeby zwrócił Pan uwagę na Bbz (Besluit bijstand zelfstandigen) — to instrument prowadzony przez gminę Rotterdam, w ramach którego przedsiębiorcy mogą otrzymać nieoprocentowaną pożyczkę. Wniosek składa Pan bezpośrednio do Werk en Inkomen Rotterdam. Na spotkaniu powiem Panu, na co gmina będzie patrzeć przy ocenie wniosku i jakie dane z księgowości będą Panu potrzebne — w tym zakresie mogę Pana wesprzeć dokumentowo.
+4. Strategiczne pytania dotyczące samej firmy — chcę być z Panem szczery, bo traktuję naszą współpracę poważnie: po trzech latach działalności i przy obecnej strukturze przychodów warto wspólnie zastanowić się nad kierunkiem FlexGrafik. Nie po to, żeby Pana zniechęcać — wręcz przeciwnie, po to żeby ustawić firmę w sposób, który da Panu realną szansę na stabilność. Mam kilka konkretnych myśli na ten temat, ale wolę je przedstawić w rozmowie, nie mailowo.
+Proszę, żeby przed spotkaniem przygotował Pan, w miarę możliwości:
+— szacunek liczby godzin poświęconych w 2025 roku na działalność FlexGrafik (zlecenia, kontakt z klientami, administracja), bez liczenia czasu na naukę nowych umiejętności; to jest istotne dla oceny urencriterium,
+— krótki opis projektów FlexGrafik, które Pan obecnie kończy, z przewidywaną datą zakończenia i szacunkową wartością,
+— aktualny stan zobowiązań prywatnych i firmowych, jeśli jest Pan gotów to omówić — to pomoże mi realnie ocenić skalę potrzeby finansowej.
+Na koniec jedna rzecz, którą chcę powiedzieć wprost: cieszę się, że napisał Pan teraz, a nie za pół roku. Im wcześniej spojrzymy na sytuację, tym więcej mamy opcji. Proszę z tego skorzystać.

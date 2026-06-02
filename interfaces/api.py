@@ -130,7 +130,11 @@ class CustomerChatRequest(BaseModel):
 
 class CustomerChatResponse(BaseModel):
     reply: str
-    lead: dict
+    lead: dict = {}
+    lead_score: Optional[int] = None
+    intent: Optional[str] = None
+    category: Optional[str] = None
+    reason: Optional[str] = None
 
 
 class StatusResponse(BaseModel):
@@ -1269,7 +1273,14 @@ async def customer_widget_chat(request: CustomerChatRequest):
         if "error" in result:
             from fastapi import HTTPException
             raise HTTPException(status_code=500, detail=result["error"])
-        return CustomerChatResponse(reply=result.get("reply", ""), lead=result.get("lead", {}))
+        return CustomerChatResponse(
+            reply=result.get("reply", ""),
+            lead=result.get("lead", {}),
+            lead_score=result.get("lead_score"),
+            intent=result.get("intent"),
+            category=result.get("category"),
+            reason=result.get("reason"),
+        )
     except Exception as e:
         from fastapi import HTTPException
         logger.error(f"[Widget] Blad /api/v1/widget/chat: {e}")

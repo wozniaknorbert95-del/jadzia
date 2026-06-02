@@ -80,6 +80,7 @@ def _send_telegram_alert_sync(message: str) -> None:
         logger.error(f"[CustomerAgent] TG Alert Błąd: {e}")
 
 from agent.agent import MODEL_HAIKU
+from core.lead_scoring import LeadScorer
 
 async def process_customer_message(session_id: str, user_input: str) -> Dict[str, Any]:
     fallback = {"reply": "Chwilowe problemy techniczne. Wyślij formularz.", "lead": {"score":0, "intent":"low", "category":"problem", "reason":"Błąd/Timeout"}}
@@ -106,7 +107,6 @@ async def process_customer_message(session_id: str, user_input: str) -> Dict[str
         raw_text = response.content[0].text.strip()
         logger.debug(f"[CustomerAgent] Odpowiedź z Claude (raw): {raw_text}")
         
-        # Claude czasem dodaje tekst poza JSONem, wyciągamy tylko JSON
         if "{" in raw_text:
             raw_text = raw_text[raw_text.find("{"):raw_text.rfind("}")+1]
             
@@ -114,7 +114,6 @@ async def process_customer_message(session_id: str, user_input: str) -> Dict[str
             parsed = json.loads(raw_text)
         except json.JSONDecodeError:
             logger.error(f"[CustomerAgent] Błąd parsowania JSON: {raw_text}")
-            # Próba ratowania - jeśli nie ma JSONa, to weź całą odpowiedź jako reply
             parsed = {"reply": raw_text, "lead": {"score": 10, "intent": "low", "category": "informacja", "reason": "Błąd parsowania AI"}}
 
         lead_info = parsed.get("lead", {})
@@ -131,7 +130,18 @@ async def process_customer_message(session_id: str, user_input: str) -> Dict[str
         
         async with _cache_lock:
             _customer_sessions_cache[session_id] = history
-            
+
+        try:
+            scorer = LeadScorer()
+            lead_result = scorer.compute(user_input, history)
+            parsed["lead_score"] = lead_result["lead_score"]
+            parsed["intent"] = lead_result["intent"]
+            parsed["category"] = lead_result["category"]
+            parsed["reason"] = lead_result["reason"]
+        except Exception as e:
+            logger.error(f"[CustomerAgent] LeadScorer błąd: {type(e).__name__} - {e}", exc_info=True)
+            return {"error": "system_temporarily_unavailable", "code": 503}
+
         return parsed
     except Exception as e:
         logger.error(f"[CustomerAgent] Błąd przetwarzania wiadomości (sesja: {session_id}): {type(e).__name__} - {e}", exc_info=True)

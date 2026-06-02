@@ -1,0 +1,33 @@
+[GOAL]
+Connect LeadScoring service with Customer Agent and generate dynamic AI responses.
+
+[TARGET]
+- agent/customer_agent.py – invoke LeadScorer for each message
+- Add lead_score / intent / category / reason to response payload
+- Global error handling for LeadScorer failures
+- tests/unit/test_lead_scoring_integration.py (4 new asserts)
+
+[LOGIC]
+# 1. Import LeadScorer
+from core.lead_scoring import LeadScorer
+
+# 2. Inside process_customer_message:
+   scorer = LeadScorer()
+   result = scorer.compute(user_message, history)
+   # Append fields to response
+   response = {
+       "reply": ...,  # existing AI reply
+       "lead_score": result["lead_score"],
+       "intent": result["intent"],
+       "category": result["category"],
+       "reason": result["reason"]
+   }
+
+# 3. If scorer raises any exception → return JSON error:
+   {"error":"system_temporarily_unavailable","code":503}
+
+# 4. Tests:
+   - test_score_is_passed_to_reply()
+   - test_intent_high_triggers_urgent_reply()
+   - test_fallback_error_handling()
+   - test_basic_low_intent_processing()

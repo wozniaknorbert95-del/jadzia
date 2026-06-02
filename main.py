@@ -19,8 +19,10 @@ sys.path.insert(0, str(PROJECT_DIR))
 # Utwórz folder data jeśli nie istnieje
 (PROJECT_DIR / "data").mkdir(exist_ok=True)
 
-# Import aplikacji FastAPI
-from interfaces.api import app
+# Import aplikacji FastAPI z nowej struktury
+from api.app import create_app
+
+app = create_app()
 
 # Eksportuj app dla uvicorn
 __all__ = ["app"]
@@ -46,7 +48,12 @@ def main():
         host=host,
         port=port,
         reload=True,
-        reload_dirs=[str(PROJECT_DIR / "agent"), str(PROJECT_DIR / "interfaces")]
+        reload_dirs=[
+            str(PROJECT_DIR / "agent"),
+            str(PROJECT_DIR / "interfaces"),
+            str(PROJECT_DIR / "core"),
+            str(PROJECT_DIR / "api"),
+        ]
     )
 
 
