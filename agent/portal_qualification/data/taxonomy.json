@@ -1,0 +1,109 @@
+{
+  "schema_version": "qual_v1",
+  "updated": "2026-06-25",
+  "locale": "nl-NL",
+  "enums": {
+    "industry": {
+      "values": ["bouw", "techniek", "schoonmaak", "installatie", "hovenier", "overig"],
+      "labels_nl": {
+        "bouw": "Bouw",
+        "techniek": "Techniek",
+        "schoonmaak": "Schoonmaak",
+        "installatie": "Installatie",
+        "hovenier": "Hovenier",
+        "overig": "Anders"
+      },
+      "synonyms_nl": {
+        "bouw": ["bouw", "aannemer", "klusbedrijf", "timmer", "metsel"],
+        "techniek": ["techniek", "monteur", "elektra", "loodgieter", "hvac"],
+        "schoonmaak": ["schoonmaak", "schoonmaker", "glazenwasser", "kantoor schoonmaak"],
+        "installatie": ["installatie", "installateur", "zonnepanelen", "airco"],
+        "hovenier": ["hovenier", "tuin", "groen", "landschap"],
+        "overig": ["anders", "overig", "weet niet", "iets anders"]
+      }
+    },
+    "goal": {
+      "values": ["meer_klanten", "professioneler_imago", "voertuig_reclame", "vloot_groei"],
+      "labels_nl": {
+        "meer_klanten": "Meer klanten",
+        "professioneler_imago": "Professioneler imago",
+        "voertuig_reclame": "Voertuig reclame",
+        "vloot_groei": "Vloot / meerdere voertuigen"
+      },
+      "synonyms_nl": {
+        "meer_klanten": ["meer klanten", "klanten", "omzet", "groei"],
+        "professioneler_imago": ["professioneel", "imago", "serieus", "uitstraling"],
+        "voertuig_reclame": ["voertuig", "bus reclame", "auto belettering", "wrap"],
+        "vloot_groei": ["vloot", "meerdere bussen", "flota", "team voertuigen"]
+      }
+    },
+    "vehicle": {
+      "values": ["geen", "auto", "bus", "vloot"],
+      "labels_nl": {
+        "geen": "Nog geen voertuig",
+        "auto": "Personenauto",
+        "bus": "Bedrijfsbus",
+        "vloot": "Meerdere voertuigen"
+      },
+      "synonyms_nl": {
+        "geen": ["geen", "nee", "nog niet", "niet"],
+        "auto": ["auto", "personenauto", "caddy"],
+        "bus": ["bus", "bedrijfsbus", "bestelbus", "transporter"],
+        "vloot": ["vloot", "meerdere", "2 bussen", "flota"]
+      }
+    },
+    "budget_tier": {
+      "values": ["onder_300", "300_700", "700_plus", "onbekend"],
+      "labels_nl": {
+        "onder_300": "Onder €300",
+        "300_700": "€300 – €700",
+        "700_plus": "€700+",
+        "onbekend": "Weet ik nog niet"
+      },
+      "synonyms_nl": {
+        "onder_300": ["onder 300", "klein budget", "goedkoop", "<300"],
+        "300_700": ["300-700", "300 tot 700", "middel"],
+        "700_plus": ["700+", "boven 700", "groot budget", "premium"],
+        "onbekend": ["weet niet", "geen idee", "later"]
+      }
+    }
+  },
+  "steps": {
+    "greeting": {
+      "step_next": "q1_industry",
+      "question_nl": "Hoi! Ik ben een AI-assistent van FlexGrafik. In welke branche werk je?",
+      "slot": null
+    },
+    "q1_industry": {
+      "step_next": "q2_goal",
+      "question_nl": "Wat is je belangrijkste doel?",
+      "slot": "industry"
+    },
+    "q2_goal": {
+      "step_next": "q3_vehicle",
+      "question_nl": "Wat is je belangrijkste doel?",
+      "slot": "goal"
+    },
+    "q3_vehicle": {
+      "step_next": "q4_budget",
+      "question_nl": "Heb je een bedrijfsbus, auto of meerdere voertuigen voor reclame?",
+      "slot": "vehicle"
+    },
+    "q4_budget": {
+      "step_next": "recommend",
+      "question_nl": "Wat is je globale budgetindicatie?",
+      "slot": "budget_tier"
+    },
+    "recommend": {
+      "step_next": "done",
+      "question_nl": null,
+      "slot": null
+    }
+  },
+  "preset_rules_ssot": "zzpackage.flexgrafik.nl/system/data/preset-manifest.json",
+  "utm_defaults": {
+    "utm_source": "portal_qual",
+    "utm_medium": "chat",
+    "utm_campaign": "homepage"
+  }
+}

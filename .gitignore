@@ -7,7 +7,10 @@ __pycache__/
 *.key
 *.pem
 data/
+!agent/portal_qualification/data/
+!agent/portal_qualification/data/*.json
 *.lock
+!requirements.lock
 *.log
 .vscode/
 .idea/
