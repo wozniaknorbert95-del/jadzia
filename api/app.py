@@ -47,6 +47,7 @@ def create_app() -> FastAPI:
 
     # ── Register routers ──
     from api.routes.chat import router as chat_router
+    from api.routes.portal_qualify import router as portal_qualify_router
     from api.routes.health import router as health_router
     from api.routes.worker import router as worker_router
     from api.routes.dashboard import router as dashboard_router
@@ -54,6 +55,7 @@ def create_app() -> FastAPI:
     from api.routes.sessions import router as sessions_router
 
     app.include_router(chat_router)
+    app.include_router(portal_qualify_router)
     app.include_router(health_router)
     app.include_router(worker_router)
     app.include_router(dashboard_router)
@@ -142,7 +144,7 @@ async def _worker_loop():
                 OperationStatus,
                 find_task_by_id,
             )
-            from agent.agent import process_message
+            from core.agent import process_message
 
             _log.debug("[worker_loop] iteration %s start", iter_num)
             try:

@@ -36,6 +36,36 @@ class CustomerChatResponse(BaseModel):
     reason: Optional[str] = None
 
 
+class PortalQualifyUiSuggestion(BaseModel):
+    value: str
+    label_nl: str
+
+
+class PortalQualifyCta(BaseModel):
+    type: str
+    label_nl: str
+    url: str
+
+
+class PortalQualifyRequest(BaseModel):
+    session_id: str
+    message: str = ""
+    step: Optional[str] = None
+    consent_lead_storage: bool = False
+
+
+class PortalQualifyResponse(BaseModel):
+    schema_version: str = "qual_v1"
+    reply: str
+    step_next: str
+    ui_suggestions: List[PortalQualifyUiSuggestion] = Field(default_factory=list)
+    qualification_profile: Dict[str, Optional[str]] = Field(default_factory=dict)
+    recommended_preset_id: Optional[str] = None
+    wizard_deep_link: Optional[str] = None
+    cta: Optional[PortalQualifyCta] = None
+    lead_saved: bool = False
+
+
 class StatusResponse(BaseModel):
     status: str
     operation: Optional[dict] = None

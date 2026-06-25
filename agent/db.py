@@ -122,6 +122,27 @@ def _init_schema(conn: sqlite3.Connection):
         ON tasks(task_id)
     """)
 
+    # Portal qualification leads (INT-012)
+    conn.execute("""
+        CREATE TABLE IF NOT EXISTS portal_qual_leads (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            session_id TEXT NOT NULL,
+            industry TEXT,
+            goal TEXT,
+            vehicle TEXT,
+            budget_tier TEXT,
+            recommended_preset_id TEXT NOT NULL,
+            source TEXT NOT NULL DEFAULT 'portal_qual',
+            consent INTEGER NOT NULL DEFAULT 1,
+            created_at TEXT NOT NULL,
+            expires_at TEXT
+        )
+    """)
+    conn.execute("""
+        CREATE INDEX IF NOT EXISTS idx_portal_qual_session
+        ON portal_qual_leads(session_id)
+    """)
+
     conn.commit()
 
 
