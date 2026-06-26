@@ -2,9 +2,11 @@
 
 from __future__ import annotations
 
-from typing import Any, Dict, List, Optional
+from typing import Any, Dict, List, Literal, Optional
 
-from pydantic import BaseModel, ConfigDict, Field
+import re
+
+from pydantic import BaseModel, ConfigDict, Field, field_validator
 
 
 # ──────────────────────────────────────────────
@@ -52,6 +54,75 @@ class PortalQualifyRequest(BaseModel):
     message: str = ""
     step: Optional[str] = None
     consent_lead_storage: bool = False
+
+
+class WooOrderItem(BaseModel):
+    sku: str
+    qty: int = Field(ge=1)
+    price: float = Field(ge=0)
+
+
+class WooOrderCustomer(BaseModel):
+    email: str
+    name: str = ""
+
+
+class WooOrderWebhookRequest(BaseModel):
+    """INT-002 inbound payload from zzpackage WooCommerce."""
+
+    order_id: str = Field(min_length=1)
+    status: Literal["processing", "completed"]
+    items: List[WooOrderItem] = Field(min_length=1)
+    customer: WooOrderCustomer
+    total_gross: float = Field(ge=0)
+    payment_id: str = ""
+
+    @field_validator("order_id", "payment_id", mode="before")
+    @classmethod
+    def _strip_strings(cls, v: object) -> object:
+        if isinstance(v, str):
+            return v.strip()
+        return v
+
+
+class WooOrderWebhookResponse(BaseModel):
+    """INT-002 response contract."""
+
+    db_status: Literal["success", "fail"]
+    order_internal_id: str = ""
+
+
+class LeadCreateRequest(BaseModel):
+    """INT-004 inbound payload from app.flexgrafik.nl."""
+
+    email: str = Field(min_length=3)
+    name: str = ""
+    source: Literal["game", "web"] = "game"
+    consent_status: bool
+    game_score: Optional[int] = Field(default=None, ge=0)
+    reward_tier: Optional[str] = None
+
+    @field_validator("email")
+    @classmethod
+    def _validate_email(cls, v: str) -> str:
+        v = v.strip().lower()
+        if not re.match(r"^[^@\s]+@[^@\s]+\.[^@\s]+$", v):
+            raise ValueError("invalid email format")
+        return v
+
+    @field_validator("name", "reward_tier", mode="before")
+    @classmethod
+    def _strip_optional_strings(cls, v: object) -> object:
+        if isinstance(v, str):
+            return v.strip()
+        return v
+
+
+class LeadCreateResponse(BaseModel):
+    """INT-004 / lead_node output."""
+
+    lead_id: str = ""
+    sync_status: Literal["success", "duplicate", "fail"]
 
 
 class PortalQualifyResponse(BaseModel):

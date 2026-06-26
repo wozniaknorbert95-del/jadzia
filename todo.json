@@ -1,56 +1,91 @@
 {
   "project": "Jadzia-Core",
-  "last_updated": "2026-06-26 (COI docs alignment)",
+  "last_updated": "2026-06-26 (DEPLOY-01 gate active; P1-01 implemented, blocked until deploy proof)",
   "status": "active",
   "plan": "docs/plans/PLAN-COI-PHASE-A.md",
+  "active_gate": "DEPLOY-01",
+  "active_plan": "docs/plans/PLAN-DEPLOY-INT-002.md",
+  "next_human": "DEPLOY-01: Fazy 1-5 w PLAN-DEPLOY-INT-002.md (sekrety, jadzia deploy, smoke curl, theme, Mollie test)",
+  "next_agent": "Po DEPLOY-01 completed: DEPLOY-02 prep + P1-02 analytics_node. P1-01 kod gotowy — czeka na deploy gate.",
+  "agent_rule": "Nie deployuj autonomicznie (Zasada 11). Nie oznaczaj DEPLOY-01 completed bez E2E proof w handoff.",
   "sprints": {
     "remediation": "completed",
-    "coi_phase_a": "active"
+    "coi_phase_a": "active",
+    "deploy_int_002": "in_progress"
   },
   "tasks": [
+    {
+      "id": "DEPLOY-01",
+      "sprint": "COI Phase A — Revenue PROOF",
+      "task": "E2E deploy INT-002: jadzia VPS + zzpackage wp-config/theme + Mollie test → wiersz w orders",
+      "status": "in_progress",
+      "priority": "critical",
+      "owner": "human",
+      "checklist": "docs/plans/PLAN-DEPLOY-INT-002.md",
+      "blocks": ["P1-01-deploy", "P1-02", "DEPLOY-02"]
+    },
+    {
+      "id": "DEPLOY-02",
+      "sprint": "COI Phase A — Growth PROOF",
+      "task": "E2E deploy INT-004: app → POST /api/v1/leads → wiersz w leads (po P1-01 kod)",
+      "status": "blocked",
+      "priority": "high",
+      "owner": "human",
+      "blocked_by": "DEPLOY-01",
+      "checklist": "docs/handoffs/TEMPLATE-deploy-int-004-proof.md"
+    },
+    {
+      "id": "P0-01",
+      "sprint": "COI Phase A — Revenue",
+      "task": "order_node + POST /webhooks/woocommerce/order (INT-002)",
+      "status": "completed",
+      "priority": "critical"
+    },
+    {
+      "id": "P0-02",
+      "sprint": "COI Phase A — Revenue",
+      "task": "Schema orders w jadzia.db + migracja",
+      "status": "completed",
+      "priority": "critical"
+    },
+    {
+      "id": "P0-03",
+      "sprint": "COI Phase A — Revenue",
+      "task": "WC webhook sender zzpackage (fg-jadzia-order-webhook.php)",
+      "status": "completed",
+      "priority": "critical",
+      "note": "Deploy theme + wp-config = DEPLOY-01"
+    },
+    {
+      "id": "P1-01",
+      "sprint": "COI Phase A — Growth",
+      "task": "lead_node + POST /api/v1/leads (INT-004)",
+      "status": "completed",
+      "priority": "medium",
+      "note": "Kod gotowy; E2E proof = DEPLOY-02 po DEPLOY-01"
+    },
+    {
+      "id": "P1-01-deploy",
+      "sprint": "COI Phase A — Growth",
+      "task": "Weryfikacja P1-01 na prod (blocked by DEPLOY-01 gate closure)",
+      "status": "blocked",
+      "priority": "medium",
+      "blocked_by": "DEPLOY-01"
+    },
+    {
+      "id": "P1-02",
+      "sprint": "COI Phase A — Growth",
+      "task": "analytics_node + GET /api/v1/analytics/snapshot",
+      "status": "blocked",
+      "priority": "medium",
+      "blocked_by": "DEPLOY-01"
+    },
     {
       "id": "D2-01",
       "sprint": "Docs — COI sync",
       "task": "Sync brain.md, PRD-core.md, AGENTS.md z module-jadzia-core.md (COI charter)",
       "status": "completed",
       "priority": "high"
-    },
-    {
-      "id": "P0-01",
-      "sprint": "COI Phase A — Revenue",
-      "task": "order_node + POST /webhooks/woocommerce/order (INT-002)",
-      "status": "pending",
-      "priority": "critical",
-      "risk": "Requires /blast contract before /implement"
-    },
-    {
-      "id": "P0-02",
-      "sprint": "COI Phase A — Revenue",
-      "task": "Schema orders w jadzia.db + migracja",
-      "status": "pending",
-      "priority": "critical"
-    },
-    {
-      "id": "P0-03",
-      "sprint": "COI Phase A — Revenue",
-      "task": "WC webhook config na zzpackage (checklist Dowódcy)",
-      "status": "blocked",
-      "priority": "critical",
-      "risk": "Wymaga konfiguracji WooCommerce po stronie zzpackage"
-    },
-    {
-      "id": "P1-01",
-      "sprint": "COI Phase A — Growth",
-      "task": "lead_node + POST /api/v1/leads (game lead sync)",
-      "status": "pending",
-      "priority": "medium"
-    },
-    {
-      "id": "P1-02",
-      "sprint": "COI Phase A — Growth",
-      "task": "analytics_node + GET /api/v1/analytics/snapshot",
-      "status": "pending",
-      "priority": "medium"
     },
     {
       "id": "S1-01",

@@ -77,21 +77,21 @@ queued → planning → reading_files → generating_code
 | Dashboard metrics | `api/routes/dashboard.py` |
 | Cost tracking | `api/routes/costs.py` |
 
-### COI nodes (Phase A — PLANNED)
+### COI nodes (Phase A)
 
-| Node | Priority | Contract |
-|------|----------|----------|
-| `order_node` | **P0** | INT-002 WC webhook |
-| `lead_node` | P1 | Game lead API |
-| `analytics_node` | P1 | GA4 snapshot |
-| `content_calendar_node` | P2 | Social schedule |
+| Node | Priority | Contract | Status |
+|------|----------|----------|--------|
+| `order_node` | **P0** | INT-002 WC webhook | LIVE |
+| `lead_node` | P1 | Game lead API | LIVE (receiver); DEPLOY-02 E2E pending |
+| `analytics_node` | P1 | GA4 snapshot | PLANNED |
+| `content_calendar_node` | P2 | Social schedule | PLANNED |
 
 ### Infrastructure
 
 | Feature | Status |
 |---------|--------|
-| `POST /webhooks/woocommerce/order` | PLANNED (P0) |
-| `orders` table in `jadzia.db` | PLANNED (P0) |
+| `POST /webhooks/woocommerce/order` | LIVE |
+| `orders` table in `jadzia.db` | LIVE |
 | `GET /worker/dashboard` | LIVE |
 | `GET /health`, `/worker/health` | LIVE |
 

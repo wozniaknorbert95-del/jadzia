@@ -35,9 +35,9 @@ Szczegóły charter: `flexgrafik-meta/docs/core/jadzia-operating-charter.md`
 
 | Element | Kontrakt | Status |
 |---------|----------|--------|
-| Order ingestion | INT-002 `POST /webhooks/woocommerce/order` | PLANNED |
-| `order_node` | `flexgrafik-meta/docs/core/agent-cards-jadzia.md` | PLANNED |
-| `orders` table | `jadzia.db` schema | PLANNED |
+| Order ingestion | INT-002 `POST /webhooks/woocommerce/order` | LIVE |
+| `order_node` | `agent/nodes/order_node.py` | LIVE |
+| `orders` table | `jadzia.db` — `agent/db.py` | LIVE |
 
 Plan wykonania: `docs/plans/PLAN-COI-PHASE-A.md`
 
@@ -53,9 +53,9 @@ Plan wykonania: `docs/plans/PLAN-COI-PHASE-A.md`
 | ID | Kierunek | Status |
 |----|----------|--------|
 | INT-001 | Wizard → widget chat | LIVE |
-| INT-002 | WC → order webhook | PLANNED |
+| INT-002 | WC → order webhook | LIVE (receiver); zzpackage sender P0-03 |
 | INT-003 | Game → Wizard coupon | LIVE (app side) |
-| Game lead sync | app → jadzia | PLANNED |
+| Game lead sync | app → jadzia `POST /api/v1/leads` | LIVE (receiver); DEPLOY-02 E2E pending |
 
 Pełne kontrakty: `flexgrafik-meta/docs/core/integration-contracts.md`
 

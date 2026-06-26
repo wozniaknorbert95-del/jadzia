@@ -65,6 +65,8 @@ class TestRouteRegistration:
             ("POST", "/chat"),
             ("POST", "/api/v1/widget/chat"),
             ("POST", "/api/v1/portal/qualify"),
+            ("POST", "/api/v1/leads"),
+            ("POST", "/webhooks/woocommerce/order"),
             ("POST", "/worker/task"),
             ("GET", "/worker/task/{task_id}"),
             ("POST", "/worker/task/{task_id}/input"),
@@ -91,7 +93,7 @@ class TestRouteRegistration:
 
     def test_telegram_router_not_included_by_default(self, app):
         routes = _get_routes(app)
-        telegram = {r for r in routes if "telegram" in r[1].lower() or "webhook" in r[1].lower()}
+        telegram = {r for r in routes if "telegram" in r[1].lower()}
         assert len(telegram) == 0, f"Telegram routes present without env: {telegram}"
 
 

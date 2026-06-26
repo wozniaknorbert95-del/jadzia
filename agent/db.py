@@ -143,6 +143,53 @@ def _init_schema(conn: sqlite3.Connection):
         ON portal_qual_leads(session_id)
     """)
 
+    # WooCommerce orders mirror (INT-002)
+    conn.execute("""
+        CREATE TABLE IF NOT EXISTS orders (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            order_id TEXT NOT NULL UNIQUE,
+            status TEXT NOT NULL,
+            items_json TEXT NOT NULL,
+            customer_email TEXT,
+            customer_name TEXT,
+            total_gross REAL NOT NULL,
+            payment_id TEXT,
+            created_at TEXT NOT NULL,
+            updated_at TEXT NOT NULL
+        )
+    """)
+    conn.execute("""
+        CREATE INDEX IF NOT EXISTS idx_orders_status
+        ON orders(status)
+    """)
+    conn.execute("""
+        CREATE INDEX IF NOT EXISTS idx_orders_created_at
+        ON orders(created_at)
+    """)
+
+    # Game / web leads (INT-004)
+    conn.execute("""
+        CREATE TABLE IF NOT EXISTS leads (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            email TEXT NOT NULL UNIQUE,
+            name TEXT,
+            source TEXT NOT NULL DEFAULT 'game',
+            consent_status INTEGER NOT NULL DEFAULT 0,
+            game_score INTEGER,
+            reward_tier TEXT,
+            created_at TEXT NOT NULL,
+            updated_at TEXT NOT NULL
+        )
+    """)
+    conn.execute("""
+        CREATE INDEX IF NOT EXISTS idx_leads_source
+        ON leads(source)
+    """)
+    conn.execute("""
+        CREATE INDEX IF NOT EXISTS idx_leads_created_at
+        ON leads(created_at)
+    """)
+
     conn.commit()
 
 
@@ -761,6 +808,220 @@ def db_mark_tasks_failed(task_ids: List[str], reason: str) -> Dict[str, Any]:
         "skipped_terminal": skipped_terminal,
         "not_found": not_found,
     }
+
+
+# ============================================================================
+# ORDER OPERATIONS (INT-002)
+# ============================================================================
+
+def db_upsert_order(order_data: Dict) -> Optional[str]:
+    """
+    Insert or update a WooCommerce order mirror row.
+
+    Args:
+        order_data: Dict with order_id, status, items (list), customer (dict),
+                    total_gross, payment_id (optional).
+
+    Returns:
+        order_internal_id as string on success, None on failure.
+    """
+    order_id = order_data.get("order_id")
+    if not order_id:
+        return None
+
+    now = datetime.now(timezone.utc).isoformat()
+    items = order_data.get("items") or []
+    customer = order_data.get("customer") or {}
+
+    try:
+        with db_transaction() as conn:
+            existing = conn.execute(
+                "SELECT id, created_at FROM orders WHERE order_id = ?",
+                (order_id,),
+            ).fetchone()
+
+            if existing:
+                conn.execute(
+                    """
+                    UPDATE orders SET
+                        status = ?,
+                        items_json = ?,
+                        customer_email = ?,
+                        customer_name = ?,
+                        total_gross = ?,
+                        payment_id = ?,
+                        updated_at = ?
+                    WHERE order_id = ?
+                    """,
+                    (
+                        order_data["status"],
+                        json.dumps(items),
+                        customer.get("email"),
+                        customer.get("name"),
+                        order_data["total_gross"],
+                        order_data.get("payment_id"),
+                        now,
+                        order_id,
+                    ),
+                )
+                internal_id = str(existing["id"])
+            else:
+                cursor = conn.execute(
+                    """
+                    INSERT INTO orders (
+                        order_id, status, items_json,
+                        customer_email, customer_name,
+                        total_gross, payment_id,
+                        created_at, updated_at
+                    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+                    """,
+                    (
+                        order_id,
+                        order_data["status"],
+                        json.dumps(items),
+                        customer.get("email"),
+                        customer.get("name"),
+                        order_data["total_gross"],
+                        order_data.get("payment_id"),
+                        now,
+                        now,
+                    ),
+                )
+                internal_id = str(cursor.lastrowid)
+
+        return internal_id
+    except Exception as e:
+        import logging
+        logging.getLogger(__name__).error(
+            "[DB] db_upsert_order failed order_id=%s: %s", order_id, e
+        )
+        return None
+
+
+def db_get_order_by_wc_id(order_id: str) -> Optional[Dict]:
+    """Get order by WooCommerce order_id."""
+    conn = get_connection()
+    row = conn.execute(
+        "SELECT * FROM orders WHERE order_id = ?", (order_id,)
+    ).fetchone()
+    if not row:
+        return None
+    return _row_to_order_dict(row)
+
+
+def db_get_order_by_internal_id(internal_id: int) -> Optional[Dict]:
+    """Get order by internal autoincrement id."""
+    conn = get_connection()
+    row = conn.execute(
+        "SELECT * FROM orders WHERE id = ?", (internal_id,)
+    ).fetchone()
+    if not row:
+        return None
+    return _row_to_order_dict(row)
+
+
+def _row_to_order_dict(row: sqlite3.Row) -> Dict:
+    """Convert orders row to dict with parsed items."""
+    order = dict(row)
+    order["order_internal_id"] = str(order.pop("id"))
+    if order.get("items_json"):
+        try:
+            order["items"] = json.loads(order["items_json"])
+        except Exception:
+            order["items"] = []
+    else:
+        order["items"] = []
+    order.pop("items_json", None)
+    order["customer"] = {
+        "email": order.pop("customer_email", None),
+        "name": order.pop("customer_name", None),
+    }
+    return order
+
+
+# ============================================================================
+# LEAD OPERATIONS (INT-004)
+# ============================================================================
+
+def db_create_lead(lead_data: Dict) -> tuple[Optional[str], str]:
+    """
+    Insert a lead if email is unique.
+
+    Returns:
+        (lead_id, sync_status) where sync_status is success|duplicate|fail
+    """
+    email = (lead_data.get("email") or "").strip().lower()
+    if not email:
+        return None, "fail"
+
+    if not lead_data.get("consent_status"):
+        return None, "fail"
+
+    now = datetime.now(timezone.utc).isoformat()
+
+    try:
+        with db_transaction() as conn:
+            existing = conn.execute(
+                "SELECT id FROM leads WHERE email = ?", (email,)
+            ).fetchone()
+            if existing:
+                return str(existing["id"]), "duplicate"
+
+            cursor = conn.execute(
+                """
+                INSERT INTO leads (
+                    email, name, source, consent_status,
+                    game_score, reward_tier, created_at, updated_at
+                ) VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+                """,
+                (
+                    email,
+                    lead_data.get("name"),
+                    lead_data.get("source", "game"),
+                    1,
+                    lead_data.get("game_score"),
+                    lead_data.get("reward_tier"),
+                    now,
+                    now,
+                ),
+            )
+            return str(cursor.lastrowid), "success"
+    except Exception as e:
+        import logging
+        logging.getLogger(__name__).error(
+            "[DB] db_create_lead failed email=%s: %s", email[:3] + "***", e
+        )
+        return None, "fail"
+
+
+def db_get_lead_by_email(email: str) -> Optional[Dict]:
+    """Get lead by email (normalized lowercase)."""
+    conn = get_connection()
+    row = conn.execute(
+        "SELECT * FROM leads WHERE email = ?", (email.strip().lower(),)
+    ).fetchone()
+    if not row:
+        return None
+    return _row_to_lead_dict(row)
+
+
+def db_get_lead_by_id(lead_id: int) -> Optional[Dict]:
+    """Get lead by internal id."""
+    conn = get_connection()
+    row = conn.execute(
+        "SELECT * FROM leads WHERE id = ?", (lead_id,)
+    ).fetchone()
+    if not row:
+        return None
+    return _row_to_lead_dict(row)
+
+
+def _row_to_lead_dict(row: sqlite3.Row) -> Dict:
+    """Convert leads row to dict."""
+    lead = dict(row)
+    lead["lead_id"] = str(lead.pop("id"))
+    lead["consent_status"] = bool(lead.get("consent_status"))
+    return lead
 
 
 # ============================================================================
