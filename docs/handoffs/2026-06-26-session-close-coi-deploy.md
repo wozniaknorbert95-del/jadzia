@@ -39,6 +39,8 @@ Run anytime on VPS:
 bash /root/jadzia/deployment/prod-smoke.sh
 ```
 
+**Smoke 2026-06-26:** `pass=5 fail=0` — health, analytics (degraded), calendar list+create, WC secret.
+
 ---
 
 ## Gates — honest status
@@ -55,7 +57,10 @@ bash /root/jadzia/deployment/prod-smoke.sh
 
 ## Git
 
-Commit + push na `master` w tej sesji (jadzia-core + flexgrafik-meta contracts).
+| Repo | Commit |
+|------|--------|
+| jadzia-core | `8143d7d` master (pushed) |
+| flexgrafik-meta | `45f791d` main (pushed) |
 
 ---
 
