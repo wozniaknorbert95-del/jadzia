@@ -33,8 +33,8 @@ app saveLead → zzpackage /wp-json/fg/v1/leads → MySQL + fg_jadzia_sync_lead 
 
 ## App repo (uncommitted)
 
-- `fg-game-api.php` — INT-004 forward
-- `storageService.ts`, `App.tsx`, `leadRewardTier.ts` — payload + analytics
+- ~~`fg-game-api.php` — INT-004 forward~~ → **committed** `c7091cb` on `feat/int-004-lead-sync-coi`
+- PR: https://github.com/wozniaknorbert95-del/app.flexgrafik.nl/pull/119
 - Handoff: `app.flexgrafik.nl/docs/handoffs/2026-06-26-deploy-int-004-leads.md`
 
 ## Rollback
