@@ -23,7 +23,7 @@ from agent.state import (
     update_operation_status,
     OperationStatus,
 )
-from interfaces.api import app
+from api.app import create_app; app = create_app()
 
 CHAT_A = "concurrent_chat_a"
 CHAT_B = "concurrent_chat_b"

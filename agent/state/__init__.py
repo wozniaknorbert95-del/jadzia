@@ -1,0 +1,40 @@
+from agent.state._config import OperationStatus
+from agent.state._helpers import _check_invariants, migrate_state_to_multitask
+from agent.state.locks import LockError, agent_lock, force_unlock, is_locked
+from agent.state.core import (
+    archive_state,
+    clear_state,
+    get_pending_operation_summary,
+    has_pending_operation,
+    load_state,
+    save_state,
+)
+from agent.state.tasks import (
+    add_error,
+    add_task_to_queue,
+    cleanup_old_sessions,
+    clear_active_task_and_advance,
+    clear_pending_plan,
+    create_operation,
+    find_session_by_task_id,
+    find_task_by_id,
+    get_active_task_id,
+    get_awaiting_approval_task_id,
+    get_backups,
+    get_current_status,
+    get_next_task_from_queue,
+    get_operation_id,
+    get_pending_plan,
+    get_stored_contents,
+    get_stored_diffs,
+    is_dry_run,
+    is_test_mode,
+    list_active_sessions,
+    mark_file_written,
+    mark_task_completed,
+    set_awaiting_response,
+    set_pending_plan,
+    store_diffs,
+    store_new_contents,
+    update_operation_status,
+)

@@ -1,0 +1,100 @@
+AUDYT jadzia-core — Raport Kompleksowy
+Data: 2026-06-02 | Scope: pełne repozytorium | Metoda: analiza wszystkich 60+ plików źródłowych
+🔴 Poziom 1 — Krytyczne (natychmiastowe działanie)
+S1. LIVE SECRETS w .env skomitowane do repo
+Plik: .env:1-38  
+Dowód: ANTHROPIC_API_KEY, SSH_HOST, SSH_USER, TELEGRAM_WEBHOOK_SECRET — wszystkie jawne w historii gita.  
+Ryzyko: Każdy z dostępem do repo ma klucz API Anthropic (płatny), dane logowania SSH, secret webhooka Telegram.  
+Zalecenie: Rotacja wszystkich sekretów → git rm --cached .env → dodać .env do .gitignore → git filter-branch lub BFG Repo-Cleaner do usunięcia z historii.
+S2. Divergentne wersje dependencji
+- pyproject.toml:7 → anthropic>=0.18.0
+- requirements.txt:5 → anthropic>=0.40.0  
+To samo dla fastapi, uvicorn, httpx, pydantic, cachetools.
+Ryzyko: CI używa requirements.txt, ale pyproject.toml jest source of truth dla deweloperów. Prowadzi do "works on my machine".
+S3. jadzia.service → User=root
+Plik: deployment/jadzia.service:8-9  
+Ryzyko: Cała aplikacja działa jako root. W przypadku exploita (np. przez webhook/czytanie plików SSH) atakujący ma pełną kontrolę nad VPS.  
+Zalecenie: Dedicated system user jadzia z ograniczonymi prawami, NoNewPrivileges=true już jest ale to za mało.
+S4. Brak lockfile'a (poetry.lock / requirements.lock)
+Brak: poetry.lock, requirements.lock, Pipfile.lock, pdm.lock  
+Ryzyko: Reprodukowalność buildów = 0. CI może zainstalować inną wersję zależności niż dev.  
+Zalecenie: Wybrać jednego managera (poetry lub pip freeze > requirements.lock) i commitować lockfile.
+🟠 Poziom 2 — Architektura i techniczny dług
+A1. DUPLIKACJA KODU: DWA API, DWIE WARSTWY
+Stary (legacy)
+interfaces/api.py (747 linii)
+agent/agent.py (764 linii)
+interfaces/telegram_api.py
+Problem: Oba zbiory plików istnieją obok siebie. interfaces/api.py zawiera własną fabrykę FastAPI z własnymi modelami Pydantic, własnym worker loop, własnymi endpointami. api/ zawiera refactored wersję. main.py:23 używa api.app.create_app(), ale stary kod w interfaces/ i agent/ jest wciąż importowany przez nowy kod (core/services.py importuje z agent.tools.*, agent.alerts.*).  
+Ryzyko: Utrzymanie dwóch warstw = dwa razy więcej bugów. Stary kod może być bezrefleksyjnie importowany, tworząc niejawny coupling.
+A2. Dual persistence (JSON + SQLite)
+Plik: agent/state.py:47 USE_SQLITE_STATE  
+Agent utrzymuje stan równolegle w SQLite (docelowo) i JSON (fallback). _sync_to_sqlite() (linia 137) i _load_state_from_sqlite() (linia 319), ale load_state() (linia 370) zawsze próbuje SQLITE → jeśli nie ma → fallback do JSON. To znaczy, że wszystkie odczyty stanu przechodzą przez łańcuch: SQLite query → sprawdź None → ewentualnie czytaj JSON. Każdy request = 1-3 zapytań SQL + potencjalnie I/O pliku.
+A3. agent/state.py → 1237+ linii
+Stanowy moduł zawierający: locki, migrację, operacje JSON, operacje SQLite, walidację invariantów, cleanup, listowanie sesji, backup, DIFF storage, content storage. To woła o podział na 3-4 moduły:
+- state/core.py — podstawowe CRUD
+- state/locks.py — lock management
+- state/migration.py — legacy → SQLite
+- state/sync.py — SQLite sync
+A4. agent/agent.py (764 linii) vs core/services.py (343 linii)
+Stary agent ma wszystko: routing komend, planowanie, generowanie diffów, obsługę błędów. Nowa warstwa core/services.py ma tylko abstrakcje i implementacje serwisów. Logika agenta wciąż w starym pliku. api/app.py:_worker_loop() (linia 118) importuje z agent.agent import process_message — czyli worker loop używa starego agenta, nie nowej warstwy core.
+A5. cli/ to pusty szkielet
+Plik: cli/__init__.py — tylko docstring. Brak CLI entry point (main() w main.py nie używa cli/).
+🟡 Poziom 3 — Jakość kodu i proces
+Q1. Mieszane PL/EN w kodzie
+- main.py:2 "Punkt wejścia" (PL), requirements.txt:1 "Production Dependencies" (EN)
+- agent.py komentarze po PL, core/models.py docstring po EN
+- guardrails.py docstring po PL, dependencies.py po EN  
+Nie ma tragedii, ale widać że kod powstawał ad-hoc.
+Q2. Brak mypy w CI
+CI file: .github/workflows/ci.yml ma ruff + black + bandit, ale nie ma mypy. Kod ma type hints wszędzie w nowych modułach — idealny kandydat do type checking.
+Q3. Brak konfiguracji ruff/black w pyproject.toml
+CI woła ruff check . i black --check ., ale nie ma konfiguracji w pyproject.toml (np. [tool.ruff], [tool.black]). Używa domyślnych ustawień.
+Q4. Brak pre-commit hooks
+Brak .pre-commit-config.yaml. Deweloperzy/agenci mogą commitować bez lintowania.
+Q5. Brak testów integracyjnych dla API
+tests/unit/ ma testy jednostkowe. tests/ ma 25+ plików testowych (test_concurrent_tasks.py, test_worker_api.py, etc.), ale to stare testy z monolitu — nie ma testów dla api/app.py z TestClient.
+Q6. todo.json status "active" ale 4/5 tasks completed
+Backlog (2 items) vs pending (1 item). ADVANCED_LEAD-001 czeka od 2026-06-01. PLD (Product Language Docs) nieaktualne.
+🟢 Poziom 4 — Workflow i dokumentacja
+W1. (Potwierdzone z poprzedniego audytu vibe-init)
+- Brak workflow /implement
+- Brak kategorii Refactor w routerze
+- Niespójne stage definicje F1-F5
+- V-FILES niezdefiniowane
+- handoff.md jest notatką a nie workflow template
+W2. brain.md i AGENTS.md częściowo nieaktualne
+- brain.md mówi o todo.json jako "backlog modułu" — todo.json jest rzeczywiście używany
+- AGENTS.md mówi "flexgrafik-meta/docs/core/workflow-manual.md" — nie mogłem zweryfikować (repo external)
+W3. docs/PRD-core.md odwołuje się do "PRD-schema.md" (linia 107) który nie istnieje
+- "Schema change → PRD-schema.md update NAJPIERW" — ale plik nie istnieje
+W4. Dużo artefaktów deploy w katalogu głównym
+7 archiwów .tar.gz, 2 pliki .ps1, 3 pliki .bat, 2 pliki konfiguracyjne nginx, ngrok.exe, ngrok.zip, deploy_answers.txt, Project-Instructions.md — wszystkie w rootcie. Zaśmieca strukturę.
+📊 Podsumowanie ilościowe
+Kategoria	Otwarte	Krytyczne
+Security	4	2
+Architektura	5	0
+Jakość kodu	6	0
+Workflow/Docs	10	0
+Total	25	2
+🎯 Rekomendowany plan działania
+Sprint 1 — Bezpieczeństwo (1-2 dni)
+1. Rotacja secretów, wyczyszczenie historii gita, .gitignore dla .env
+2. Dodanie lockfile'a (poetry lock lub pip freeze > requirements.lock)
+3. jadzia.service → dedicated system user zamiast root
+4. Ujednolicenie wersji dependencji w pyproject.toml i requirements.txt
+Sprint 2 — Architektura (3-5 dni)
+5. Usunięcie starej warstwy interfaces/ (po weryfikacji że api/ pokrywa wszystkie endpointy)
+6. Podział agent/state.py na moduły
+7. Migracja agent/agent.py:process_message do core/agent.py
+8. Integracja testów TestClient dla api/app.py
+Sprint 3 — CI/DevX (2-3 dni)
+ 9. Dodanie mypy do CI
+10. Konfiguracja ruff + black w pyproject.toml
+11. Dodanie pre-commit hooks
+12. Przeniesienie artefaktów do archive/
+Sprint 4 — Workflow (1-2 dni)
+13. Implementacja brakujących workflowów (implement.md, refactor)
+14. Ujednolicenie stage F1-F5
+15. Definicja V-FILES
+16. Updejt brain.md, AGENTS.md, PRD-core.md

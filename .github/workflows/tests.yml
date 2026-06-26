@@ -9,8 +9,6 @@ on:
 jobs:
   test:
     runs-on: ubuntu-latest
-    env:
-      USE_SQLITE_STATE: "1"
     steps:
       - uses: actions/checkout@v4
 

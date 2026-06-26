@@ -28,7 +28,7 @@ Problem/Ticket od Dowódcy; optional handoff `V-FILES` (max 4).
 
 ## Do
 
-- [pre-flight.md](../../.agents/workflows/pre-flight.md) when **Deploy/Hotfix**
+- [.agents/workflows/implement.md](../../.agents/workflows/implement.md) when **Hotfix**
 - [AGENTS.md](../../AGENTS.md), [brain.md](../../brain.md), [todo.json](../../todo.json)
 - [docs/PRD-core.md](../../docs/PRD-core.md) for VPS/service context
 - global-rules from flexgrafik-meta if in workspace
@@ -46,9 +46,9 @@ Problem/Ticket od Dowódcy; optional handoff `V-FILES` (max 4).
 |---------|---------------------|------------------|
 | New node, API, LangGraph flow | **Feature** | **`/blast`** |
 | Bug, 500, webhook fail, unknown | **Bugfix** | **`/debug`** |
-| Known cause, narrow Python fix | **Hotfix** | `/pre-flight` → implement |
-| Schema / alembic change | **Migrate** | **`/jadzia-migrate`** |
-| Ship to VPS production | **Deploy** | `/pre-flight` → `/jadzia-test` → `/audit-red-team` → `/jadzia-deploy` |
+| Known cause, narrow Python fix | **Hotfix** | `/implement` |
+| Schema / alembic change | **Migrate** | **`/migrate`** |
+| Ship to VPS production | **Deploy** | `/jadzia-test` → `/audit-red-team` → `/jadzia-deploy` |
 
 ## Output
 
@@ -61,7 +61,7 @@ READY: [YES|NO]
 
 ---
 CURRENT_STAGE: F1-Plan
-RECOMMENDED_NEXT: [/blast | /debug | /pre-flight | /jadzia-migrate | /jadzia-test | /audit-red-team | /jadzia-deploy]
+RECOMMENDED_NEXT: [/blast | /blueprint | /debug | /implement | /migrate | /jadzia-test | /audit-red-team | /jadzia-deploy]
 WHY_NEXT: [...]
 ---
 ```

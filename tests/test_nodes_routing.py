@@ -47,14 +47,12 @@ async def test_route_approval():
         "active_task_id": task_id,
         "task_queue": [],
     }
-    # Patch load_state at source (agent.state) so get_active_task_id and has_pending_operation
-    # see the mock; also patch routing's reference so direct load_state() calls in routing see it.
-    with patch("agent.state.load_state", return_value=state):
+    with patch("agent.nodes.routing.load_state", return_value=state):
         with patch("agent.nodes.routing.classify_intent", new_callable=AsyncMock, return_value="APPROVAL"):
-            with patch("agent.nodes.routing.load_state", return_value=state):
+            with patch("agent.nodes.routing.has_pending_operation", return_value=True):
                 with patch("agent.nodes.routing.handle_approval", new_callable=AsyncMock) as mock_appr:
                     mock_appr.return_value = ("Zatwierdzono", False, None, None)
-                    text, _, _, _ = await route_user_input("tak", "chat1", "http", AsyncMock())
+                    text, _, _, _ = await route_user_input("tak", "chat1", "http", AsyncMock(), task_id=task_id)
     mock_appr.assert_called_once()
     call_args = mock_appr.call_args
     assert call_args[0][3] is True  # approved=True

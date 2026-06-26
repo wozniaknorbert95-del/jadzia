@@ -1,21 +1,18 @@
 """Dashboard and worker health endpoints."""
 
 import asyncio
-import json
 import logging
 from datetime import datetime, timezone
-from pathlib import Path
 
 from fastapi import APIRouter, Depends
 
 from api.dependencies import verify_jwt
-from agent.state import USE_SQLITE_STATE
 
 _log = logging.getLogger("api.routes.dashboard")
 router = APIRouter(prefix="/worker", tags=["dashboard"])
 
 
-def _dashboard_empty_response(sqlite_required: bool = False, error: str = None) -> dict:
+def _dashboard_empty_response(error: str = None) -> dict:
     out = {
         "total_tasks": 0,
         "by_status": {"completed": 0, "error": 0, "in_progress": 0, "diff_ready": 0},
@@ -25,8 +22,6 @@ def _dashboard_empty_response(sqlite_required: bool = False, error: str = None) 
         "errors_last_24h": 0,
         "avg_duration_seconds": None,
     }
-    if sqlite_required:
-        out["sqlite_required"] = True
     if error:
         out["error"] = error
     return out
@@ -37,8 +32,6 @@ async def get_worker_dashboard(_auth=Depends(verify_jwt)):
     """Dashboard metrics for tasks."""
     from agent.db import db_get_dashboard_metrics
 
-    if not USE_SQLITE_STATE:
-        return _dashboard_empty_response(sqlite_required=True)
     try:
         raw = db_get_dashboard_metrics()
     except Exception:
@@ -102,7 +95,6 @@ async def get_worker_health():
         db_get_worker_health_session_counts,
         db_health_check,
     )
-    from agent.state import USE_SQLITE_STATE
     from agent.tools.rest import test_ssh_connection
     from api._state import _worker_loop_ref, health_metrics
 
@@ -111,39 +103,10 @@ async def get_worker_health():
     active_tasks = 0
     queued_tasks = 0
 
-    if USE_SQLITE_STATE:
-        try:
-            active_sessions, total_tasks, active_tasks, queued_tasks = db_get_worker_health_session_counts()
-        except Exception:
-            sessions_dir = Path("data/sessions")
-            if sessions_dir.exists():
-                for session_file in sessions_dir.glob("*.json"):
-                    try:
-                        with open(session_file, encoding="utf-8") as f:
-                            state = json.load(f)
-                        if state.get("tasks"):
-                            active_sessions += 1
-                            total_tasks += len(state["tasks"])
-                            if state.get("active_task_id"):
-                                active_tasks += 1
-                            queued_tasks += len(state.get("task_queue", []))
-                    except Exception:
-                        pass
-    else:
-        sessions_dir = Path("data/sessions")
-        if sessions_dir.exists():
-            for session_file in sessions_dir.glob("*.json"):
-                try:
-                    with open(session_file, encoding="utf-8") as f:
-                        state = json.load(f)
-                    if state.get("tasks"):
-                        active_sessions += 1
-                        total_tasks += len(state["tasks"])
-                        if state.get("active_task_id"):
-                            active_tasks += 1
-                        queued_tasks += len(state.get("task_queue", []))
-                except Exception:
-                    pass
+    try:
+        active_sessions, total_tasks, active_tasks, queued_tasks = db_get_worker_health_session_counts()
+    except Exception:
+        pass
 
     ssh_status = "unknown"
     try:

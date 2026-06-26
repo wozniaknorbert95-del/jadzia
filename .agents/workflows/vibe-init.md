@@ -1,45 +1,59 @@
 ---
-description: Start sesji jadzia-core. CORE router F1-Plan.
+description: L0 - Triage & Context Router. The entry point for every session.
 ---
 
 # /vibe-init
 
-## Goal
+## 🎯 Goal
+Map the current state, load canonical knowledge, and route the task to the correct engineering path.
 
-Mapowanie sytuacji, wczytanie zasad i wybór ścieżki (Standard vs Fast-Track).
+## 📥 Input
+- Problem Statement / Ticket / User Request.
+- Optional: Reference to `todo.json` task ID.
 
-## Input
+## 🛠️ Agent Procedure
 
-Problem/Ticket; optional handoff `V-FILES` (max 4).
+### 1. Context Loading (Hydration)
+You MUST read the following files before proceeding:
+- `todo.json` $\to$ Identify current task status and backlog.
+- `brain.md` $\to$ Sync with project architecture and global rules.
+- `AGENTS.md` $\to$ Review guardrails.
+- (Optional) Last 2 files from `docs/handoffs/` to maintain continuity.
 
-## Agent procedure
+### 2. Task Classification
+Classify the request into one of the following paths:
 
-1. Skim **[AGENTS.md](../../AGENTS.md)**, **[brain.md](../../brain.md)**, **[todo.json](../../todo.json)**.
-2. **Deploy/Hotfix:** [pre-flight.md](pre-flight.md) — skip deep architecture.
-3. Classify; emit Output.
+| Signal | CLASSIFICATION | PATH | LOGIC |
+| :--- | :--- | :--- | :--- |
+| New logic, API, LangGraph node, Feature | **FEATURE** | `L1: /blast` $\to$ `/self-review` | Requires a technical contract. |
+| Structural change, module split, tech debt | **REFACTOR** | `L1: /blueprint` $\to$ `/self-review` | Requires impact mapping. |
+| Bug, regression, unexpected behavior | **BUGFIX** | `L2: /debug` | Requires Root-Cause Analysis. |
+| Known fix, critical outage, trivial change | **HOTFIX** | `L2: /implement` | Fast-track to execution. |
+| DB Schema change / Alembic | **MIGRATE** | `L1: /migrate` | High-risk persistence change. |
+| Push to Production | **DEPLOY** | `L3: /jadzia-test` $\to$ `L4: /jadzia-deploy` | Release pipeline. |
+| Production DOWN / Critical Failure | **CRITICAL** | `L-CRIT: /panic` | Emergency restoration. |
+| Perf issues, Slow queries, Latency | **PERF** | `L2: /profile` | Performance engineering. |
+| New Library / Package | **DEP** | `L1: /dep-audit` | Dependency gatekeeping. |
 
-## Task classification router
+### 3. Constraint Mapping
+Identify:
+- **Invariants**: What must stay exactly as is?
+- **Dependencies**: Which modules (`core/services.py`, `agent/state/`) are touched?
+- **Risks**: Potential side effects on the worker loop or SQLite locks.
 
-| Signals | TASK_CLASSIFICATION | RECOMMENDED_NEXT |
-|---------|---------------------|------------------|
-| New node, API endpoint, LangGraph | **Feature** | **`/blast`** |
-| Bug, regression, unknown cause | **Bugfix** | **`/debug`** |
-| Known cause, narrow fix, urgency | **Hotfix** | `/pre-flight` → implement |
-| DB schema / alembic | **Migrate** | **`/jadzia-migrate`** |
-| Ship commits to VPS | **Deploy** | `/pre-flight` → `/jadzia-test` → `/audit-red-team` → `/jadzia-deploy` |
-
-## Output
+## 📤 Output Format
 
 ```text
-TASK_CLASSIFICATION: [Feature/Bugfix/Hotfix/Migrate/Deploy]
+TASK_CLASSIFICATION: [FEATURE | REFACTOR | BUGFIX | HOTFIX | MIGRATE | DEPLOY]
+TASK_ID: [ID from todo.json | NEW]
 CONSTRAINTS: [...]
+INVARIANTS: [...]
 RISKS: [...]
-MISSING: [NONE|...]
-READY: [YES|NO]
+READY: [YES | NO - Missing: X]
 
 ---
-CURRENT_STAGE: F1-Plan
-RECOMMENDED_NEXT: [/blast | /debug | /pre-flight | /jadzia-migrate | /jadzia-test | /audit-red-team | /jadzia-deploy]
-WHY_NEXT: [...]
+CURRENT_STAGE: L0-Triage
+RECOMMENDED_NEXT: [/blast | /blueprint | /debug | /implement | /jadzia-test | /jadzia-deploy]
+WHY_NEXT: [Brief engineering justification]
 ---
 ```

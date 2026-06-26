@@ -5,7 +5,7 @@ Tests for Customer Chat Widget API.
 import pytest
 from unittest.mock import patch, AsyncMock
 from fastapi.testclient import TestClient
-from interfaces.api import app
+from api.app import create_app; app = create_app()
 from agent.customer_agent import _customer_sessions_cache, SYSTEM_PROMPT
 
 @pytest.fixture(autouse=True)
@@ -22,7 +22,7 @@ def test_customer_chat_endpoint_success():
     """
     client = TestClient(app)
     
-    with patch("interfaces.api.process_customer_message", new_callable=AsyncMock) as mock_process:
+    with patch("agent.customer_agent.process_customer_message", new_callable=AsyncMock) as mock_process:
         mock_process.return_value = {
             "reply": "This is a test reply.",
             "lead": {"score": 10, "intent": "low", "category": "informacja", "reason": "test"}
@@ -54,24 +54,29 @@ async def test_customer_chat_caching():
         mock_create.return_value.content = [AsyncMock(text='{"reply": "First reply", "lead": {}}')]
         result1 = await process_customer_message("test-session-cache", "First message")
 
-    # Check if the history was stored in the cache
-    history1 = _customer_sessions_cache.get("test-session-cache")
-    assert len(history1) == 2  # user message + assistant reply
-    assert history1[0]["content"] == "First message"
+        # Check if the history was stored in the cache
+        history1 = _customer_sessions_cache.get("test-session-cache")
+        assert len(history1) == 2  # user message + assistant reply
+        assert history1[0]["content"] == "First message"
 
-    # Second call
-    mock_create.return_value.content = [AsyncMock(text='{"reply": "Second reply", "lead": {}}')]
-    result2 = await process_customer_message("test-session-cache", "Second message")
+        # Second call — fresh mock, still inside patch
+        # Capture messages at call time (before process_customer_message mutates the list)
+        captured_messages = []
+        def capture_messages(*args, **kwargs):
+            captured_messages.append(list(kwargs.get("messages", [])))
+            return mock_create.return_value
+        mock_create.side_effect = capture_messages
+        mock_create.return_value.content = [AsyncMock(text='{"reply": "Second reply", "lead": {}}')]
+        result2 = await process_customer_message("test-session-cache", "Second message")
 
-    # Check history again, it should be longer
-    history2 = _customer_sessions_cache.get("test-session-cache")
-    assert len(history2) == 4
-    assert history2[2]["content"] == "Second message"
+        # Check history again, it should be longer
+        history2 = _customer_sessions_cache.get("test-session-cache")
+        assert len(history2) == 4
+        assert history2[2]["content"] == "Second message"
 
-    # Verify that the history from the first call was passed to the AI on the second call
-    call_args, call_kwargs = mock_create.call_args
-    messages = call_args[0] if call_args else call_kwargs.get('messages', [])
-    assert len(messages) == 3
-    assert messages[0]['role'] == 'user' and messages[0]['content'] == 'First message'
-    assert messages[1]['role'] == 'assistant'
-    assert messages[2]['role'] == 'user' and messages[2]['content'] == 'Second message'
+        # Verify that the history from the first call was passed to the AI on the second call
+        messages = captured_messages[0]
+        assert len(messages) == 3
+        assert messages[0]['role'] == 'user' and messages[0]['content'] == 'First message'
+        assert messages[1]['role'] == 'assistant'
+        assert messages[2]['role'] == 'user' and messages[2]['content'] == 'Second message'

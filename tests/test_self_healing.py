@@ -102,8 +102,8 @@ async def test_auto_rollback_on_failure():
                                     mock_handle_rollback,
                                 ):
                                     with patch("agent.nodes.approval.mark_task_completed", return_value=None):
-                                        with patch("interfaces.webhooks.record_deployment_verification"):
-                                            with patch("interfaces.webhooks.notify_webhook", new_callable=AsyncMock):
+                                        with patch("api.webhooks.record_deployment_verification"):
+                                            with patch("api.webhooks.notify_webhook", new_callable=AsyncMock):
                                                 with patch("agent.nodes.approval.asyncio.sleep", new_callable=AsyncMock):
                                                     text, awaiting, input_type, next_task_id = await execute_changes(
                                                         "chat1", "http", state, task_id="task-1"
@@ -149,8 +149,8 @@ async def test_scenario3_forced_auto_rollback_in_test_mode():
                                     mock_handle_rollback,
                                 ):
                                     with patch("agent.nodes.approval.mark_task_completed", return_value=None):
-                                        with patch("interfaces.webhooks.record_deployment_verification"):
-                                            with patch("interfaces.webhooks.notify_webhook", new_callable=AsyncMock):
+                                        with patch("api.webhooks.record_deployment_verification"):
+                                            with patch("api.webhooks.notify_webhook", new_callable=AsyncMock):
                                                 with patch("agent.nodes.approval.asyncio.sleep", new_callable=AsyncMock):
                                                     text, awaiting, input_type, next_task_id = await execute_changes(
                                                         "chat-s3", "http", state, task_id="task-s3"

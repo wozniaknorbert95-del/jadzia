@@ -197,20 +197,20 @@ class TestTelegramDedup:
     """_is_duplicate_update should detect repeated update_ids within TTL."""
 
     def test_first_call_returns_false(self):
-        from interfaces.telegram_api import _is_duplicate_update, _processed_updates
+        from api.telegram import _is_duplicate_update, _processed_updates
         uid = 999_000_000 + int(time.time() * 1000) % 1_000_000
         _processed_updates.pop(uid, None)  # clean slate
         assert _is_duplicate_update(uid) is False
 
     def test_second_call_returns_true(self):
-        from interfaces.telegram_api import _is_duplicate_update, _processed_updates
+        from api.telegram import _is_duplicate_update, _processed_updates
         uid = 999_100_000 + int(time.time() * 1000) % 1_000_000
         _processed_updates.pop(uid, None)
         _is_duplicate_update(uid)  # register
         assert _is_duplicate_update(uid) is True
 
     def test_expired_entry_not_duplicate(self):
-        from interfaces.telegram_api import _is_duplicate_update, _processed_updates, _DEDUP_TTL_SECONDS
+        from api.telegram import _is_duplicate_update, _processed_updates, _DEDUP_TTL_SECONDS
         uid = 999_200_000 + int(time.time() * 1000) % 1_000_000
         # Manually insert an expired entry
         _processed_updates[uid] = time.time() - _DEDUP_TTL_SECONDS - 10
@@ -225,7 +225,7 @@ class TestGetTaskIdForChat:
     """_get_task_id_for_chat should fall back to DB when in-memory cache is empty."""
 
     def test_returns_from_cache(self):
-        from interfaces.telegram_api import _get_task_id_for_chat
+        from api.telegram import _get_task_id_for_chat
         chat_id = _fresh_chat_id()
         with patch("agent.db.db_get_active_task", return_value="cached_task"), \
              patch("agent.db.db_get_task", return_value={"task_id": "cached_task"}):
@@ -233,7 +233,7 @@ class TestGetTaskIdForChat:
             assert result == "cached_task"
 
     def test_falls_back_to_db(self):
-        from interfaces.telegram_api import _get_task_id_for_chat
+        from api.telegram import _get_task_id_for_chat
         chat_id = _fresh_chat_id()
         with patch("agent.db.db_get_active_task", return_value="db_task_123"), \
              patch("agent.db.db_get_task", return_value={"task_id": "db_task_123"}):
@@ -241,7 +241,7 @@ class TestGetTaskIdForChat:
             assert result == "db_task_123"
 
     def test_returns_none_when_both_empty(self):
-        from interfaces.telegram_api import _get_task_id_for_chat
+        from api.telegram import _get_task_id_for_chat
         chat_id = _fresh_chat_id()
         with patch("agent.db.db_get_active_task", return_value=None), \
              patch("agent.db.db_get_last_active_task", return_value=None):

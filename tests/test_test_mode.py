@@ -5,7 +5,7 @@ from unittest.mock import AsyncMock, patch
 import pytest
 from fastapi.testclient import TestClient
 
-from interfaces.api import app
+from api.app import create_app; app = create_app()
 from agent.state import (
     create_operation,
     get_active_task_id,
@@ -27,7 +27,6 @@ def _is_uuid(val: str) -> bool:
 
 
 @pytest.mark.asyncio
-@pytest.mark.xfail(reason="legacy; call_claude is AsyncMock, plan_response is coroutine not str; scenarios covered by test_worker_scenarios_ci")
 async def test_worker_task_test_mode_auto_approves():
     """
     POST /worker/task with test_mode=true should auto-approve pending approval
@@ -49,7 +48,7 @@ async def test_worker_task_test_mode_auto_approves():
         set_awaiting_response(True, "approval", chat_id, source or "http", task_id=task_id_local)
         return ("Oto zmiany. Zatwierdzić?", True, "approval")
 
-    with patch("interfaces.api.process_message", new_callable=AsyncMock) as mock_pm:
+    with patch("core.agent.process_message", new_callable=AsyncMock) as mock_pm:
         mock_pm.side_effect = mock_process_message
         r1 = client.post(
             "/worker/task",
@@ -63,11 +62,13 @@ async def test_worker_task_test_mode_auto_approves():
 
     # In test_mode, the router should auto-approve on next call without HTTP input endpoint.
     # Simulate a status poll that would internally route user input (here we just call it directly).
+    async def mock_call_claude(messages, system=None):
+        return '{"understood_intent": "zmien kolor przycisku", "files_to_modify": [{"path": "test.css"}], "steps": ["krok 1"], "recommendations": [{"decision": "zmien kolor", "reason": "test", "confidence": "high"}], "questions": []}'
+
     text, awaiting, input_type, _ = await route_user_input(
-        "any", "test_mode_chat", "http", AsyncMock(), task_id=task_id
+        "any", "test_mode_chat", "http", mock_call_claude, task_id=task_id
     )
     assert awaiting in (False, True)
-    assert "Oto zmiany" in text or "Zatwierdzić" in text or "test_mode" or text
 
 
 @pytest.mark.asyncio

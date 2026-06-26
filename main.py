@@ -50,7 +50,6 @@ def main():
         reload=True,
         reload_dirs=[
             str(PROJECT_DIR / "agent"),
-            str(PROJECT_DIR / "interfaces"),
             str(PROJECT_DIR / "core"),
             str(PROJECT_DIR / "api"),
         ]

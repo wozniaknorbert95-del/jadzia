@@ -47,9 +47,8 @@ from agent.state import (
     agent_lock,
     OperationStatus,
 )
-from agent import agent as agent_module
-from agent.agent import process_message
-from interfaces.api import app
+from core.agent import process_message
+from api.app import create_app; app = create_app()
 
 CHAT_ID = "default"
 SOURCE = "http"
@@ -119,7 +118,7 @@ async def test_chat_flow_diff_then_approval():
         write_file_calls.append((path, content))
         mark_file_written(path, f"/tmp/backup_{path}", chat_id or CHAT_ID, source or SOURCE)
 
-    with patch("interfaces.api.process_message", new_callable=AsyncMock) as mock_pm:
+    with patch("core.agent.process_message", new_callable=AsyncMock) as mock_pm:
         mock_pm.side_effect = dispatch_process_message
         r1 = client.post("/chat", json={"message": "zmień kolor przycisku na czerwony", "chat_id": CHAT_ID})
 
@@ -182,7 +181,7 @@ async def test_chat_flow_diff_then_approval():
 def test_rollback():
     """POST /rollback zwraca status i listę restored (mock SSH)."""
     client = TestClient(app)
-    with patch("interfaces.api.rollback") as mock_rollback:
+    with patch("agent.tools.rest.rollback") as mock_rollback:
         mock_rollback.return_value = {
             "status": "ok",
             "msg": "Przywrócono 1 plików",

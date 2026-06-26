@@ -3,7 +3,7 @@
 import pytest
 from httpx import ASGITransport, AsyncClient
 
-from interfaces.api import app
+from api.app import create_app; app = create_app()
 
 
 @pytest.mark.asyncio
@@ -40,7 +40,7 @@ async def test_health_shows_ssh_status():
 
     transport = ASGITransport(app=app)
     async with AsyncClient(transport=transport, base_url="http://test") as client:
-        with patch("interfaces.api.test_ssh_connection", return_value=(True, "OK")):
+        with patch("agent.tools.rest.test_ssh_connection", return_value=(True, "OK")):
             response = await client.get("/worker/health")
             data = response.json()
 

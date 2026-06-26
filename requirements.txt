@@ -1,29 +1,15 @@
-# Jadzia V4 - Production Dependencies
-# Generated from pyproject.toml
+# Production Dependencies
+# Source of truth: pyproject.toml
 
-# Core
 anthropic>=0.40.0
 fastapi>=0.115.0
 PyJWT>=2.8.0
 uvicorn[standard]>=0.30.0
-pydantic>=2.0.0
+pydantic>=2.5.0
 pydantic-settings>=2.0.0
 python-dotenv>=1.0.0
-
-# SSH & File Operations
-paramiko>=3.0.0
+paramiko>=3.4.0
 filelock>=3.0.0
-
-# Database
-python-multipart>=0.0.9
-
-# Testing (optional for production)
-pytest>=8.0.0
-pytest-asyncio>=0.23.0
 httpx>=0.27.0
-
-# Gemini AI API
-google-generativeai>=0.8.0
-
-# Chatbot Widget Dependencies
-cachetools>=5.0.0
+python-multipart>=0.0.9
+cachetools>=5.3.3

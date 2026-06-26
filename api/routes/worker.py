@@ -180,7 +180,7 @@ async def worker_task_input(
         raise HTTPException(status_code=400, detail="Provide either 'approval' (true/false) or 'answer' (string)")
 
     try:
-        from agent.agent import process_message
+        from core.agent import process_message
 
         response_text, awaiting_input, input_type = await process_message(
             user_input=user_message,

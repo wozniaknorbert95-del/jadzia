@@ -16,9 +16,9 @@ import pytest
 from fastapi.testclient import TestClient
 
 from agent.state import clear_state, get_next_task_from_queue, load_state, create_operation
-from agent.agent import process_message
+from core.agent import process_message
 from agent.log import get_recent_logs
-from interfaces.api import app
+from api.app import create_app; app = create_app()
 
 SOURCE = "http"
 

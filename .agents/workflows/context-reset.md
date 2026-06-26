@@ -1,28 +1,36 @@
 ---
-description: Reset sesji po pętli błędów (>2 próby).
+description: L0 - Memory Purge & Context Reset.
 ---
 
 # /context-reset
 
-STOP. Nie pisz kodu.
+## 🎯 Goal
+Clear the agent's active working memory (context window) to prevent "context pollution" when switching between unrelated tasks.
 
-1. Cel w 1 zdaniu
-2. Co próbowano
-3. Dlaczego nie zadziałało (jeśli nieznane → `/debug`)
-4. Nowe podejście
-5. Pliki do dotknięcia
+## 🛠️ Procedure
 
-Zapisz `.cursor/session-state.md` + optional `docs/handoffs/*-context-reset.md`.
+### 1. State Archive
+Before resetting, ensure the current state is captured in `/handoff`.
+- [ ] `todo.json` updated.
+- [ ] `brain.md` updated.
+- [ ] Handoff file written.
 
-## Output
+### 2. Memory Purge
+The agent should explicitly notify the user that it is discarding the current conversation history regarding the specific implementation details of the previous task.
+
+### 3. Re-Initialization
+Immediately trigger `/vibe-init` for the next task to reload only the necessary canonical knowledge.
+
+## 📤 Output Format
 
 ```text
-STATE_SAVED: [.cursor/session-state.md]
-RESUME_PROMPT: [@vibe-init + V-FILES + LEFT]
+CONTEXT_STATUS: PURGED
+ARCHIVE_CONFIRMED: [YES | NO]
+READY_FOR: /vibe-init [Next Task ID]
 
 ---
-CURRENT_STAGE: recovery
-RECOMMENDED_NEXT: [new chat → /vibe-init]
-WHY_NEXT: [...]
+CURRENT_STAGE: L0-Reset
+RECOMMENDED_NEXT: /vibe-init
+WHY_NEXT: Fresh context prevents hallucinations and drift.
 ---
 ```

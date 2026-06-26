@@ -17,7 +17,7 @@ from agent.state import (
     update_operation_status,
     OperationStatus,
 )
-from interfaces.api import app
+from api.app import create_app; app = create_app()
 
 WORKER_CHAT_ID = "test_worker_123"
 SOURCE = "http"
@@ -90,7 +90,7 @@ def test_post_worker_task_then_input_then_completed():
         update_operation_status(OperationStatus.COMPLETED, chat_id, SOURCE, task_id=task_id)
         return ("Zrobione.", False, None)
 
-    with patch("interfaces.api.process_message", new_callable=AsyncMock) as mock_pm:
+    with patch("core.agent.process_message", new_callable=AsyncMock) as mock_pm:
         mock_pm.side_effect = mock_process_message
         r2 = client.post(
             f"/worker/task/{task_id}/input",

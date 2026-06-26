@@ -1,9 +1,9 @@
 """Tests for webhook notifications."""
 
 import pytest
-from unittest.mock import patch, AsyncMock
+from unittest.mock import Mock, patch, AsyncMock
 
-from interfaces.webhooks import notify_webhook
+from api.webhooks import notify_webhook
 
 
 @pytest.mark.asyncio
@@ -12,10 +12,10 @@ async def test_notify_webhook_success():
     webhook_url = "http://director:9000/callback"
     task_id = "test_task_1"
 
-    with patch("interfaces.webhooks.httpx.AsyncClient") as mock_client:
-        mock_response = AsyncMock()
+    with patch("api.webhooks.httpx.AsyncClient") as mock_client:
+        mock_response = Mock()
         mock_response.status_code = 200
-        mock_response.raise_for_status = AsyncMock()
+        mock_response.raise_for_status = Mock()
 
         mock_client.return_value.__aenter__.return_value.post = AsyncMock(
             return_value=mock_response
@@ -40,7 +40,7 @@ async def test_notify_webhook_failure_does_not_raise():
     """Webhook failure should not raise exception."""
     webhook_url = "http://invalid:9999/callback"
 
-    with patch("interfaces.webhooks.httpx.AsyncClient") as mock_client:
+    with patch("api.webhooks.httpx.AsyncClient") as mock_client:
         mock_client.return_value.__aenter__.return_value.post = AsyncMock(
             side_effect=Exception("Connection failed")
         )
@@ -75,7 +75,7 @@ async def test_webhook_called_on_task_completion():
     with patch("agent.nodes.approval.get_stored_diffs", return_value={"test.css": "diff"}):
         with patch("agent.nodes.approval.mark_task_completed", return_value=None):
             with patch(
-                "interfaces.webhooks.notify_webhook",
+                "api.webhooks.notify_webhook",
                 new_callable=AsyncMock,
             ) as mock_webhook:
                 await execute_changes("test", "http", state, task_id=task_id)

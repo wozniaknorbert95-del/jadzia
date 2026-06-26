@@ -543,7 +543,7 @@ def _row_to_task_dict(row: sqlite3.Row) -> Dict:
 def db_delete_session(chat_id: str, source: str = "http") -> None:
     """
     Delete a session and all its tasks.
-    Used by clear_state() when USE_SQLITE_STATE. With chat_id-only schema, deletes by chat_id.
+    Used by clear_state(). With chat_id-only schema, deletes by chat_id.
     """
     with db_transaction() as conn:
         if _sessions_pk_is_chat_id_only(conn):

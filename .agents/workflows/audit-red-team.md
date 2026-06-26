@@ -1,34 +1,43 @@
 ---
-description: Audyt adversarial przed deploy VPS — raport only.
+description: L3 - Adversarial Audit & Regression Analysis.
 ---
 
 # /audit-red-team
 
-## Goal
+## 🎯 Goal
+Think like an attacker or a "chaos monkey". Attempt to break the implementation and find edge cases that `pytest` missed.
 
-Security, SSH least privilege, webhook secrets, SQLite migrations, error handling — **bez patchy**.
+## 🛠️ Audit Checklist
 
-## Do
+### 1. Security & Least Privilege
+- **Secrets**: Are there any API keys or passwords hardcoded in the diff?
+- **Paths**: Does the new code allow reading/writing files outside the allowed scope (Check `agent/guardrails.py`)?
+- **Permissions**: Does the code assume `root` privileges that might be restricted later?
 
-- Priorytety: CRITICAL / HIGH / MEDIUM / LOW.
-- Check: no secrets in repo, Paramiko scope, HITL (Tak/Nie), rollback path in [PRD-core.md](../../docs/PRD-core.md).
-- PASS/FAIL explicit.
+### 2. Stability & Edge Cases
+- **Nulls/Empty**: What happens if the API returns an empty list or `None`?
+- **Concurrency**: What happens if two worker loops try to access the same SQLite session?
+- **Timeouts**: Does a slow external API call (Anthropic/WooCommerce) hang the entire worker loop?
 
-## Don't
+### 3. Regression Audit
+- Does this change affect any existing feature in `brain.md`?
+- If a module was split (Refactor), do all existing imports still work?
 
-- Patch during audit.
-- Deploy autonomously.
+## 🏁 Verdict
+- **PASS ✅**: No critical vulnerabilities or regressions found.
+- **FAIL ❌**: Critical risk identified. Must return to `/implement` or `/debug`.
 
-## Output
+## 📤 Output Format
 
 ```text
-VULNERABILITIES: [...]
-REGRESSION_RISK: [Low|Med|High]
+VULNERABILITIES: [List of risks found | NONE]
+EDGE_CASES_TESTED: [List of scenarios]
+REGRESSION_RISK: [Low | Med | High]
 VERDICT: [PASS ✅ | FAIL ❌]
 
 ---
-CURRENT_STAGE: F4-Test
-RECOMMENDED_NEXT: [/jadzia-deploy | /blast | /debug]
-WHY_NEXT: [...]
+CURRENT_STAGE: L3-Audit
+RECOMMENDED_NEXT: [/jadzia-deploy | /implement]
+WHY_NEXT: PASS $\to$ Ready to ship; FAIL $\to$ Fix required.
 ---
 ```

@@ -103,7 +103,7 @@ async def execute_changes(
         next_task_id = mark_task_completed(chat_id, task_id, source)
         webhook_url = task.get("webhook_url")
         if webhook_url:
-            from interfaces.webhooks import notify_webhook
+            from api.webhooks import notify_webhook
             result = {
                 "dry_run": True,
                 "files_modified": file_list,
@@ -150,7 +150,7 @@ async def execute_changes(
     # Self-healing verification (only when not dry_run)
     if not task.get("dry_run", True):
         from agent.tools.rest import health_check_wordpress
-        from interfaces.webhooks import record_deployment_verification
+        from api.webhooks import record_deployment_verification
 
         log_event(
             EventType.FILE_WRITE,
@@ -205,7 +205,7 @@ async def execute_changes(
 
             webhook_url = task.get("webhook_url")
             if webhook_url:
-                from interfaces.webhooks import notify_webhook
+                from api.webhooks import notify_webhook
 
                 webhook_payload = {
                     "task_id": task_id,
@@ -276,7 +276,7 @@ async def _execute_deploy(
 
         webhook_url = task.get("webhook_url")
         if webhook_url:
-            from interfaces.webhooks import notify_webhook
+            from api.webhooks import notify_webhook
             diffs = get_stored_diffs(chat_id, source, task_id=task_id)
             wh_result = {
                 "dry_run": False,

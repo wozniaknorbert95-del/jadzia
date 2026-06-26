@@ -247,12 +247,13 @@ class TestWorkerEndpointsNoAuth:
         data = r.json()
         assert "status" in data
 
-    def test_worker_dashboard_no_sqlite(self, client):
-        with patch("api.routes.dashboard.USE_SQLITE_STATE", False):
+    def test_worker_dashboard_db_unavailable(self, client):
+        with patch("agent.db.db_get_dashboard_metrics", side_effect=RuntimeError("db down")):
             r = client.get("/worker/dashboard")
         assert r.status_code == 200
         data = r.json()
-        assert data.get("sqlite_required") is True
+        assert data.get("error") == "db_unavailable"
+        assert data.get("total_tasks") == 0
 
 
 # ──────────────────────────────────────────────

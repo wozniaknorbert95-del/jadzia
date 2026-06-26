@@ -7,7 +7,7 @@ import pytest
 from unittest.mock import patch, AsyncMock
 
 from agent.telegram_validator import normalize_telegram_update
-from interfaces.telegram_api import (
+from api.telegram import (
     parse_telegram_command,
     parse_callback_approval,
     build_inline_keyboard_approval,
@@ -230,15 +230,15 @@ def test_normalize_telegram_update_callback_empty_data_returns_none():
 @pytest.mark.asyncio
 async def test_send_telegram_replies_calls_send_message_when_token_set():
     """When TELEGRAM_BOT_TOKEN is set and response has messages, sendMessage is called."""
-    from interfaces.telegram_api import _send_telegram_replies, TelegramWebhookResponse, TELEGRAM_BOT_TOKEN
+    from api.telegram import _send_telegram_replies, TelegramWebhookResponse, TELEGRAM_BOT_TOKEN
     from unittest.mock import AsyncMock, patch
 
     response = TelegramWebhookResponse(
         success=True,
         messages=[{"text": "Hello", "parse_mode": "MarkdownV2"}],
     )
-    with patch("interfaces.telegram_api.TELEGRAM_BOT_TOKEN", "fake-token"):
-        with patch("interfaces.telegram_api.httpx.AsyncClient") as mock_client_cls:
+    with patch("api.telegram.TELEGRAM_BOT_TOKEN", "fake-token"):
+        with patch("api.telegram.httpx.AsyncClient") as mock_client_cls:
             mock_post = AsyncMock(return_value=type("R", (), {"raise_for_status": lambda: None})())
             mock_client_cls.return_value.__aenter__.return_value.post = mock_post
             await _send_telegram_replies("123", response, None)
@@ -253,12 +253,12 @@ async def test_send_telegram_replies_calls_send_message_when_token_set():
 @pytest.mark.asyncio
 async def test_send_telegram_replies_no_call_when_no_messages():
     """When response has no messages, no HTTP call to Telegram."""
-    from interfaces.telegram_api import _send_telegram_replies, TelegramWebhookResponse
+    from api.telegram import _send_telegram_replies, TelegramWebhookResponse
     from unittest.mock import AsyncMock, patch
 
     response = TelegramWebhookResponse(success=True, messages=[])
-    with patch("interfaces.telegram_api.TELEGRAM_BOT_TOKEN", "fake-token"):
-        with patch("interfaces.telegram_api.httpx.AsyncClient") as mock_client_cls:
+    with patch("api.telegram.TELEGRAM_BOT_TOKEN", "fake-token"):
+        with patch("api.telegram.httpx.AsyncClient") as mock_client_cls:
             mock_post = AsyncMock()
             mock_client_cls.return_value.__aenter__.return_value.post = mock_post
             await _send_telegram_replies("123", response, None)

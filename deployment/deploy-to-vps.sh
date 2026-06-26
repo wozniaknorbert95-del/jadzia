@@ -119,15 +119,8 @@ if [ -f ".env" ]; then
     read -p "Upload .env to VPS? (Y/n): " -n 1 -r
     echo
     if [[ ! $REPLY =~ ^[Nn]$ ]]; then
-        # Check if USE_SQLITE_STATE is set
-        if grep -q "USE_SQLITE_STATE=1" .env; then
-            echo -e "${GREEN}✅ USE_SQLITE_STATE=1 found in .env${NC}"
-        else
-            echo -e "${YELLOW}⚠️  Adding USE_SQLITE_STATE=1 to VPS .env${NC}"
-        fi
         upload_file ".env" "${VPS_PROJECT_DIR}/.env"
-        run_ssh "grep -q 'USE_SQLITE_STATE' ${VPS_PROJECT_DIR}/.env || echo 'USE_SQLITE_STATE=1' >> ${VPS_PROJECT_DIR}/.env"
-        echo -e "${GREEN}✅ .env uploaded and configured${NC}"
+        echo -e "${GREEN}✅ .env uploaded${NC}"
     else
         echo -e "${YELLOW}⚠️  .env NOT uploaded - you must configure manually!${NC}"
     fi
@@ -136,7 +129,6 @@ else
     echo "You must create .env on VPS with required variables:"
     echo "  - ANTHROPIC_API_KEY"
     echo "  - SSH_HOST, SSH_PORT, SSH_USER, SSH_KEY_PATH (for WordPress hosting)"
-    echo "  - USE_SQLITE_STATE=1"
 fi
 echo ""
 

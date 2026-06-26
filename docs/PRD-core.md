@@ -104,7 +104,7 @@ Cron backup 2AM: rclone sync /data/ gdrive:jadzia-backup
 
 ## AI GUIDELINES
 
-- Schema change → PRD-schema.md update NAJPIERW, alembic migration RAZEM z kodem
+- Schema change → `/migrate` workflow (`.agents/workflows/migrate.md`) update NAJPIERW, alembic migration RAZEM z kodem
 - Feature branch only, nigdy main
 - Backup DB przed każdą zmianą schema
 - pytest po każdej zmianie w app/

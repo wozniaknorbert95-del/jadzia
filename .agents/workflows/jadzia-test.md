@@ -1,40 +1,46 @@
 ---
-description: pytest + smoke — gate before audit-red-team and deploy.
+description: L3 - Automated Validation & Smoke Testing.
 ---
 
 # /jadzia-test
 
-## Goal
+## 🎯 Goal
+Ensure the change is functionally correct and has not introduced regressions. This is the mandatory gate before any production deploy.
 
-Automated verification per `.github/workflows/tests.yml` and local smoke.
+## 🛠️ Procedure
 
-## Procedure
+### 1. Automated Suite (The Hard Gate)
+Run the following in order:
+1. **Linting**: `ruff check .` $\to$ Must be 0 errors.
+2. **Typing**: `mypy .` $\to$ No new type errors in touched modules.
+3. **Unit Tests**: `pytest tests/unit` $\to$ All tests must pass.
+4. **Integration**: `pytest tests/integration` $\to$ Verify the full flow (API $\to$ DB).
 
-1. Run `pytest` (full suite or scoped per BLAST).
-2. Optional local: `uvicorn` + `curl localhost:8000/health` if service layer touched.
-3. Record failures with evidence — route to `/debug` on FAIL.
-4. On PASS → recommend `/audit-red-team` before any VPS deploy.
+### 2. Smoke Testing (The "Real-World" Gate)
+If the service layer was touched:
+1. Start local server: `uvicorn main:app`.
+2. Health Check: `curl -f localhost:8000/health`.
+3. Feature Check: Execute the specific Telegram command or API call that triggers the new logic.
+4. Log Audit: `tail -f logs/jadzia.log` $\to$ Check for unexpected warnings/errors.
 
-## Do
+### 3. Failure Handling
+If any test fails:
+- **STOP** the pipeline.
+- Route immediately to `/debug`.
+- Do NOT attempt "quick fixes" without a new `/debug` cycle.
 
-- Match CI workflow expectations
-- Include failing test name + assertion on FAIL
-
-## Don't
-
-- Skip tests for "small" deploy
-- Deploy on FAIL
-
-## Output
+## 📤 Output Format
 
 ```text
 TEST_RESULT: [PASS | FAIL]
-PYTEST: [N passed, M failed — or summary]
-SMOKE: [/health OK | skipped | FAIL detail]
+LINT: [PASS | FAIL]
+TYPE_CHECK: [PASS | FAIL]
+PYTEST: [X passed, Y failed]
+SMOKE_TEST: [OK | FAIL - Detail]
 
 ---
-CURRENT_STAGE: F4-Test
+CURRENT_STAGE: L3-Validate
 RECOMMENDED_NEXT: [/audit-red-team | /debug]
-WHY_NEXT: PASS → adversarial gate; FAIL → diagnose
+WHY_NEXT: PASS $\to$ Security audit; FAIL $\to$ Diagnostics.
 ---
 ```

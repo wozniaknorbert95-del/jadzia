@@ -12,13 +12,13 @@ uvicorn main:app --host 0.0.0.0 --port 8000
 
 See `SYSTEM_BIBLE.md` for the complete architecture reference.
 
-**Flow:** User -> Telegram -> telegram_api.py -> Worker Queue (SQLite) -> worker_loop (api.py) -> process_message (agent.py) -> SSH Orchestrator -> Telegram response
+**Flow:** User -> Telegram -> `api/telegram.py` -> Worker Queue (SQLite) -> worker_loop (`api/app.py`) -> `process_message` (`core/agent.py`) -> SSH Orchestrator -> Telegram response
 
 **Key files:**
-- `interfaces/api.py` - FastAPI app + worker loop
-- `interfaces/telegram_api.py` - Telegram webhook handler
-- `agent/agent.py` - Core AI agent logic
-- `agent/state.py` - Session state management
+- `api/app.py` - FastAPI app factory + worker loop
+- `api/telegram.py` - Telegram webhook handler
+- `core/agent.py` - Core agent orchestration (`process_message`)
+- `agent/state/` - Session state management (SQLite-backed)
 - `agent/db.py` - SQLite database layer
 - `agent/tools/ssh_orchestrator.py` - SSH file operations
 

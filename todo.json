@@ -1,30 +1,137 @@
 {
   "project": "Jadzia-Core",
-  "last_updated": "2026-05-11",
+  "last_updated": "2026-06-26 (baseline commit + A3-01 in_progress)",
   "status": "active",
+  "plan": "docs/plans/PLAN-REMEDIACJI.md",
   "tasks": [
     {
-      "id": "CHAT-001",
-      "task": "Naprawa backendu czatbota (endpoint /api/v1/widget/chat)",
-      "status": "completed",
+      "id": "S1-01",
+      "sprint": "S1 — Security",
+      "task": "Rotacja sekretów: nowe klucze API/SSH/Telegram, wyczyszczenie .env z historii gita (git filter-branch/BFG)",
+      "status": "blocked",
       "priority": "critical",
-      "assigned_to": "Antigravity"
+      "risk": "Wymaga człowieka do wygenerowania nowych kluczy i uruchomienia BFG"
     },
     {
-      "id": "DEPLOY-001",
-      "task": "Wdrożenie poprawek na VPS",
+      "id": "S1-02",
+      "sprint": "S1 — Security",
+      "task": "Ujednolicenie wersji dependencji: pyproject.toml i requirements.txt",
       "status": "completed",
-      "priority": "high",
-      "assigned_to": "Antigravity"
-    }
-  ],
-  "backlog": [
+      "priority": "high"
+    },
     {
-      "task": "Monitorowanie logów agent.log pod kątem interakcji użytkowników",
+      "id": "S1-03",
+      "sprint": "S1 — Security",
+      "task": "Dedicated system user dla jadzia.service (zamiast root)",
+      "status": "completed",
+      "priority": "high"
+    },
+    {
+      "id": "S1-04",
+      "sprint": "S1 — Security",
+      "task": "Lockfile: pip freeze > requirements.lock lub poetry lock",
+      "status": "completed",
+      "priority": "high"
+    },
+    {
+      "id": "A1-01",
+      "sprint": "S2 — Architektura",
+      "task": "Usunięcie legacy interfaces/ po weryfikacji api/ coverage",
+      "status": "completed",
+      "priority": "medium",
+      "risk": "Permanent dual maintenance"
+    },
+    {
+      "id": "A2-01",
+      "sprint": "S2 — Architektura",
+      "task": "Podział agent/state.py (1237 linii) na state/core.py, locks.py, migration.py, sync.py",
+      "status": "completed",
+      "priority": "medium",
+      "risk": "State logic sprawdzana przy każdym requeście"
+    },
+    {
+      "id": "A3-01",
+      "sprint": "S2 — Architektura",
+      "task": "Migracja process_message z agent/agent.py do core/agent.py",
+      "status": "in_progress",
+      "priority": "medium",
+      "risk": "Partial: core/agent.py active; call_claude/detect_session_source still in agent/agent.py"
+    },
+    {
+      "id": "A4-01",
+      "sprint": "S2 — Architektura",
+      "task": "Decyzja: single persistence (SQLite only) vs zachowanie dualnego (JSON+SQLite)",
+      "status": "completed",
       "priority": "medium"
     },
     {
-      "task": "Implementacja zaawansowanego Lead Scoringu w oparciu o dane z WooCommerce",
+      "id": "A5-01",
+      "sprint": "S2 — Architektura",
+      "task": "CLI: implementacja entry point lub usunięcie pustego szkieletu",
+      "status": "pending",
+      "priority": "low"
+    },
+    {
+      "id": "C1-01",
+      "sprint": "S3 — CI/DevX",
+      "task": "Dodanie mypy --strict do CI (obok ruff, black, bandit)",
+      "status": "completed",
+      "priority": "medium"
+    },
+    {
+      "id": "C1-02",
+      "sprint": "S3 — CI/DevX",
+      "task": "Konfiguracja ruff i black w pyproject.toml",
+      "status": "completed",
+      "priority": "low"
+    },
+    {
+      "id": "C1-03",
+      "sprint": "S3 — CI/DevX",
+      "task": "Dodanie pre-commit hooks (ruff, black, mypy)",
+      "status": "completed",
+      "priority": "low"
+    },
+    {
+      "id": "C1-04",
+      "sprint": "S3 — CI/DevX",
+      "task": "Testy integracyjne API: TestClient dla api/app.py",
+      "status": "completed",
+      "priority": "medium"
+    },
+    {
+      "id": "C1-05",
+      "sprint": "S3 — CI/DevX",
+      "task": "Przeniesienie artefaktów deploy (.tar.gz, .ps1, .bat, ngrok, deploy_answers.txt) do archive/",
+      "status": "completed",
+      "priority": "low"
+    },
+    {
+      "id": "D1-01",
+      "sprint": "S4 — Docs",
+      "task": "Aktualizacja brain.md: stage L0-L4, lista workflow v2.0",
+      "status": "completed",
+      "priority": "medium"
+    },
+    {
+      "id": "D1-02",
+      "sprint": "S4 — Docs",
+      "task": "Utworzenie PRD-schema.md lub fix referencji w docs/PRD-core.md",
+      "status": "completed",
+      "priority": "low"
+    },
+    {
+      "id": "D1-03",
+      "sprint": "S4 — Docs",
+      "task": "Standaryzacja języka: wszystkie komentarze i docstringi po EN",
+      "status": "pending",
+      "priority": "low"
+    },
+    {
+      "id": "D1-04",
+      "sprint": "S4 — Docs",
+      "task": "Utrzymanie todo.json na bieżąco",
+      "status": "completed",
       "priority": "low"
     }
   ]

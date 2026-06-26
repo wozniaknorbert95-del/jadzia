@@ -5,17 +5,17 @@ Wants=network-online.target
 
 [Service]
 Type=simple
-User=root
-Group=root
-WorkingDirectory=/root/jadzia
+User=jadzia
+Group=jadzia
+WorkingDirectory=/opt/jadzia
 
 # Environment
-Environment="PATH=/root/jadzia/venv/bin:/usr/local/bin:/usr/bin:/bin"
+Environment="PATH=/opt/jadzia/venv/bin:/usr/local/bin:/usr/bin:/bin"
 Environment="PYTHONUNBUFFERED=1"
-EnvironmentFile=/root/jadzia/.env
+EnvironmentFile=/opt/jadzia/.env
 
 # Start command
-ExecStart=/root/jadzia/venv/bin/python main.py
+ExecStart=/opt/jadzia/venv/bin/python main.py
 
 # Restart policy
 Restart=always
@@ -24,8 +24,8 @@ StartLimitBurst=5
 StartLimitInterval=300
 
 # Logging
-StandardOutput=append:/root/jadzia/logs/jadzia.log
-StandardError=append:/root/jadzia/logs/jadzia-error.log
+StandardOutput=append:/opt/jadzia/logs/jadzia.log
+StandardError=append:/opt/jadzia/logs/jadzia-error.log
 
 # Resource limits
 LimitNOFILE=65536

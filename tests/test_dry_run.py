@@ -79,24 +79,14 @@ def test_worker_api_dry_run_parameter():
     """Worker API should accept and return dry_run parameter."""
     from contextlib import nullcontext
     from fastapi.testclient import TestClient
-    from interfaces.api import app
+    from api.app import create_app; app = create_app()
     from agent.state import OperationStatus
 
     client = TestClient(app)
 
     # POST with dry_run=true: simulate queued path so we get 200 with dry_run=True
-    with patch("interfaces.api.agent_lock", lambda **kw: nullcontext()):
-        with patch("interfaces.api.load_state") as mock_load:
-            with patch("interfaces.api.get_active_task_id", return_value="active-123"):
-                with patch("interfaces.api.add_task_to_queue", return_value=1) as mock_add:
-                    mock_load.return_value = {
-                        "chat_id": "test_dry_api",
-                        "source": "http",
-                        "tasks": {"active-123": {"status": OperationStatus.PLANNING}},
-                        "active_task_id": "active-123",
-                        "task_queue": [],
-                    }
-                    response = client.post(
+    with patch("api.routes.worker.add_task_to_queue", return_value=1) as mock_add:
+        response = client.post(
                         "/worker/task?dry_run=true",
                         json={"instruction": "test", "chat_id": "test_dry_api"},
                     )
@@ -108,18 +98,8 @@ def test_worker_api_dry_run_parameter():
     assert mock_add.call_args.kwargs.get("dry_run") is True
 
     # POST without dry_run: simulate same queued path, default dry_run=False
-    with patch("interfaces.api.agent_lock", lambda **kw: nullcontext()):
-        with patch("interfaces.api.load_state") as mock_load2:
-            with patch("interfaces.api.get_active_task_id", return_value="active-456"):
-                with patch("interfaces.api.add_task_to_queue", return_value=1) as mock_add2:
-                    mock_load2.return_value = {
-                        "chat_id": "test_normal_api",
-                        "source": "http",
-                        "tasks": {"active-456": {"status": OperationStatus.PLANNING}},
-                        "active_task_id": "active-456",
-                        "task_queue": [],
-                    }
-                    response2 = client.post(
+    with patch("api.routes.worker.add_task_to_queue", return_value=1) as mock_add2:
+        response2 = client.post(
                         "/worker/task",
                         json={"instruction": "test", "chat_id": "test_normal_api"},
                     )
