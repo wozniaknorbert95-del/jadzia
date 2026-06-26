@@ -1,11 +1,11 @@
 {
   "project": "Jadzia-Core",
-  "last_updated": "2026-06-26 (deploy VPS OK; Phase B P2-01 content_calendar LIVE kod)",
+  "last_updated": "2026-06-26 (DEPLOY-02 INT-004 proof PASS; DEPLOY-01 Mollie still open)",
   "status": "active",
   "plan": "docs/plans/PLAN-COI-PHASE-B.md",
   "active_gate": "DEPLOY-01",
   "active_plan": "docs/plans/PLAN-DEPLOY-INT-002.md",
-  "next_human": "1) Mollie E2E DEPLOY-01  2) GA4 env DEPLOY-03  3) JWT smoke calendar+analytics na prod",
+  "next_human": "1) Mollie E2E DEPLOY-01  2) GA4 env DEPLOY-03  3) commit+deploy app frontend (INT-004 payload)",
   "next_agent": "Phase B.2: Telegram notify pending_approval (po zamknięciu deploy gates)",
   "agent_rule": "Nie deployuj autonomicznie (Zasada 11). Nie oznaczaj DEPLOY-01/03 completed bez E2E proof w handoff.",
   "sprints": {
@@ -25,17 +25,17 @@
       "owner": "human",
       "checklist": "docs/handoffs/2026-06-26-deploy-int-002-proof.md",
       "note": "jadzia a22c3d6 on VPS, zzpackage GHA 28231465724, SMOKE-1 success",
-      "blocks": ["P1-01-deploy", "DEPLOY-02"]
+      "blocks": ["P1-01-deploy"]
     },
     {
       "id": "DEPLOY-02",
       "sprint": "COI Phase A — Growth PROOF",
-      "task": "E2E deploy INT-004: app → POST /api/v1/leads → wiersz w leads (po P1-01 kod)",
-      "status": "blocked",
+      "task": "E2E deploy INT-004: app → POST /api/v1/leads → wiersz w leads",
+      "status": "completed",
       "priority": "high",
-      "owner": "human",
-      "blocked_by": "DEPLOY-01",
-      "checklist": "docs/handoffs/TEMPLATE-deploy-int-004-proof.md"
+      "owner": "agent",
+      "checklist": "docs/handoffs/2026-06-26-deploy-int-004-proof.md",
+      "note": "fg-game-api v1.3 on zzpackage; wp-config FG_JADZIA_LEADS_*; 2 rows in leads table"
     },
     {
       "id": "DEPLOY-03",
