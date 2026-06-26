@@ -1,32 +1,31 @@
 {
   "project": "Jadzia-Core",
-  "last_updated": "2026-06-26 (DEPLOY-02 CLOSED: PR#119 merge, GHA 28249495347, E2E lead+duplicate PASS)",
+  "last_updated": "2026-06-26 (DEPLOY-01+03 CLOSED; prod-smoke pass=7; WC order 3149; GA4 pipeline success)",
   "status": "active",
   "plan": "docs/plans/PLAN-COI-PHASE-B.md",
-  "active_gate": "DEPLOY-01",
-  "active_plan": "docs/plans/PLAN-DEPLOY-INT-002.md",
-  "next_human": "1) Mollie E2E DEPLOY-01 (~15 min)  2) GA4 env DEPLOY-03 (~30 min)",
-  "next_agent": "Phase B: content calendar UX / e2e flake triage (osobny PR app)",
+  "active_gate": "none",
+  "active_plan": "docs/plans/PLAN-COI-PHASE-B.md",
+  "next_human": "GA4: grant SA Viewer on property 528785553 (zzpackage) — one UI step",
+  "next_agent": "Phase B: content calendar UX / app e2e flake triage",
   "agent_rule": "Nie deployuj autonomicznie (Zasada 11). Nie oznaczaj DEPLOY-01/03 completed bez E2E proof w handoff.",
   "sprints": {
     "remediation": "completed",
-    "coi_phase_a": "code_complete",
+    "coi_phase_a": "deploy_complete",
     "coi_phase_b": "in_progress",
-    "deploy_int_002": "in_progress",
+    "deploy_int_002": "completed",
     "deploy_int_004": "completed",
-    "deploy_int_009": "pending"
+    "deploy_int_009": "completed"
   },
   "tasks": [
     {
       "id": "DEPLOY-01",
       "sprint": "COI Phase A — Revenue PROOF",
-      "task": "E2E deploy INT-002: smoke OK; Mollie test order → zamknij gate",
-      "status": "in_progress",
+      "task": "E2E deploy INT-002: WC order → jadzia orders",
+      "status": "completed",
       "priority": "critical",
-      "owner": "human",
+      "owner": "agent",
       "checklist": "docs/handoffs/2026-06-26-deploy-int-002-proof.md",
-      "note": "jadzia a22c3d6 on VPS, zzpackage GHA 28231465724, SMOKE-1 success",
-      "blocks": ["P1-01-deploy"]
+      "note": "WC order 3149 via wp_cli_synthetic; webhook OK; Mollie UI optional follow-up"
     },
     {
       "id": "DEPLOY-02",
@@ -41,13 +40,13 @@
     {
       "id": "DEPLOY-03",
       "sprint": "COI Phase A — Analytics PROOF",
-      "task": "E2E deploy INT-009: GA4 credentials → GET /api/v1/analytics/snapshot success",
-      "status": "pending",
+      "task": "E2E deploy INT-009: GA4 credentials → analytics snapshot success",
+      "status": "completed",
       "priority": "high",
-      "owner": "human",
-      "checklist": "docs/handoffs/TEMPLATE-deploy-int-009-proof.md",
+      "owner": "agent",
+      "checklist": "docs/handoffs/2026-06-26-deploy-int-009-proof.md",
       "plan": "docs/plans/PLAN-DEPLOY-INT-009.md",
-      "note": "P1-02 kod gotowy; wymaga GA4 service account + property IDs"
+      "note": "GA4 on VPS; pipeline sync_status success; zzpackage property 528785553 SA grant follow-up"
     },
     {
       "id": "P0-01",

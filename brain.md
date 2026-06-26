@@ -35,13 +35,13 @@ Szczegóły charter: `flexgrafik-meta/docs/core/jadzia-operating-charter.md`
 
 | Element | Kontrakt | Status |
 |---------|----------|--------|
-| Order ingestion | INT-002 `POST /webhooks/woocommerce/order` | LIVE (kod); DEPLOY-01 E2E pending |
+| Order ingestion | INT-002 `POST /webhooks/woocommerce/order` | LIVE (WC order 3149 on prod) |
 | `order_node` | `agent/nodes/order_node.py` | LIVE |
 | `orders` table | `jadzia.db` — `agent/db.py` | LIVE |
 | Lead ingestion | INT-004 `POST /api/v1/leads` | LIVE (kod); DEPLOY-02 E2E pending |
 | `lead_node` | `agent/nodes/lead_node.py` | LIVE |
 | `leads` table | `jadzia.db` | LIVE |
-| Analytics snapshot | INT-009 `GET /api/v1/analytics/snapshot` | LIVE (VPS); DEPLOY-03 GA4 proof pending |
+| Analytics snapshot | INT-009 `GET /api/v1/analytics/snapshot` | LIVE (GA4 on VPS; prod-smoke pass=7) |
 | `analytics_node` | `agent/nodes/analytics_node.py` | LIVE |
 | Content calendar | INT-010 `GET/POST/PATCH /api/v1/content-calendar` | LIVE (VPS) |
 | `content_calendar_node` | `agent/nodes/content_calendar_node.py` | LIVE |
@@ -63,10 +63,10 @@ Plan Phase B: `docs/plans/PLAN-COI-PHASE-B.md`
 | ID | Kierunek | Status |
 |----|----------|--------|
 | INT-001 | Wizard → widget chat | LIVE |
-| INT-002 | WC → order webhook | LIVE (receiver); DEPLOY-01 Mollie E2E pending |
+| INT-002 | WC → order webhook | LIVE |
 | INT-003 | Game → Wizard coupon | LIVE (app side) |
 | INT-004 | app → `POST /api/v1/leads` | LIVE (receiver); DEPLOY-02 E2E pending |
-| INT-009 | GA4 → analytics snapshot | LIVE (VPS); DEPLOY-03 GA4 credentials pending |
+| INT-009 | GA4 → analytics snapshot | LIVE |
 | INT-010 | Content calendar | LIVE (VPS bootstrap) |
 
 Pełne kontrakty: `flexgrafik-meta/docs/core/integration-contracts.md`
