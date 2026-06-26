@@ -79,7 +79,7 @@ def _send_telegram_alert_sync(message: str) -> None:
     except Exception as e:
         logger.error(f"[CustomerAgent] TG Alert Błąd: {e}")
 
-from agent.agent import MODEL_HAIKU
+from core.llm import MODEL_HAIKU
 from core.lead_scoring import LeadScorer
 
 async def process_customer_message(session_id: str, user_input: str) -> Dict[str, Any]:

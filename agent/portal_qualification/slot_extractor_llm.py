@@ -54,7 +54,7 @@ async def extract_slot_llm(slot: str, message: str) -> Optional[str]:
     )
 
     try:
-        from agent.agent import MODEL_HAIKU
+        from core.llm import MODEL_HAIKU
 
         response = await client.messages.create(
             model=MODEL_HAIKU,

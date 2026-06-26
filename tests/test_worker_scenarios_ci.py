@@ -130,7 +130,7 @@ async def test_scenario2_happy_path_test_mode(client, isolate_logs):
     chat_id = f"ci_s2_{uuid.uuid4().hex[:8]}"
     clear_state(chat_id, SOURCE)
 
-    with patch("agent.agent.call_claude_with_retry", new_callable=AsyncMock) as mock_claude:
+    with patch("core.agent.call_claude_with_retry", new_callable=AsyncMock) as mock_claude:
         mock_claude.side_effect = [
             _intent_new_task_response(),
             _plan_response(),
@@ -187,7 +187,7 @@ async def test_scenario3_forced_auto_rollback(client, isolate_logs):
     clear_state(chat_id, SOURCE)
     instruction = f"Zmień przycisk {SCENARIO3_FORCE_ROLLBACK_TOKEN}"
 
-    with patch("agent.agent.call_claude_with_retry", new_callable=AsyncMock) as mock_claude:
+    with patch("core.agent.call_claude_with_retry", new_callable=AsyncMock) as mock_claude:
         mock_claude.side_effect = [
             _intent_new_task_response(),
             _plan_response(),
@@ -234,7 +234,7 @@ async def test_scenario4_test_mode_dry_run(client, isolate_logs):
     chat_id = f"ci_s4_{uuid.uuid4().hex[:8]}"
     clear_state(chat_id, SOURCE)
 
-    with patch("agent.agent.call_claude_with_retry", new_callable=AsyncMock) as mock_claude:
+    with patch("core.agent.call_claude_with_retry", new_callable=AsyncMock) as mock_claude:
         mock_claude.side_effect = [
             _intent_new_task_response(),
             _plan_response(),

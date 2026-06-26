@@ -17,6 +17,7 @@ from agent.state import (
 from agent.log import log_error
 from agent.nodes.routing import route_user_input
 from agent.prompt import get_error_recovery_prompt
+from core.llm import call_claude_with_retry, detect_session_source
 
 logger = logging.getLogger(__name__)
 
@@ -33,12 +34,10 @@ async def process_message(
     auto_advance: bool = True,
 ) -> Tuple[str, bool, Optional[str]]:
     if source is None:
-        from agent.agent import detect_session_source
         source = detect_session_source(chat_id)
 
     try:
         try:
-            from agent.agent import call_claude_with_retry
             with agent_lock(timeout=5, chat_id=chat_id, source=source):
                 _tid = task_id or get_active_task_id(chat_id, source)
                 logger.debug("[process_message] task_id=%s acquired lock (auto_advance=%s)", _tid, auto_advance)
@@ -135,7 +134,7 @@ async def handle_error(
             operation_state=operation_state,
         )
 
-        from agent.agent import call_claude_with_retry
+        from core.llm import call_claude_with_retry
         response = await call_claude_with_retry([{"role": "user", "content": recovery_prompt}])
         return (response, False, None)
 

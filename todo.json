@@ -1,6 +1,6 @@
 {
   "project": "Jadzia-Core",
-  "last_updated": "2026-06-26 (baseline commit + A3-01 in_progress)",
+  "last_updated": "2026-06-26 (A3-01 done, pushed)",
   "status": "active",
   "plan": "docs/plans/PLAN-REMEDIACJI.md",
   "tasks": [
@@ -53,9 +53,9 @@
       "id": "A3-01",
       "sprint": "S2 — Architektura",
       "task": "Migracja process_message z agent/agent.py do core/agent.py",
-      "status": "in_progress",
+      "status": "completed",
       "priority": "medium",
-      "risk": "Partial: core/agent.py active; call_claude/detect_session_source still in agent/agent.py"
+      "risk": "LLM client in core/llm.py; agent/agent.py is backward-compat shim"
     },
     {
       "id": "A4-01",
