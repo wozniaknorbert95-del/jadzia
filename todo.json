@@ -1,12 +1,12 @@
 {
   "project": "Jadzia-Core",
-  "last_updated": "2026-06-26 (DEPLOY-01 gate active; P1-01 implemented, blocked until deploy proof)",
+  "last_updated": "2026-06-26 (DEPLOY-01 smoke OK on prod; Mollie E2E pending)",
   "status": "active",
   "plan": "docs/plans/PLAN-COI-PHASE-A.md",
   "active_gate": "DEPLOY-01",
   "active_plan": "docs/plans/PLAN-DEPLOY-INT-002.md",
-  "next_human": "DEPLOY-01: Fazy 1-5 w PLAN-DEPLOY-INT-002.md (sekrety, jadzia deploy, smoke curl, theme, Mollie test)",
-  "next_agent": "Po DEPLOY-01 completed: DEPLOY-02 prep + P1-02 analytics_node. P1-01 kod gotowy — czeka na deploy gate.",
+  "next_human": "Mollie test order (Wizard test mode) → real order_id w orders → zamknij DEPLOY-01 proof handoff",
+  "next_agent": "Po DEPLOY-01 completed: P1-02 analytics_node. P1-01 kod LIVE na VPS.",
   "agent_rule": "Nie deployuj autonomicznie (Zasada 11). Nie oznaczaj DEPLOY-01 completed bez E2E proof w handoff.",
   "sprints": {
     "remediation": "completed",
@@ -17,11 +17,12 @@
     {
       "id": "DEPLOY-01",
       "sprint": "COI Phase A — Revenue PROOF",
-      "task": "E2E deploy INT-002: jadzia VPS + zzpackage wp-config/theme + Mollie test → wiersz w orders",
+      "task": "E2E deploy INT-002: smoke OK; Mollie test order → zamknij gate",
       "status": "in_progress",
       "priority": "critical",
       "owner": "human",
-      "checklist": "docs/plans/PLAN-DEPLOY-INT-002.md",
+      "checklist": "docs/handoffs/2026-06-26-deploy-int-002-proof.md",
+      "note": "jadzia a22c3d6 on VPS, zzpackage GHA 28231465724, SMOKE-1 success",
       "blocks": ["P1-01-deploy", "P1-02", "DEPLOY-02"]
     },
     {
