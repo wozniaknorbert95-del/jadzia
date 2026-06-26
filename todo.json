@@ -1,18 +1,19 @@
 {
   "project": "Jadzia-Core",
-  "last_updated": "2026-06-26 (DEPLOY-02 INT-004 proof PASS; DEPLOY-01 Mollie still open)",
+  "last_updated": "2026-06-26 (DEPLOY-02 CLOSED: PR#119 merge, GHA 28249495347, E2E lead+duplicate PASS)",
   "status": "active",
   "plan": "docs/plans/PLAN-COI-PHASE-B.md",
   "active_gate": "DEPLOY-01",
   "active_plan": "docs/plans/PLAN-DEPLOY-INT-002.md",
-  "next_human": "1) Mollie E2E DEPLOY-01  2) GA4 env DEPLOY-03  3) commit+deploy app frontend (INT-004 payload)",
-  "next_agent": "Phase B.2: Telegram notify pending_approval (po zamknięciu deploy gates)",
+  "next_human": "1) Mollie E2E DEPLOY-01 (~15 min)  2) GA4 env DEPLOY-03 (~30 min)",
+  "next_agent": "Phase B: content calendar UX / e2e flake triage (osobny PR app)",
   "agent_rule": "Nie deployuj autonomicznie (Zasada 11). Nie oznaczaj DEPLOY-01/03 completed bez E2E proof w handoff.",
   "sprints": {
     "remediation": "completed",
     "coi_phase_a": "code_complete",
     "coi_phase_b": "in_progress",
     "deploy_int_002": "in_progress",
+    "deploy_int_004": "completed",
     "deploy_int_009": "pending"
   },
   "tasks": [
@@ -35,7 +36,7 @@
       "priority": "high",
       "owner": "agent",
       "checklist": "docs/handoffs/2026-06-26-deploy-int-004-proof.md",
-      "note": "fg-game-api v1.3 on zzpackage; wp-config FG_JADZIA_LEADS_*; 2 rows in leads table"
+      "note": "PR#119 merged 917b630; GHA 28249495347; E2E int004-e2e-20260626175956@flexgrafik.nl; duplicate PASS"
     },
     {
       "id": "DEPLOY-03",
@@ -81,10 +82,10 @@
     {
       "id": "P1-01-deploy",
       "sprint": "COI Phase A — Growth",
-      "task": "Weryfikacja P1-01 na prod (blocked by DEPLOY-01 gate closure)",
-      "status": "blocked",
+      "task": "Weryfikacja P1-01 leads na prod (INT-004 E2E)",
+      "status": "completed",
       "priority": "medium",
-      "blocked_by": "DEPLOY-01"
+      "note": "DEPLOY-02 closed 2026-06-26"
     },
     {
       "id": "P1-02",
