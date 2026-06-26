@@ -125,6 +125,104 @@ class LeadCreateResponse(BaseModel):
     sync_status: Literal["success", "duplicate", "fail"]
 
 
+class AnalyticsSourceAppMetrics(BaseModel):
+    """INT-009 app.flexgrafik.nl GA4 metrics."""
+
+    active_users: int = 0
+    sessions: int = 0
+    avg_session_duration_sec: float = 0.0
+    game_starts: int = 0
+    lead_captured: int = 0
+    dau_1d: Optional[int] = None
+
+
+class AnalyticsSourceZzpackageMetrics(BaseModel):
+    """INT-009 zzpackage Wizard GA4 metrics."""
+
+    sessions: int = 0
+    conversions: int = 0
+    purchase_revenue: float = 0.0
+    aov: float = 0.0
+
+
+class AnalyticsSnapshotSources(BaseModel):
+    """Per-source metrics bundle."""
+
+    app: Optional[AnalyticsSourceAppMetrics] = None
+    zzpackage: Optional[AnalyticsSourceZzpackageMetrics] = None
+
+
+class AnalyticsSnapshotResponse(BaseModel):
+    """INT-009 / analytics_node output."""
+
+    sync_status: Literal["success", "degraded", "fail"]
+    generated_at: str
+    period: str
+    sources: AnalyticsSnapshotSources = Field(default_factory=AnalyticsSnapshotSources)
+    errors: List[str] = Field(default_factory=list)
+
+
+class ContentCalendarCreateRequest(BaseModel):
+    """INT-010 inbound — create calendar entry."""
+
+    platform: Literal["facebook", "tiktok"]
+    title: str = Field(min_length=1, max_length=200)
+    body_nl: str = Field(min_length=1, max_length=5000)
+    scheduled_at: str
+    source_order_id: Optional[str] = None
+
+    @field_validator("title", "body_nl", mode="before")
+    @classmethod
+    def _strip_strings(cls, v: object) -> object:
+        if isinstance(v, str):
+            return v.strip()
+        return v
+
+
+class ContentCalendarUpdateRequest(BaseModel):
+    """INT-010 partial update."""
+
+    title: Optional[str] = Field(default=None, min_length=1, max_length=200)
+    body_nl: Optional[str] = Field(default=None, min_length=1, max_length=5000)
+    scheduled_at: Optional[str] = None
+    status: Optional[Literal["draft", "pending_approval", "approved", "published", "cancelled"]] = None
+
+    @field_validator("title", "body_nl", mode="before")
+    @classmethod
+    def _strip_optional(cls, v: object) -> object:
+        if isinstance(v, str):
+            return v.strip()
+        return v
+
+
+class ContentCalendarEntry(BaseModel):
+    """INT-010 calendar row."""
+
+    entry_id: str
+    platform: Literal["facebook", "tiktok"]
+    title: str
+    body_nl: str
+    scheduled_at: str
+    status: Literal["draft", "pending_approval", "approved", "published", "cancelled"]
+    source_order_id: Optional[str] = None
+    created_at: str
+    updated_at: str
+
+
+class ContentCalendarListResponse(BaseModel):
+    """INT-010 list response."""
+
+    entries: List[ContentCalendarEntry] = Field(default_factory=list)
+    total: int = 0
+
+
+class ContentCalendarCreateResponse(BaseModel):
+    """INT-010 / content_calendar_node create output."""
+
+    entry_id: str
+    sync_status: Literal["success", "fail"]
+
+
 class PortalQualifyResponse(BaseModel):
     schema_version: str = "qual_v1"
     reply: str

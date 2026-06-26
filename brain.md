@@ -3,7 +3,7 @@ status: "[ACTIVE]"
 title: "Jadzia-Core Brain (Canonical)"
 owner: "Norbert Wozniak"
 updated: "2026-06-26"
-readiness_overall: "~40% vs COI vision"
+readiness_overall: "~50% vs COI vision"
 ---
 
 ## 1) Misja modułu
@@ -31,31 +31,43 @@ Szczegóły charter: `flexgrafik-meta/docs/core/jadzia-operating-charter.md`
 
 **Pipeline:** `routing → commands | intent | planning | generate | approval → SSH write → HITL diff`
 
-## 3) TO-BE Phase A (następna fala — COI Revenue)
+## 3) COI Phase A (kod agenta — COMPLETE)
 
 | Element | Kontrakt | Status |
 |---------|----------|--------|
-| Order ingestion | INT-002 `POST /webhooks/woocommerce/order` | LIVE |
+| Order ingestion | INT-002 `POST /webhooks/woocommerce/order` | LIVE (kod); DEPLOY-01 E2E pending |
 | `order_node` | `agent/nodes/order_node.py` | LIVE |
 | `orders` table | `jadzia.db` — `agent/db.py` | LIVE |
+| Lead ingestion | INT-004 `POST /api/v1/leads` | LIVE (kod); DEPLOY-02 E2E pending |
+| `lead_node` | `agent/nodes/lead_node.py` | LIVE |
+| `leads` table | `jadzia.db` | LIVE |
+| Analytics snapshot | INT-009 `GET /api/v1/analytics/snapshot` | LIVE (VPS); DEPLOY-03 GA4 proof pending |
+| `analytics_node` | `agent/nodes/analytics_node.py` | LIVE |
+| Content calendar | INT-010 `GET/POST/PATCH /api/v1/content-calendar` | LIVE (VPS) |
+| `content_calendar_node` | `agent/nodes/content_calendar_node.py` | LIVE |
 
-Plan wykonania: `docs/plans/PLAN-COI-PHASE-A.md`
+Plan Phase A: `docs/plans/PLAN-COI-PHASE-A.md`  
+Plan Phase B: `docs/plans/PLAN-COI-PHASE-B.md`
 
 ## 4) Dane
 
 - **Operational SSoT:** `data/jadzia.db` (SQLite-only — brak JSON session files)
 - **Agent tasks/sessions:** `agent/db.py`, `agent/state/`
 - **Customer chat:** TTLCache w `agent/customer_agent.py`
-- **Orders/leads/calendar:** PLANNED (Phase A/B)
+- **Orders/leads:** LIVE w `jadzia.db` (Phase A kod)
+- **Analytics:** GA4 read-through cache (Phase A kod); snapshot persist = Phase B
+- **Content calendar:** LIVE w `jadzia.db` (Phase B bootstrap)
 
 ## 5) Integracje
 
 | ID | Kierunek | Status |
 |----|----------|--------|
 | INT-001 | Wizard → widget chat | LIVE |
-| INT-002 | WC → order webhook | LIVE (receiver); zzpackage sender P0-03 |
+| INT-002 | WC → order webhook | LIVE (receiver); DEPLOY-01 Mollie E2E pending |
 | INT-003 | Game → Wizard coupon | LIVE (app side) |
-| Game lead sync | app → jadzia `POST /api/v1/leads` | LIVE (receiver); DEPLOY-02 E2E pending |
+| INT-004 | app → `POST /api/v1/leads` | LIVE (receiver); DEPLOY-02 E2E pending |
+| INT-009 | GA4 → analytics snapshot | LIVE (VPS); DEPLOY-03 GA4 credentials pending |
+| INT-010 | Content calendar | LIVE (VPS bootstrap) |
 
 Pełne kontrakty: `flexgrafik-meta/docs/core/integration-contracts.md`
 
@@ -66,11 +78,11 @@ Pełne kontrakty: `flexgrafik-meta/docs/core/integration-contracts.md`
 | WP SSH agent | 90% | 95% |
 | Customer chat | 85% | 90% |
 | Worker queue/HITL | 85% | 90% |
-| Operational OS (orders/leads) | 5% | 90% |
-| Analytics integration | 0% | 80% |
+| Operational OS (orders/leads) | 40% | 90% |
+| Analytics integration | 30% | 80% |
 | Content calendar | 0% | 75% |
 | COI strategy synthesis | 10% (docs) | 85% |
-| **Overall** | **~40%** | **85%** |
+| **Overall** | **~50%** | **85%** |
 
 ## 7) Source of Truth
 

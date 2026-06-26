@@ -190,6 +190,29 @@ def _init_schema(conn: sqlite3.Connection):
         ON leads(created_at)
     """)
 
+    # Social content calendar (INT-010)
+    conn.execute("""
+        CREATE TABLE IF NOT EXISTS content_calendar (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            platform TEXT NOT NULL,
+            title TEXT NOT NULL,
+            body_nl TEXT NOT NULL,
+            scheduled_at TEXT NOT NULL,
+            status TEXT NOT NULL DEFAULT 'draft',
+            source_order_id TEXT,
+            created_at TEXT NOT NULL,
+            updated_at TEXT NOT NULL
+        )
+    """)
+    conn.execute("""
+        CREATE INDEX IF NOT EXISTS idx_content_calendar_scheduled
+        ON content_calendar(scheduled_at)
+    """)
+    conn.execute("""
+        CREATE INDEX IF NOT EXISTS idx_content_calendar_status
+        ON content_calendar(status)
+    """)
+
     conn.commit()
 
 
@@ -1022,6 +1045,139 @@ def _row_to_lead_dict(row: sqlite3.Row) -> Dict:
     lead["lead_id"] = str(lead.pop("id"))
     lead["consent_status"] = bool(lead.get("consent_status"))
     return lead
+
+
+# ============================================================================
+# Content calendar operations (INT-010)
+# ============================================================================
+
+_VALID_CALENDAR_STATUSES = frozenset(
+    {"draft", "pending_approval", "approved", "published", "cancelled"}
+)
+_VALID_PLATFORMS = frozenset({"facebook", "tiktok"})
+
+
+def db_create_calendar_entry(entry_data: Dict) -> tuple[str, str]:
+    """
+    Insert content calendar entry.
+
+    Returns:
+        (entry_id, sync_status) where sync_status is success|fail
+    """
+    platform = entry_data.get("platform", "")
+    if platform not in _VALID_PLATFORMS:
+        return "", "fail"
+
+    now = datetime.now(timezone.utc).isoformat()
+    conn = get_connection()
+    try:
+        cursor = conn.execute(
+            """
+            INSERT INTO content_calendar (
+                platform, title, body_nl, scheduled_at, status,
+                source_order_id, created_at, updated_at
+            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+            """,
+            (
+                platform,
+                entry_data["title"],
+                entry_data["body_nl"],
+                entry_data["scheduled_at"],
+                entry_data.get("status", "draft"),
+                entry_data.get("source_order_id"),
+                now,
+                now,
+            ),
+        )
+        conn.commit()
+        return str(cursor.lastrowid), "success"
+    except Exception:
+        conn.rollback()
+        return "", "fail"
+
+
+def db_list_calendar_entries(
+    status: Optional[str] = None,
+    platform: Optional[str] = None,
+    limit: int = 50,
+) -> List[Dict]:
+    """List calendar entries with optional filters."""
+    conn = get_connection()
+    query = "SELECT * FROM content_calendar WHERE 1=1"
+    params: List[Any] = []
+
+    if status:
+        query += " AND status = ?"
+        params.append(status)
+    if platform:
+        query += " AND platform = ?"
+        params.append(platform)
+
+    query += " ORDER BY scheduled_at ASC LIMIT ?"
+    params.append(limit)
+
+    rows = conn.execute(query, params).fetchall()
+    return [_row_to_calendar_dict(row) for row in rows]
+
+
+def db_get_calendar_entry(entry_id: int) -> Optional[Dict]:
+    """Get calendar entry by internal id."""
+    conn = get_connection()
+    row = conn.execute(
+        "SELECT * FROM content_calendar WHERE id = ?", (entry_id,)
+    ).fetchone()
+    if not row:
+        return None
+    return _row_to_calendar_dict(row)
+
+
+def db_update_calendar_entry(entry_id: int, updates: Dict) -> bool:
+    """Update calendar entry fields. Returns True on success."""
+    allowed = {"title", "body_nl", "scheduled_at", "status"}
+    filtered = {k: v for k, v in updates.items() if k in allowed and v is not None}
+    if not filtered:
+        return False
+    if "status" in filtered and filtered["status"] not in _VALID_CALENDAR_STATUSES:
+        return False
+
+    filtered["updated_at"] = datetime.now(timezone.utc).isoformat()
+    set_clause = ", ".join(f"{k} = ?" for k in filtered)
+    values = list(filtered.values()) + [entry_id]
+
+    conn = get_connection()
+    try:
+        cursor = conn.execute(
+            f"UPDATE content_calendar SET {set_clause} WHERE id = ?",
+            values,
+        )
+        conn.commit()
+        return cursor.rowcount > 0
+    except Exception:
+        conn.rollback()
+        return False
+
+
+def db_get_completed_orders_for_calendar(limit: int = 10) -> List[Dict]:
+    """Recent completed/processing orders for case-study suggestions."""
+    conn = get_connection()
+    rows = conn.execute(
+        """
+        SELECT order_id, status, total_gross, customer_name, created_at
+        FROM orders
+        WHERE status IN ('completed', 'processing')
+        ORDER BY created_at DESC
+        LIMIT ?
+        """,
+        (limit,),
+    ).fetchall()
+    return [dict(row) for row in rows]
+
+
+def _row_to_calendar_dict(row: sqlite3.Row) -> Dict:
+    """Convert content_calendar row to API dict."""
+    entry = dict(row)
+    entry["entry_id"] = str(entry.pop("id"))
+    return entry
 
 
 # ============================================================================

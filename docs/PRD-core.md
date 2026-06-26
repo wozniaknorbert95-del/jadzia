@@ -83,8 +83,8 @@ queued → planning → reading_files → generating_code
 |------|----------|----------|--------|
 | `order_node` | **P0** | INT-002 WC webhook | LIVE |
 | `lead_node` | P1 | Game lead API | LIVE (receiver); DEPLOY-02 E2E pending |
-| `analytics_node` | P1 | GA4 snapshot | PLANNED |
-| `content_calendar_node` | P2 | Social schedule | PLANNED |
+| `analytics_node` | P1 | GA4 snapshot (INT-009) | LIVE (kod); GA4 credentials + deploy pending |
+| `content_calendar_node` | P2 | Social schedule (INT-010) | LIVE (bootstrap); publish API Phase B.2 |
 
 ### Infrastructure
 

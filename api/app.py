@@ -49,6 +49,8 @@ def create_app() -> FastAPI:
     from api.routes.chat import router as chat_router
     from api.routes.portal_qualify import router as portal_qualify_router
     from api.routes.leads import router as leads_router
+    from api.routes.analytics import router as analytics_router
+    from api.routes.content_calendar import router as content_calendar_router
     from api.routes.webhooks import router as inbound_webhooks_router
     from api.routes.health import router as health_router
     from api.routes.worker import router as worker_router
@@ -59,6 +61,8 @@ def create_app() -> FastAPI:
     app.include_router(chat_router)
     app.include_router(portal_qualify_router)
     app.include_router(leads_router)
+    app.include_router(analytics_router)
+    app.include_router(content_calendar_router)
     app.include_router(inbound_webhooks_router)
     app.include_router(health_router)
     app.include_router(worker_router)

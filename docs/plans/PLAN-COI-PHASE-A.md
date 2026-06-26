@@ -1,6 +1,6 @@
 # PLAN-COI-PHASE-A — jadzia-core
 
-**Status:** ACTIVE  
+**Status:** CODE COMPLETE — deploy gates pending  
 **Created:** 2026-06-26  
 **Source:** `flexgrafik-meta/docs/core/modules/module-jadzia-core.md` §8, `jadzia-operating-charter.md` §2 Filar 1  
 **Supersedes:** `docs/plans/PLAN-REMEDIACJI.md` (completed)
@@ -33,11 +33,21 @@ Remediation sprint (architecture, SQLite-only, `core/`) is **done** — see arch
 
 ## Execution order (1-1-1)
 
-1. **P0-02** — Schema `orders` + migration (`/migrate` workflow)
-2. **P0-01** — `order_node` + route (`/blast` → `/implement`)
-3. **P0-03** — WC webhook on zzpackage (Dowódca, blocked on agent)
-4. **P1-01** — Lead API
-5. **P1-02** — Analytics snapshot
+1. **P0-02** — Schema `orders` + migration (`/migrate` workflow) — **DONE**
+2. **P0-01** — `order_node` + route (`/blast` → `/implement`) — **DONE**
+3. **P0-03** — WC webhook on zzpackage (Dowódca) — **DONE**
+4. **P1-01** — Lead API — **DONE**
+5. **P1-02** — Analytics snapshot — **DONE**
+
+## Deploy gates (human, Zasada 11)
+
+| Gate | Contract | Plan |
+|------|----------|------|
+| DEPLOY-01 | INT-002 Mollie E2E | `PLAN-DEPLOY-INT-002.md` |
+| DEPLOY-03 | INT-009 GA4 snapshot | `PLAN-DEPLOY-INT-009.md` |
+| DEPLOY-02 | INT-004 lead E2E | `TEMPLATE-deploy-int-004-proof.md` |
+
+Close handoff: `docs/handoffs/2026-06-26-coi-phase-a-close.md`
 
 ---
 

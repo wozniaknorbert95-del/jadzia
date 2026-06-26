@@ -1,17 +1,19 @@
 {
   "project": "Jadzia-Core",
-  "last_updated": "2026-06-26 (DEPLOY-01 smoke OK on prod; Mollie E2E pending)",
+  "last_updated": "2026-06-26 (deploy VPS OK; Phase B P2-01 content_calendar LIVE kod)",
   "status": "active",
-  "plan": "docs/plans/PLAN-COI-PHASE-A.md",
+  "plan": "docs/plans/PLAN-COI-PHASE-B.md",
   "active_gate": "DEPLOY-01",
   "active_plan": "docs/plans/PLAN-DEPLOY-INT-002.md",
-  "next_human": "Mollie test order (Wizard test mode) → real order_id w orders → zamknij DEPLOY-01 proof handoff",
-  "next_agent": "Po DEPLOY-01 completed: P1-02 analytics_node. P1-01 kod LIVE na VPS.",
-  "agent_rule": "Nie deployuj autonomicznie (Zasada 11). Nie oznaczaj DEPLOY-01 completed bez E2E proof w handoff.",
+  "next_human": "1) Mollie E2E DEPLOY-01  2) GA4 env DEPLOY-03  3) JWT smoke calendar+analytics na prod",
+  "next_agent": "Phase B.2: Telegram notify pending_approval (po zamknięciu deploy gates)",
+  "agent_rule": "Nie deployuj autonomicznie (Zasada 11). Nie oznaczaj DEPLOY-01/03 completed bez E2E proof w handoff.",
   "sprints": {
     "remediation": "completed",
-    "coi_phase_a": "active",
-    "deploy_int_002": "in_progress"
+    "coi_phase_a": "code_complete",
+    "coi_phase_b": "in_progress",
+    "deploy_int_002": "in_progress",
+    "deploy_int_009": "pending"
   },
   "tasks": [
     {
@@ -23,7 +25,7 @@
       "owner": "human",
       "checklist": "docs/handoffs/2026-06-26-deploy-int-002-proof.md",
       "note": "jadzia a22c3d6 on VPS, zzpackage GHA 28231465724, SMOKE-1 success",
-      "blocks": ["P1-01-deploy", "P1-02", "DEPLOY-02"]
+      "blocks": ["P1-01-deploy", "DEPLOY-02"]
     },
     {
       "id": "DEPLOY-02",
@@ -34,6 +36,17 @@
       "owner": "human",
       "blocked_by": "DEPLOY-01",
       "checklist": "docs/handoffs/TEMPLATE-deploy-int-004-proof.md"
+    },
+    {
+      "id": "DEPLOY-03",
+      "sprint": "COI Phase A — Analytics PROOF",
+      "task": "E2E deploy INT-009: GA4 credentials → GET /api/v1/analytics/snapshot success",
+      "status": "pending",
+      "priority": "high",
+      "owner": "human",
+      "checklist": "docs/handoffs/TEMPLATE-deploy-int-009-proof.md",
+      "plan": "docs/plans/PLAN-DEPLOY-INT-009.md",
+      "note": "P1-02 kod gotowy; wymaga GA4 service account + property IDs"
     },
     {
       "id": "P0-01",
@@ -77,9 +90,25 @@
       "id": "P1-02",
       "sprint": "COI Phase A — Growth",
       "task": "analytics_node + GET /api/v1/analytics/snapshot",
-      "status": "blocked",
+      "status": "completed",
       "priority": "medium",
-      "blocked_by": "DEPLOY-01"
+      "note": "Kod gotowy (app+zzpackage INT-009); deploy po GA4 credentials na VPS"
+    },
+    {
+      "id": "P2-01",
+      "sprint": "COI Phase B — Content",
+      "task": "content_calendar_node + GET/POST/PATCH /api/v1/content-calendar (INT-010 bootstrap)",
+      "status": "completed",
+      "priority": "medium",
+      "note": "Deployed VPS 2026-06-26; FB/TikTok publish API = Phase B.2"
+    },
+    {
+      "id": "P2-02",
+      "sprint": "COI Phase B — Content",
+      "task": "Telegram notify Dowódcy on pending_approval calendar entries",
+      "status": "completed",
+      "priority": "medium",
+      "note": "content_calendar_node → _send_telegram_alert_sync on pending_approval"
     },
     {
       "id": "D2-01",
