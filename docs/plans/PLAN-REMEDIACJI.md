@@ -1,5 +1,8 @@
 # Plan Remediacji — jadzia-core
 
+**Status:** COMPLETED (archived 2026-06-26)  
+**Successor:** [`PLAN-COI-PHASE-A.md`](PLAN-COI-PHASE-A.md)
+
 **Data**: 2026-06-02
 **Źródło**: `docs/audyt-raport.txt` (25 findings) + `docs/plans/STAGE2-JADZIA-DONE.md`
 **Status workflow**: v2.0 Elite Edition wdrożony (L0-L4)

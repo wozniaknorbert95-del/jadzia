@@ -17,7 +17,7 @@ Identify and eliminate performance bottlenecks in the Jadzia-Core execution pipe
 ### 2. Execution Pipeline Latency
 - **LLM Turnaround**: Measure time from `process_message` start to LLM response.
 - **Worker Overhead**: Measure the time spent in the 15s/2s polling loop.
-- **I/O Bound**: Identify slow file reads/writes in `agent/state.py`.
+- **I/O Bound**: Identify slow DB reads/writes in `agent/state/` or `agent/db.py`.
 
 ### 3. Resource Consumption
 - Memory leak check in the background worker.

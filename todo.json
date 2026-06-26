@@ -1,9 +1,57 @@
 {
   "project": "Jadzia-Core",
-  "last_updated": "2026-06-26 (A3-01 done, pushed)",
+  "last_updated": "2026-06-26 (COI docs alignment)",
   "status": "active",
-  "plan": "docs/plans/PLAN-REMEDIACJI.md",
+  "plan": "docs/plans/PLAN-COI-PHASE-A.md",
+  "sprints": {
+    "remediation": "completed",
+    "coi_phase_a": "active"
+  },
   "tasks": [
+    {
+      "id": "D2-01",
+      "sprint": "Docs — COI sync",
+      "task": "Sync brain.md, PRD-core.md, AGENTS.md z module-jadzia-core.md (COI charter)",
+      "status": "completed",
+      "priority": "high"
+    },
+    {
+      "id": "P0-01",
+      "sprint": "COI Phase A — Revenue",
+      "task": "order_node + POST /webhooks/woocommerce/order (INT-002)",
+      "status": "pending",
+      "priority": "critical",
+      "risk": "Requires /blast contract before /implement"
+    },
+    {
+      "id": "P0-02",
+      "sprint": "COI Phase A — Revenue",
+      "task": "Schema orders w jadzia.db + migracja",
+      "status": "pending",
+      "priority": "critical"
+    },
+    {
+      "id": "P0-03",
+      "sprint": "COI Phase A — Revenue",
+      "task": "WC webhook config na zzpackage (checklist Dowódcy)",
+      "status": "blocked",
+      "priority": "critical",
+      "risk": "Wymaga konfiguracji WooCommerce po stronie zzpackage"
+    },
+    {
+      "id": "P1-01",
+      "sprint": "COI Phase A — Growth",
+      "task": "lead_node + POST /api/v1/leads (game lead sync)",
+      "status": "pending",
+      "priority": "medium"
+    },
+    {
+      "id": "P1-02",
+      "sprint": "COI Phase A — Growth",
+      "task": "analytics_node + GET /api/v1/analytics/snapshot",
+      "status": "pending",
+      "priority": "medium"
+    },
     {
       "id": "S1-01",
       "sprint": "S1 — Security",
@@ -11,6 +59,13 @@
       "status": "blocked",
       "priority": "critical",
       "risk": "Wymaga człowieka do wygenerowania nowych kluczy i uruchomienia BFG"
+    },
+    {
+      "id": "OPS-01",
+      "sprint": "Ops — Deploy",
+      "task": "VPS: user jadzia, /opt/jadzia per deployment/jadzia.service (obecnie root@/root/jadzia)",
+      "status": "pending",
+      "priority": "high"
     },
     {
       "id": "S1-02",
@@ -24,7 +79,8 @@
       "sprint": "S1 — Security",
       "task": "Dedicated system user dla jadzia.service (zamiast root)",
       "status": "completed",
-      "priority": "high"
+      "priority": "high",
+      "note": "Repo ready; VPS still root — see OPS-01"
     },
     {
       "id": "S1-04",
@@ -35,32 +91,29 @@
     },
     {
       "id": "A1-01",
-      "sprint": "S2 — Architektura",
+      "sprint": "S2 — Architektura (remediation)",
       "task": "Usunięcie legacy interfaces/ po weryfikacji api/ coverage",
       "status": "completed",
-      "priority": "medium",
-      "risk": "Permanent dual maintenance"
+      "priority": "medium"
     },
     {
       "id": "A2-01",
-      "sprint": "S2 — Architektura",
-      "task": "Podział agent/state.py (1237 linii) na state/core.py, locks.py, migration.py, sync.py",
+      "sprint": "S2 — Architektura (remediation)",
+      "task": "Podział agent/state.py na agent/state/ package",
       "status": "completed",
-      "priority": "medium",
-      "risk": "State logic sprawdzana przy każdym requeście"
+      "priority": "medium"
     },
     {
       "id": "A3-01",
-      "sprint": "S2 — Architektura",
-      "task": "Migracja process_message z agent/agent.py do core/agent.py",
+      "sprint": "S2 — Architektura (remediation)",
+      "task": "Migracja process_message + LLM do core/agent.py i core/llm.py",
       "status": "completed",
-      "priority": "medium",
-      "risk": "LLM client in core/llm.py; agent/agent.py is backward-compat shim"
+      "priority": "medium"
     },
     {
       "id": "A4-01",
-      "sprint": "S2 — Architektura",
-      "task": "Decyzja: single persistence (SQLite only) vs zachowanie dualnego (JSON+SQLite)",
+      "sprint": "S2 — Architektura (remediation)",
+      "task": "Single persistence: SQLite-only (bez USE_SQLITE_STATE / JSON fallback)",
       "status": "completed",
       "priority": "medium"
     },
@@ -73,57 +126,57 @@
     },
     {
       "id": "C1-01",
-      "sprint": "S3 — CI/DevX",
-      "task": "Dodanie mypy --strict do CI (obok ruff, black, bandit)",
+      "sprint": "S3 — CI/DevX (remediation)",
+      "task": "Dodanie mypy --strict do CI",
       "status": "completed",
       "priority": "medium"
     },
     {
       "id": "C1-02",
-      "sprint": "S3 — CI/DevX",
+      "sprint": "S3 — CI/DevX (remediation)",
       "task": "Konfiguracja ruff i black w pyproject.toml",
       "status": "completed",
       "priority": "low"
     },
     {
       "id": "C1-03",
-      "sprint": "S3 — CI/DevX",
-      "task": "Dodanie pre-commit hooks (ruff, black, mypy)",
+      "sprint": "S3 — CI/DevX (remediation)",
+      "task": "Dodanie pre-commit hooks",
       "status": "completed",
       "priority": "low"
     },
     {
       "id": "C1-04",
-      "sprint": "S3 — CI/DevX",
+      "sprint": "S3 — CI/DevX (remediation)",
       "task": "Testy integracyjne API: TestClient dla api/app.py",
       "status": "completed",
       "priority": "medium"
     },
     {
       "id": "C1-05",
-      "sprint": "S3 — CI/DevX",
-      "task": "Przeniesienie artefaktów deploy (.tar.gz, .ps1, .bat, ngrok, deploy_answers.txt) do archive/",
+      "sprint": "S3 — CI/DevX (remediation)",
+      "task": "Przeniesienie artefaktów deploy do archive/",
       "status": "completed",
       "priority": "low"
     },
     {
       "id": "D1-01",
-      "sprint": "S4 — Docs",
-      "task": "Aktualizacja brain.md: stage L0-L4, lista workflow v2.0",
+      "sprint": "S4 — Docs (remediation)",
+      "task": "Aktualizacja brain.md: workflow v2.0 L0-L4",
       "status": "completed",
       "priority": "medium"
     },
     {
       "id": "D1-02",
-      "sprint": "S4 — Docs",
-      "task": "Utworzenie PRD-schema.md lub fix referencji w docs/PRD-core.md",
+      "sprint": "S4 — Docs (remediation)",
+      "task": "Fix referencji w docs/PRD-core.md",
       "status": "completed",
       "priority": "low"
     },
     {
       "id": "D1-03",
       "sprint": "S4 — Docs",
-      "task": "Standaryzacja języka: wszystkie komentarze i docstringi po EN",
+      "task": "Standaryzacja języka: komentarze i docstringi po EN",
       "status": "pending",
       "priority": "low"
     },

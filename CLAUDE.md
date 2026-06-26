@@ -1,4 +1,4 @@
-# JADZIA - AI Agent do zarządzania sklepem internetowym
+# JADZIA — Chief Operating Intelligence (COI) backend
 
 ## Quick Start
 
@@ -10,15 +10,19 @@ uvicorn main:app --host 0.0.0.0 --port 8000
 
 ## Architecture
 
-See `SYSTEM_BIBLE.md` for the complete architecture reference.
+See `brain.md` and `docs/PRD-core.md` for the complete reference.
+Module spec: `flexgrafik-meta/docs/core/modules/module-jadzia-core.md`
 
-**Flow:** User -> Telegram -> `api/telegram.py` -> Worker Queue (SQLite) -> worker_loop (`api/app.py`) -> `process_message` (`core/agent.py`) -> SSH Orchestrator -> Telegram response
+**WP agent flow:** User -> Telegram -> `api/telegram.py` -> Worker Queue (SQLite) -> `api/app.py` worker_loop -> `core/agent.py` -> SSH Orchestrator -> response
+
+**Widget flow:** Wizard -> `POST /api/v1/widget/chat` -> `agent/customer_agent.py` -> Claude (INT-001)
 
 **Key files:**
 - `api/app.py` - FastAPI app factory + worker loop
 - `api/telegram.py` - Telegram webhook handler
-- `core/agent.py` - Core agent orchestration (`process_message`)
-- `agent/state/` - Session state management (SQLite-backed)
+- `core/agent.py` - Orchestration (`process_message`)
+- `core/llm.py` - Claude API client
+- `agent/state/` - Session state (SQLite-backed)
 - `agent/db.py` - SQLite database layer
 - `agent/tools/ssh_orchestrator.py` - SSH file operations
 

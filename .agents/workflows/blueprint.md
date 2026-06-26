@@ -10,7 +10,7 @@ Map the structural transformation of the system. Unlike `/blast` (which adds), `
 ## 🛠️ Procedure
 
 ### 1. Current State Analysis (As-Is)
-- Map the existing coupling. (e.g., "`agent/agent.py` is currently tightly coupled to `agent/state.py` via X method").
+- Map the existing coupling. (e.g., "`core/agent.py` is currently tightly coupled to `agent/state/` via `load_state`/`save_state`").
 - Identify "God Objects" or "Leaky Abstractions".
 
 ### 2. Target State Design (To-Be)

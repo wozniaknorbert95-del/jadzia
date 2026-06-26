@@ -18,7 +18,7 @@ Move from "guessing" to "proving". Identify the exact line and state that causes
 Isolate the failure to a specific layer:
 - **Layer 1 (Interface)**: `api/app.py`, `api/routes/`, `api/telegram.py`.
 - **Layer 2 (Logic)**: `core/services.py` or `agent/agent.py`.
-- **Layer 3 (State)**: `agent/state.py` or `agent/db.py`.
+- **Layer 3 (State)**: `agent/state/` or `agent/db.py`.
 - **Layer 4 (External)**: Anthropic API, Telegram API, SQLite locks.
 
 ### Step 3: Proof of Concept (The "Smoking Gun")

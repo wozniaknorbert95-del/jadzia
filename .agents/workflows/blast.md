@@ -23,7 +23,7 @@ Create a durable, immutable technical contract before a single line of code is w
 Detailed checklist of files to be modified/created:
 - [ ] `core/services.py`: Add method `X`.
 - [ ] `api/routes/X.py`: Add endpoint `Y`.
-- [ ] `agent/state.py`: Update schema for `Z`.
+- [ ] `agent/state/` or `agent/db.py`: Update schema for `Z`.
 - [ ] `tests/`: Create `test_feature_x.py`.
 
 ### 4. S - Success Criteria (Definition of Done)

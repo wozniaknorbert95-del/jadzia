@@ -10,7 +10,7 @@ disable-model-invocation: true
 
 ## Goal
 
-Trwały kontrakt techniczny przed edycją kodu Python/FastAPI/LangGraph.
+Trwały kontrakt techniczny przed edycją kodu Python/FastAPI (routes, nodes, services).
 
 ## Canonical workflow
 

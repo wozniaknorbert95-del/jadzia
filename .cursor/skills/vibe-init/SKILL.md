@@ -44,7 +44,7 @@ Problem/Ticket od Dowódcy; optional handoff `V-FILES` (max 4).
 
 | Signals | TASK_CLASSIFICATION | RECOMMENDED_NEXT |
 |---------|---------------------|------------------|
-| New node, API, LangGraph flow | **Feature** | **`/blast`** |
+| New node, API route, agent flow | **Feature** | **`/blast`** |
 | Bug, 500, webhook fail, unknown | **Bugfix** | **`/debug`** |
 | Known cause, narrow Python fix | **Hotfix** | `/implement` |
 | Schema / alembic change | **Migrate** | **`/migrate`** |

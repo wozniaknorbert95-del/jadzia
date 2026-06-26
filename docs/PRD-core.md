@@ -1,113 +1,139 @@
 # PRD-core.md — jadzia-core
-*Wersja: 1.0 | Projekt: Jadzia AI Agent | Właściciel: Norbert Woźniak*
+
+*Version: 2.0 | Owner: Norbert Wozniak | Updated: 2026-06-26*
+
+Canonical module spec: `flexgrafik-meta/docs/core/modules/module-jadzia-core.md`
 
 ---
 
-## OPIS PROJEKTU
+## Project description
 
-Jadzia — agent AI zarządzający ekosystemem FlexGrafik.
-Core: edycja plików WordPress przez SSH na podstawie komend Telegram.
-Rozbudowa: pełny silnik operacyjny (onboarding, produkcja, logistyka, marketing).
+**TO-BE:** Chief Operating Intelligence (COI) for FlexGrafik ecosystem.
 
-VPS: 185.243.54.115 (Ubuntu 24.04, 7.8GB RAM, 98GB SSD)
-Tech: Python, FastAPI, LangGraph, SQLite, Telegram Bot, Claude API
-Service: sudo systemctl restart jadzia
-Logi: /root/jadzia/logs/jadzia-error.log
-DB: /root/jadzia/data/jadzia.db
+**AS-IS:** FastAPI backend on VPS — WP SSH agent, Wizard sales widget, worker/HITL queue.
+
+VPS: `185.243.54.115:8000` (Ubuntu, systemd `jadzia.service`)
+Paths AS-IS: `/root/jadzia` | Target: `/opt/jadzia` + user `jadzia` (see `deployment/jadzia.service`)
 
 ---
 
-## TECH STACK
+## Tech stack (confirmed)
 
-- Python 3.12
-- FastAPI + LangGraph
-- SQLite (jadzia.db)
-- Telegram Bot API
-- Claude Haiku 4 (routing, proste zadania)
-- Claude Sonnet 4.5 (planowanie, generowanie kodu)
-- Paramiko (SSH do Cyber-Folks)
-- rclone (backup → Google Drive)
+| Layer | Technology | Status |
+|-------|------------|--------|
+| Language | Python 3.11+ | LIVE |
+| API | FastAPI + Uvicorn | LIVE |
+| Orchestration | Custom node pipeline (`agent/nodes/*`) | LIVE |
+| LLM | Anthropic Claude via `core/llm.py` | LIVE |
+| Entry | `core/agent.py` (`process_message`) | LIVE |
+| DB | SQLite `data/jadzia.db` (SQLite-only sessions) | LIVE |
+| Remote ops | Paramiko SSH | LIVE |
+| Auth | PyJWT (worker endpoints) | LIVE |
+| Messaging | Telegram webhook | LIVE |
+| LangGraph | — | PLANNED (explicit decision pending) |
 
 ---
 
-## PIPELINE (CORE — DZIAŁA)
+## Architecture (AS-IS)
+
+```
+Telegram / HTTP / Widget
+        ↓
+    api/app.py (routes)
+        ↓
+  core/agent.py (process_message)
+        ↓
+  agent/nodes/* (routing → planning → generate → approval)
+        ↓
+  agent/tools/ssh_orchestrator.py → WordPress
+```
+
+Widget flow: Wizard → `POST /api/v1/widget/chat` → `agent/customer_agent.py` → Claude Haiku
+
+---
+
+## Pipeline (WP agent — LIVE)
 
 ```
 queued → planning → reading_files → generating_code
-→ diff_ready [Tak/Nie od Norberta]
+→ diff_ready [HITL approval]
 → writing_files → completed / rolled_back
 ```
 
-Komendy Telegram: /zadanie, /status, /cofnij, /pomoc, Tak, Nie
-
 ---
 
-## FEATURE LIST
+## Feature list
 
-### CORE (działa)
+### CORE (LIVE)
+
+| Feature | Evidence |
+|---------|----------|
+| Intent routing (Haiku/Sonnet) | `core/llm.py`, `agent/nodes/intent.py` |
+| Planning + code generation | `agent/nodes/planning.py`, `generate.py` |
+| SSH executor + backup | `agent/tools/ssh_orchestrator.py` |
+| HITL approval | `agent/nodes/approval.py` |
+| Telegram + worker API | `api/telegram.py`, `api/routes/worker.py` |
+| Customer widget (INT-001) | `api/routes/chat.py` |
+| Dashboard metrics | `api/routes/dashboard.py` |
+| Cost tracking | `api/routes/costs.py` |
+
+### COI nodes (Phase A — PLANNED)
+
+| Node | Priority | Contract |
+|------|----------|----------|
+| `order_node` | **P0** | INT-002 WC webhook |
+| `lead_node` | P1 | Game lead API |
+| `analytics_node` | P1 | GA4 snapshot |
+| `content_calendar_node` | P2 | Social schedule |
+
+### Infrastructure
+
 | Feature | Status |
 |---------|--------|
-| Routing Haiku | ✅ Działa |
-| Planning Sonnet | ✅ Działa |
-| Generator kodu | ✅ Działa |
-| SSH executor (Paramiko) | ✅ Działa |
-| Backup przed zapisem | ✅ Działa |
-| Human-in-the-loop (Tak/Nie) | ✅ Działa |
-| Telegram bot komendy | ✅ Działa |
-| Rollback przy błędzie | ✅ Działa |
+| `POST /webhooks/woocommerce/order` | PLANNED (P0) |
+| `orders` table in `jadzia.db` | PLANNED (P0) |
+| `GET /worker/dashboard` | LIVE |
+| `GET /health`, `/worker/health` | LIVE |
 
-### NODY OPERACYJNE (do zbudowania — po domenach)
-| Node | Status | Priorytet |
-|------|--------|-----------|
-| onboarding_node.py | 🔴 Planned | 1 |
-| production_node.py | 🔴 Planned | 2 |
-| postnl_node.py | 🔴 Planned | 3 |
-| installer_node.py | 🔴 Planned | 4 |
+### INT-002 target payload (from integration-contracts.md)
 
-### AGENTY SPECJALISTYCZNE (do zbudowania — po nodach)
-| Agent | Status | Priorytet |
-|-------|--------|-----------|
-| Content Engine | 🔴 Planned | 1 |
-| Lead Scout | 🔴 Planned | 2 |
-| Game Master | 🔴 Planned | 3 |
-
-### INFRASTRUKTURA (do zbudowania)
-| Feature | Status | Priorytet |
-|---------|--------|-----------|
-| Webhook WooCommerce → jadzia.db | ⏳ Q1 2026 | KRYTYCZNY |
-| Admin Dashboard | 🔴 Planned | WYSOKI |
-| Endpoint /costs monitoring | ✅ Działa | — |
-| Endpoint /health | ✅ Działa | — |
+```json
+{
+  "order_id": "string",
+  "status": "processing|completed",
+  "items": [{"sku": "string", "qty": "number", "price": "number"}],
+  "customer": {"email": "string", "name": "string"},
+  "total_gross": "number (EUR)",
+  "payment_id": "string (mollie)"
+}
+```
 
 ---
 
-## DEPLOY CONFIG
+## Deploy config
 
 ```
 VPS: 185.243.54.115
-User: root
+User: root (AS-IS) → jadzia (target)
 Service: jadzia.service
-Deploy flow:
-  1. TS=$(date +%Y%m%d-%H%M%S)
-  2. sqlite3 /root/jadzia/data/jadzia.db ".backup /root/jadzia/backups/pre-deploy-$TS.db"
-  3. git pull origin main
-  4. pip install -r requirements.txt
-  5. alembic upgrade head
-  6. systemctl restart jadzia.service
-  7. sleep 3 && curl -f localhost:8000/health
-  FAIL? → alembic downgrade -1 → git checkout HEAD~1 → restore backup → restart
-```
+Path: /root/jadzia (AS-IS) → /opt/jadzia (target)
 
-Cron backup 2AM: rclone sync /data/ gdrive:jadzia-backup
+Deploy flow (manual — Zasada 11):
+  1. Backup: cp data/jadzia.db data/jadzia.db.bak.$(date +%Y%m%d-%H%M%S)
+  2. Upload code (exclude data/, .env, venv/)
+  3. pip install -r requirements.txt
+  4. systemctl restart jadzia
+  5. curl -f http://localhost:8000/worker/health
+
+Runbook: deployment/deploy-to-vps.sh
+```
 
 ---
 
-## AI GUIDELINES
+## AI guidelines
 
-- Schema change → `/migrate` workflow (`.agents/workflows/migrate.md`) update NAJPIERW, alembic migration RAZEM z kodem
-- Feature branch only, nigdy main
-- Backup DB przed każdą zmianą schema
-- pytest po każdej zmianie w app/
-- Jeden node na raz — nie buduj wszystkich równolegle
-- Domeny muszą być gotowe PRZED rozbudową nodów
-- NIE modyfikuj plików poza app/[twój-scope]/
+- Schema change → `/migrate` workflow first; update PRD + tests together
+- Feature branch preferred; pytest after every change
+- One node at a time (1-1-1)
+- Active plan: `docs/plans/PLAN-COI-PHASE-A.md`
+- Do not claim LangGraph — use custom pipeline until explicit migration decision

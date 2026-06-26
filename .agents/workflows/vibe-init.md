@@ -25,7 +25,7 @@ Classify the request into one of the following paths:
 
 | Signal | CLASSIFICATION | PATH | LOGIC |
 | :--- | :--- | :--- | :--- |
-| New logic, API, LangGraph node, Feature | **FEATURE** | `L1: /blast` $\to$ `/self-review` | Requires a technical contract. |
+| New logic, API, agent node, Feature | **FEATURE** | `L1: /blast` $\to$ `/self-review` | Requires a technical contract. |
 | Structural change, module split, tech debt | **REFACTOR** | `L1: /blueprint` $\to$ `/self-review` | Requires impact mapping. |
 | Bug, regression, unexpected behavior | **BUGFIX** | `L2: /debug` | Requires Root-Cause Analysis. |
 | Known fix, critical outage, trivial change | **HOTFIX** | `L2: /implement` | Fast-track to execution. |
