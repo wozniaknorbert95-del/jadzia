@@ -1,8 +1,8 @@
 # PLAN-COI-PHASE-B — Content Calendar bootstrap
 
-**Status:** IN PROGRESS (P2-01 kod done)  
+**Status:** IN PROGRESS (P2-01 + B.2 E2E done)  
 **Created:** 2026-06-26  
-**Parent:** `docs/plans/PLAN-COI-PHASE-A.md` (code complete)  
+**Parent:** `docs/archive/plans/PLAN-COI-PHASE-A.md` (completed)  
 **Contract:** INT-010
 
 ---
@@ -40,11 +40,24 @@ Internal social content calendar in `jadzia.db` — FB/TikTok drafts, approval w
 
 ---
 
-## Next (Phase B.2)
+## Delivered (Phase B.2 E2E — 2026-06-27)
 
-1. Telegram notify on `pending_approval`
-2. FB/TikTok API integration (separate dep audit)
-3. Scheduled publish job (worker loop extension)
+| Step | Proof |
+|------|-------|
+| Order suggestions | `GET /content-calendar/suggestions/orders` → order `3149` |
+| Draft create | `POST /content-calendar` → `entry_id=3`, `sync_status: success` |
+| Pending approval | `PATCH` → `status: pending_approval` |
+| Telegram alert | `_notify_pending_approval` → async `_send_telegram_alert_sync` (no TG error in logs) |
+
+Script: `deployment/deploy-b2-calendar-e2e.sh` → **PASS** on VPS
+
+---
+
+## Next (Phase B.3)
+
+1. FB/TikTok API integration (separate dep audit)
+2. Scheduled publish job (worker loop extension)
+3. Approval flow UI in Command Center (optional)
 
 ---
 

@@ -13,7 +13,7 @@ Canonical module spec: `flexgrafik-meta/docs/core/modules/module-jadzia-core.md`
 **AS-IS:** FastAPI backend on VPS — WP SSH agent, Wizard sales widget, worker/HITL queue.
 
 VPS: `185.243.54.115:8000` (Ubuntu, systemd `jadzia.service`)
-Paths AS-IS: `/root/jadzia` | Target: `/opt/jadzia` + user `jadzia` (see `deployment/jadzia.service`)
+Paths: `/opt/jadzia` + user `jadzia` (OPS-01 DONE; see `deployment/jadzia.service`)
 
 ---
 
@@ -114,9 +114,9 @@ queued → planning → reading_files → generating_code
 
 ```
 VPS: 185.243.54.115
-User: root (AS-IS) → jadzia (target)
+User: jadzia (OPS-01 DONE)
 Service: jadzia.service
-Path: /root/jadzia (AS-IS) → /opt/jadzia (target)
+Path: /opt/jadzia
 
 Deploy flow (manual — Zasada 11):
   1. Backup: cp data/jadzia.db data/jadzia.db.bak.$(date +%Y%m%d-%H%M%S)
@@ -135,5 +135,5 @@ Runbook: deployment/deploy-to-vps.sh
 - Schema change → `/migrate` workflow first; update PRD + tests together
 - Feature branch preferred; pytest after every change
 - One node at a time (1-1-1)
-- Active plan: `docs/plans/PLAN-COI-PHASE-A.md`
+- Active plan: `docs/plans/PLAN-COI-PHASE-B.md`
 - Do not claim LangGraph — use custom pipeline until explicit migration decision

@@ -22,10 +22,10 @@ Agent provides the Commander with the exact sequence of commands.
 ### 2. Execution Block (Copy-Paste for Commander)
 ```bash
 # 1. Backup current DB
-sqlite3 /root/jadzia/data/jadzia.db ".backup /root/jadzia/backups/pre-deploy-$(date +%Y%m%d-%H%M%S).db"
+sqlite3 /opt/jadzia/data/jadzia.db ".backup /opt/jadzia/backups/pre-deploy-$(date +%Y%m%d-%H%M%S).db"
 
 # 2. Pull latest code
-cd /root/jadzia && git pull origin main
+cd /opt/jadzia && git pull origin main
 
 # 3. Update dependencies
 source venv/bin/activate && pip install -r requirements.txt

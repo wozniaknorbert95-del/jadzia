@@ -1,12 +1,12 @@
 {
   "project": "Jadzia-Core",
-  "last_updated": "2026-06-26 (DEPLOY-01+03 CLOSED; prod-smoke pass=7; WC order 3149; GA4 pipeline success)",
+  "last_updated": "2026-06-30 (handoff: repo-hygiene DONE; next D1-03 or FB token)",
   "status": "active",
   "plan": "docs/plans/PLAN-COI-PHASE-B.md",
   "active_gate": "none",
   "active_plan": "docs/plans/PLAN-COI-PHASE-B.md",
-  "next_human": "GA4: grant SA Viewer on property 528785553 (zzpackage) — one UI step",
-  "next_agent": "Phase B: content calendar UX / app e2e flake triage",
+  "next_human": "Provide FB Page Access Token (Graph API Explorer -> Get Page Access Token -> select FlexGrafik page). OR confirm D1-03 EN docstrings as next task.",
+  "next_agent": "D1-03: EN docstrings standardization",
   "agent_rule": "Nie deployuj autonomicznie (Zasada 11). Nie oznaczaj DEPLOY-01/03 completed bez E2E proof w handoff.",
   "sprints": {
     "remediation": "completed",
@@ -14,7 +14,8 @@
     "coi_phase_b": "in_progress",
     "deploy_int_002": "completed",
     "deploy_int_004": "completed",
-    "deploy_int_009": "completed"
+    "deploy_int_009": "completed",
+    "coi_phase_b3": "planned"
   },
   "tasks": [
     {
@@ -46,7 +47,7 @@
       "owner": "agent",
       "checklist": "docs/handoffs/2026-06-26-deploy-int-009-proof.md",
       "plan": "docs/plans/PLAN-DEPLOY-INT-009.md",
-      "note": "GA4 on VPS; pipeline sync_status success; zzpackage property 528785553 SA grant follow-up"
+      "note": "GA4 zzpackage verified 2026-06-27: sync_status success, sources.zzpackage sessions=23"
     },
     {
       "id": "P0-01",
@@ -111,6 +112,14 @@
       "note": "content_calendar_node → _send_telegram_alert_sync on pending_approval"
     },
     {
+      "id": "P2-03",
+      "sprint": "COI Phase B — Content",
+      "task": "E2E prod: orders → suggestions → draft → pending_approval → Telegram",
+      "status": "completed",
+      "priority": "medium",
+      "note": "deploy-b2-calendar-e2e.sh PASS 2026-06-27; entry_id=3, source_order_id=3149"
+    },
+    {
       "id": "D2-01",
       "sprint": "Docs — COI sync",
       "task": "Sync brain.md, PRD-core.md, AGENTS.md z module-jadzia-core.md (COI charter)",
@@ -129,8 +138,9 @@
       "id": "OPS-01",
       "sprint": "Ops — Deploy",
       "task": "VPS: user jadzia, /opt/jadzia per deployment/jadzia.service (obecnie root@/root/jadzia)",
-      "status": "pending",
-      "priority": "high"
+      "status": "completed",
+      "priority": "high",
+      "note": "Completed 2026-06-30. Migration root@/root/jadzia → jadzia@/opt/jadzia. Service running as jadzia (not root). All tests PASS (342/342 pytest PASS, 10/10 smoke PASS)."
     },
     {
       "id": "S1-02",
@@ -186,8 +196,9 @@
       "id": "A5-01",
       "sprint": "S2 — Architektura",
       "task": "CLI: implementacja entry point lub usunięcie pustego szkieletu",
-      "status": "pending",
-      "priority": "low"
+      "status": "completed",
+      "priority": "low",
+      "note": "Completed 2026-06-30. Professional CLI implemented: 8 commands (health, status, worker, costs, sessions, logs, test, version). Entry-point jadzia=cli.main:main. 5/5 VPS test PASS."
     },
     {
       "id": "C1-01",
@@ -251,6 +262,62 @@
       "task": "Utrzymanie todo.json na bieżąco",
       "status": "completed",
       "priority": "low"
+    },
+    {
+      "id": "B3-01",
+      "sprint": "COI Phase B.3 - Facebook Publish",
+      "task": "agent/publishers/facebook.py + agent/publishers/__init__.py",
+      "status": "pending",
+      "priority": "high",
+      "note": "INT-011. Facebook Graph API publish engine BLOCKED: requires FB Page Access Token (commander action)"
+    },
+    {
+      "id": "B3-02",
+      "sprint": "COI Phase B.3 - Facebook Publish",
+      "task": "Schema migration: add publish_result, media_url, fb_post_id, scheduled_publish_at to content_calendar",
+      "status": "pending",
+      "priority": "high",
+      "note": " BLOCKED: requires FB Page Access Token (commander action)"
+    },
+    {
+      "id": "B3-03",
+      "sprint": "COI Phase B.3 - Facebook Publish",
+      "task": "content_calendar_node: publish_entry() method",
+      "status": "pending",
+      "priority": "high",
+      "note": " BLOCKED: requires FB Page Access Token (commander action)"
+    },
+    {
+      "id": "B3-04",
+      "sprint": "COI Phase B.3 - Facebook Publish",
+      "task": "API: POST /{entry_id}/publish + GET /{entry_id}/publish-status",
+      "status": "pending",
+      "priority": "high",
+      "note": " BLOCKED: requires FB Page Access Token (commander action)"
+    },
+    {
+      "id": "B3-05",
+      "sprint": "COI Phase B.3 - Facebook Publish",
+      "task": "Worker loop: scheduled publish check for approved entries",
+      "status": "pending",
+      "priority": "medium",
+      "note": " BLOCKED: requires FB Page Access Token (commander action)"
+    },
+    {
+      "id": "B3-06",
+      "sprint": "COI Phase B.3 - Facebook Publish",
+      "task": "Tests: facebook publisher unit + integration",
+      "status": "pending",
+      "priority": "high",
+      "note": " BLOCKED: requires FB Page Access Token (commander action)"
+    },
+    {
+      "id": "C1-01",
+      "sprint": "COI Phase C - TikTok",
+      "task": "TikTok for Business API audit + integration (deferred from B.3)",
+      "status": "pending",
+      "priority": "medium",
+      "note": "Deferred - video-only, requires TikTok Developer Program approval"
     }
   ]
 }

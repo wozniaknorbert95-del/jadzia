@@ -17,7 +17,7 @@ readiness_overall: "~50% vs COI vision"
 
 Szczegóły charter: `flexgrafik-meta/docs/core/jadzia-operating-charter.md`
 
-## 2) AS-IS LIVE (kod potwierdzony)
+## 2) AS-IS LIVE (kod potwierdzony, 2026-06-30)
 
 | Capability | Entry point | Status |
 |------------|-------------|--------|
@@ -28,8 +28,12 @@ Szczegóły charter: `flexgrafik-meta/docs/core/jadzia-operating-charter.md`
 | LLM client | `core/llm.py` (Haiku/Sonnet) | LIVE |
 | Session state | `agent/state/` + `agent/db.py` | LIVE (SQLite-only) |
 | Cost tracking | `api/routes/costs.py` | LIVE |
+| Content calendar | `agent/nodes/content_calendar_node.py` | LIVE |
+| **Management CLI** | `cli/main.py` → `jadzia` cmd | LIVE (5 cmds) |
 
 **Pipeline:** `routing → commands | intent | planning | generate | approval → SSH write → HITL diff`
+
+**VPS runtime:** `jadzia` user (non-root), `/opt/jadzia`, systemd `jadzia.service`
 
 ## 3) COI Phase A (kod agenta — COMPLETE)
 
@@ -46,8 +50,8 @@ Szczegóły charter: `flexgrafik-meta/docs/core/jadzia-operating-charter.md`
 | Content calendar | INT-010 `GET/POST/PATCH /api/v1/content-calendar` | LIVE (VPS) |
 | `content_calendar_node` | `agent/nodes/content_calendar_node.py` | LIVE |
 
-Plan Phase A: `docs/plans/PLAN-COI-PHASE-A.md`  
-Plan Phase B: `docs/plans/PLAN-COI-PHASE-B.md`
+Plan Phase A (completed): `docs/archive/plans/PLAN-COI-PHASE-A.md`  
+Plan Phase B (active): `docs/plans/PLAN-COI-PHASE-B.md`
 
 ## 4) Dane
 
@@ -80,7 +84,7 @@ Pełne kontrakty: `flexgrafik-meta/docs/core/integration-contracts.md`
 | Worker queue/HITL | 85% | 90% |
 | Operational OS (orders/leads) | 40% | 90% |
 | Analytics integration | 30% | 80% |
-| Content calendar | 0% | 75% |
+| Content calendar | 45% | 75% |
 | COI strategy synthesis | 10% (docs) | 85% |
 | **Overall** | **~50%** | **85%** |
 
@@ -93,7 +97,7 @@ Pełne kontrakty: `flexgrafik-meta/docs/core/integration-contracts.md`
 - **Workflow:** `.agents/workflows/README.md` (L0-L4)
 - **Backlog:** `todo.json`
 - **PRD:** `docs/PRD-core.md`
-- **Plan aktywny:** `docs/plans/PLAN-COI-PHASE-A.md`
+- **Plan aktywny:** `docs/plans/PLAN-COI-PHASE-B.md`
 
 ## 8) Workflow Framework (v2.0)
 
@@ -123,5 +127,5 @@ todo.json
 docs/PRD-core.md
 .agents/workflows/README.md
 flexgrafik-meta/docs/core/jadzia-operating-charter.md
-Latest docs/handoffs/*.md
+Latest docs/handoffs/README.md (then last 2 dated handoffs)
 ```

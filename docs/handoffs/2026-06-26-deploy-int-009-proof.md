@@ -2,7 +2,7 @@
 
 **Date:** 2026-06-26  
 **Gate:** DEPLOY-03  
-**Status:** **PASS** (pipeline proof; zzpackage property ACL follow-up)
+**Status:** **PASS** (full — zzpackage property `528785553` verified 2026-06-27)
 
 ## Checklist
 
@@ -10,7 +10,7 @@
 - [x] `GA4_PROPERTY_ID_APP=528764186` (FlexGrafik App, `G-0XN9Z7HS90`)
 - [x] `GA4_PROPERTY_ID_ZZPACKAGE=528785553` (ZZPackage Shop, `G-L23DGTEKCD`) — **in .env**
 - [x] SA Viewer on app property (528764186)
-- [ ] SA Viewer on zzpackage property (528785553) — **pending GA4 Admin grant**
+- [x] SA Viewer on zzpackage property (528785553) — **granted by Dowódca 2026-06-26; verified 2026-06-27**
 - [x] `google-analytics-data` in jadzia venv (0.23.0)
 - [x] Snapshot pipeline proof → `sync_status: success` (both sources)
 
@@ -39,7 +39,23 @@ GA4_PROPERTY_ID_APP=528764186
 GA4_PROPERTY_ID_ZZPACKAGE=528785553
 ```
 
-Live snapshot with 528785553 returns `degraded` until SA grant — expected until follow-up.
+### Live snapshot (528785553) — 2026-06-27
+
+After `systemctl restart jadzia` + SA Viewer grant:
+
+```json
+{
+  "sync_status": "success",
+  "period": "last_7_days",
+  "sources": {
+    "app": {"active_users": 9, "sessions": 12, "game_starts": 3},
+    "zzpackage": {"sessions": 23, "conversions": 0, "purchase_revenue": 0.0, "aov": 0.0}
+  },
+  "errors": []
+}
+```
+
+Script: `deployment/verify-ga4-zzpackage.sh` → **PASS**
 
 ### Grant SA on zzpackage property (one-time)
 
@@ -56,4 +72,4 @@ Scripts attempted: `services/scripts/ga4-add-zzpackage-viewer*.mjs` (Chrome sess
 
 ## Zamknięcie gate
 
-INT-009 pipeline **LIVE** on VPS. zzpackage-specific metrics unlock after SA Viewer on property `528785553`.
+INT-009 pipeline **LIVE** on VPS. Both `app` and `zzpackage` sources return metrics (`sync_status: success`, `errors: []`).
