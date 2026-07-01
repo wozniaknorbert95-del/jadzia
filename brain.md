@@ -52,7 +52,7 @@ Szczegóły charter: `flexgrafik-meta/docs/core/jadzia-operating-charter.md`
 | Facebook publish | INT-011 `POST/GET …/publish` | LIVE (VPS E2E PASS 2026-07-01) |
 
 Plan Phase A (completed): `docs/archive/plans/PLAN-COI-PHASE-A.md`  
-Plan Phase B (active): `docs/plans/PLAN-COI-PHASE-B.md`
+Plan Phase B (completed): `docs/archive/plans/PLAN-COI-PHASE-B.md`
 
 ## 4) Dane
 
@@ -72,7 +72,9 @@ Plan Phase B (active): `docs/plans/PLAN-COI-PHASE-B.md`
 | INT-003 | Game → Wizard coupon | LIVE (app side) |
 | INT-004 | app → `POST /api/v1/leads` | LIVE (receiver); DEPLOY-02 E2E pending |
 | INT-009 | GA4 → analytics snapshot | LIVE |
-| INT-010 | Content calendar | LIVE (VPS bootstrap) |
+| INT-010 | Content calendar | LIVE (VPS) |
+| INT-011 | Facebook publish | LIVE (VPS E2E 2026-07-01) |
+| INT-012 | Portal qualification | LIVE (2026-06-25) |
 
 Pełne kontrakty: `flexgrafik-meta/docs/core/integration-contracts.md`
 
@@ -98,7 +100,7 @@ Pełne kontrakty: `flexgrafik-meta/docs/core/integration-contracts.md`
 - **Workflow:** `.agents/workflows/README.md` (L0-L4)
 - **Backlog:** `todo.json`
 - **PRD:** `docs/PRD-core.md`
-- **Plan aktywny:** `docs/plans/PLAN-COI-PHASE-B.md`
+- **Active plan:** brak — Phase B complete; wybór przy `/vibe-init`
 
 ## 8) Workflow Framework (v2.0)
 

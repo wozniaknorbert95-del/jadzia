@@ -3,7 +3,7 @@
 
 set -e
 
-PROJECT_DIR="/root/jadzia"
+PROJECT_DIR="/opt/jadzia"
 SERVICE_FILE="jadzia.service"
 
 echo "=========================================="

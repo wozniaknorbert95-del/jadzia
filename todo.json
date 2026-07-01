@@ -1,17 +1,17 @@
 {
   "project": "Jadzia-Core",
-  "last_updated": "2026-07-01 (handoff: B3 E2E PASS fb_post_id=491325420727745_122179053746613375)",
+  "last_updated": "2026-06-30 (Phase B COMPLETE; B3.1+ deferred)",
   "status": "active",
   "plan": "docs/plans/PLAN-COI-PHASE-B.md",
   "active_gate": "none",
-  "active_plan": "docs/plans/PLAN-COI-PHASE-B.md",
-  "next_human": "Rotate FB Page Access Token (exposed in chat). Optionally delete E2E test post on FlexGrafik FB page.",
-  "next_agent": "B3.1: Facebook insights reader (pages_read_engagement + read_insights)",
+  "active_plan": null,
+  "next_human": "Jutro: rotacja FB Page Access Token. Potem wybór modułu (zzpackage / flexgrafik-nl).",
+  "next_agent": "Cross-module: zzpackage Wizard konwersja LUB flexgrafik-nl FX-PORTFOLIO-PAGE-01 — albo jadzia GA4 snapshot persist",
   "agent_rule": "Nie deployuj autonomicznie (Zasada 11). Nie oznaczaj DEPLOY-01/03 completed bez E2E proof w handoff.",
   "sprints": {
     "remediation": "completed",
     "coi_phase_a": "deploy_complete",
-    "coi_phase_b": "in_progress",
+    "coi_phase_b": "completed",
     "deploy_int_002": "completed",
     "deploy_int_004": "completed",
     "deploy_int_009": "completed",
@@ -322,25 +322,25 @@
       "id": "B3-1-01",
       "sprint": "COI Phase B.3.1 - FB Sense",
       "task": "facebook_reader: page insights + post list API",
-      "status": "pending",
+      "status": "deferred",
       "priority": "medium",
-      "note": "pages_read_engagement, read_insights"
+      "note": "DEFERRED 2026-06-30 — Dowódca; revisit when FB sense needed"
     },
     {
       "id": "B3-2-01",
       "sprint": "COI Phase B.3.2 - FB Comments",
       "task": "list_post_comments + Telegram brief",
-      "status": "pending",
+      "status": "deferred",
       "priority": "medium",
-      "note": "pages_read_user_content"
+      "note": "DEFERRED 2026-06-30 — Dowódca"
     },
     {
       "id": "B3-3-01",
       "sprint": "COI Phase B.3.3 - FB Reply HITL",
       "task": "reply_to_comment with Dowódca approval",
-      "status": "pending",
+      "status": "deferred",
       "priority": "medium",
-      "note": "pages_manage_engagement"
+      "note": "DEFERRED 2026-06-30 — Dowódca"
     },
     {
       "id": "C1-01",

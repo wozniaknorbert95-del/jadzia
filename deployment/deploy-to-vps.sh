@@ -8,7 +8,8 @@ set -e
 VPS_HOST="185.243.54.115"
 VPS_PORT="22"
 VPS_USER="root"
-VPS_PROJECT_DIR="/root/jadzia"
+VPS_PROJECT_DIR="/opt/jadzia"
+JADZIA_RUN_USER="jadzia"
 SSH_KEY="$HOME/.ssh/cyberfolks_key"
 LOCAL_PROJECT_DIR="$(cd "$(dirname "$0")/.." && pwd)"
 
@@ -112,6 +113,12 @@ fi
 echo -e "${GREEN}✅ Code uploaded (data/logs/.env untouched)${NC}"
 echo ""
 
+# Step 3b: Fix ownership after upload (service runs as jadzia@/opt/jadzia)
+echo "🔒 Setting ownership to ${JADZIA_RUN_USER}..."
+run_ssh "chown -R ${JADZIA_RUN_USER}:${JADZIA_RUN_USER} ${VPS_PROJECT_DIR} && chmod 750 ${VPS_PROJECT_DIR} && test -f ${VPS_PROJECT_DIR}/.env && chmod 640 ${VPS_PROJECT_DIR}/.env || true"
+echo -e "${GREEN}✅ Ownership set${NC}"
+echo ""
+
 # Step 4: Upload .env file
 echo "🔐 Handling .env configuration..."
 if [ -f ".env" ]; then
@@ -155,15 +162,15 @@ echo ""
 
 # Step 6: Install Python dependencies
 echo "🐍 Installing Python dependencies on VPS..."
-run_ssh "cd ${VPS_PROJECT_DIR} && python3 -m venv venv"
-run_ssh "cd ${VPS_PROJECT_DIR} && source venv/bin/activate && pip install --upgrade pip setuptools wheel"
-run_ssh "cd ${VPS_PROJECT_DIR} && source venv/bin/activate && pip install -r requirements.txt"
+run_ssh "cd ${VPS_PROJECT_DIR} && sudo -u ${JADZIA_RUN_USER} python3 -m venv venv 2>/dev/null || true"
+run_ssh "cd ${VPS_PROJECT_DIR} && sudo -u ${JADZIA_RUN_USER} bash -c 'source venv/bin/activate && pip install --upgrade pip setuptools wheel'"
+run_ssh "cd ${VPS_PROJECT_DIR} && sudo -u ${JADZIA_RUN_USER} bash -c 'source venv/bin/activate && pip install -r requirements.txt'"
 echo -e "${GREEN}✅ Dependencies installed${NC}"
 echo ""
 
 # Step 7: Create necessary directories
 echo "📂 Creating required directories..."
-run_ssh "cd ${VPS_PROJECT_DIR} && mkdir -p logs data/sessions"
+run_ssh "cd ${VPS_PROJECT_DIR} && sudo -u ${JADZIA_RUN_USER} mkdir -p logs data/sessions"
 echo -e "${GREEN}✅ Directories created${NC}"
 echo ""
 

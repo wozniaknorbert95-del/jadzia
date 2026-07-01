@@ -4,15 +4,15 @@ Session continuity for `/vibe-init`: read the **last 2** handoffs from this fold
 
 ## Start here (vibe-init)
 
-1. [`2026-06-30-repo-hygiene.md`](2026-06-30-repo-hygiene.md) — repo cleanup (this session)
-2. [`2026-06-30-session-close-handoff.md`](2026-06-30-session-close-handoff.md) — umbrella state (Phase B, OPS-01, CLI)
+1. [`2026-06-30-phase-b-close.md`](2026-06-30-phase-b-close.md) — Phase B COMPLETE, deploy script fix
+2. [`2026-07-01-b3-fb-publish-e2e.md`](2026-07-01-b3-fb-publish-e2e.md) — B3 E2E PASS
 3. Latest task handoff for your sprint (see Active below)
 
 ## Active reference (keep in root)
 
 | Handoff | Topic |
 |---------|-------|
-| [`2026-06-30-repo-hygiene.md`](2026-06-30-repo-hygiene.md) | Repo cleanup & archive |
+| [`2026-06-30-phase-b-close.md`](2026-06-30-phase-b-close.md) | Phase B COMPLETE + deploy `/opt/jadzia` |
 | [`2026-06-30-session-close-handoff.md`](2026-06-30-session-close-handoff.md) | Umbrella close |
 | [`2026-06-30-ops-01-complete.md`](2026-06-30-ops-01-complete.md) | VPS `/opt/jadzia` migration |
 | [`2026-06-30-a5-01-cli.md`](2026-06-30-a5-01-cli.md) | Management CLI (`jadzia` cmd) |
