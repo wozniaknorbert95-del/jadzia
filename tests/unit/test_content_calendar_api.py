@@ -95,3 +95,47 @@ def test_content_calendar_patch_status(client, temp_db):
         )
         assert patched.status_code == 200
         assert patched.json()["status"] == "approved"
+
+
+def test_content_calendar_publish_flow(client, temp_db, monkeypatch):
+    monkeypatch.setenv("FB_PAGE_ID", "491325420727745")
+    monkeypatch.setenv("FB_ACCESS_TOKEN", "test-token")
+
+    def _mock_publish(message, scheduled_publish_time=None):
+        return {"status": "success", "post_id": "491325420727745_99"}
+
+    monkeypatch.setattr(
+        "agent.nodes.content_calendar_node.publish_post",
+        _mock_publish,
+    )
+
+    with patch.dict(os.environ, {"JWT_SECRET": JWT_SECRET_VALUE}, clear=False), patch(
+        "api.dependencies.JWT_SECRET",
+        JWT_SECRET_VALUE,
+    ):
+        created = client.post(
+            "/api/v1/content-calendar",
+            json=_valid_payload(),
+            headers=_auth_headers(),
+        )
+        entry_id = created.json()["entry_id"]
+        client.patch(
+            f"/api/v1/content-calendar/{entry_id}",
+            json={"status": "approved"},
+            headers=_auth_headers(),
+        )
+        pub = client.post(
+            f"/api/v1/content-calendar/{entry_id}/publish",
+            headers=_auth_headers(),
+        )
+        assert pub.status_code == 200
+        assert pub.json()["post_id"] == "491325420727745_99"
+
+        status = client.get(
+            f"/api/v1/content-calendar/{entry_id}/publish-status",
+            headers=_auth_headers(),
+        )
+        assert status.status_code == 200
+        body = status.json()
+        assert body["fb_post_id"] == "491325420727745_99"
+        assert body["status"] == "published"

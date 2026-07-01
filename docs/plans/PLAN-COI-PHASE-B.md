@@ -55,9 +55,12 @@ Script: `deployment/deploy-b2-calendar-e2e.sh` → **PASS** on VPS
 
 ## Next (Phase B.3)
 
-1. FB/TikTok API integration (separate dep audit)
-2. Scheduled publish job (worker loop extension)
-3. Approval flow UI in Command Center (optional)
+1. ~~FB Graph API publish (INT-011)~~ — **CODE DONE** 2026-06-30; VPS E2E pending
+2. B3.1 insights reader → B3.2 comments → B3.3 reply HITL
+3. TikTok publish — Phase C (deferred)
+
+Handoff: `docs/handoffs/2026-06-30-b3-fb-publish-implementation.md`  
+E2E: `deployment/deploy-b3-fb-publish-e2e.sh`
 
 ---
 

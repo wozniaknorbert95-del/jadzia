@@ -5,6 +5,7 @@ from __future__ import annotations
 import asyncio
 import logging
 import os
+import time
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import Optional
@@ -123,6 +124,32 @@ TERMINAL_STATUSES = ("completed", "failed", "rolled_back")
 WORKER_TASK_TIMEOUT_SECONDS = int(os.getenv("WORKER_TASK_TIMEOUT_SECONDS", "600") or "600")
 WORKER_STALE_TASK_MINUTES = int(os.getenv("WORKER_STALE_TASK_MINUTES", "15") or "15")
 WORKER_AWAITING_TIMEOUT_MINUTES = int(os.getenv("WORKER_AWAITING_TIMEOUT_MINUTES", "1440") or "1440")
+
+_last_fb_publish_check: float = 0.0
+
+
+async def _maybe_run_scheduled_fb_publish() -> None:
+    """Publish approved Facebook entries when scheduled time is due (INT-011)."""
+    global _last_fb_publish_check
+
+    interval = int(os.getenv("FB_PUBLISH_CHECK_INTERVAL_SECONDS", "60") or "0")
+    if interval <= 0:
+        return
+
+    now = time.monotonic()
+    if now - _last_fb_publish_check < interval:
+        return
+    _last_fb_publish_check = now
+
+    def _run() -> None:
+        from agent.nodes.content_calendar_node import publish_due_scheduled_entries
+
+        publish_due_scheduled_entries()
+
+    try:
+        await asyncio.to_thread(_run)
+    except Exception as e:
+        _log.error("[worker_loop] scheduled FB publish failed: %s", e)
 
 
 async def _worker_loop():
@@ -337,6 +364,7 @@ async def _worker_loop():
                 except Exception as e:
                     _log.error("[worker_loop] session error %s/%s: %s", source, chat_id, e)
 
+            await _maybe_run_scheduled_fb_publish()
             await asyncio.sleep(busy_sleep if had_work else idle_backoff_sec)
         except asyncio.CancelledError:
             _log.info("[worker_loop] cancelled")

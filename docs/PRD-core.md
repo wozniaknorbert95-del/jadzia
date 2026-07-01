@@ -84,7 +84,8 @@ queued → planning → reading_files → generating_code
 | `order_node` | **P0** | INT-002 WC webhook | LIVE |
 | `lead_node` | P1 | Game lead API | LIVE (receiver); DEPLOY-02 E2E pending |
 | `analytics_node` | P1 | GA4 snapshot (INT-009) | LIVE (kod); GA4 credentials + deploy pending |
-| `content_calendar_node` | P2 | Social schedule (INT-010) | LIVE (bootstrap); publish API Phase B.2 |
+| `content_calendar_node` | P2 | Social schedule (INT-010) | LIVE |
+| Facebook publish | P2 | INT-011 Graph API `POST /feed` | LIVE (kod); VPS E2E pending |
 
 ### Infrastructure
 
@@ -127,6 +128,23 @@ Deploy flow (manual — Zasada 11):
 
 Runbook: deployment/deploy-to-vps.sh
 ```
+
+### INT-011 Facebook Page publish (Phase B.3)
+
+| Env | Purpose |
+|-----|---------|
+| `FB_PAGE_ID` | Facebook Page ID (FlexGrafik: `491325420727745`) |
+| `FB_ACCESS_TOKEN` | Page Access Token — **VPS .env only, never commit** |
+| `FB_PUBLISH_CHECK_INTERVAL_SECONDS` | Worker scheduled publish check (default 60, 0=off) |
+
+| Method | Path | Purpose |
+|--------|------|---------|
+| POST | `/api/v1/content-calendar/{entry_id}/publish` | Publish approved facebook entry |
+| GET | `/api/v1/content-calendar/{entry_id}/publish-status` | `fb_post_id`, `publish_result` |
+
+E2E: `deployment/deploy-b3-fb-publish-e2e.sh`
+
+**Roadmap after B3:** B3.1 insights, B3.2 read comments, B3.3 reply HITL — see `docs/handoffs/2026-06-30-b3-fb-publish-implementation.md`
 
 ---
 

@@ -71,6 +71,8 @@ class TestRouteRegistration:
             ("POST", "/api/v1/content-calendar"),
             ("PATCH", "/api/v1/content-calendar/{entry_id}"),
             ("GET", "/api/v1/content-calendar/suggestions/orders"),
+            ("POST", "/api/v1/content-calendar/{entry_id}/publish"),
+            ("GET", "/api/v1/content-calendar/{entry_id}/publish-status"),
             ("POST", "/webhooks/woocommerce/order"),
             ("POST", "/worker/task"),
             ("GET", "/worker/task/{task_id}"),

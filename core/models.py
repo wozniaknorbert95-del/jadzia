@@ -185,7 +185,9 @@ class ContentCalendarUpdateRequest(BaseModel):
     title: Optional[str] = Field(default=None, min_length=1, max_length=200)
     body_nl: Optional[str] = Field(default=None, min_length=1, max_length=5000)
     scheduled_at: Optional[str] = None
-    status: Optional[Literal["draft", "pending_approval", "approved", "published", "cancelled"]] = None
+    status: Optional[
+        Literal["draft", "pending_approval", "approved", "published", "cancelled", "failed"]
+    ] = None
 
     @field_validator("title", "body_nl", mode="before")
     @classmethod
@@ -203,10 +205,28 @@ class ContentCalendarEntry(BaseModel):
     title: str
     body_nl: str
     scheduled_at: str
-    status: Literal["draft", "pending_approval", "approved", "published", "cancelled"]
+    status: Literal[
+        "draft", "pending_approval", "approved", "published", "cancelled", "failed"
+    ]
     source_order_id: Optional[str] = None
+    fb_post_id: Optional[str] = None
+    publish_result: Optional[str] = None
+    media_url: Optional[str] = None
+    scheduled_publish_at: Optional[str] = None
     created_at: str
     updated_at: str
+
+
+class ContentCalendarPublishStatusResponse(BaseModel):
+    """INT-011 publish status for a calendar entry."""
+
+    entry_id: str
+    status: Literal[
+        "draft", "pending_approval", "approved", "published", "cancelled", "failed"
+    ]
+    fb_post_id: Optional[str] = None
+    publish_result: Optional[str] = None
+    platform: Literal["facebook", "tiktok"]
 
 
 class ContentCalendarListResponse(BaseModel):

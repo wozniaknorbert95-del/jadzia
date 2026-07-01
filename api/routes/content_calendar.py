@@ -13,6 +13,7 @@ from core.models import (
     ContentCalendarCreateResponse,
     ContentCalendarEntry,
     ContentCalendarListResponse,
+    ContentCalendarPublishStatusResponse,
     ContentCalendarUpdateRequest,
 )
 
@@ -24,7 +25,7 @@ router = APIRouter(tags=["content-calendar"])
 @router.get("/api/v1/content-calendar", response_model=ContentCalendarListResponse)
 async def get_content_calendar(
     status: Optional[
-        Literal["draft", "pending_approval", "approved", "published", "cancelled"]
+        Literal["draft", "pending_approval", "approved", "published", "cancelled", "failed"]
     ] = Query(default=None),
     platform: Optional[Literal["facebook", "tiktok"]] = Query(default=None),
     limit: int = Query(default=50, ge=1, le=200),
@@ -72,3 +73,48 @@ async def get_case_study_suggestions(
 
     orders = suggest_case_study_orders(limit=limit)
     return {"orders": orders, "total": len(orders)}
+
+
+@router.post("/api/v1/content-calendar/{entry_id}/publish")
+async def post_publish_calendar_entry(
+    entry_id: str,
+    _auth=Depends(verify_jwt),
+) -> dict:
+    """Trigger Facebook publish for an approved entry (INT-011)."""
+    from agent.nodes.content_calendar_node import publish_entry
+
+    result = publish_entry(entry_id)
+    if result.get("status") == "error" and result.get("message"):
+        raise HTTPException(status_code=400, detail=result)
+    if result.get("status") == "error":
+        raise HTTPException(status_code=502, detail=result)
+    return result
+
+
+@router.get(
+    "/api/v1/content-calendar/{entry_id}/publish-status",
+    response_model=ContentCalendarPublishStatusResponse,
+)
+async def get_publish_status(
+    entry_id: str,
+    _auth=Depends(verify_jwt),
+) -> ContentCalendarPublishStatusResponse:
+    """Return publish state and FB post id for a calendar entry (INT-011)."""
+    from agent.db import db_get_calendar_entry
+
+    try:
+        internal_id = int(entry_id)
+    except ValueError:
+        raise HTTPException(status_code=400, detail="Invalid entry_id") from None
+
+    row = db_get_calendar_entry(internal_id)
+    if not row:
+        raise HTTPException(status_code=404, detail="Calendar entry not found")
+
+    return ContentCalendarPublishStatusResponse(
+        entry_id=str(row["entry_id"]),
+        status=row["status"],
+        fb_post_id=row.get("fb_post_id"),
+        publish_result=row.get("publish_result"),
+        platform=row["platform"],
+    )

@@ -1,12 +1,12 @@
 {
   "project": "Jadzia-Core",
-  "last_updated": "2026-06-30 (handoff: repo-hygiene DONE; next D1-03 or FB token)",
+  "last_updated": "2026-07-01 (handoff: B3 E2E PASS fb_post_id=491325420727745_122179053746613375)",
   "status": "active",
   "plan": "docs/plans/PLAN-COI-PHASE-B.md",
   "active_gate": "none",
   "active_plan": "docs/plans/PLAN-COI-PHASE-B.md",
-  "next_human": "Provide FB Page Access Token (Graph API Explorer -> Get Page Access Token -> select FlexGrafik page). OR confirm D1-03 EN docstrings as next task.",
-  "next_agent": "D1-03: EN docstrings standardization",
+  "next_human": "Rotate FB Page Access Token (exposed in chat). Optionally delete E2E test post on FlexGrafik FB page.",
+  "next_agent": "B3.1: Facebook insights reader (pages_read_engagement + read_insights)",
   "agent_rule": "Nie deployuj autonomicznie (Zasada 11). Nie oznaczaj DEPLOY-01/03 completed bez E2E proof w handoff.",
   "sprints": {
     "remediation": "completed",
@@ -15,7 +15,7 @@
     "deploy_int_002": "completed",
     "deploy_int_004": "completed",
     "deploy_int_009": "completed",
-    "coi_phase_b3": "planned"
+    "coi_phase_b3": "deploy_complete",
   },
   "tasks": [
     {
@@ -267,49 +267,80 @@
       "id": "B3-01",
       "sprint": "COI Phase B.3 - Facebook Publish",
       "task": "agent/publishers/facebook.py + agent/publishers/__init__.py",
-      "status": "pending",
+      "status": "completed",
       "priority": "high",
-      "note": "INT-011. Facebook Graph API publish engine BLOCKED: requires FB Page Access Token (commander action)"
+      "note": "INT-011 Graph v25.0 publish/check/delete"
     },
     {
       "id": "B3-02",
       "sprint": "COI Phase B.3 - Facebook Publish",
       "task": "Schema migration: add publish_result, media_url, fb_post_id, scheduled_publish_at to content_calendar",
-      "status": "pending",
-      "priority": "high",
-      "note": " BLOCKED: requires FB Page Access Token (commander action)"
+      "status": "completed",
+      "priority": "high"
     },
     {
       "id": "B3-03",
       "sprint": "COI Phase B.3 - Facebook Publish",
       "task": "content_calendar_node: publish_entry() method",
-      "status": "pending",
-      "priority": "high",
-      "note": " BLOCKED: requires FB Page Access Token (commander action)"
+      "status": "completed",
+      "priority": "high"
     },
     {
       "id": "B3-04",
       "sprint": "COI Phase B.3 - Facebook Publish",
       "task": "API: POST /{entry_id}/publish + GET /{entry_id}/publish-status",
-      "status": "pending",
-      "priority": "high",
-      "note": " BLOCKED: requires FB Page Access Token (commander action)"
+      "status": "completed",
+      "priority": "high"
     },
     {
       "id": "B3-05",
       "sprint": "COI Phase B.3 - Facebook Publish",
       "task": "Worker loop: scheduled publish check for approved entries",
-      "status": "pending",
+      "status": "completed",
       "priority": "medium",
-      "note": " BLOCKED: requires FB Page Access Token (commander action)"
+      "note": "FB_PUBLISH_CHECK_INTERVAL_SECONDS default 60"
     },
     {
       "id": "B3-06",
       "sprint": "COI Phase B.3 - Facebook Publish",
       "task": "Tests: facebook publisher unit + integration",
-      "status": "pending",
+      "status": "completed",
       "priority": "high",
-      "note": " BLOCKED: requires FB Page Access Token (commander action)"
+      "note": "358+ pytest pass"
+    },
+    {
+      "id": "B3-DEPLOY",
+      "sprint": "COI Phase B.3 - Facebook Publish",
+      "task": "VPS E2E: deploy-b3-fb-publish-e2e.sh on prod",
+      "status": "completed",
+      "priority": "high",
+      "owner": "agent",
+      "checklist": "docs/handoffs/2026-07-01-b3-fb-publish-e2e.md",
+      "note": "PASS 2026-07-01 entry_id=7 fb_post_id=491325420727745_122179053746613375"
+    },
+    {
+      "id": "B3-1-01",
+      "sprint": "COI Phase B.3.1 - FB Sense",
+      "task": "facebook_reader: page insights + post list API",
+      "status": "pending",
+      "priority": "medium",
+      "note": "pages_read_engagement, read_insights"
+    },
+    {
+      "id": "B3-2-01",
+      "sprint": "COI Phase B.3.2 - FB Comments",
+      "task": "list_post_comments + Telegram brief",
+      "status": "pending",
+      "priority": "medium",
+      "note": "pages_read_user_content"
+    },
+    {
+      "id": "B3-3-01",
+      "sprint": "COI Phase B.3.3 - FB Reply HITL",
+      "task": "reply_to_comment with Dowódca approval",
+      "status": "pending",
+      "priority": "medium",
+      "note": "pages_manage_engagement"
     },
     {
       "id": "C1-01",

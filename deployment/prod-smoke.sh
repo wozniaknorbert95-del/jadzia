@@ -1,10 +1,13 @@
 #!/usr/bin/env bash
-# Prod smoke suite — run ON VPS as root@jadzia host.
+# Prod smoke suite — run ON VPS (jadzia@/opt/jadzia after OPS-01).
 # Usage: bash deployment/prod-smoke.sh
 
 set -euo pipefail
 
 BASE="${JADZIA_BASE_URL:-http://localhost:8000}"
+JADZIA_ROOT="${JADZIA_ROOT:-/opt/jadzia}"
+ENV_FILE="${JADZIA_ENV_FILE:-${JADZIA_ROOT}/.env}"
+DB_PATH="${JADZIA_DB_PATH:-${JADZIA_ROOT}/data/jadzia.db}"
 PASS=0
 FAIL=0
 
@@ -20,10 +23,10 @@ else
   bad "worker/health"
 fi
 
-if [ -f /root/jadzia/.env ]; then
+if [ -f "$ENV_FILE" ]; then
   set -a
   # shellcheck disable=SC1091
-  source /root/jadzia/.env
+  source "$ENV_FILE"
   set +a
 fi
 
@@ -69,9 +72,15 @@ else
   echo "WARN GA4 not configured — DEPLOY-03 pending"
 fi
 
-ORDERS=$(sqlite3 /root/jadzia/data/jadzia.db "SELECT COUNT(*) FROM orders;" 2>/dev/null || echo 0)
+if [ -n "${FB_PAGE_ID:-}" ] && [ -n "${FB_ACCESS_TOKEN:-}" ]; then
+  ok "Facebook publish env configured"
+else
+  echo "WARN FB_PAGE_ID/FB_ACCESS_TOKEN missing — B3 E2E pending"
+fi
+
+ORDERS=$(sqlite3 "$DB_PATH" "SELECT COUNT(*) FROM orders;" 2>/dev/null || echo 0)
 echo "INFO orders count=$ORDERS"
-if sqlite3 /root/jadzia/data/jadzia.db "SELECT order_id FROM orders WHERE order_id != 'SMOKE-1' LIMIT 1;" 2>/dev/null | grep -q .; then
+if sqlite3 "$DB_PATH" "SELECT order_id FROM orders WHERE order_id != 'SMOKE-1' LIMIT 1;" 2>/dev/null | grep -q .; then
   ok "real WC order present"
 else
   echo "WARN only SMOKE-1 — DEPLOY-01 Mollie E2E pending"

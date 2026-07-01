@@ -49,6 +49,7 @@ Szczegóły charter: `flexgrafik-meta/docs/core/jadzia-operating-charter.md`
 | `analytics_node` | `agent/nodes/analytics_node.py` | LIVE |
 | Content calendar | INT-010 `GET/POST/PATCH /api/v1/content-calendar` | LIVE (VPS) |
 | `content_calendar_node` | `agent/nodes/content_calendar_node.py` | LIVE |
+| Facebook publish | INT-011 `POST/GET …/publish` | LIVE (VPS E2E PASS 2026-07-01) |
 
 Plan Phase A (completed): `docs/archive/plans/PLAN-COI-PHASE-A.md`  
 Plan Phase B (active): `docs/plans/PLAN-COI-PHASE-B.md`

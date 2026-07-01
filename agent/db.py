@@ -213,7 +213,26 @@ def _init_schema(conn: sqlite3.Connection):
         ON content_calendar(status)
     """)
 
+    _migrate_content_calendar_columns(conn)
+
     conn.commit()
+
+
+def _migrate_content_calendar_columns(conn: sqlite3.Connection) -> None:
+    """Add INT-011 publish columns (idempotent)."""
+    new_columns = (
+        ("publish_result", "TEXT"),
+        ("media_url", "TEXT"),
+        ("fb_post_id", "TEXT"),
+        ("scheduled_publish_at", "TEXT"),
+    )
+    for column_name, column_type in new_columns:
+        try:
+            conn.execute(
+                f"ALTER TABLE content_calendar ADD COLUMN {column_name} {column_type}"
+            )
+        except sqlite3.OperationalError:
+            pass
 
 
 @contextmanager
@@ -1052,7 +1071,7 @@ def _row_to_lead_dict(row: sqlite3.Row) -> Dict:
 # ============================================================================
 
 _VALID_CALENDAR_STATUSES = frozenset(
-    {"draft", "pending_approval", "approved", "published", "cancelled"}
+    {"draft", "pending_approval", "approved", "published", "cancelled", "failed"}
 )
 _VALID_PLATFORMS = frozenset({"facebook", "tiktok"})
 
@@ -1133,7 +1152,16 @@ def db_get_calendar_entry(entry_id: int) -> Optional[Dict]:
 
 def db_update_calendar_entry(entry_id: int, updates: Dict) -> bool:
     """Update calendar entry fields. Returns True on success."""
-    allowed = {"title", "body_nl", "scheduled_at", "status"}
+    allowed = {
+        "title",
+        "body_nl",
+        "scheduled_at",
+        "status",
+        "publish_result",
+        "media_url",
+        "fb_post_id",
+        "scheduled_publish_at",
+    }
     filtered = {k: v for k, v in updates.items() if k in allowed and v is not None}
     if not filtered:
         return False

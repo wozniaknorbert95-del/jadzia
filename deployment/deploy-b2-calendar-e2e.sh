@@ -4,7 +4,7 @@
 set -euo pipefail
 
 BASE="${JADZIA_BASE_URL:-http://localhost:8000}"
-source /root/jadzia/.env
+source "${JADZIA_ENV_FILE:-/opt/jadzia/.env}"
 export JWT_SECRET
 
 TOKEN=$(python3 -c 'import os,jwt; print(jwt.encode({"sub":"b2-e2e"}, os.environ["JWT_SECRET"], algorithm="HS256"))')

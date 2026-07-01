@@ -16,7 +16,8 @@ Session continuity for `/vibe-init`: read the **last 2** handoffs from this fold
 | [`2026-06-30-session-close-handoff.md`](2026-06-30-session-close-handoff.md) | Umbrella close |
 | [`2026-06-30-ops-01-complete.md`](2026-06-30-ops-01-complete.md) | VPS `/opt/jadzia` migration |
 | [`2026-06-30-a5-01-cli.md`](2026-06-30-a5-01-cli.md) | Management CLI (`jadzia` cmd) |
-| [`2026-06-30-b3-audit-complete.md`](2026-06-30-b3-audit-complete.md) | B.3 Facebook publish audit |
+| [`2026-07-01-b3-fb-publish-e2e.md`](2026-07-01-b3-fb-publish-e2e.md) | B3 E2E PASS — Facebook publish on prod |
+| [`2026-06-30-b3-fb-publish-implementation.md`](2026-06-30-b3-fb-publish-implementation.md) | B3 INT-011 code implementation |
 | [`2026-06-27-ga4-verify-phase-b2-e2e.md`](2026-06-27-ga4-verify-phase-b2-e2e.md) | GA4 Phase B2 E2E |
 
 ## Gate proofs (E2E deploy evidence)

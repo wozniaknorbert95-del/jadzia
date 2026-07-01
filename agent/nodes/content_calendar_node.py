@@ -1,8 +1,10 @@
-"""Content calendar node — INT-010 social schedule."""
+"""Content calendar node — INT-010 social schedule, INT-011 Facebook publish."""
 
 from __future__ import annotations
 
+import json
 import logging
+from datetime import datetime, timezone
 from typing import List, Optional
 
 from agent.db import (
@@ -12,6 +14,7 @@ from agent.db import (
     db_list_calendar_entries,
     db_update_calendar_entry,
 )
+from agent.publishers.facebook import is_facebook_configured, publish_post
 from core.models import (
     ContentCalendarCreateRequest,
     ContentCalendarCreateResponse,
@@ -114,6 +117,83 @@ def suggest_case_study_orders(limit: int = 10) -> List[dict]:
     return orders
 
 
+def publish_entry(entry_id: str) -> dict:
+    """Publish an approved Facebook calendar entry via Graph API (INT-011)."""
+    try:
+        internal_id = int(entry_id)
+    except ValueError:
+        return {"status": "error", "message": "Invalid entry_id"}
+
+    row = db_get_calendar_entry(internal_id)
+    if not row:
+        return {"status": "error", "message": "Entry not found"}
+
+    if row.get("platform") != "facebook":
+        return {
+            "status": "error",
+            "message": f"Publish supported for facebook only, not {row.get('platform')}",
+        }
+
+    if row.get("status") != "approved":
+        return {
+            "status": "error",
+            "message": f"Entry must be approved, not {row.get('status')}",
+        }
+
+    if not is_facebook_configured():
+        return {
+            "status": "error",
+            "message": "FB_PAGE_ID and FB_ACCESS_TOKEN not configured",
+        }
+
+    result = publish_post(row["body_nl"])
+    updates = {
+        "publish_result": json.dumps(result),
+        "fb_post_id": result.get("post_id"),
+    }
+    if result.get("status") == "success":
+        updates["status"] = "published"
+    else:
+        updates["status"] = "failed"
+
+    db_update_calendar_entry(internal_id, updates)
+    logger.info(
+        "[ContentCalendarNode] Publish entry_id=%s fb_status=%s",
+        entry_id,
+        result.get("status"),
+    )
+    return result
+
+
+def publish_due_scheduled_entries(limit: int = 20) -> int:
+    """Publish approved entries whose scheduled_publish_at is due (worker hook)."""
+    if not is_facebook_configured():
+        return 0
+
+    entries = db_list_calendar_entries(status="approved", platform="facebook", limit=limit)
+    now = datetime.now(timezone.utc)
+    published_count = 0
+
+    for entry in entries:
+        sched_raw = entry.get("scheduled_publish_at") or entry.get("scheduled_at")
+        if not sched_raw:
+            continue
+        try:
+            sched_dt = datetime.fromisoformat(str(sched_raw).replace("Z", "+00:00"))
+            if sched_dt.tzinfo is None:
+                sched_dt = sched_dt.replace(tzinfo=timezone.utc)
+        except (ValueError, TypeError):
+            continue
+        if sched_dt <= now:
+            result = publish_entry(str(entry["entry_id"]))
+            if result.get("status") == "success":
+                published_count += 1
+
+    if published_count:
+        logger.info("[ContentCalendarNode] Scheduled publish count=%s", published_count)
+    return published_count
+
+
 def _row_to_entry(row: dict) -> ContentCalendarEntry:
     return ContentCalendarEntry(
         entry_id=row["entry_id"],
@@ -123,6 +203,10 @@ def _row_to_entry(row: dict) -> ContentCalendarEntry:
         scheduled_at=row["scheduled_at"],
         status=row["status"],
         source_order_id=row.get("source_order_id"),
+        fb_post_id=row.get("fb_post_id"),
+        publish_result=row.get("publish_result"),
+        media_url=row.get("media_url"),
+        scheduled_publish_at=row.get("scheduled_publish_at"),
         created_at=row["created_at"],
         updated_at=row["updated_at"],
     )
