@@ -14,7 +14,7 @@ Session continuity for `/vibe-init`: read the **last 2** handoffs from this fold
 |---------|-------|
 | [`2026-07-03-remediation-complete.md`](2026-07-03-remediation-complete.md) | S2-01..S3-02 remediation umbrella |
 | [`2026-07-03-s2-01-auth-hardening.md`](2026-07-03-s2-01-auth-hardening.md) | Auth hardening code |
-| [`2026-07-03-s2-01-deploy-checklist.md`](2026-07-03-s2-01-deploy-checklist.md) | VPS deploy (Dowódca) |
+| [`2026-07-03-s2-01-deploy-proof.md`](2026-07-03-s2-01-deploy-proof.md) | VPS deploy proof — 401, smoke 7/8 |
 | [`2026-07-03-s1-01-secret-rotation-checklist.md`](2026-07-03-s1-01-secret-rotation-checklist.md) | S1-01 human checklist |
 | [`2026-07-03-jadzia-core-audit.md`](2026-07-03-jadzia-core-audit.md) | Specialist audit |
 

@@ -1,7 +1,7 @@
 # Handoff: Post-Audit Remediation Complete (2026-07-03)
 
 **Source audit:** `docs/ops/JADZIA-CORE-AUDIT-2026-07-03.md`  
-**Status:** CODE COMPLETE — VPS deploy + S1-01 pending Dowódca
+**Status:** DEPLOYED 2026-07-03 — S1-01 secret rotation remains Dowódca-only
 
 ## Sessions delivered
 
@@ -12,8 +12,8 @@
 | S2-03 | requirements.lock + CI blocking | CODE DONE |
 | S3-01 | GA4 snapshot SQLite persist | CODE DONE |
 | S3-02 | Weekly Telegram brief worker hook | CODE DONE |
-| S1-01 | Secret rotation | HUMAN checklist |
-| S2-01 deploy | prod smoke + 401 proof | HUMAN checklist |
+| S2-01 deploy | prod smoke + 401 proof | **DEPLOYED** — see deploy-proof handoff |
+| S1-01 | Secret rotation | **PENDING** Dowódca checklist |
 
 ## Test evidence
 
@@ -29,14 +29,15 @@ pytest tests/ → 376 passed, 1 skipped, 1 xfailed (2026-07-03)
 - `deployment/jadzia.service` — uvicorn ExecStart
 - `requirements.lock` — clean jadzia-only deps
 
-## VPS enable weekly brief (optional)
+## Deploy evidence (VPS 2026-07-03)
 
-```env
-WEEKLY_BRIEF_INTERVAL_SECONDS=604800
-```
+See [`2026-07-03-s2-01-deploy-proof.md`](2026-07-03-s2-01-deploy-proof.md):
+- jadzia **active**, uvicorn prod mode
+- `POST /chat` without JWT → **401**
+- prod-smoke **7/8**
 
-## Next
+## Next (Dowódca only)
 
-1. Deploy per `2026-07-03-s2-01-deploy-checklist.md`
-2. S1-01 secret rotation per checklist
-3. Optional: `docs/ops/VPS-EDGE-HARDENING.md` (nginx rate limit)
+1. S1-01 secret rotation per checklist
+2. Optional edge hardening: `docs/ops/VPS-EDGE-HARDENING.md`
+3. Optional `WEEKLY_BRIEF_INTERVAL_SECONDS=604800`
