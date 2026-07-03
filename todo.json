@@ -1,12 +1,12 @@
 {
   "project": "Jadzia-Core",
-  "last_updated": "2026-06-30 (Phase B COMPLETE; B3.1+ deferred)",
+  "last_updated": "2026-07-03 (post-audit remediation S2/S3)",
   "status": "active",
-  "plan": "docs/plans/PLAN-COI-PHASE-B.md",
-  "active_gate": "none",
+  "plan": "docs/ops/JADZIA-CORE-AUDIT-2026-07-03.md",
+  "active_gate": "S2-01-deploy-manual",
   "active_plan": null,
-  "next_human": "Jutro: rotacja FB Page Access Token. Potem wybór modułu (zzpackage / flexgrafik-nl).",
-  "next_agent": "Cross-module: zzpackage Wizard konwersja LUB flexgrafik-nl FX-PORTFOLIO-PAGE-01 — albo jadzia GA4 snapshot persist",
+  "next_human": "Deploy S2-01..S3 na VPS: REQUIRE_SECRETS=1, prod-smoke, curl 401. S1-01 secret rotation.",
+  "next_agent": "Edge hardening runbook LUB B3.1 FB sense — po deploy remediation",
   "agent_rule": "Nie deployuj autonomicznie (Zasada 11). Nie oznaczaj DEPLOY-01/03 completed bez E2E proof w handoff.",
   "sprints": {
     "remediation": "completed",
@@ -16,6 +16,7 @@
     "deploy_int_004": "completed",
     "deploy_int_009": "completed",
     "coi_phase_b3": "deploy_complete",
+    "post_audit_remediation": "code_complete_deploy_pending"
   },
   "tasks": [
     {
@@ -349,6 +350,46 @@
       "status": "pending",
       "priority": "medium",
       "note": "Deferred - video-only, requires TikTok Developer Program approval"
+    },
+    {
+      "id": "S2-01",
+      "sprint": "Post-audit remediation — Security",
+      "task": "Prod auth hardening: REQUIRE_SECRETS gate + JWT on admin routes",
+      "status": "completed",
+      "priority": "critical",
+      "note": "2026-07-03 code complete; deploy pending Dowódca"
+    },
+    {
+      "id": "S2-02",
+      "sprint": "Post-audit remediation — Runtime",
+      "task": "jadzia.service uvicorn without reload",
+      "status": "completed",
+      "priority": "high",
+      "note": "2026-07-03"
+    },
+    {
+      "id": "S2-03",
+      "sprint": "Post-audit remediation — Hygiene",
+      "task": "Clean requirements.lock + CI blocking + docs sync",
+      "status": "completed",
+      "priority": "high",
+      "note": "2026-07-03"
+    },
+    {
+      "id": "S3-01",
+      "sprint": "Post-audit remediation — COI Sense",
+      "task": "analytics_snapshots SQLite persist + GET /api/v1/analytics/snapshots",
+      "status": "completed",
+      "priority": "medium",
+      "note": "2026-07-03"
+    },
+    {
+      "id": "S3-02",
+      "sprint": "Post-audit remediation — COI Sense",
+      "task": "Weekly Telegram brief node + WEEKLY_BRIEF_INTERVAL_SECONDS worker hook",
+      "status": "completed",
+      "priority": "medium",
+      "note": "2026-07-03; enable on VPS with interval e.g. 604800"
     }
   ]
 }

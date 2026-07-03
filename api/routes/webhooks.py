@@ -10,6 +10,7 @@ import os
 from fastapi import APIRouter, HTTPException, Request
 from pydantic import ValidationError
 
+from core.config import require_secrets_enabled
 from core.models import WooOrderWebhookRequest, WooOrderWebhookResponse
 
 logger = logging.getLogger(__name__)
@@ -22,6 +23,8 @@ WC_WEBHOOK_SECRET = os.getenv("WC_WEBHOOK_SECRET", "")
 def _validate_wc_hmac(body: bytes, signature: str | None) -> None:
     """Validate HMAC-SHA256 signature when WC_WEBHOOK_SECRET is configured."""
     if not WC_WEBHOOK_SECRET:
+        if require_secrets_enabled():
+            raise HTTPException(status_code=500, detail="WC_WEBHOOK_SECRET not configured")
         logger.warning("WC_WEBHOOK_SECRET not configured — webhook auth skipped")
         return
 

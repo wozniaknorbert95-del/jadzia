@@ -43,16 +43,18 @@ def main():
     print("=" * 60)
     print()
     
+    reload_enabled = os.getenv("UVICORN_RELOAD", "0").strip() in ("1", "true", "yes")
+
     uvicorn.run(
         "main:app",
         host=host,
         port=port,
-        reload=True,
+        reload=reload_enabled,
         reload_dirs=[
             str(PROJECT_DIR / "agent"),
             str(PROJECT_DIR / "core"),
             str(PROJECT_DIR / "api"),
-        ]
+        ] if reload_enabled else None,
     )
 
 

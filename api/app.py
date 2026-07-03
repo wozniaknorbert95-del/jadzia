@@ -15,6 +15,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 from api._state import health_metrics
+from core.config import validate_production_config
 
 load_dotenv()
 
@@ -23,6 +24,8 @@ _log = logging.getLogger("api.app")
 
 def create_app() -> FastAPI:
     """Create and configure the FastAPI application."""
+    validate_production_config()
+
     app = FastAPI(
         title="JADZIA API",
         description="AI Agent for online store management",
@@ -126,6 +129,7 @@ WORKER_STALE_TASK_MINUTES = int(os.getenv("WORKER_STALE_TASK_MINUTES", "15") or 
 WORKER_AWAITING_TIMEOUT_MINUTES = int(os.getenv("WORKER_AWAITING_TIMEOUT_MINUTES", "1440") or "1440")
 
 _last_fb_publish_check: float = 0.0
+_last_weekly_brief_check: float = 0.0
 
 
 async def _maybe_run_scheduled_fb_publish() -> None:
@@ -150,6 +154,30 @@ async def _maybe_run_scheduled_fb_publish() -> None:
         await asyncio.to_thread(_run)
     except Exception as e:
         _log.error("[worker_loop] scheduled FB publish failed: %s", e)
+
+
+async def _maybe_run_weekly_brief() -> None:
+    """Send COI weekly brief on configured interval (S3-02)."""
+    global _last_weekly_brief_check
+
+    interval = int(os.getenv("WEEKLY_BRIEF_INTERVAL_SECONDS", "0") or "0")
+    if interval <= 0:
+        return
+
+    now = time.monotonic()
+    if now - _last_weekly_brief_check < interval:
+        return
+    _last_weekly_brief_check = now
+
+    def _run() -> None:
+        from agent.nodes.brief_node import send_weekly_brief
+
+        send_weekly_brief()
+
+    try:
+        await asyncio.to_thread(_run)
+    except Exception as e:
+        _log.error("[worker_loop] weekly brief failed: %s", e)
 
 
 async def _worker_loop():
@@ -365,6 +393,7 @@ async def _worker_loop():
                     _log.error("[worker_loop] session error %s/%s: %s", source, chat_id, e)
 
             await _maybe_run_scheduled_fb_publish()
+            await _maybe_run_weekly_brief()
             await asyncio.sleep(busy_sleep if had_work else idle_backoff_sec)
         except asyncio.CancelledError:
             _log.info("[worker_loop] cancelled")

@@ -2,7 +2,7 @@
 
 from fastapi import APIRouter, Depends, HTTPException
 
-from api.dependencies import get_claude_service
+from api.dependencies import get_claude_service, verify_jwt
 from core.models import ChatRequest, ChatResponse, CustomerChatRequest, CustomerChatResponse
 from core.services import ClaudeService
 
@@ -13,6 +13,7 @@ router = APIRouter(tags=["chat"])
 async def chat(
     request: ChatRequest,
     claude: ClaudeService = Depends(get_claude_service),
+    _auth=Depends(verify_jwt),
 ):
     """Main endpoint for agent communication."""
     try:

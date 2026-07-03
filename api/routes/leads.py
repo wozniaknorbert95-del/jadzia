@@ -7,6 +7,7 @@ import os
 
 from fastapi import APIRouter, Header, HTTPException
 
+from core.config import require_secrets_enabled
 from core.models import LeadCreateRequest, LeadCreateResponse
 
 logger = logging.getLogger(__name__)
@@ -19,6 +20,8 @@ LEADS_API_KEY = os.getenv("LEADS_API_KEY", "")
 def _validate_leads_api_key(x_api_key: str | None) -> None:
     """Validate X-API-Key when LEADS_API_KEY is configured."""
     if not LEADS_API_KEY:
+        if require_secrets_enabled():
+            raise HTTPException(status_code=500, detail="LEADS_API_KEY not configured")
         logger.warning("LEADS_API_KEY not configured — lead API auth skipped")
         return
 

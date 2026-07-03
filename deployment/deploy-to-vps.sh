@@ -164,7 +164,7 @@ echo ""
 echo "🐍 Installing Python dependencies on VPS..."
 run_ssh "cd ${VPS_PROJECT_DIR} && sudo -u ${JADZIA_RUN_USER} python3 -m venv venv 2>/dev/null || true"
 run_ssh "cd ${VPS_PROJECT_DIR} && sudo -u ${JADZIA_RUN_USER} bash -c 'source venv/bin/activate && pip install --upgrade pip setuptools wheel'"
-run_ssh "cd ${VPS_PROJECT_DIR} && sudo -u ${JADZIA_RUN_USER} bash -c 'source venv/bin/activate && pip install -r requirements.txt'"
+run_ssh "cd ${VPS_PROJECT_DIR} && sudo -u ${JADZIA_RUN_USER} bash -c 'source venv/bin/activate && if [ -f requirements.lock ]; then pip install -r requirements.lock; else pip install -r requirements.txt; fi'"
 echo -e "${GREEN}✅ Dependencies installed${NC}"
 echo ""
 

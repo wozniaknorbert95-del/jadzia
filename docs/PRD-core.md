@@ -1,6 +1,6 @@
 # PRD-core.md — jadzia-core
 
-*Version: 2.0 | Owner: Norbert Wozniak | Updated: 2026-06-26*
+*Version: 2.1 | Owner: Norbert Wozniak | Updated: 2026-07-03*
 
 Canonical module spec: `flexgrafik-meta/docs/core/modules/module-jadzia-core.md`
 
@@ -82,10 +82,10 @@ queued → planning → reading_files → generating_code
 | Node | Priority | Contract | Status |
 |------|----------|----------|--------|
 | `order_node` | **P0** | INT-002 WC webhook | LIVE |
-| `lead_node` | P1 | Game lead API | LIVE (receiver); DEPLOY-02 E2E pending |
-| `analytics_node` | P1 | GA4 snapshot (INT-009) | LIVE (kod); GA4 credentials + deploy pending |
+| `lead_node` | P1 | Game lead API | LIVE (DEPLOY-02 E2E PASS) |
+| `analytics_node` | P1 | GA4 snapshot (INT-009) | LIVE (DEPLOY-03 E2E PASS) |
 | `content_calendar_node` | P2 | Social schedule (INT-010) | LIVE |
-| Facebook publish | P2 | INT-011 Graph API `POST /feed` | LIVE (kod); VPS E2E pending |
+| Facebook publish | P2 | INT-011 Graph API `POST /feed` | LIVE (B3 E2E PASS 2026-07-01) |
 
 ### Infrastructure
 
@@ -122,12 +122,27 @@ Path: /opt/jadzia
 Deploy flow (manual — Zasada 11):
   1. Backup: cp data/jadzia.db data/jadzia.db.bak.$(date +%Y%m%d-%H%M%S)
   2. Upload code (exclude data/, .env, venv/)
-  3. pip install -r requirements.txt
+  3. pip install -r requirements.txt  # or requirements.lock when present
   4. systemctl restart jadzia
   5. curl -f http://localhost:8000/worker/health
 
+Production service runs: uvicorn main:app (no reload). Local dev: UVICORN_RELOAD=1 python main.py
+
 Runbook: deployment/deploy-to-vps.sh
 ```
+
+### Production security (S2-01)
+
+Set on VPS `.env`:
+
+| Env | Purpose |
+|-----|---------|
+| `JADZIA_ENV=production` or `REQUIRE_SECRETS=1` | Fail boot if secrets missing |
+| `JWT_SECRET` | Worker + admin routes (`/chat`, `/rollback`, `/logs`, …) |
+| `WC_WEBHOOK_SECRET` | INT-002 HMAC (match zzpackage wp-config) |
+| `LEADS_API_KEY` | INT-004 X-API-Key |
+
+Public by design: `/api/v1/widget/chat`, `/api/v1/portal/qualify`, health probes.
 
 ### INT-011 Facebook Page publish (Phase B.3)
 

@@ -215,6 +215,22 @@ def _init_schema(conn: sqlite3.Connection):
 
     _migrate_content_calendar_columns(conn)
 
+    conn.execute("""
+        CREATE TABLE IF NOT EXISTS analytics_snapshots (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            period TEXT NOT NULL,
+            generated_at TEXT NOT NULL,
+            sync_status TEXT NOT NULL,
+            sources_json TEXT NOT NULL DEFAULT '{}',
+            errors_json TEXT NOT NULL DEFAULT '[]',
+            created_at TEXT NOT NULL
+        )
+    """)
+    conn.execute("""
+        CREATE INDEX IF NOT EXISTS idx_analytics_snapshots_period
+        ON analytics_snapshots(period, created_at DESC)
+    """)
+
     conn.commit()
 
 
@@ -1206,6 +1222,77 @@ def _row_to_calendar_dict(row: sqlite3.Row) -> Dict:
     entry = dict(row)
     entry["entry_id"] = str(entry.pop("id"))
     return entry
+
+
+def db_save_analytics_snapshot(snapshot: Dict) -> Optional[int]:
+    """Persist GA4 snapshot row (INT-009 history). Returns internal id."""
+    import json
+    from datetime import datetime, timezone
+
+    now = datetime.now(timezone.utc).replace(microsecond=0).isoformat()
+    conn = get_connection()
+    try:
+        cursor = conn.execute(
+            """
+            INSERT INTO analytics_snapshots
+            (period, generated_at, sync_status, sources_json, errors_json, created_at)
+            VALUES (?, ?, ?, ?, ?, ?)
+            """,
+            (
+                snapshot["period"],
+                snapshot["generated_at"],
+                snapshot["sync_status"],
+                json.dumps(snapshot.get("sources", {})),
+                json.dumps(snapshot.get("errors", [])),
+                now,
+            ),
+        )
+        conn.commit()
+        return int(cursor.lastrowid)
+    except Exception as e:
+        conn.rollback()
+        import logging
+        logging.getLogger(__name__).error("[DB] analytics snapshot save failed: %s", e)
+        return None
+
+
+def db_get_latest_analytics_snapshot(period: Optional[str] = None) -> Optional[Dict]:
+    """Return most recent persisted analytics snapshot, optionally filtered by period label."""
+    conn = get_connection()
+    if period:
+        row = conn.execute(
+            """
+            SELECT * FROM analytics_snapshots
+            WHERE period = ?
+            ORDER BY created_at DESC
+            LIMIT 1
+            """,
+            (period,),
+        ).fetchone()
+    else:
+        row = conn.execute(
+            """
+            SELECT * FROM analytics_snapshots
+            ORDER BY created_at DESC
+            LIMIT 1
+            """
+        ).fetchone()
+    return dict(row) if row else None
+
+
+def db_list_analytics_snapshots(limit: int = 30) -> List[Dict]:
+    """List recent analytics snapshots newest first."""
+    conn = get_connection()
+    rows = conn.execute(
+        """
+        SELECT id, period, generated_at, sync_status, sources_json, errors_json, created_at
+        FROM analytics_snapshots
+        ORDER BY created_at DESC
+        LIMIT ?
+        """,
+        (limit,),
+    ).fetchall()
+    return [dict(row) for row in rows]
 
 
 # ============================================================================

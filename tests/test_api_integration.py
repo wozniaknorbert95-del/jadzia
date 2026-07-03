@@ -67,6 +67,7 @@ class TestRouteRegistration:
             ("POST", "/api/v1/portal/qualify"),
             ("POST", "/api/v1/leads"),
             ("GET", "/api/v1/analytics/snapshot"),
+            ("GET", "/api/v1/analytics/snapshots"),
             ("GET", "/api/v1/content-calendar"),
             ("POST", "/api/v1/content-calendar"),
             ("PATCH", "/api/v1/content-calendar/{entry_id}"),
@@ -155,7 +156,8 @@ class TestHealthEndpoints:
 
     def test_logs(self, client):
         fake_logs = [{"ts": "2026-01-01T00:00:00+00:00", "msg": "test"}]
-        with patch("agent.log.get_recent_logs", return_value=fake_logs):
+        with patch("api.dependencies.JWT_SECRET", None), \
+             patch("agent.log.get_recent_logs", return_value=fake_logs):
             r = client.get("/logs?limit=2")
         assert r.status_code == 200
         data = r.json()
@@ -163,7 +165,8 @@ class TestHealthEndpoints:
         assert len(data["logs"]) == 1
 
     def test_clear_state(self, client):
-        with patch("agent.state.force_unlock", return_value=True), \
+        with patch("api.dependencies.JWT_SECRET", None), \
+             patch("agent.state.force_unlock", return_value=True), \
              patch("agent.state.clear_state") as mock_clear:
             r = client.post("/clear")
         assert r.status_code == 200
@@ -172,7 +175,8 @@ class TestHealthEndpoints:
         mock_clear.assert_called_once()
 
     def test_rollback(self, client):
-        with patch("agent.tools.rest.rollback",
+        with patch("api.dependencies.JWT_SECRET", None), \
+             patch("agent.tools.rest.rollback",
                    return_value={"status": "ok", "restored": [], "errors": [], "msg": "OK"}), \
              patch("agent.alerts.send_alert"), \
              patch("agent.state.clear_state"):
@@ -180,7 +184,8 @@ class TestHealthEndpoints:
         assert r.status_code == 200
 
     def test_test_ssh(self, client):
-        with patch("agent.tools.rest.test_ssh_connection", return_value=(True, "SSH OK")):
+        with patch("api.dependencies.JWT_SECRET", None), \
+             patch("agent.tools.rest.test_ssh_connection", return_value=(True, "SSH OK")):
             r = client.get("/test-ssh")
         assert r.status_code == 200
         assert r.json()["status"] == "ok"
@@ -273,7 +278,8 @@ class TestSessionEndpoints:
 
     def test_list_sessions(self, client):
         fake = [{"chat_id": "test", "source": "http"}]
-        with patch("api.routes.sessions.list_active_sessions", return_value=fake):
+        with patch("api.dependencies.JWT_SECRET", None), \
+             patch("api.routes.sessions.list_active_sessions", return_value=fake):
             r = client.get("/sessions")
         assert r.status_code == 200
         data = r.json()
@@ -281,7 +287,8 @@ class TestSessionEndpoints:
         assert len(data["sessions"]) == 1
 
     def test_cleanup_sessions(self, client):
-        with patch("api.routes.sessions.cleanup_old_sessions", return_value=3):
+        with patch("api.dependencies.JWT_SECRET", None), \
+             patch("api.routes.sessions.cleanup_old_sessions", return_value=3):
             r = client.post("/sessions/cleanup?days=7")
         assert r.status_code == 200
         data = r.json()
@@ -357,7 +364,8 @@ class TestErrorHandling:
         assert r.status_code == 404
 
     def test_422_on_invalid_json_body(self, client):
-        r = client.post("/chat", json={"invalid": "data"})
+        with patch("api.dependencies.JWT_SECRET", None):
+            r = client.post("/chat", json={"invalid": "data"})
         assert r.status_code == 422
 
     def test_500_on_unhandled_exception(self, client):

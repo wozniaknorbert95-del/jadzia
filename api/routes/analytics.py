@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import json
 import logging
 from typing import Literal
 
@@ -41,3 +42,28 @@ async def get_analytics_snapshot(
         raise HTTPException(status_code=503, detail={"sync_status": "fail", "errors": result.errors})
 
     return result
+
+
+@router.get("/api/v1/analytics/snapshots")
+async def list_analytics_snapshots(
+    limit: int = Query(default=30, ge=1, le=200),
+    _auth=Depends(verify_jwt),
+) -> dict:
+    """Return persisted GA4 snapshot history (newest first)."""
+    from agent.db import db_list_analytics_snapshots
+
+    rows = db_list_analytics_snapshots(limit=limit)
+    items = []
+    for row in rows:
+        items.append(
+            {
+                "id": row["id"],
+                "period": row["period"],
+                "generated_at": row["generated_at"],
+                "sync_status": row["sync_status"],
+                "sources": json.loads(row.get("sources_json") or "{}"),
+                "errors": json.loads(row.get("errors_json") or "[]"),
+                "created_at": row["created_at"],
+            }
+        )
+    return {"snapshots": items, "total": len(items)}

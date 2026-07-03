@@ -134,4 +134,28 @@ def fetch_analytics_snapshot(period_days: int = 7) -> AnalyticsSnapshotResponse:
         errors=errors,
     )
     _cache[period_days] = response
+    _persist_snapshot(response)
     return response
+
+
+def _persist_snapshot(response: AnalyticsSnapshotResponse) -> None:
+    """Write snapshot to SQLite for COI sense layer history."""
+    from agent.db import db_save_analytics_snapshot
+
+    sources = {}
+    if response.sources.app is not None:
+        sources["app"] = response.sources.app.model_dump()
+    if response.sources.zzpackage is not None:
+        sources["zzpackage"] = response.sources.zzpackage.model_dump()
+
+    row_id = db_save_analytics_snapshot(
+        {
+            "period": response.period,
+            "generated_at": response.generated_at,
+            "sync_status": response.sync_status,
+            "sources": sources,
+            "errors": response.errors,
+        }
+    )
+    if row_id:
+        logger.info("[AnalyticsNode] Snapshot persisted id=%s period=%s", row_id, response.period)

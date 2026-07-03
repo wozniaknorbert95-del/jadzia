@@ -2,8 +2,8 @@
 status: "[ACTIVE]"
 title: "Jadzia-Core Brain (Canonical)"
 owner: "Norbert Wozniak"
-updated: "2026-06-26"
-readiness_overall: "~50% vs COI vision"
+updated: "2026-07-03"
+readiness_overall: "~58% vs COI vision"
 ---
 
 ## 1) Misja modułu
@@ -60,7 +60,7 @@ Plan Phase B (completed): `docs/archive/plans/PLAN-COI-PHASE-B.md`
 - **Agent tasks/sessions:** `agent/db.py`, `agent/state/`
 - **Customer chat:** TTLCache w `agent/customer_agent.py`
 - **Orders/leads:** LIVE w `jadzia.db` (Phase A kod)
-- **Analytics:** GA4 read-through cache (Phase A kod); snapshot persist = Phase B
+- **Analytics:** GA4 read-through cache + **SQLite persist** (`analytics_snapshots`, S3-01)
 - **Content calendar:** LIVE w `jadzia.db` (Phase B bootstrap)
 
 ## 5) Integracje
@@ -86,10 +86,10 @@ Pełne kontrakty: `flexgrafik-meta/docs/core/integration-contracts.md`
 | Customer chat | 85% | 90% |
 | Worker queue/HITL | 85% | 90% |
 | Operational OS (orders/leads) | 40% | 90% |
-| Analytics integration | 30% | 80% |
+| Analytics integration | 45% | 80% |
 | Content calendar | 45% | 75% |
 | COI strategy synthesis | 10% (docs) | 85% |
-| **Overall** | **~50%** | **85%** |
+| **Overall** | **~58%** | **85%** |
 
 ## 7) Source of Truth
 
@@ -100,7 +100,7 @@ Pełne kontrakty: `flexgrafik-meta/docs/core/integration-contracts.md`
 - **Workflow:** `.agents/workflows/README.md` (L0-L4)
 - **Backlog:** `todo.json`
 - **PRD:** `docs/PRD-core.md`
-- **Active plan:** brak — Phase B complete; wybór przy `/vibe-init`
+- **Active plan:** post-audit remediation — see `docs/ops/JADZIA-CORE-AUDIT-2026-07-03.md`
 
 ## 8) Workflow Framework (v2.0)
 

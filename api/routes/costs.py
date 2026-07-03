@@ -2,7 +2,7 @@
 
 from fastapi import APIRouter, Depends
 
-from api.dependencies import get_claude_service
+from api.dependencies import get_claude_service, verify_jwt
 from core.models import CostEstimateRequest, CostEstimateResponse
 from core.services import ClaudeService
 
@@ -10,7 +10,10 @@ router = APIRouter(tags=["costs"])
 
 
 @router.get("/costs")
-async def get_costs(claude: ClaudeService = Depends(get_claude_service)):
+async def get_costs(
+    claude: ClaudeService = Depends(get_claude_service),
+    _auth=Depends(verify_jwt),
+):
     """Get current cost statistics."""
     stats = claude.get_cost_stats()
     return {
@@ -22,7 +25,10 @@ async def get_costs(claude: ClaudeService = Depends(get_claude_service)):
 
 
 @router.post("/costs/reset")
-async def reset_costs(claude: ClaudeService = Depends(get_claude_service)):
+async def reset_costs(
+    claude: ClaudeService = Depends(get_claude_service),
+    _auth=Depends(verify_jwt),
+):
     """Reset cost statistics."""
     claude.reset_cost_stats()
     return {"status": "ok", "message": "Cost stats reset"}

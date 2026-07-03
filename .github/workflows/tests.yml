@@ -31,6 +31,5 @@ jobs:
       - name: Run scenario tests (CI gate)
         run: pytest tests/test_worker_scenarios_ci.py -vv
 
-      - name: Run full test suite (non-blocking)
+      - name: Run full test suite
         run: pytest tests/ -v --tb=short
-        continue-on-error: true

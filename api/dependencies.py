@@ -9,6 +9,7 @@ import jwt
 from fastapi import Depends, HTTPException
 from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
 
+from core.config import require_secrets_enabled
 from core.services import (
     ClaudeService,
     GeminiService,
@@ -63,10 +64,12 @@ async def verify_jwt(
     credentials: Optional[HTTPAuthorizationCredentials] = Depends(_bearer),
 ) -> Optional[dict]:
     """
-    When JWT_SECRET is set, require valid Authorization: Bearer <token>.
-    When JWT_SECRET is not set, auth is disabled (backward compatible for dev/CI).
+    When JWT_SECRET is set (or REQUIRE_SECRETS/production mode), require Bearer token.
+    When JWT_SECRET is not set and not in production mode, auth is disabled (dev/CI).
     """
     if not JWT_SECRET:
+        if require_secrets_enabled():
+            raise HTTPException(status_code=500, detail="JWT_SECRET not configured")
         return None
     if not credentials:
         raise HTTPException(status_code=401, detail="Missing Authorization header")

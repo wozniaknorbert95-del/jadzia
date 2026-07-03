@@ -2,8 +2,9 @@
 
 from typing import Optional
 
-from fastapi import APIRouter, HTTPException, Query
+from fastapi import APIRouter, Depends, HTTPException, Query
 
+from api.dependencies import verify_jwt
 from core.models import RollbackResponse, StatusResponse
 
 router = APIRouter(tags=["health"])
@@ -68,7 +69,7 @@ async def status():
 
 
 @router.post("/rollback", response_model=RollbackResponse)
-async def do_rollback():
+async def do_rollback(_auth=Depends(verify_jwt)):
     """Roll back latest changes."""
     try:
         from agent.tools.rest import rollback
@@ -92,7 +93,7 @@ async def do_rollback():
 
 
 @router.get("/test-ssh")
-async def test_ssh():
+async def test_ssh(_auth=Depends(verify_jwt)):
     """Test SSH connection to the server."""
     from agent.tools.rest import test_ssh_connection
 
@@ -104,6 +105,7 @@ async def test_ssh():
 async def clear(
     chat_id: Optional[str] = Query(None, description="Session chat_id"),
     source: Optional[str] = Query(None, description="Session source"),
+    _auth=Depends(verify_jwt),
 ):
     """Clear session state and queue (emergency reset)."""
     from agent.state import force_unlock, clear_state, LockError
@@ -119,7 +121,7 @@ async def clear(
 
 
 @router.get("/logs")
-async def logs(limit: int = 20):
+async def logs(limit: int = 20, _auth=Depends(verify_jwt)):
     """Recent log entries."""
     from agent.log import get_recent_logs
 
