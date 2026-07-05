@@ -10,7 +10,7 @@
 
 | # | Wymaganie | Exit criteria | Wynik |
 |---|-----------|---------------|-------|
-| 1 | Deploy kodu na prod | `git @ e1e63f8`, service active | **PASS** |
+| 1 | Deploy kodu na prod | `git @ 463e5e0`, service active | **PASS** |
 | 2 | `JADZIA_ENV=production` | w `.env`, boot gate aktywny | **PASS** |
 | 3 | Auth proof | `POST /chat` bez JWT → **401** | **PASS** |
 | 4 | prod-smoke | **8/8 PASS**, exit 0 | **PASS** |
@@ -169,7 +169,7 @@ Pliki w repo:
 
 | Check | Wynik |
 |-------|-------|
-| Git | `e1e63f8` |
+| Git | `463e5e0` |
 | Service | active |
 | `CHAT_NO_AUTH` | **401** |
 | prod-smoke | **8/8 PASS** |

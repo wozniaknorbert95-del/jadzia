@@ -1,7 +1,7 @@
 # Handoff: Deploy closure COMPLETE (2026-07-05)
 
 **Gate:** Zasada 11 manual deploy — **CLOSED**  
-**VPS:** 185.243.54.115 `/opt/jadzia` @ `e1e63f8`
+**VPS:** 185.243.54.115 `/opt/jadzia` @ `463e5e0`
 
 ## All requirements PASS
 

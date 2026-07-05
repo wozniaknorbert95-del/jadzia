@@ -1,11 +1,11 @@
 {
   "project": "Jadzia-Core",
-  "last_updated": "2026-07-03 (post-audit remediation S2/S3)",
+  "last_updated": "2026-07-05 (deploy closure — smoke 8/8)",
   "status": "active",
   "plan": "docs/ops/JADZIA-CORE-AUDIT-2026-07-03.md",
   "active_gate": "S1-01-secret-rotation",
-  "active_plan": null,
-  "next_human": "S1-01: rotacja sekretów + BFG (checklist). Opcjonalnie: VPS edge hardening, WEEKLY_BRIEF_INTERVAL_SECONDS.",
+  "active_plan": "docs/ops/PLAN-DEPLOY-CLOSURE-2026-07-05.md",
+  "next_human": "S1-01: rotacja sekretów + BFG (checklist docs/handoffs/2026-07-03-s1-01-secret-rotation-checklist.md). Deploy closure DONE.",
   "next_agent": "Po S1-01: B3.1 FB sense LUB edge nginx — albo cross-module zzpackage",
   "agent_rule": "Nie deployuj autonomicznie (Zasada 11). Nie oznaczaj DEPLOY-01/03 completed bez E2E proof w handoff.",
   "sprints": {
