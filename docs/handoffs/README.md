@@ -4,9 +4,9 @@ Session continuity for `/vibe-init`: read the **last 2** handoffs from this fold
 
 ## Start here (vibe-init)
 
-1. [`2026-07-03-remediation-complete.md`](2026-07-03-remediation-complete.md) — post-audit S2/S3 CODE DONE
-2. [`2026-07-03-jadzia-core-audit.md`](2026-07-03-jadzia-core-audit.md) — audit verdict
-3. [`2026-07-01-b3-fb-publish-e2e.md`](2026-07-01-b3-fb-publish-e2e.md) — B3 E2E PASS
+1. [`2026-07-05-deploy-closure-complete.md`](2026-07-05-deploy-closure-complete.md) — deploy Zasada 11 CLOSED (smoke 8/8)
+2. [`2026-07-03-remediation-complete.md`](2026-07-03-remediation-complete.md) — post-audit S2/S3
+3. [`docs/ops/PLAN-DEPLOY-CLOSURE-2026-07-05.md`](../ops/PLAN-DEPLOY-CLOSURE-2026-07-05.md) — repeatable deploy checklist
 
 ## Active reference (keep in root)
 
