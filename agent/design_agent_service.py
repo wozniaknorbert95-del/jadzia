@@ -7,7 +7,6 @@ import os
 import sys
 import time
 from pathlib import Path
-from typing import Dict, List, Optional
 
 from fastapi import HTTPException, UploadFile
 
@@ -19,7 +18,7 @@ from core.models import (
 
 logger = logging.getLogger(__name__)
 
-_RATE: Dict[str, list[float]] = {}
+_RATE: dict[str, list[float]] = {}
 _RATE_LIMIT = 2
 _RATE_WINDOW_SEC = 3600
 
@@ -87,7 +86,7 @@ def _ensure_vge_import():
         ) from exc
 
 
-def _verify_api_key(header_key: Optional[str]) -> None:
+def _verify_api_key(header_key: str | None) -> None:
     expected = os.getenv("FG_DESIGN_AGENT_KEY", "")
     if not expected:
         return
@@ -108,7 +107,7 @@ async def process_design_agent_generate(
     stijl: str,
     logo: UploadFile,
     client_ip: str,
-    api_key: Optional[str],
+    api_key: str | None,
 ) -> DesignAgentGenerateResponse:
     import json
 
@@ -155,7 +154,7 @@ async def process_design_agent_generate(
     public_base = os.getenv("DESIGN_AGENT_PUBLIC_URL", "")
     if not public_base:
         logger.warning(
-            "DESIGN_AGENT_PUBLIC_URL not set — mockups returned as base64 data URLs (large payloads)."
+            "DESIGN_AGENT_PUBLIC_URL not set — mockups use base64 data URLs (large payloads)."
         )
 
     try:
@@ -177,7 +176,7 @@ async def process_design_agent_generate(
 
     _log_generation_cost(result.brief_id, vehicle, result.cost_eur)
 
-    mockups: List[DesignAgentMockupItem] = []
+    mockups: list[DesignAgentMockupItem] = []
     for m in result.mockups:
         url = m.url or m.data_url or ""
         mockups.append(

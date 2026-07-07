@@ -2,8 +2,6 @@
 
 from __future__ import annotations
 
-from typing import Optional
-
 from fastapi import APIRouter, File, Form, Header, Request, UploadFile
 
 from agent.design_agent_service import process_design_agent_generate
@@ -25,7 +23,7 @@ async def design_agent_generate(
     slogan: str = Form(""),
     stijl: str = Form("strak"),
     logo: UploadFile = File(...),
-    x_fg_design_agent_key: Optional[str] = Header(None, alias="X-FG-Design-Agent-Key"),
+    x_fg_design_agent_key: str | None = Header(None, alias="X-FG-Design-Agent-Key"),
 ):
     """Generate 2 vehicle mockups from chat brief + logo (VGE 3.0)."""
     client_ip = request.client.host if request.client else "unknown"
