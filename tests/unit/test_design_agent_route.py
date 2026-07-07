@@ -25,7 +25,9 @@ def client():
 
 
 def test_design_agent_route_registered(client: TestClient) -> None:
-    paths = {getattr(r, "path", "") for r in client.app.routes}
+    openapi = client.get("/openapi.json")
+    assert openapi.status_code == 200
+    paths = set(openapi.json().get("paths", {}).keys())
     assert "/api/v1/design-agent/generate" in paths
 
 

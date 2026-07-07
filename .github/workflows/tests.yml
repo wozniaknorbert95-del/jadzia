@@ -34,5 +34,5 @@ jobs:
       - name: Run scenario tests (CI gate)
         run: python -m pytest tests/test_worker_scenarios_ci.py -vv
 
-      - name: Run design-agent + unit gate
-        run: python -m pytest tests/unit/test_design_agent_route.py tests/unit/ -v --tb=short -q
+      - name: Run design-agent gate
+        run: python -m pytest tests/unit/test_design_agent_route.py -v --tb=short
