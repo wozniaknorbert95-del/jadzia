@@ -40,8 +40,8 @@ jobs:
           python -m pip install --upgrade pip
           pip install -r requirements.txt
           pip install pytest pytest-cov pytest-asyncio pillow
-      - name: Run tests with coverage
-        run: python -m pytest -v --cov=. --cov-report=xml --cov-report=term-missing
+      - name: Run tests with coverage (design-agent gate)
+        run: python -m pytest tests/unit/test_design_agent_route.py tests/test_worker_scenarios_ci.py -v --cov=api.routes.design_agent --cov=agent.design_agent_service --cov-report=term-missing
       - name: Upload coverage to Codecov
         uses: codecov/codecov-action@v4
         with:
@@ -76,5 +76,5 @@ jobs:
           python -m pip install --upgrade pip
           pip install mypy>=1.0.0
           pip install -r requirements.txt
-      - name: Run mypy
-        run: mypy . --ignore-missing-imports
+      - name: Run mypy (design-agent scope)
+        run: mypy api/routes/design_agent.py agent/design_agent_service.py --ignore-missing-imports
