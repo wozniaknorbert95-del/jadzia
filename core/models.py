@@ -490,3 +490,31 @@ class CostEstimateResponse(BaseModel):
     estimated_output_tokens: int = 0
     estimated_cost: float = 0.0
     model: str = ""
+
+
+# ──────────────────────────────────────────────
+# Design Agent (ZZPackage /voertuigreclame-ontwerp/)
+# ──────────────────────────────────────────────
+
+
+class DesignAgentMockupItem(BaseModel):
+    variant: str
+    panel: str
+    url: str
+    degraded: bool = False
+
+
+class DesignAgentProductItem(BaseModel):
+    sku: str
+    naam: str
+    price_suggested: float
+    highlight: bool = False
+
+
+class DesignAgentGenerateResponse(BaseModel):
+    brief_id: str
+    mockups: List[DesignAgentMockupItem]
+    recommended_products: List[DesignAgentProductItem]
+    wizard_deeplink: str
+    cost_eur: float = 0.0
+    user_stijl: str = "strak"
