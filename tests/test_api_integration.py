@@ -86,6 +86,7 @@ class TestRouteRegistration:
             ("POST", "/costs/estimate"),
             ("GET", "/sessions"),
             ("POST", "/sessions/cleanup"),
+            ("POST", "/api/v1/design-agent/generate"),
             # FastAPI auto-generated
             ("GET", "/docs"),
             ("GET", "/docs/oauth2-redirect"),
@@ -95,6 +96,8 @@ class TestRouteRegistration:
 
         missing = expected - routes
         extra = routes - expected
+        # StaticFiles mount for Design Agent uploads (optional)
+        extra = {r for r in extra if not r[1].startswith("/uploads/design-agent")}
 
         assert not missing, f"Missing routes: {missing}"
         assert not extra, f"Unexpected routes: {extra}"

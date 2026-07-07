@@ -61,6 +61,7 @@ def create_app() -> FastAPI:
     from api.routes.dashboard import router as dashboard_router
     from api.routes.costs import router as costs_router
     from api.routes.sessions import router as sessions_router
+    from api.routes.design_agent import router as design_agent_router
 
     app.include_router(chat_router)
     app.include_router(portal_qualify_router)
@@ -73,6 +74,22 @@ def create_app() -> FastAPI:
     app.include_router(dashboard_router)
     app.include_router(costs_router)
     app.include_router(sessions_router)
+    app.include_router(design_agent_router)
+
+    # Design Agent mockup PNGs (nginx may also serve this path on VPS)
+    da_output = os.getenv("DESIGN_AGENT_OUTPUT_DIR", "output/design-agent")
+    da_path = Path(da_output)
+    da_path.mkdir(parents=True, exist_ok=True)
+    try:
+        from fastapi.staticfiles import StaticFiles
+
+        app.mount(
+            "/uploads/design-agent",
+            StaticFiles(directory=str(da_path)),
+            name="design-agent-uploads",
+        )
+    except Exception as e:
+        _log.warning("Design Agent static mount skipped: %s", e)
 
     # Telegram router (conditionally included)
     if os.getenv("TELEGRAM_BOT_ENABLED", "") == "1":
