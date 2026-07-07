@@ -133,7 +133,7 @@ async def process_design_agent_generate(
         colors, opts = [], []
 
     brief = DesignAgentBrief(
-        vehicle=vehicle,  # type: ignore[arg-type]
+        vehicle=vehicle,
         branche=branche,
         bedrijfsnaam=bedrijfsnaam.strip(),
         telefoon=telefoon,
@@ -141,7 +141,7 @@ async def process_design_agent_generate(
         brand_colors=colors,
         tekst_opties=opts,
         slogan=slogan,
-        stijl=stijl if stijl in ("strak", "opvallend") else "strak",  # type: ignore[arg-type]
+        stijl=stijl if stijl in ("strak", "opvallend") else "strak",
     )
 
     output_root = Path(os.getenv("DESIGN_AGENT_OUTPUT_DIR", "output/design-agent"))

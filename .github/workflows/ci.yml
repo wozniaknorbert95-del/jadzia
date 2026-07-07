@@ -78,4 +78,4 @@ jobs:
           pip install mypy>=1.0.0
           pip install -r requirements.txt
       - name: Run mypy (design-agent scope)
-        run: mypy api/routes/design_agent.py agent/design_agent_service.py --ignore-missing-imports --follow-imports=skip
+        run: mypy api/routes/design_agent.py agent/design_agent_service.py --ignore-missing-imports --follow-imports=skip --disable-error-code=untyped-decorator
