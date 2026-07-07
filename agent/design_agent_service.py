@@ -72,7 +72,7 @@ def _check_rate_limit(client_ip: str) -> None:
     _RATE[client_ip] = hits
 
 
-def _ensure_vge_import():
+def _ensure_vge_import() -> None:
     vge_root = os.getenv("VGE_ROOT", "")
     if vge_root and vge_root not in sys.path:
         sys.path.insert(0, vge_root)
