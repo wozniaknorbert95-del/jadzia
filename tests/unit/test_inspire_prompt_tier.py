@@ -39,7 +39,8 @@ def test_tier_b_prompt_contains_coverage(matrix_path: Path) -> None:
     )
     positive, _ = build_prompt(ctx, "tier_b", tier_b)
     assert tier_b.coverage in positive
-    assert "Smart Start" in positive
+    assert "entry_coverage" in positive
+    assert "Smart Start" not in positive
     assert "strak vs opvallend" not in positive.lower()
 
 
@@ -57,5 +58,6 @@ def test_tier_a_prompt_premium_label(matrix_path: Path) -> None:
         positionering="opvallend",
     )
     positive, _ = build_prompt(ctx, "tier_a", tier_a)
-    assert "Premium Presence" in positive
+    assert "Premium Presence" not in positive
+    assert "premium_coverage" in positive
     assert tier_a.coverage in positive
