@@ -66,7 +66,6 @@ def build_prompt(
     """Return (positive, negative) prompts for fal kontext."""
     vehicle = VEHICLE_LABELS.get(ctx.vehicle, "commercial vehicle")
     colors = ", ".join(ctx.brand_colors) if ctx.brand_colors else "professional brand colors"
-    text_line = _text_lines(ctx)
     branche = ctx.branche or "local business"
     tier_label = "Smart Start" if variant == "tier_b" else "Premium Presence"
     coverage = tier_meta.coverage
@@ -76,12 +75,16 @@ def build_prompt(
         f"Photorealistic professional commercial vehicle wrap mockup, studio automotive photography, "
         f"glossy paint reflections, Netherlands {branche} company branding on a {vehicle}. "
         f"Product tier: {tier_label}. Vehicle coverage: {coverage}. "
-        f"Company name and contact on the vehicle: {text_line}. "
+        f"{'Minimal door-panel branding only, small logo zone.' if variant == 'tier_b' else 'Full side wrap with large color blocks across multiple panels.'} "
+        f"Company branding: logo and brand color blocks only on the vehicle body. "
+        f"No phone numbers, no URLs, no slogans, no readable words except abstract logo shapes. "
         f"Brand colors: {colors}. Visual style: {style}. "
         f"Side view 3/4 angle, realistic vinyl wrap on body panels, sharp focus, 8k commercial photo."
     )
     negative = (
         "cartoon, illustration, flat sticker, distorted wheels, deformed vehicle, "
-        "wrong perspective, blurry text, watermark, low quality, duplicate vehicle"
+        "wrong perspective, blurry text, watermark, low quality, duplicate vehicle, "
+        "misspelled words, gibberish letters, random characters on vehicle, "
+        "phone numbers on doors, website URLs on body, offensive Dutch words"
     )
     return positive, negative

@@ -6,7 +6,7 @@ import io
 import logging
 from pathlib import Path
 
-from PIL import Image, ImageDraw, ImageFont
+from PIL import Image
 
 logger = logging.getLogger(__name__)
 
@@ -47,7 +47,7 @@ def build_reference_png(
     bedrijfsnaam: str,
     telefoon: str,
 ) -> bytes:
-    """PIL composite: vehicle picker + logo + company name (approximate inspiration ref)."""
+    """PIL composite: vehicle template + logo hint only (no contact text for fal)."""
     assets = resolve_assets_dir()
     tpl_name = VEHICLE_TEMPLATE.get(vehicle, "voertuig_caddy.png")
     tpl_path = assets / tpl_name
@@ -70,15 +70,8 @@ def build_reference_png(
     px, py = int(w * bx[0]), int(h * bx[1])
     base.paste(logo, (px, py), logo)
 
-    draw = ImageDraw.Draw(base)
-    try:
-        font = ImageFont.truetype("arial.ttf", max(14, int(h * 0.035)))
-    except OSError:
-        font = ImageFont.load_default()
-    text_y = py + logo.height + 8
-    draw.text((px, text_y), bedrijfsnaam[:40], fill=(20, 20, 20, 255), font=font)
-    if telefoon:
-        draw.text((px, text_y + int(h * 0.05)), telefoon[:20], fill=(40, 40, 40, 255), font=font)
+    # Logo-only ref: fal must not inherit readable phone/URL from composite (G-AUDIT P0).
+    _ = bedrijfsnaam, telefoon
 
     out = io.BytesIO()
     base.convert("RGB").save(out, format="PNG", optimize=True)
