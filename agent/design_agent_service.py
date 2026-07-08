@@ -1,4 +1,4 @@
-"""Design Agent REST handler — invokes VGE generate_design_agent_mockups."""
+"""Design Agent REST handler — INSPIRE v2 (fal full-frame) or legacy VGE."""
 
 from __future__ import annotations
 
@@ -32,6 +32,10 @@ _ALLOWED_LOGO_MIMES = {
 _ALLOWED_LOGO_EXT = {".png", ".jpg", ".jpeg", ".svg", ".pdf"}
 
 
+def _engine_mode() -> str:
+    return os.getenv("DESIGN_AGENT_ENGINE", "inspire").strip().lower()
+
+
 def _validate_logo_upload(logo: UploadFile, logo_bytes: bytes) -> None:
     filename = (logo.filename or "").lower()
     ext = Path(filename).suffix
@@ -52,10 +56,11 @@ def _validate_logo_upload(logo: UploadFile, logo_bytes: bytes) -> None:
 
 def _log_generation_cost(brief_id: str, vehicle: str, cost_eur: float) -> None:
     logger.info(
-        "design-agent cost brief_id=%s vehicle=%s cost_eur=%.4f",
+        "design-agent cost brief_id=%s vehicle=%s cost_eur=%.4f engine=%s",
         brief_id,
         vehicle,
         cost_eur,
+        _engine_mode(),
     )
 
 
@@ -94,6 +99,16 @@ def _verify_api_key(header_key: str | None) -> None:
         raise HTTPException(status_code=401, detail="Ongeldige API-sleutel.")
 
 
+def _parse_json_list(raw: str) -> list:
+    import json
+
+    try:
+        val = json.loads(raw) if raw else []
+        return val if isinstance(val, list) else []
+    except json.JSONDecodeError:
+        return []
+
+
 async def process_design_agent_generate(
     *,
     vehicle: str,
@@ -109,14 +124,8 @@ async def process_design_agent_generate(
     client_ip: str,
     api_key: str | None,
 ) -> DesignAgentGenerateResponse:
-    import json
-
     _verify_api_key(api_key)
     _check_rate_limit(client_ip)
-    _ensure_vge_import()
-
-    from vge.models.design_agent_brief import DesignAgentBrief
-    from vge.services.design_agent import generate_design_agent_mockups
 
     if not bedrijfsnaam.strip():
         raise HTTPException(status_code=400, detail="Bedrijfsnaam is verplicht.")
@@ -126,23 +135,9 @@ async def process_design_agent_generate(
         raise HTTPException(status_code=400, detail="Logo mag maximaal 5 MB zijn.")
     _validate_logo_upload(logo, logo_bytes)
 
-    try:
-        colors = json.loads(brand_colors) if brand_colors else []
-        opts = json.loads(tekst_opties) if tekst_opties else []
-    except json.JSONDecodeError:
-        colors, opts = [], []
-
-    brief = DesignAgentBrief(
-        vehicle=vehicle,
-        branche=branche,
-        bedrijfsnaam=bedrijfsnaam.strip(),
-        telefoon=telefoon,
-        website=website,
-        brand_colors=colors,
-        tekst_opties=opts,
-        slogan=slogan,
-        stijl=stijl if stijl in ("strak", "opvallend") else "strak",
-    )
+    colors = _parse_json_list(brand_colors)
+    opts = _parse_json_list(tekst_opties)
+    user_stijl = stijl if stijl in ("strak", "opvallend") else "strak"
 
     output_root = Path(os.getenv("DESIGN_AGENT_OUTPUT_DIR", "output/design-agent"))
     ssot_path = Path(
@@ -157,16 +152,54 @@ async def process_design_agent_generate(
             "DESIGN_AGENT_PUBLIC_URL not set — mockups use base64 data URLs (large payloads)."
         )
 
+    mode = _engine_mode()
     try:
-        result = generate_design_agent_mockups(
-            brief,
-            logo_bytes,
-            output_root,
-            ssot_path,
-            public_base_url=public_base,
-        )
+        if mode == "inspire":
+            from agent.inspire.engine import generate_inspire_mockups
+
+            result = generate_inspire_mockups(
+                vehicle=vehicle,
+                branche=branche,
+                bedrijfsnaam=bedrijfsnaam.strip(),
+                telefoon=telefoon,
+                website=website,
+                brand_colors=colors,
+                tekst_opties=opts,
+                slogan=slogan,
+                stijl=user_stijl,  # type: ignore[arg-type]
+                logo_bytes=logo_bytes,
+                output_dir=output_root,
+                ssot_path=ssot_path,
+                public_base_url=public_base,
+            )
+        else:
+            _ensure_vge_import()
+            from vge.models.design_agent_brief import DesignAgentBrief
+            from vge.services.design_agent import generate_design_agent_mockups
+
+            brief = DesignAgentBrief(
+                vehicle=vehicle,  # type: ignore[arg-type]
+                branche=branche,
+                bedrijfsnaam=bedrijfsnaam.strip(),
+                telefoon=telefoon,
+                website=website,
+                brand_colors=colors,
+                tekst_opties=opts,
+                slogan=slogan,
+                stijl=user_stijl,  # type: ignore[arg-type]
+            )
+            result = generate_design_agent_mockups(
+                brief,
+                logo_bytes,
+                output_root,
+                ssot_path,
+                public_base_url=public_base,
+            )
     except ValueError as exc:
         raise HTTPException(status_code=400, detail=str(exc)) from exc
+    except RuntimeError as exc:
+        logger.exception("design-agent inspire runtime error")
+        raise HTTPException(status_code=503, detail=str(exc)) from exc
     except Exception as exc:
         logger.exception("design-agent generate failed")
         raise HTTPException(

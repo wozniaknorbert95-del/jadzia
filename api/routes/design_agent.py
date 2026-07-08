@@ -25,7 +25,7 @@ async def design_agent_generate(
     logo: UploadFile = File(...),
     x_fg_design_agent_key: str | None = Header(None, alias="X-FG-Design-Agent-Key"),
 ) -> DesignAgentGenerateResponse:
-    """Generate 2 vehicle mockups from chat brief + logo (VGE 3.0)."""
+    """Generate 2 photoreal inspiration mockups (INSPIRE v2 fal full-frame)."""
     client_ip = request.client.host if request.client else "unknown"
     return await process_design_agent_generate(
         vehicle=vehicle,
