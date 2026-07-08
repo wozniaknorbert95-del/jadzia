@@ -186,7 +186,10 @@ async def process_design_agent_generate(
             "../zzpackage.flexgrafik.nl/system/data/product-master-table.json",
         )
     )
-    public_base = os.getenv("DESIGN_AGENT_PUBLIC_URL", "")
+    public_base = (
+        os.getenv("DESIGN_AGENT_PUBLIC_URL", "").strip()
+        or os.getenv("DESIGN_AGENT_MOCKUP_PUBLIC_BASE", "").strip()
+    )
     if not public_base:
         logger.warning(
             "DESIGN_AGENT_PUBLIC_URL not set — mockups use base64 data URLs (large payloads)."
