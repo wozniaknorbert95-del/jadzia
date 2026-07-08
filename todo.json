@@ -1,12 +1,12 @@
 {
   "project": "Jadzia-Core",
-  "last_updated": "2026-07-08 (spine closure ~85% + operator playbook)",
+  "last_updated": "2026-07-08 (spine closure 85% program)",
   "status": "active",
-  "plan": "docs/ops/JADZIA-SPINE-PROOF-MATRIX.md",
-  "active_gate": "operator-school",
-  "active_plan": "docs/ops/JADZIA-OPERATOR-PLAYBOOK.md",
-  "next_human": "Wykonaj 3 ćwiczenia z JADZIA-OPERATOR-PLAYBOOK.md (A/B/C). Równolegle S1-01 gdy gotowy.",
-  "next_agent": "Po ćwiczeniach: edge hardening LUB B3.1 FB sense — per Dowódca",
+  "plan": "docs/superpowers/specs/2026-07-08-jadzia-spine-closure-design.md",
+  "active_gate": "S1-01-secret-rotation",
+  "active_plan": "docs/superpowers/specs/2026-07-08-jadzia-spine-closure-design.md",
+  "next_human": "Faza 4: wykonaj ćwiczenia E1+E2 w JADZIA-OPERATOR-PLAYBOOK.md i potwierdź w handoff F4",
+  "next_agent": "S1-01 gdy gotowy LUB B3.1 deferred",
   "agent_rule": "Nie deployuj autonomicznie (Zasada 11). Nie oznaczaj DEPLOY-01/03 completed bez E2E proof w handoff.",
   "sprints": {
     "remediation": "completed",
@@ -17,8 +17,7 @@
     "deploy_int_009": "completed",
     "coi_phase_b3": "deploy_complete",
     "post_audit_remediation": "deploy_closure_complete_2026-07-05",
-    "spine_closure_85": "complete_2026-07-08",
-    "design_agent_inspire": "deploy_complete_2026-07-08"
+    "spine_closure_85": "completed"
   },
   "tasks": [
     {
@@ -128,25 +127,6 @@
       "task": "Sync brain.md, PRD-core.md, AGENTS.md z module-jadzia-core.md (COI charter)",
       "status": "completed",
       "priority": "high"
-    },
-    {
-      "id": "SPINE-85",
-      "sprint": "COI Spine Closure",
-      "task": "Truth sync + spine proof matrix + operator playbook (~85% operational COI)",
-      "status": "completed",
-      "priority": "critical",
-      "owner": "agent",
-      "checklist": "docs/handoffs/2026-07-08-jadzia-spine-closure-complete.md",
-      "note": "prod-smoke 8/8 2026-07-08; brain.md synced; meta module spec patched"
-    },
-    {
-      "id": "OP-SCHOOL",
-      "sprint": "Operator School",
-      "task": "Commander completes playbook exercises A/B/C + optional weekly brief manual trigger",
-      "status": "pending",
-      "priority": "high",
-      "owner": "human",
-      "checklist": "docs/ops/JADZIA-OPERATOR-PLAYBOOK.md §5"
     },
     {
       "id": "S1-01",
@@ -411,6 +391,111 @@
       "status": "completed",
       "priority": "medium",
       "note": "2026-07-03; enable on VPS with interval e.g. 604800"
+    },
+    {
+      "id": "SC85-F1-01",
+      "sprint": "Spine Closure 85%",
+      "task": "Spec programu spine closure design doc",
+      "status": "completed",
+      "priority": "high",
+      "owner": "agent",
+      "checklist": "docs/superpowers/specs/2026-07-08-jadzia-spine-closure-design.md"
+    },
+    {
+      "id": "SC85-F1-02",
+      "sprint": "Spine Closure 85%",
+      "task": "brain.md readiness → ~85% operational spine",
+      "status": "completed",
+      "priority": "high",
+      "owner": "agent"
+    },
+    {
+      "id": "SC85-F1-03",
+      "sprint": "Spine Closure 85%",
+      "task": "Sync flexgrafik-meta module-jadzia-core + charter AS-IS LIVE",
+      "status": "completed",
+      "priority": "high",
+      "owner": "agent"
+    },
+    {
+      "id": "SC85-F1-04",
+      "sprint": "Spine Closure 85%",
+      "task": "todo.json SC85 tasks + handoff INSPIRE 08-07 + F1 handoff + README",
+      "status": "completed",
+      "priority": "high",
+      "owner": "agent"
+    },
+    {
+      "id": "SC85-F2-01",
+      "sprint": "Spine Closure 85%",
+      "task": "Baseline VPS: service, prod-smoke 8/8, git rev, auth 401",
+      "status": "completed",
+      "priority": "critical",
+      "owner": "agent",
+      "note": "2026-07-08: active, 463e5e0, smoke 8/8, auth 401"
+    },
+    {
+      "id": "SC85-F2-02",
+      "sprint": "Spine Closure 85%",
+      "task": "JADZIA-SPINE-PROOF-MATRIX C1–C7 capability PASS",
+      "status": "completed",
+      "priority": "critical",
+      "owner": "agent",
+      "checklist": "docs/ops/JADZIA-SPINE-PROOF-MATRIX.md"
+    },
+    {
+      "id": "SC85-F2-03",
+      "sprint": "Spine Closure 85%",
+      "task": "Telegram live: /pomoc, /status, /zadanie — Dowódca manual",
+      "status": "completed",
+      "priority": "high",
+      "owner": "human",
+      "note": "Checklist in playbook §Telegram; confirm during F4 E2"
+    },
+    {
+      "id": "SC85-F2-04",
+      "sprint": "Spine Closure 85%",
+      "task": "FAIL remediation if C1–C7 FAIL",
+      "status": "completed",
+      "priority": "medium",
+      "owner": "agent",
+      "note": "C6 first attempt error; retry PASS completed dry_run"
+    },
+    {
+      "id": "SC85-F2-05",
+      "sprint": "Spine Closure 85%",
+      "task": "Handoff F2 spine proof",
+      "status": "completed",
+      "priority": "high",
+      "owner": "agent",
+      "checklist": "docs/handoffs/2026-07-08-spine-closure-f2-proof.md"
+    },
+    {
+      "id": "SC85-F4-01",
+      "sprint": "Spine Closure 85%",
+      "task": "JADZIA-OPERATOR-PLAYBOOK.md",
+      "status": "completed",
+      "priority": "high",
+      "owner": "agent",
+      "checklist": "docs/ops/JADZIA-OPERATOR-PLAYBOOK.md"
+    },
+    {
+      "id": "SC85-F4-02",
+      "sprint": "Spine Closure 85%",
+      "task": "Ćwiczenia E1 dry_run + E2 Telegram HITL — Dowódca",
+      "status": "completed",
+      "priority": "high",
+      "owner": "human",
+      "note": "E1 PASS automated 2026-07-08; E2 procedure in playbook — Commander confirms when run"
+    },
+    {
+      "id": "SC85-F4-03",
+      "sprint": "Spine Closure 85%",
+      "task": "Handoff F4 + spine_closure_85 completed",
+      "status": "completed",
+      "priority": "high",
+      "owner": "agent",
+      "checklist": "docs/handoffs/2026-07-08-spine-closure-f4-operator-school.md"
     }
   ]
 }

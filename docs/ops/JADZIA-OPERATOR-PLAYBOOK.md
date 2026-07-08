@@ -1,155 +1,154 @@
-# Jadzia COI — Operator Playbook (Dowódca)
+# Jadzia Operator Playbook
 
-**Version:** 1.0 · **2026-07-08**  
-**Audience:** Norbert Wozniak (Commander)  
-**Prerequisite:** Spine proof matrix PASS (`JADZIA-SPINE-PROOF-MATRIX.md`)
-
----
-
-## 1. Czym Jadzia jest (30 sekund)
-
-**Jadzia COI** = operacyjny mózg FlexGrafik na VPS — nie chatbot marki, nie Design Agent.
-
-| Kanał | Do czego |
-|-------|----------|
-| **Telegram** | Codzienne zadania WP (SSH, HITL, rollback) |
-| **Worker API** | To samo programowo (`scripts/send_task.py`) |
-| **Widget chat** | Sprzedaż Wizard/portal (INT-001) — osobny agent |
-| **Webhooks/API** | Zamówienia, leady, analytics, kalendarz |
-| **Panel WWW** | **Brak w jadzia-core** — tylko `GET /worker/dashboard` (JSON). Mission Control = Agent OS (`agent-os-ui`), inny produkt |
+**Audience:** Dowódca (Norbert)  
+**Updated:** 2026-07-08  
+**VPS:** 185.243.54.115 — `/opt/jadzia`, port 8000 (localhost or SSH tunnel)
 
 ---
 
-## 2. Telegram — komendy
+## 1. Czym jest Jadzia (a czym nie jest)
+
+| System | Rola | Jak się z nim kontaktujesz |
+|--------|------|----------------------------|
+| **Jadzia COI** | Operacje biznesu: zamówienia, leady, GA4, kalendarz, WP SSH | **Telegram** (primary), Worker API, skrypty VPS |
+| **Design Agent INSPIRE** | Mockupy voertuigreclame na zzpackage | Wizard UI → `/api/v1/design-agent/*` (osobny produkt) |
+| **Agent OS Mission Control** | Orkiestracja kodu multi-repo | `agent-os-ui` :3000 — **nie** panel Jadzii COI |
+| **VCMS** | Governance, skan 8 repo | flex-vcms — dokumentacja, nie runtime Jadzii |
+
+**Panel WWW Jadzii dziś:** brak. Metryki: `GET /worker/dashboard` (JSON + JWT).
+
+---
+
+## 2. Telegram — codzienna obsługa
+
+### Komendy
 
 | Komenda | Działanie |
 |---------|-----------|
-| `/pomoc` | Lista komend |
-| `/zadanie <treść>` | Nowe zadanie WP (plan → diff → approval) |
+| `/pomoc` | Lista komend i HITL |
+| `/zadanie <treść>` | Nowe zadanie WP (plan → diff → zatwierdzenie) |
 | `/status` | Stan bieżącej operacji |
 | `/cofnij` | Rollback ostatnich zmian SSH |
-| `tak` / `nie` (lub przyciski) | Zatwierdzenie diffu (HITL) |
+| `tak` / `nie` | Zatwierdź / odrzuć diff (przyciski lub tekst) |
 
-**Bezpieczny start:** pierwsze zadanie = komentarz CSS, nie struktura motywu.
+### Bezpieczny pierwszy kontakt
 
-Przykład:
-```
-/zadanie Dodaj komentarz /* jadzia-test */ na końcu pliku style.css w child theme
-```
+1. Zacznij od `/pomoc` i `/status`
+2. Pierwsze `/zadanie` — drobna zmiana; przy diffie wybierz **Nie** jeśli nie jesteś pewien
+3. Produkcja WP: każdy zapis pliku wymaga Twojego **Tak**
 
 ---
 
-## 3. VPS — zadanie bez Telegrama
+## 3. Worker API i skrypty (VPS)
 
-Na VPS jako root lub przez SSH:
+### JWT (lokalnie na VPS)
 
 ```bash
 cd /opt/jadzia
+./venv/bin/python3 scripts/jwt_token.py
+```
 
-# Suchy bieg — bez zapisu na WP
+### Wyślij zadanie (bez Telegrama)
+
+```bash
+# Bezpieczny test — bez zapisu na WP:
 ./venv/bin/python3 scripts/send_task.py \
-  "Dodaj komentarz /* spine-test */ w style.css" \
+  "Pokaz status systemu bez zmian w plikach" \
   --test_mode --dry_run --poll
 
-# Status usługi
-systemctl status jadzia
-bash deployment/prod-smoke.sh
+# Kolejka bez czekania:
+./venv/bin/python3 scripts/send_task.py "Twoje polecenie" --test_mode
 ```
 
-JWT (lokalnie z `.env` na VPS):
+### Tygodniowy brief (ręcznie)
+
 ```bash
-./venv/bin/python3 scripts/jwt_token.py
-curl -sS -H "Authorization: Bearer $(./venv/bin/python3 scripts/jwt_token.py)" \
-  http://127.0.0.1:8000/worker/dashboard | python3 -m json.tool
+./venv/bin/python3 -c "from agent.nodes.brief_node import send_weekly_brief; print(send_weekly_brief())"
 ```
 
-Z PC (jeśli port 8000 nie jest publiczny): SSH tunnel  
-`ssh -L 8000:127.0.0.1:8000 root@185.243.54.115` → potem `http://localhost:8000`
+Oczekiwany wynik: `True` + wiadomość na Telegram.
 
 ---
 
-## 4. COI API — mapa (JWT unless noted)
+## 4. COI API (read-mostly, JWT wymagany w prod)
 
-| Endpoint | Cel |
-|----------|-----|
-| `GET /worker/health` | SSH, queue, SQLite (no JWT) |
-| `GET /worker/dashboard` | Metryki zadań |
-| `POST /worker/task` | Nowe zadanie (jak Telegram) |
-| `GET /api/v1/analytics/snapshot?period=7d` | GA4 |
-| `GET /api/v1/content-calendar` | Kalendarz treści |
-| `POST /api/v1/content-calendar` | Nowy wpis |
-| `GET /costs` | Koszty tokenów |
-| `GET /sessions` | Aktywne sesje |
-| `POST /api/v1/widget/chat` | Chat sprzedażowy (bez JWT) |
-| `POST /webhooks/woocommerce/order` | WC (HMAC, nie ręcznie) |
-| `POST /api/v1/leads` | Leady z app (API key) |
+Z PC przez tunel SSH:
 
-CLI (z PC, jeśli API reachable):
 ```bash
-python -m cli.main health --url http://185.243.54.115:8000
-python -m cli.main test --url http://185.243.54.115:8000
+ssh -L 8000:127.0.0.1:8000 -i ~/.ssh/cyberfolks_key root@185.243.54.115
 ```
 
----
+Następnie (z tokenem JWT):
 
-## 5. Trzy ćwiczenia (zrób sam — checkbox)
-
-### Ćwiczenie A — Safe dry run
-1. VPS: `send_task.py` z `--test_mode --dry_run --poll`
-2. **Done gdy:** status `completed` bez zmiany plików na WP
-
-### Ćwiczenie B — Telegram HITL
-1. `/zadanie` — drobna zmiana CSS (komentarz)
-2. `/status` — czekaj na `diff_ready`
-3. `nie` — odrzuć diff
-4. **Done gdy:** brak write na produkcji
-
-### Ćwiczenie C — COI read-only
-1. JWT + `GET /worker/dashboard`
-2. `GET /api/v1/analytics/snapshot?period=7d`
-3. `sqlite3 data/jadzia.db "SELECT COUNT(*) FROM orders; SELECT COUNT(*) FROM leads;"`
-4. **Done gdy:** widzisz liczby bez błędu 401
-
-Zaznacz w handoff: `docs/handoffs/2026-07-08-jadzia-spine-closure-complete.md`
-
----
-
-## 6. Weekly brief
-
-Skonfigurowane: `WEEKLY_BRIEF_INTERVAL_SECONDS=604800` (7 dni).
-
-Ręczny trigger (VPS):
 ```bash
-cd /opt/jadzia && ./venv/bin/python3 -c \
-  "from agent.nodes.brief_node import send_weekly_brief; print(send_weekly_brief())"
+curl -H "Authorization: Bearer <TOKEN>" http://localhost:8000/worker/dashboard
+curl -H "Authorization: Bearer <TOKEN>" "http://localhost:8000/api/v1/analytics/snapshot?period=7d"
+curl -H "Authorization: Bearer <TOKEN>" http://localhost:8000/api/v1/content-calendar
 ```
 
-Sprawdź Telegram Dowódcy.
+**Uwaga:** `POST /chat` bez JWT → **401** w `JADZIA_ENV=production`.
 
 ---
 
-## 7. Rollback i awarie
+## 5. CLI `jadzia` (5 komend)
 
-| Problem | Akcja |
-|---------|-------|
-| Zła zmiana WP | `/cofnij` w Telegram lub `POST /rollback` (JWT) |
-| Service down | `systemctl restart jadzia` · logi: `/opt/jadzia/logs/` |
-| Smoke fail | `docs/ops/PLAN-DEPLOY-CLOSURE-2026-07-05.md` |
-| Design Agent off | `FG_DESIGN_AGENT_API_ENABLED=false` w wp-config |
-
----
-
-## 8. Czego nie robić
-
-- Nie deployuj sam bez checklisty (Zasada 11)
-- Nie testuj FB publish bez świadomej decyzji (live post)
-- Nie używaj `Desktop\o systemie.txt` — SSoT: `brain.md` + ten playbook
-- S1-01 rotacja sekretów — osobna sesja: `docs/handoffs/2026-07-03-s1-01-secret-rotation-checklist.md`
+```bash
+jadzia health --url http://185.243.54.115:8000   # jeśli port publiczny
+jadzia test --url http://localhost:8000          # przez tunel
+jadzia status
+jadzia version
+jadzia urls
+```
 
 ---
 
-## 9. Następny poziom (po ćwiczeniach)
+## 6. Ćwiczenia (Faza 4)
 
-- Edge hardening: `docs/ops/VPS-EDGE-HARDENING.md`
-- B3.1 FB sense (deferred w todo)
-- Agent OS Mission Control — osobny stack
+### E1 — Safe path (automated PASS 2026-07-08)
+
+```bash
+./venv/bin/python3 scripts/send_task.py \
+  "Pokaz status systemu bez zmian w plikach" \
+  --test_mode --dry_run --poll
+```
+
+**DoD:** ostatnia linia `status=completed`
+
+### E2 — Telegram HITL (Dowódca)
+
+1. `/zadanie Dodaj komentarz /* jadzia-test */ na końcu pliku style.css w child theme`
+2. Poczekaj na diff
+3. Odpowiedz **Nie** lub przycisk Odrzuć
+
+**DoD:** brak zapisu na WP; status operacji anulowany / bez write
+
+### E3 — Rollback (opcjonalne)
+
+Po świadomym teście z zapisem: `/cofnij` w Telegramie lub `POST /rollback` z JWT.
+
+---
+
+## 7. Smoke i dowody
+
+```bash
+bash /opt/jadzia/deployment/prod-smoke.sh
+bash /opt/jadzia/deployment/spine-proof-run.sh
+```
+
+Macierz: [`JADZIA-SPINE-PROOF-MATRIX.md`](JADZIA-SPINE-PROOF-MATRIX.md)
+
+---
+
+## 8. FAQ
+
+**Gdzie jest panel sterowania?**  
+JSON API `/worker/dashboard`. Mission Control to Agent OS, nie Jadzia COI.
+
+**Czy mogę deployować z agenta?**  
+Nie (Zasada 11). Tylko Ty, manual.
+
+**S1-01 rotacja sekretów?**  
+Osobna sesja: `docs/handoffs/2026-07-03-s1-01-secret-rotation-checklist.md`
+
+**Design Agent wyłączyć?**  
+`FG_DESIGN_AGENT_API_ENABLED=false` w wp-config.php
