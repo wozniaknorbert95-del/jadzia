@@ -1,12 +1,12 @@
 {
   "project": "Jadzia-Core",
-  "last_updated": "2026-07-05 (deploy closure — smoke 8/8)",
+  "last_updated": "2026-07-08 (spine closure ~85% + operator playbook)",
   "status": "active",
-  "plan": "docs/ops/JADZIA-CORE-AUDIT-2026-07-03.md",
-  "active_gate": "S1-01-secret-rotation",
-  "active_plan": "docs/ops/PLAN-DEPLOY-CLOSURE-2026-07-05.md",
-  "next_human": "S1-01: rotacja sekretów + BFG (checklist docs/handoffs/2026-07-03-s1-01-secret-rotation-checklist.md). Deploy closure DONE.",
-  "next_agent": "Po S1-01: B3.1 FB sense LUB edge nginx — albo cross-module zzpackage",
+  "plan": "docs/ops/JADZIA-SPINE-PROOF-MATRIX.md",
+  "active_gate": "operator-school",
+  "active_plan": "docs/ops/JADZIA-OPERATOR-PLAYBOOK.md",
+  "next_human": "Wykonaj 3 ćwiczenia z JADZIA-OPERATOR-PLAYBOOK.md (A/B/C). Równolegle S1-01 gdy gotowy.",
+  "next_agent": "Po ćwiczeniach: edge hardening LUB B3.1 FB sense — per Dowódca",
   "agent_rule": "Nie deployuj autonomicznie (Zasada 11). Nie oznaczaj DEPLOY-01/03 completed bez E2E proof w handoff.",
   "sprints": {
     "remediation": "completed",
@@ -16,7 +16,9 @@
     "deploy_int_004": "completed",
     "deploy_int_009": "completed",
     "coi_phase_b3": "deploy_complete",
-    "post_audit_remediation": "deploy_closure_complete_2026-07-05"
+    "post_audit_remediation": "deploy_closure_complete_2026-07-05",
+    "spine_closure_85": "complete_2026-07-08",
+    "design_agent_inspire": "deploy_complete_2026-07-08"
   },
   "tasks": [
     {
@@ -126,6 +128,25 @@
       "task": "Sync brain.md, PRD-core.md, AGENTS.md z module-jadzia-core.md (COI charter)",
       "status": "completed",
       "priority": "high"
+    },
+    {
+      "id": "SPINE-85",
+      "sprint": "COI Spine Closure",
+      "task": "Truth sync + spine proof matrix + operator playbook (~85% operational COI)",
+      "status": "completed",
+      "priority": "critical",
+      "owner": "agent",
+      "checklist": "docs/handoffs/2026-07-08-jadzia-spine-closure-complete.md",
+      "note": "prod-smoke 8/8 2026-07-08; brain.md synced; meta module spec patched"
+    },
+    {
+      "id": "OP-SCHOOL",
+      "sprint": "Operator School",
+      "task": "Commander completes playbook exercises A/B/C + optional weekly brief manual trigger",
+      "status": "pending",
+      "priority": "high",
+      "owner": "human",
+      "checklist": "docs/ops/JADZIA-OPERATOR-PLAYBOOK.md §5"
     },
     {
       "id": "S1-01",
