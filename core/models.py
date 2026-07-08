@@ -498,9 +498,13 @@ class CostEstimateResponse(BaseModel):
 
 
 class DesignAgentMockupItem(BaseModel):
-    variant: str
+    variant: str  # tier_b | tier_a
     panel: str
     url: str
+    sku: str = ""
+    naam: str = ""
+    price_suggested: float = 0.0
+    label_nl: str = ""
     degraded: bool = False
 
 
@@ -517,4 +521,7 @@ class DesignAgentGenerateResponse(BaseModel):
     recommended_products: List[DesignAgentProductItem]
     wizard_deeplink: str
     cost_eur: float = 0.0
-    user_stijl: str = "strak"
+    positionering: str = "balanced"
+    mockup_b_sku: str = ""
+    mockup_a_sku: str = ""
+    user_stijl: str = "strak"  # legacy alias for positionering

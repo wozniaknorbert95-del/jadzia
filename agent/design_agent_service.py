@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import json
 import logging
 import os
 import sys
@@ -30,6 +31,11 @@ _ALLOWED_LOGO_MIMES = {
     "application/pdf",
 }
 _ALLOWED_LOGO_EXT = {".png", ".jpg", ".jpeg", ".svg", ".pdf"}
+
+TIER_LABELS = {
+    "tier_b": "Smart Start",
+    "tier_a": "Premium Presence",
+}
 
 
 def _engine_mode() -> str:
@@ -100,13 +106,38 @@ def _verify_api_key(header_key: str | None) -> None:
 
 
 def _parse_json_list(raw: str) -> list:
-    import json
-
     try:
         val = json.loads(raw) if raw else []
         return val if isinstance(val, list) else []
     except json.JSONDecodeError:
         return []
+
+
+def _parse_bool_form(raw: str) -> bool:
+    return raw.strip().lower() in ("true", "1", "yes")
+
+
+def _resolve_positionering(positionering: str, stijl: str) -> str:
+    pos = (positionering or "").strip().lower()
+    if pos in ("strak", "opvallend", "balanced"):
+        return pos
+    legacy = (stijl or "").strip().lower()
+    if legacy in ("strak", "opvallend"):
+        return legacy
+    return "balanced"
+
+
+def _load_ssot_rows(ssot_path: Path) -> list[dict]:
+    if not ssot_path.is_file():
+        return []
+    return json.loads(ssot_path.read_text(encoding="utf-8"))
+
+
+def _ssot_product(rows: list[dict], sku: str) -> tuple[str, float]:
+    for row in rows:
+        if row.get("sku") == sku:
+            return str(row.get("naam", sku)), float(row.get("price_suggested", 0))
+    return sku, 0.0
 
 
 async def process_design_agent_generate(
@@ -119,13 +150,22 @@ async def process_design_agent_generate(
     brand_colors: str,
     tekst_opties: str,
     slogan: str,
+    diensten: str,
+    doelgroep: str,
+    positionering: str,
     stijl: str,
+    mockup_b_sku: str,
+    mockup_a_sku: str,
+    brief_confirmed: str,
     logo: UploadFile,
     client_ip: str,
     api_key: str | None,
 ) -> DesignAgentGenerateResponse:
     _verify_api_key(api_key)
     _check_rate_limit(client_ip)
+
+    if not _parse_bool_form(brief_confirmed):
+        raise HTTPException(status_code=400, detail="Bevestig je briefing eerst.")
 
     if not bedrijfsnaam.strip():
         raise HTTPException(status_code=400, detail="Bedrijfsnaam is verplicht.")
@@ -137,7 +177,7 @@ async def process_design_agent_generate(
 
     colors = _parse_json_list(brand_colors)
     opts = _parse_json_list(tekst_opties)
-    user_stijl = stijl if stijl in ("strak", "opvallend") else "strak"
+    user_positionering = _resolve_positionering(positionering, stijl)
 
     output_root = Path(os.getenv("DESIGN_AGENT_OUTPUT_DIR", "output/design-agent"))
     ssot_path = Path(
@@ -166,7 +206,12 @@ async def process_design_agent_generate(
                 brand_colors=colors,
                 tekst_opties=opts,
                 slogan=slogan,
-                stijl=user_stijl,  # type: ignore[arg-type]
+                stijl=user_positionering,  # type: ignore[arg-type]
+                positionering=user_positionering,  # type: ignore[arg-type]
+                diensten=diensten,
+                doelgroep=doelgroep,
+                mockup_b_sku=mockup_b_sku,
+                mockup_a_sku=mockup_a_sku,
                 logo_bytes=logo_bytes,
                 output_dir=output_root,
                 ssot_path=ssot_path,
@@ -186,7 +231,7 @@ async def process_design_agent_generate(
                 brand_colors=colors,
                 tekst_opties=opts,
                 slogan=slogan,
-                stijl=user_stijl,  # type: ignore[arg-type]
+                stijl=user_positionering,  # type: ignore[arg-type]
             )
             result = generate_design_agent_mockups(
                 brief,
@@ -209,11 +254,23 @@ async def process_design_agent_generate(
 
     _log_generation_cost(result.brief_id, vehicle, result.cost_eur)
 
+    ssot_rows = _load_ssot_rows(ssot_path)
     mockups: list[DesignAgentMockupItem] = []
     for m in result.mockups:
         url = m.url or m.data_url or ""
+        sku = m.sku or ""
+        naam, price = _ssot_product(ssot_rows, sku) if sku else ("", 0.0)
         mockups.append(
-            DesignAgentMockupItem(variant=m.variant, panel=m.panel, url=url, degraded=m.degraded)
+            DesignAgentMockupItem(
+                variant=m.variant,
+                panel=m.panel,
+                url=url,
+                sku=sku,
+                naam=naam,
+                price_suggested=price,
+                label_nl=TIER_LABELS.get(m.variant, ""),
+                degraded=m.degraded,
+            )
         )
 
     products = [
@@ -226,11 +283,16 @@ async def process_design_agent_generate(
         for p in result.recommended_products
     ]
 
+    pos = getattr(result, "positionering", result.user_stijl)
+
     return DesignAgentGenerateResponse(
         brief_id=result.brief_id,
         mockups=mockups,
         recommended_products=products,
         wizard_deeplink=result.wizard_deeplink,
         cost_eur=result.cost_eur,
-        user_stijl=result.user_stijl,
+        positionering=pos,
+        mockup_b_sku=getattr(result, "mockup_b_sku", ""),
+        mockup_a_sku=getattr(result, "mockup_a_sku", ""),
+        user_stijl=pos,
     )

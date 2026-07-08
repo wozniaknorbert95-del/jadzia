@@ -37,21 +37,34 @@ def test_design_agent_generate_200_mocked(mock_proc: AsyncMock, client: TestClie
         brief_id="test-brief-id",
         mockups=[
             DesignAgentMockupItem(
-                variant="strak",
+                variant="tier_b",
                 panel="deur",
-                url="https://api.zzpackage.flexgrafik.nl/uploads/design-agent/test/mockup_strak.png",
+                url="https://api.zzpackage.flexgrafik.nl/uploads/design-agent/test/mockup_tier_b.png",
+                sku="MA-005",
+                naam="Magneten set Caddy",
+                price_suggested=129.0,
+                label_nl="Smart Start",
             ),
             DesignAgentMockupItem(
-                variant="opvallend",
+                variant="tier_a",
                 panel="deur",
-                url="https://api.zzpackage.flexgrafik.nl/uploads/design-agent/test/mockup_opvallend.png",
+                url="https://api.zzpackage.flexgrafik.nl/uploads/design-agent/test/mockup_tier_a.png",
+                sku="CS-SET-PRO-ZZP",
+                naam="Pro ZZP set Caddy",
+                price_suggested=199.0,
+                label_nl="Premium Presence",
             ),
         ],
         recommended_products=[
-            DesignAgentProductItem(sku="DF-004", naam="DTP", price_suggested=199.0, highlight=True)
+            DesignAgentProductItem(sku="MA-005", naam="Magneten", price_suggested=129.0, highlight=True),
+            DesignAgentProductItem(sku="CS-SET-PRO-ZZP", naam="Pro ZZP", price_suggested=199.0, highlight=True),
+            DesignAgentProductItem(sku="DF-004", naam="DTP", price_suggested=199.0, highlight=False),
         ],
-        wizard_deeplink="/wizard/?da_vehicle=caddy",
-        cost_eur=0.04,
+        wizard_deeplink="https://zzpackage.flexgrafik.nl/wizard/?voertuig=caddy&highlight=MA-005",
+        cost_eur=0.22,
+        positionering="strak",
+        mockup_b_sku="MA-005",
+        mockup_a_sku="CS-SET-PRO-ZZP",
         user_stijl="strak",
     )
 
@@ -61,7 +74,10 @@ def test_design_agent_generate_200_mocked(mock_proc: AsyncMock, client: TestClie
             "vehicle": "caddy",
             "bedrijfsnaam": "Test BV",
             "branche": "Elektricien",
-            "stijl": "strak",
+            "diensten": "Storingen, groepenkast",
+            "doelgroep": "Particulieren",
+            "positionering": "strak",
+            "brief_confirmed": "true",
         },
         files={"logo": ("logo.png", _logo_png(), "image/png")},
     )
@@ -69,7 +85,26 @@ def test_design_agent_generate_200_mocked(mock_proc: AsyncMock, client: TestClie
     assert resp.status_code == 200
     body = resp.json()
     assert len(body["mockups"]) == 2
-    assert body["mockups"][0]["url"].startswith("https://")
+    assert body["mockups"][0]["variant"] == "tier_b"
+    assert body["mockups"][0]["sku"] == "MA-005"
+    assert body["mockups"][0]["label_nl"] == "Smart Start"
+    assert body["positionering"] == "strak"
+    assert body["mockup_b_sku"] == "MA-005"
+
+
+def test_design_agent_generate_400_brief_not_confirmed(client: TestClient) -> None:
+    resp = client.post(
+        "/api/v1/design-agent/generate",
+        data={
+            "vehicle": "caddy",
+            "bedrijfsnaam": "Test BV",
+            "branche": "Elektricien",
+            "brief_confirmed": "false",
+        },
+        files={"logo": ("logo.png", _logo_png(), "image/png")},
+    )
+    assert resp.status_code == 400
+    assert "Bevestig je briefing eerst" in resp.json()["detail"]
 
 
 def test_design_agent_generate_401_without_key(client: TestClient) -> None:
@@ -82,6 +117,7 @@ def test_design_agent_generate_401_without_key(client: TestClient) -> None:
                 "vehicle": "caddy",
                 "bedrijfsnaam": "Test BV",
                 "stijl": "strak",
+                "brief_confirmed": "true",
             },
             files={"logo": ("logo.png", _logo_png(), "image/png")},
         )
