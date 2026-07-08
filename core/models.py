@@ -525,3 +525,26 @@ class DesignAgentGenerateResponse(BaseModel):
     mockup_b_sku: str = ""
     mockup_a_sku: str = ""
     user_stijl: str = "strak"  # legacy alias for positionering
+
+
+class DesignAgentChatRequest(BaseModel):
+    session_id: str | None = None
+    message: str
+
+
+class DesignAgentChatResponse(BaseModel):
+    session_id: str
+    reply_nl: str
+    brief_partial: dict = {}
+    phase: int = 1
+    ready_to_generate: bool = False
+    brief_confirmed: bool = False
+
+
+class DesignAgentChatSessionResponse(BaseModel):
+    session_id: str
+    brief_partial: dict = {}
+    phase: int = 1
+    ready_to_generate: bool = False
+    brief_confirmed: bool = False
+    messages_count: int = 0
