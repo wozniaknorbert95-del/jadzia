@@ -1,12 +1,12 @@
 {
   "project": "Jadzia-Core",
-  "last_updated": "2026-07-09 (sesja zamknięta — M1 + Phase B deploy prod)",
+  "last_updated": "2026-07-09 (/handoff — M1 + Phase B prod, session close)",
   "status": "active",
   "plan": "docs/design/coi-commander/COI-COMMANDER-PLAN-v3.md",
   "active_gate": null,
   "active_plan": null,
-  "next_human": "2 min: Commander Marketing — fb-health strip + filtr Nieudane/Opublikowane. Opcjonalnie: rotacja FB token (był w czacie).",
-  "next_agent": "COI-CMD-QUEUE-CLEAN (szum Home) LUB COI-CONTENT-INTAKE-M2 (video) — po Twoim OK",
+  "next_human": "Marketing UI smoke 2 min (fb-health, filtry, wpis QR). Opcjonalnie: rotacja FB token.",
+  "next_agent": "COI-CMD-QUEUE-CLEAN — docs/handoffs/2026-07-09-coi-marketing-session-HANDOFF.md",
   "agent_rule": "Nie deployuj autonomicznie (Zasada 11). Nie oznaczaj DEPLOY-01/03 completed bez E2E proof w handoff.",
   "sprints": {
     "remediation": "completed",
