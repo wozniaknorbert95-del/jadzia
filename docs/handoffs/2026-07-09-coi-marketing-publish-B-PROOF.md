@@ -1,8 +1,8 @@
 # Handoff PROOF: COI Marketing Publish Hardening — Phase B (2026-07-09)
 
-**Branch:** `master`  
+**Branch:** `master` @ `1036d6e`  
 **Gate:** `COI-MARKETING-PUBLISH-B` → **completed**  
-**Deploy:** po commicie `git pull` na VPS `/opt/jadzia`
+**VPS:** `/opt/jadzia` @ `1036d6e` — `jadzia` active (2026-07-09)
 
 ---
 
