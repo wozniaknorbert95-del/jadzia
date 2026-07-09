@@ -2,14 +2,15 @@
 
 from __future__ import annotations
 
+import io
 from pathlib import Path
 
 import pytest
-from PIL import Image
+from PIL import Image, ImageDraw, ImageFont
 
 from agent.inspire.creative_director import produce_layout_specs
 from agent.inspire.brand_strategist import load_panel_map, load_playbook, produce_brand_strategy
-from agent.inspire.overlay_renderer import apply_overlay
+from agent.inspire.overlay_renderer import _normalize_phone, apply_overlay
 from agent.inspire.tier_resolver import resolve_tier_skus
 
 ASSETS = Path(__file__).resolve().parents[2].parent / "zzpackage.flexgrafik.nl"
@@ -62,3 +63,45 @@ def test_overlay_applies_text() -> None:
     assert len(out) > 1000
     result = Image.open(__import__("io").BytesIO(out))
     assert result.size[0] > 0
+
+
+def test_overlay_v2_uses_contrast_strip_vs_flat() -> None:
+    """Vinyl strip path should differ from legacy flat text at same coords."""
+    w, h = 640, 400
+    base = Image.new("RGB", (w, h), (180, 180, 180))
+    buf = io.BytesIO()
+    base.save(buf, format="PNG")
+    png = buf.getvalue()
+
+    from agent.inspire.layout_spec import ElementAnchor, ElementStyle, LayoutElement, LayoutPanel, LayoutSpec
+
+    layout = LayoutSpec(
+        variant="tier_b",
+        sku="MA-005",
+        panels=[
+            LayoutPanel(
+                id="deur",
+                elements=[
+                    LayoutElement(
+                        type="bedrijfsnaam",
+                        anchor=ElementAnchor(x_pct=0.1, y_pct=0.2, w_pct=0.5, h_pct=0.15),
+                        text_from_brief=True,
+                        style=ElementStyle(size_px=36, color="#050608", weight="bold"),
+                    )
+                ],
+            )
+        ],
+        fal_background_prompt="test no words no readable text",
+    )
+    brief = {"bedrijfsnaam": "Quietforge"}
+    vinyl = apply_overlay(png, layout, b"", brief)
+
+    flat_base = Image.open(io.BytesIO(png)).convert("RGBA")
+    draw = ImageDraw.Draw(flat_base)
+    font = ImageFont.load_default()
+    draw.text((int(w * 0.1), int(h * 0.2)), "Quietforge", fill="#050608", font=font)
+    flat_buf = io.BytesIO()
+    flat_base.convert("RGB").save(flat_buf, format="PNG")
+
+    assert vinyl != flat_buf.getvalue()
+    assert _normalize_phone("06-12345678") == "06-1234 5678"
