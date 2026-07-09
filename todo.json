@@ -1,12 +1,12 @@
 {
   "project": "Jadzia-Core",
-  "last_updated": "2026-07-09 (COI Commander v3 — deploy-ready, uncommitted)",
+  "last_updated": "2026-07-09 (COI Commander v3 — prod deploy PROOF)",
   "status": "active",
   "plan": "docs/design/coi-commander/COI-COMMANDER-PLAN-v3.md",
-  "active_gate": "COI-CMD-DEPLOY-01",
+  "active_gate": "COI-CMD-WORKSHOP",
   "active_plan": "docs/design/coi-commander/COI-COMMANDER-PLAN-v3.md",
-  "next_human": "Commit + @jadzia-deploy COI Commander; smoke /commander + /ticket TG; ustaw delegat_email",
-  "next_agent": "COI-CMD-DEPLOY-01 prod proof w handoff po deploy",
+  "next_human": "TG /ticket live test + workshop F0; merge feat branch → master gdy OK",
+  "next_agent": "COI-CMD-GAP-N16 lub COI-CMD-GAP-UNDO60 po workshop",
   "agent_rule": "Nie deployuj autonomicznie (Zasada 11). Nie oznaczaj DEPLOY-01/03 completed bez E2E proof w handoff.",
   "sprints": {
     "remediation": "completed",
@@ -18,7 +18,7 @@
     "coi_phase_b3": "deploy_complete",
     "post_audit_remediation": "deploy_closure_complete_2026-07-05",
     "spine_closure_85": "completed",
-    "coi_commander_v3": "deploy_ready_uncommitted"
+    "coi_commander_v3": "deploy_complete_2026-07-09"
   },
   "tasks": [
     {
@@ -537,10 +537,11 @@
       "id": "COI-CMD-DEPLOY-01",
       "sprint": "COI Commander v3",
       "task": "Commit + VPS deploy + prod smoke /commander + /ticket",
-      "status": "pending",
+      "status": "completed",
       "priority": "critical",
       "owner": "human",
-      "checklist": "docs/handoffs/2026-07-09-coi-commander-deploy-ready.md"
+      "checklist": "docs/handoffs/2026-07-09-coi-commander-deploy-PROOF.md",
+      "note": "1706b6a @ api.zzpackage.flexgrafik.nl/commander/ — smoke 7/7"
     },
     {
       "id": "COI-CMD-GAP-N16",
