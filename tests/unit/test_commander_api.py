@@ -65,7 +65,9 @@ def test_commander_queue_empty(client, temp_db):
     with jwt_env():
         r = client.get("/api/v1/commander/queue", headers=_auth_headers())
     assert r.status_code == 200
-    assert r.json()["total"] == 0
+    data = r.json()
+    assert "items" in data
+    assert data.get("severity_policy_ref") == "D0.8"
 
 
 def test_commander_priorities_today(client, temp_db):

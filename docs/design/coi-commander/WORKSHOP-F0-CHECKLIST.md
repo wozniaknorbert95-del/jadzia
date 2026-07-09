@@ -2,9 +2,11 @@
 
 ## Wejście
 
-- [ ] AUDYT-HIL-KONTROLA.md przeczytany
-- [ ] AUDYT-V2-GAP.md przeczytany
-- [ ] UX-BRIEF-COMMANDER.md
+- [x] AUDYT-HIL-KONTROLA.md przeczytany
+- [x] AUDYT-V2-GAP.md przeczytany
+- [x] UX-BRIEF-COMMANDER.md
+- [x] Prod deploy PROOF (`docs/handoffs/2026-07-09-coi-commander-deploy-PROOF.md`)
+- [x] `bash deployment/commander-prod-smoke.sh` automated section
 
 ## 5 testów
 

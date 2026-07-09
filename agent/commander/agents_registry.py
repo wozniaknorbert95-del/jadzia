@@ -73,12 +73,13 @@ def list_agents() -> List[Dict]:
 def pause_agent(agent_id: str) -> Dict:
     held = 0
     if agent_id == "marketing":
-        entries = db_list_calendar_entries(status="approved", limit=200)
         from agent.db import db_update_calendar_entry
 
-        for entry in entries:
-            db_update_calendar_entry(int(entry["entry_id"]), {"status": "held"})
-            held += 1
+        for status in ("approved", "pending_approval"):
+            entries = db_list_calendar_entries(status=status, limit=200)
+            for entry in entries:
+                db_update_calendar_entry(int(entry["entry_id"]), {"status": "held"})
+                held += 1
     db_commander_upsert_agent_state(agent_id, {"status": "PAUSED", "held_count": held})
     return {"agent_id": agent_id, "status": "PAUSED", "held_count": held}
 

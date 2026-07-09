@@ -314,6 +314,7 @@ def _init_schema(conn: sqlite3.Connection):
 
     _migrate_content_calendar_columns(conn)
     _migrate_commander_calendar_version(conn)
+    _migrate_commander_feedback_confidence(conn)
 
     conn.commit()
 
@@ -339,6 +340,13 @@ def _migrate_commander_calendar_version(conn: sqlite3.Connection) -> None:
     """Add optimistic-lock version column for calendar entries."""
     try:
         conn.execute("ALTER TABLE content_calendar ADD COLUMN version INTEGER NOT NULL DEFAULT 1")
+    except sqlite3.OperationalError:
+        pass
+
+
+def _migrate_commander_feedback_confidence(conn: sqlite3.Connection) -> None:
+    try:
+        conn.execute("ALTER TABLE commander_feedback ADD COLUMN confidence REAL")
     except sqlite3.OperationalError:
         pass
 
@@ -1529,16 +1537,18 @@ def db_commander_insert_feedback(
     feedback_type: str,
     payload_json: Optional[str],
     actor_id: Optional[str],
+    confidence: Optional[float] = None,
 ) -> Optional[int]:
     now = datetime.now(timezone.utc).isoformat()
     conn = get_connection()
     try:
         cursor = conn.execute(
             """
-            INSERT INTO commander_feedback (action_type, feedback_type, payload_json, actor_id, created_at)
-            VALUES (?, ?, ?, ?, ?)
+            INSERT INTO commander_feedback (
+                action_type, feedback_type, payload_json, actor_id, created_at, confidence
+            ) VALUES (?, ?, ?, ?, ?, ?)
             """,
-            (action_type, feedback_type, payload_json, actor_id, now),
+            (action_type, feedback_type, payload_json, actor_id, now, confidence),
         )
         conn.commit()
         return cursor.lastrowid
@@ -1561,9 +1571,18 @@ def db_commander_feedback_stats(action_type: str, days: int = 30) -> Dict:
         (action_type, since),
     ).fetchall()
     stats = {r["feedback_type"]: r["cnt"] for r in rows}
+    conf_row = conn.execute(
+        """
+        SELECT AVG(confidence) AS avg_conf
+        FROM commander_feedback
+        WHERE action_type = ? AND created_at >= ? AND confidence IS NOT NULL
+        """,
+        (action_type, since),
+    ).fetchone()
     total = sum(stats.values()) or 1
     overrides = stats.get("rejection", 0) + stats.get("correction", 0)
     approvals = stats.get("approval", 0)
+    confidence_avg = round(float(conf_row["avg_conf"] or 0), 3) if conf_row else 0.0
     return {
         "action_type": action_type,
         "total": total,
@@ -1571,6 +1590,7 @@ def db_commander_feedback_stats(action_type: str, days: int = 30) -> Dict:
         "overrides": overrides,
         "override_rate_pct": round(overrides / total * 100, 2),
         "approved_without_edit": approvals,
+        "confidence_avg": confidence_avg,
     }
 
 

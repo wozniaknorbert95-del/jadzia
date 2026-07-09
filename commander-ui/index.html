@@ -8,13 +8,17 @@
 </head>
 <body>
   <a class="skip-link" href="#main">Przejdź do treści</a>
+  <div id="delegat-banner" class="banner warning-banner" hidden role="alert">
+    Brak Delegata — skonfiguruj email w Ustawieniach (eskalacja 24h).
+  </div>
   <header class="topbar" role="banner">
     <h1>COI Commander</h1>
-    <nav aria-label="Główne menu">
+    <nav aria-label="Główne menu" id="main-nav">
       <button type="button" data-view="home" class="nav-btn active">Home</button>
       <button type="button" data-view="marketing" class="nav-btn">Marketing</button>
       <button type="button" data-view="analytics" class="nav-btn">Analytics</button>
       <button type="button" data-view="agents" class="nav-btn">Agenci</button>
+      <button type="button" data-view="audit" class="nav-btn">Audyt</button>
       <button type="button" data-view="settings" class="nav-btn">Ustawienia</button>
     </nav>
   </header>
@@ -26,18 +30,31 @@
     <p class="hint">UI po polsku · treści biznesowe NL</p>
   </section>
 
+  <section id="ticket-panel" class="panel" hidden aria-labelledby="ticket-title">
+    <h2 id="ticket-title">Ticket awaryjny</h2>
+    <div id="ticket-detail"></div>
+    <button type="button" id="ticket-close">Zamknij</button>
+  </section>
+
+  <div id="undo-bar" class="undo-bar" hidden role="status" aria-live="polite">
+    <span id="undo-msg">Akcja wewnętrzna — cofnij w 60s</span>
+    <button type="button" id="undo-btn">Cofnij</button>
+  </div>
+
   <main id="main" class="main" tabindex="-1">
     <section id="view-home" class="view active" aria-labelledby="home-title">
       <h2 id="home-title">Dziś — 3 priorytety</h2>
-      <div id="priorities" class="card-grid" role="list"></div>
+      <div id="priorities" class="card-grid" role="list" aria-live="polite"></div>
       <h3>Kolejka (CRITICAL + ACTION)</h3>
-      <div id="queue-list" class="queue" role="list"></div>
+      <div id="queue-list" class="queue" role="list" aria-live="polite"></div>
       <div id="health-strip" class="health-strip" aria-live="polite"></div>
     </section>
 
     <section id="view-marketing" class="view" aria-labelledby="marketing-title" hidden>
       <h2 id="marketing-title">Marketing Studio</h2>
+      <p id="graduation-badge" class="hint"></p>
       <div id="held-banner" class="banner" hidden></div>
+      <button type="button" id="bulk-approve-btn" hidden>Zatwierdź zaznaczone</button>
       <div id="calendar-entries" class="card-grid"></div>
     </section>
 
@@ -53,6 +70,15 @@
     <section id="view-agents" class="view" aria-labelledby="agents-title" hidden>
       <h2 id="agents-title">Rejestr agentów</h2>
       <div id="agents-list" class="card-grid"></div>
+      <h3>Moduły Phase C</h3>
+      <div id="phase-c-cards" class="card-grid"></div>
+    </section>
+
+    <section id="view-audit" class="view" aria-labelledby="audit-title" hidden>
+      <h2 id="audit-title">Audyt (hash-chain)</h2>
+      <button type="button" id="audit-verify">Weryfikuj łańcuch</button>
+      <pre id="audit-verify-result" class="audit-pre"></pre>
+      <div id="audit-list" class="list" aria-live="polite"></div>
     </section>
 
     <section id="view-settings" class="view" aria-labelledby="settings-title" hidden>
@@ -60,6 +86,19 @@
       <form id="settings-form" class="form">
         <label for="delegat-email">Email Delegata (eskalacja 24h)</label>
         <input id="delegat-email" type="email" />
+        <label for="delegat-tg">Telegram chat_id Delegata</label>
+        <input id="delegat-tg" type="text" placeholder="np. 123456789" />
+        <label for="daily-budget">Dzienny budżet akcji</label>
+        <input id="daily-budget" type="number" min="1" />
+        <label for="role-user">Przypisz rolę (user_id)</label>
+        <input id="role-user" type="text" placeholder="sub z JWT" />
+        <label for="role-pick">Rola</label>
+        <select id="role-pick">
+          <option value="delegat">Delegat</option>
+          <option value="viewer">Viewer</option>
+        </select>
+        <button type="button" id="role-add">Dodaj rolę</button>
+        <pre id="roles-list" class="audit-pre"></pre>
         <label for="ui-lang">Język UI</label>
         <select id="ui-lang"><option value="pl">Polski</option></select>
         <button type="submit">Zapisz</button>
@@ -70,6 +109,8 @@
   <dialog id="confirm-dialog" aria-labelledby="confirm-title">
     <h2 id="confirm-title">Potwierdź akcję</h2>
     <p id="confirm-body"></p>
+    <label id="reason-label" for="reason-input" hidden>Powód (wymagany)</label>
+    <input id="reason-input" type="text" hidden />
     <form method="dialog" class="dialog-actions">
       <button value="cancel">Anuluj</button>
       <button value="ok" class="primary">Potwierdź</button>

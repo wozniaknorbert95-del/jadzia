@@ -51,4 +51,5 @@ DAILY_ACTION_BUDGET_DEFAULT = 200
 GRADUATION_DEFAULTS = {
     "min_approvals": 20,
     "max_override_rate_pct": 5.0,
+    "min_confidence_avg": 0.7,
 }

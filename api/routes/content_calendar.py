@@ -7,7 +7,7 @@ from typing import Literal, Optional
 
 from fastapi import APIRouter, Depends, HTTPException, Query
 
-from api.dependencies import verify_jwt
+from api.dependencies import require_scope, verify_jwt
 from core.models import (
     ContentCalendarCreateRequest,
     ContentCalendarCreateResponse,
@@ -40,7 +40,7 @@ async def get_content_calendar(
 @router.post("/api/v1/content-calendar", response_model=ContentCalendarCreateResponse)
 async def post_content_calendar(
     request: ContentCalendarCreateRequest,
-    _auth=Depends(verify_jwt),
+    _auth=Depends(require_scope("marketing:approve")),
 ) -> ContentCalendarCreateResponse:
     """Create calendar draft entry (INT-010)."""
     from agent.nodes.content_calendar_node import create_calendar_entry
@@ -52,7 +52,7 @@ async def post_content_calendar(
 async def patch_content_calendar(
     entry_id: str,
     request: ContentCalendarUpdateRequest,
-    _auth=Depends(verify_jwt),
+    _auth=Depends(require_scope("marketing:approve")),
 ) -> ContentCalendarEntry:
     """Update calendar entry status or copy (INT-010)."""
     from agent.nodes.content_calendar_node import update_calendar_entry
@@ -74,21 +74,6 @@ async def get_case_study_suggestions(
     orders = suggest_case_study_orders(limit=limit)
     return {"orders": orders, "total": len(orders)}
 
-
-@router.post("/api/v1/content-calendar/{entry_id}/publish")
-async def post_publish_calendar_entry(
-    entry_id: str,
-    _auth=Depends(verify_jwt),
-) -> dict:
-    """Trigger Facebook publish for an approved entry (INT-011)."""
-    from agent.nodes.content_calendar_node import publish_entry
-
-    result = publish_entry(entry_id)
-    if result.get("status") == "error" and result.get("message"):
-        raise HTTPException(status_code=400, detail=result)
-    if result.get("status") == "error":
-        raise HTTPException(status_code=502, detail=result)
-    return result
 
 
 @router.get(

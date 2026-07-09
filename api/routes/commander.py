@@ -8,6 +8,7 @@ from datetime import datetime, timezone
 from typing import Any, Dict, List, Literal, Optional
 
 from fastapi import APIRouter, Depends, HTTPException, Query
+from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
 from pydantic import BaseModel, Field
 
 from api.dependencies import require_scope, verify_jwt
@@ -25,6 +26,7 @@ from agent.db import db_list_analytics_snapshots, db_list_leads, db_list_orders
 logger = logging.getLogger(__name__)
 
 router = APIRouter(tags=["commander"])
+_bearer = HTTPBearer(auto_error=False)
 
 
 class FeedbackRequest(BaseModel):
@@ -35,8 +37,10 @@ class FeedbackRequest(BaseModel):
 
 class SettingsUpdateRequest(BaseModel):
     delegat_email: Optional[str] = None
+    delegat_telegram_chat_id: Optional[str] = None
     ui_language: Optional[str] = None
     daily_action_budget: Optional[int] = None
+    commander_roles: Optional[Dict[str, str]] = None
 
 
 class DeeplinkMintRequest(BaseModel):
@@ -64,7 +68,11 @@ async def get_commander_queue(
     _auth=Depends(require_scope("commander:read")),
 ) -> dict:
     items = build_queue(severity_filter=severity)
-    return {"items": items, "total": len(items)}
+    return {
+        "items": items,
+        "total": len(items),
+        "severity_policy_ref": "D0.8",
+    }
 
 
 @router.get("/api/v1/commander/priorities/today")
@@ -73,6 +81,18 @@ async def get_priorities_today(
 ) -> dict:
     items = build_priorities_today(max_items=3)
     return {"priorities": items, "total": len(items)}
+
+
+@router.get("/api/v1/commander/audit-log/verify")
+async def verify_audit_chain_endpoint(
+    auth=Depends(require_scope("commander:read")),
+) -> dict:
+    from agent.commander.authz import resolve_role
+    from agent.commander.audit import verify_audit_chain
+
+    if resolve_role(auth) == "viewer":
+        raise HTTPException(status_code=403, detail="Viewer cannot verify audit")
+    return verify_audit_chain()
 
 
 @router.get("/api/v1/commander/audit-log")
@@ -187,15 +207,23 @@ async def get_commander_analytics_snapshot(
     _auth=Depends(require_scope("commander:read")),
 ) -> dict:
     rows = db_list_analytics_snapshots(limit=1)
+    orders = db_list_orders(limit=1)
+    leads = db_list_leads(limit=1)
     generated_at = None
     sources: Dict[str, Any] = {}
     if rows:
         generated_at = rows[0].get("generated_at")
         sources = json.loads(rows[0].get("sources_json") or "{}")
+    orders_at = orders[0].get("updated_at") if orders else None
+    leads_at = leads[0].get("updated_at") if leads else None
+    from agent.commander.settings import get_settings
+
+    worker_at = get_settings().get("dowodca_last_active_at")
     freshness = {
         "ga4": freshness_status("ga4", generated_at),
-        "orders": freshness_status("orders", datetime.now(timezone.utc).isoformat()),
-        "leads": freshness_status("leads", datetime.now(timezone.utc).isoformat()),
+        "orders": freshness_status("orders", orders_at),
+        "leads": freshness_status("leads", leads_at),
+        "worker": freshness_status("worker", worker_at),
     }
     return {
         "generated_at": generated_at,
@@ -207,7 +235,7 @@ async def get_commander_analytics_snapshot(
 @router.post("/api/v1/content-calendar/{entry_id}/publish")
 async def commander_publish_entry(
     entry_id: str,
-    body: PublishRequest,
+    body: PublishRequest = PublishRequest(),
     auth=Depends(require_scope("marketing:publish")),
 ) -> dict:
     result = publish_calendar_entry(entry_id, auth, body.version, body.reason)
@@ -259,16 +287,33 @@ async def post_deeplink(
     return mint_deeplink(body.ticket_id, body.base_url)
 
 
+@router.post("/api/v1/commander/actions/calendar/{entry_id}/undo")
+async def undo_calendar_internal(
+    entry_id: str,
+    auth=Depends(require_scope("marketing:approve")),
+) -> dict:
+    from agent.commander.undo import revert_internal_action
+
+    result = revert_internal_action(entry_id, auth)
+    if result.get("status") == "error":
+        raise HTTPException(status_code=400, detail=result)
+    return result
+
+
 @router.get("/api/v1/commander/tickets/{ticket_id}")
 async def get_commander_ticket(
     ticket_id: int,
     token: Optional[str] = Query(default=None),
-    _auth=Depends(verify_jwt),
+    credentials: Optional[HTTPAuthorizationCredentials] = Depends(_bearer),
 ) -> dict:
     if token:
         verified = verify_deeplink_token(token)
         if verified != ticket_id:
             raise HTTPException(status_code=401, detail="Invalid or expired token")
+    elif credentials:
+        await verify_jwt(credentials)
+    else:
+        raise HTTPException(status_code=401, detail="Missing Authorization or token")
     row = get_ticket(ticket_id)
     if not row:
         raise HTTPException(status_code=404, detail="Ticket not found")

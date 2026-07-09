@@ -36,8 +36,8 @@ def client():
     return TestClient(create_app())
 
 
-def _auth_headers() -> dict[str, str]:
-    token = pyjwt.encode({"sub": "test"}, JWT_SECRET_VALUE, algorithm="HS256")
+def _auth_headers(role: str = "dowodca") -> dict[str, str]:
+    token = pyjwt.encode({"sub": "test", "role": role}, JWT_SECRET_VALUE, algorithm="HS256")
     return {"Authorization": f"Bearer {token}"}
 
 
@@ -105,8 +105,12 @@ def test_content_calendar_publish_flow(client, temp_db, monkeypatch):
         return {"status": "success", "post_id": "491325420727745_99"}
 
     monkeypatch.setattr(
-        "agent.nodes.content_calendar_node.publish_post",
+        "agent.commander.publish.publish_post",
         _mock_publish,
+    )
+    monkeypatch.setattr(
+        "agent.commander.publish.is_facebook_configured",
+        lambda: True,
     )
 
     with patch.dict(os.environ, {"JWT_SECRET": JWT_SECRET_VALUE}, clear=False), patch(

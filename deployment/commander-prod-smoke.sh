@@ -52,5 +52,23 @@ S=$(curl -sS -X PATCH -H "$AUTH" -H "Content-Type: application/json" \
   -d '{"delegat_email":"delegat@flexgrafik.nl"}')
 if echo "$S" | grep -q 'delegat@flexgrafik.nl'; then ok "PATCH settings delegat_email"; else bad "PATCH settings ($S)"; fi
 
+G=$(curl -sS -H "$AUTH" "$BASE/api/v1/commander/graduation/fb_post_approve")
+if echo "$G" | grep -q '"mode"'; then ok "GET graduation status"; else bad "GET graduation ($G)"; fi
+
+AUD=$(curl -sS -H "$AUTH" "$BASE/api/v1/commander/audit-log?limit=5")
+if echo "$AUD" | grep -q '"entries"'; then ok "GET audit-log"; else bad "GET audit-log ($AUD)"; fi
+
+DEL=$(JWT_SECRET="$JWT_SECRET" python3 -c 'import os,jwt; print(jwt.encode({"sub":"delegat","role":"delegat"}, os.environ["JWT_SECRET"], algorithm="HS256"))')
+code=$(curl -s -o /dev/null -w "%{http_code}" -X POST -H "Authorization: Bearer $DEL" "$BASE/api/v1/agents/marketing/pause")
+if [ "$code" = "403" ]; then ok "delegat cannot pause (403)"; else bad "delegat pause ($code)"; fi
+
+echo ""
+echo "=== WORKSHOP human checklist (run manually) ==="
+echo "  [ ] TG /ticket test opis → signed link on phone"
+echo "  [ ] Open /commander/ with JWT → queue visible"
+echo "  [ ] Public unpublish confirm on published post"
+echo "  [ ] Internal 60s undo after approve (post-S3 UI)"
+echo "  [ ] Home ≤7 visual chunks"
+
 echo "=== RESULT pass=$PASS fail=$FAIL ==="
 [ "$FAIL" -eq 0 ]

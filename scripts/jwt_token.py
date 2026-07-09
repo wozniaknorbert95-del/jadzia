@@ -1,12 +1,10 @@
 """
-Generate a JWT for Worker API authentication.
+Generate a JWT for Worker API / Commander authentication.
 
 Usage (from project root):
   python scripts/jwt_token.py
+  python scripts/jwt_token.py --role delegat --sub norbert
   python scripts/jwt_token.py --days 7
-
-Requires JWT_SECRET in environment (e.g. from .env in project root).
-Output: token on stdout for use as Authorization: Bearer <token>.
 """
 
 import argparse
@@ -15,10 +13,10 @@ import sys
 from datetime import datetime, timedelta, timezone
 from pathlib import Path
 
-# Load .env from project root
 _root = Path(__file__).resolve().parent.parent
 if _root.joinpath(".env").exists():
     from dotenv import load_dotenv
+
     load_dotenv(_root / ".env")
 
 import jwt
@@ -26,12 +24,14 @@ import jwt
 
 def main():
     parser = argparse.ArgumentParser(description="Generate JWT for Worker API")
+    parser.add_argument("--days", type=int, default=365, help="Token validity in days")
     parser.add_argument(
-        "--days",
-        type=int,
-        default=365,
-        help="Token validity in days (default: 365)",
+        "--role",
+        choices=["dowodca", "delegat", "viewer"],
+        default="dowodca",
+        help="Commander role claim (F3.1)",
     )
+    parser.add_argument("--sub", default="worker", help="Subject / user id")
     args = parser.parse_args()
 
     secret = os.getenv("JWT_SECRET")
@@ -40,7 +40,8 @@ def main():
         sys.exit(1)
 
     payload = {
-        "sub": "worker",
+        "sub": args.sub,
+        "role": args.role,
         "exp": datetime.now(timezone.utc) + timedelta(days=args.days),
     }
     token = jwt.encode(payload, secret, algorithm="HS256")

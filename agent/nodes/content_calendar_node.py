@@ -78,6 +78,10 @@ def update_calendar_entry(
         row = db_get_calendar_entry(internal_id)
         return _row_to_entry(row) if row else None
 
+    row_before = db_get_calendar_entry(internal_id)
+    if not row_before:
+        return None
+
     if not db_update_calendar_entry(internal_id, updates):
         logger.error("[ContentCalendarNode] Update failed entry_id=%s", entry_id)
         return None
@@ -85,6 +89,11 @@ def update_calendar_entry(
     row = db_get_calendar_entry(internal_id)
     if not row:
         return None
+
+    if updates.get("status") == "approved" and row_before.get("status") != "approved":
+        from agent.commander.undo import register_internal_undo
+
+        register_internal_undo(str(entry_id), row_before.get("status") or "draft")
 
     if updates.get("status") == "pending_approval":
         _notify_pending_approval(row)
@@ -178,6 +187,8 @@ def publish_due_scheduled_entries(limit: int = 20) -> int:
         sched_raw = entry.get("scheduled_publish_at") or entry.get("scheduled_at")
         if not sched_raw:
             continue
+        if entry.get("status") == "held":
+            continue
         try:
             sched_dt = datetime.fromisoformat(str(sched_raw).replace("Z", "+00:00"))
             if sched_dt.tzinfo is None:
@@ -185,7 +196,12 @@ def publish_due_scheduled_entries(limit: int = 20) -> int:
         except (ValueError, TypeError):
             continue
         if sched_dt <= now:
-            result = publish_entry(str(entry["entry_id"]))
+            from agent.commander.publish import publish_calendar_entry_system
+
+            result = publish_calendar_entry_system(
+                str(entry["entry_id"]),
+                expected_version=entry.get("version"),
+            )
             if result.get("status") == "success":
                 published_count += 1
 

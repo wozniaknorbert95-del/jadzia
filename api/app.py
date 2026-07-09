@@ -189,6 +189,17 @@ async def _maybe_run_scheduled_fb_publish() -> None:
                 _log.info("[worker_loop] commander SLA escalations=%s", n)
         except Exception as exc:
             _log.warning("[worker_loop] commander escalation check failed: %s", exc)
+        try:
+            from agent.commander.health_monitor import check_commander_health
+
+            alert = check_commander_health()
+            if alert:
+                from agent.customer_agent import _send_telegram_alert_sync
+
+                _send_telegram_alert_sync(alert)
+                _log.warning("[worker_loop] commander health alert sent")
+        except Exception as exc:
+            _log.warning("[worker_loop] commander health check failed: %s", exc)
 
     try:
         await asyncio.to_thread(_run)

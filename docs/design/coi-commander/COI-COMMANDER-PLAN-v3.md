@@ -1,6 +1,18 @@
 ﻿# Plan: COI Commander Dashboard + HITL Control Layer (v3 — post AUDYT-V2-GAP)
 
-**Status:** `DRAFT — NIE APPROVE, NIE START KODU`
+**Status:** `APPROVED 2026-07-09` (deploy MVP `1706b6a`; closure program active)
+
+## IMPLEMENTATION STATUS (2026-07-09)
+
+| Faza | % | Gate |
+|------|---|------|
+| F0 Spec D0.1–D0.14 | 100% | Workshop handoff + human TG proof pending |
+| F1 Backend | 100% | N13 lock, authz matrix, scope gates |
+| F2 MVP UI | 100% | ApprovalCard, undo60, audit tab, bulk UI |
+| F3 HOTL | 100% | graduation runtime + confidence_avg |
+| F3.1 Delegation | 100% | commander_roles + JWT --role |
+| Deploy | DONE | redeploy after closure commit |
+| Scorecard v3 | 6/6 | closure handoff |
 
 **Weryfikacja T1–T13:** [`T1-T13-VERIFICATION.md`](T1-T13-VERIFICATION.md)
 

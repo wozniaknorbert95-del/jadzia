@@ -10,6 +10,13 @@ from agent.commander.constants import ROLE_SCOPES
 def resolve_role(payload: Optional[Dict[str, Any]]) -> str:
     if not payload:
         return "dowodca"
+    user_id = payload.get("sub") or payload.get("user_id")
+    if user_id:
+        from agent.commander.settings import get_role_for_user
+
+        mapped = get_role_for_user(str(user_id))
+        if mapped:
+            return mapped
     role = (payload.get("role") or "dowodca").lower()
     if role not in ROLE_SCOPES:
         return "dowodca"

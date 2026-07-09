@@ -85,10 +85,13 @@ def require_scope(scope: str):
     """FastAPI dependency factory — server-side scope enforcement (N7)."""
 
     async def _checker(auth: Optional[dict] = Depends(verify_jwt)) -> dict:
-        from agent.commander.authz import has_scope
+        from agent.commander.authz import has_scope, resolve_role
+        from agent.commander.settings import touch_dowodca_activity
 
         if auth is None:
             return {}
+        if resolve_role(auth) == "dowodca":
+            touch_dowodca_activity(auth.get("sub"))
         if not has_scope(auth, scope):
             raise HTTPException(status_code=403, detail=f"Missing scope: {scope}")
         return auth
