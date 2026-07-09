@@ -1,7 +1,7 @@
 # Design: COI Content Intake — Marketing Supply (Opcja A + zewnętrzne media URL)
 
 **Date:** 2026-07-09  
-**Status:** DRAFT — wymaga approve Dowódcy przed implementacją  
+**Status:** APPROVED 2026-07-09 (Dowódca)  
 **Owner:** Norbert Wozniak (Dowódca)  
 **Repo:** jadzia-core  
 **Poprzednik:** [`COI-COMMANDER-PLAN-v3.md`](../../design/coi-commander/COI-COMMANDER-PLAN-v3.md) (control plane — **DONE**)
@@ -373,6 +373,6 @@ Scheduling: użyć `scheduled_publish_time` (unix) tam, gdzie API wspiera; inacz
 
 ## Approve
 
-- [ ] Dowódca: design M1 UI + GDrive workflow OK
-- [ ] Dowódca: akceptacja ograniczenia wideo GDrive → M2 + playbook fallback
-- [ ] Agent: przejście do `writing-plans` po approve
+- [x] Dowódca: design M1 UI + GDrive workflow OK (2026-07-09)
+- [x] Dowódca: akceptacja ograniczenia wideo GDrive → M2 + playbook fallback
+- [x] Agent: `writing-plans` → `docs/superpowers/plans/2026-07-09-coi-content-intake-m1.md`

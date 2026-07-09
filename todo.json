@@ -3,10 +3,10 @@
   "last_updated": "2026-07-09 (COI Commander v3 merged master + prod deploy)",
   "status": "active",
   "plan": "docs/design/coi-commander/COI-COMMANDER-PLAN-v3.md",
-  "active_gate": "COI-CMD-WORKSHOP-DONE",
-  "active_plan": "docs/design/coi-commander/COI-COMMANDER-PLAN-v3.md",
-  "next_human": "Codzienny loop Commander (Marketing approve) — poniedziałek rano",
-  "next_agent": "COI-CMD-SMTP-01 (eskalacja email) lub COI-CMD-QUEUE-CLEAN (stare E2E hot_lead)",
+  "active_gate": "COI-CONTENT-INTAKE-M1",
+  "active_plan": "docs/superpowers/plans/2026-07-09-coi-content-intake-m1.md",
+  "next_human": "Utwórz folder COI-Marketing na Drive + wyślij link folderu agentowi",
+  "next_agent": "Implementacja M1 per plan (Task 1–6)",
   "agent_rule": "Nie deployuj autonomicznie (Zasada 11). Nie oznaczaj DEPLOY-01/03 completed bez E2E proof w handoff.",
   "sprints": {
     "remediation": "completed",
@@ -607,6 +607,16 @@
       "priority": "low",
       "owner": "agent",
       "note": "Home szum — testowe leady z INT-004 deploy"
+    },
+    {
+      "id": "COI-CONTENT-INTAKE-M1",
+      "sprint": "COI Content Intake",
+      "task": "Marketing composer + GDrive URL + FB photo publish",
+      "status": "in_progress",
+      "priority": "critical",
+      "owner": "agent",
+      "checklist": "docs/superpowers/plans/2026-07-09-coi-content-intake-m1.md",
+      "note": "Spec APPROVED; gdrive.py foundation done; czeka link folderu Dowódcy"
     }
   ]
 }

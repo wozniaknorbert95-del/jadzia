@@ -15,6 +15,8 @@ DEFAULTS = {
     "daily_action_budget": 200,
     "dowodca_last_active_at": None,
     "commander_roles": {},
+    "marketing_gdrive_folder_url": "",
+    "marketing_gdrive_folder_id": "",
 }
 
 
