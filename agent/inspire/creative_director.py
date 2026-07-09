@@ -137,17 +137,20 @@ def _build_elements_for_panel(
         )
 
     if "telefoon" in strategy.message_hierarchy and "telefoon" in tekst_opties and brief.get("telefoon"):
-        phone_panel = panel_id if panel_id in ("deur", "achter") else "deur"
-        if panel_id == phone_panel or (panel_id == "achter" and strategy.positionering == "opvallend"):
-            phone_anchor = _panel_bbox(vehicle, phone_panel, panel_map)
+        phone_on_this_panel = False
+        if strategy.positionering == "opvallend" and panel_id == "achter":
+            phone_on_this_panel = True
+        elif strategy.positionering != "opvallend" and is_primary_panel:
+            phone_on_this_panel = True
+        if phone_on_this_panel:
             elements.append(
                 LayoutElement(
                     type="telefoon",
                     anchor=ElementAnchor(
-                        x_pct=phone_anchor.x_pct,
-                        y_pct=phone_anchor.y_pct + phone_anchor.h_pct * 0.72,
-                        w_pct=phone_anchor.w_pct * 0.9,
-                        h_pct=phone_anchor.h_pct * 0.2,
+                        x_pct=anchor.x_pct,
+                        y_pct=anchor.y_pct + anchor.h_pct * 0.72,
+                        w_pct=anchor.w_pct * 0.9,
+                        h_pct=anchor.h_pct * 0.2,
                     ),
                     text_from_brief=True,
                     style=ElementStyle(size_px=typo.phone_min_px, color=primary_color, weight="bold"),
@@ -285,7 +288,8 @@ def _fal_background_prompt(
     )
     negative = (
         "cartoon, illustration, flat sticker, distorted wheels, typography, lettering, words, "
-        "phone numbers, URLs, business name text, offensive Dutch words, moord, dood"
+        "phone numbers, URLs, business name text, company name, brand name text, "
+        "offensive Dutch words, moord, dood"
     )
     return positive, negative
 
