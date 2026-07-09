@@ -1,12 +1,12 @@
 {
   "project": "Jadzia-Core",
-  "last_updated": "2026-07-09 (COI Commander v3 closure S0-S7 complete)",
+  "last_updated": "2026-07-09 (COI Commander v3 merged master + prod deploy)",
   "status": "active",
   "plan": "docs/design/coi-commander/COI-COMMANDER-PLAN-v3.md",
-  "active_gate": "COI-CMD-CLOSURE-DONE",
+  "active_gate": "COI-CMD-HUMAN-WORKSHOP",
   "active_plan": "docs/design/coi-commander/COI-COMMANDER-PLAN-v3.md",
-  "next_human": "VPS redeploy + merge master + TG /ticket live proof",
-  "next_agent": "F4 paid ads IA only (deferred) lub INSPIRE engine commit",
+  "next_human": "TG /ticket na telefonie + JWT w /commander/ + delegat email (15 min)",
+  "next_agent": "INSPIRE engine stash commit lub F4 paid ads IA",
   "agent_rule": "Nie deployuj autonomicznie (Zasada 11). Nie oznaczaj DEPLOY-01/03 completed bez E2E proof w handoff.",
   "sprints": {
     "remediation": "completed",
@@ -18,7 +18,7 @@
     "coi_phase_b3": "deploy_complete",
     "post_audit_remediation": "deploy_closure_complete_2026-07-05",
     "spine_closure_85": "completed",
-    "coi_commander_v3": "closure_complete_2026-07-09"
+    "coi_commander_v3": "merged_master_deploy_2026-07-09"
   },
   "tasks": [
     {
@@ -523,7 +523,7 @@
       "status": "completed",
       "priority": "critical",
       "owner": "agent",
-      "note": "Mount /commander/ — brak prod proof"
+      "note": "master @ f24cf5e — prod smoke 10/10"
     },
     {
       "id": "COI-CMD-F3",
@@ -541,17 +541,17 @@
       "priority": "critical",
       "owner": "human",
       "checklist": "docs/handoffs/2026-07-09-coi-commander-deploy-PROOF.md",
-      "note": "1706b6a @ api.zzpackage.flexgrafik.nl/commander/ — smoke 7/7"
+      "note": "master f24cf5e @ api.zzpackage.flexgrafik.nl/commander/ — smoke 10/10"
     },
     {
       "id": "COI-CMD-WORKSHOP",
       "sprint": "COI Commander v3",
       "task": "F0 workshop live + test no-laptop (Dowódca)",
-      "status": "completed",
+      "status": "pending",
       "priority": "high",
       "owner": "human",
       "checklist": "docs/handoffs/2026-07-09-coi-commander-workshop-PROOF.md",
-      "note": "Automated prep done; human TG proof pending"
+      "note": "Agent: merge+deploy done; Dowódca: TG /ticket + JWT dashboard"
     },
     {
       "id": "COI-CMD-GAP-N16",
@@ -579,6 +579,16 @@
       "priority": "critical",
       "owner": "agent",
       "checklist": "docs/handoffs/2026-07-09-coi-commander-v3-CLOSURE-PROOF.md"
+    },
+    {
+      "id": "COI-CMD-MERGE-MASTER",
+      "sprint": "COI Commander v3",
+      "task": "Merge feat/design-agent-inspire-v2 → master + VPS deploy",
+      "status": "completed",
+      "priority": "critical",
+      "owner": "agent",
+      "checklist": "docs/handoffs/2026-07-09-coi-commander-master-merge-PROOF.md",
+      "note": "master f24cf5e; VPS active; smoke 10/10"
     }
   ]
 }
