@@ -54,11 +54,12 @@ pytest tests/unit/test_commander_*.py tests/unit/test_content_calendar_api.py -q
 
 ## Twoja kolej (Dowódca)
 
-1. Wygeneruj JWT: `python scripts/jwt_token.py --role dowodca --sub norbert` (na VPS z `.env`)
-2. Otwórz https://api.zzpackage.flexgrafik.nl/commander/ → wklej token
-3. TG: `/ticket test workshop` → klik link na **telefonie**
-4. Ustawienia → email Delegata → Zapisz
-5. Zaznacz workshop checklist po testach
+1. ~~Wygeneruj JWT~~ ✅ krok 1 done
+2. ~~TG `/ticket`~~ ✅ workaround OK; **ponów po fix deeplink** (link `https://api...` nie `127.0.0.1`)
+3. Ustawienia → email Delegata → Zapisz
+4. Audyt → Weryfikuj łańcuch (opcjonalnie Marketing undo60)
+
+**Fix deeplink (2026-07-09):** `get_public_base_url()` — commit `1b97201`
 
 ---
 
