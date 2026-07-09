@@ -11,7 +11,7 @@
 | F2 MVP UI | 100% | ApprovalCard, undo60, audit tab, bulk UI |
 | F3 HOTL | 100% | graduation runtime + confidence_avg |
 | F3.1 Delegation | 100% | commander_roles + JWT --role |
-| Deploy | DONE | redeploy after closure commit |
+| Deploy | DONE | `a0182e3` prod smoke 10/10 |
 | Scorecard v3 | 6/6 | closure handoff |
 
 **Weryfikacja T1–T13:** [`T1-T13-VERIFICATION.md`](T1-T13-VERIFICATION.md)

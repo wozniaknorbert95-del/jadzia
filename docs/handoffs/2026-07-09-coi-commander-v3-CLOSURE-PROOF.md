@@ -2,6 +2,9 @@
 
 **Program:** COI Commander v3 Closure (Sprints S0–S7)  
 **Branch:** `feat/design-agent-inspire-v2`  
+**Commit:** `a0182e3`  
+**VPS:** `185.243.54.115` `/opt/jadzia` @ `a0182e3` — service **active**  
+**Public URL:** https://api.zzpackage.flexgrafik.nl/commander/  
 **Plan:** [`COI-COMMANDER-PLAN-v3.md`](../design/coi-commander/COI-COMMANDER-PLAN-v3.md) — **APPROVED**
 
 ---
@@ -38,17 +41,29 @@
 
 ```bash
 pytest tests/unit/test_commander_*.py tests/unit/test_content_calendar_api.py tests/unit/test_auth_hardening.py -q
+→ 42 passed (2026-07-09)
 ```
 
 ---
 
-## Deploy (manual — Zasada 11)
+## Deploy PROOF (2026-07-09)
 
-1. Commit + push branch
-2. VPS: pull, `systemctl restart jadzia`
-3. `bash deployment/commander-prod-smoke.sh`
-4. TG `/ticket test` + no-laptop deeplink (Dowódca)
-5. Merge → `master` po approve
+| Krok | Status |
+|------|--------|
+| Commit `a0182e3` (bez INSPIRE engine) | ✅ |
+| Push `origin/feat/design-agent-inspire-v2` | ✅ |
+| VPS pull + `systemctl restart jadzia` | ✅ |
+| `deployment/commander-prod-smoke.sh` | ✅ **10/10 PASS** |
+
+Smoke: `/commander/` local+public 200, queue, agents, tickets, CRITICAL queue, settings delegat, graduation, audit-log, delegat 403 pause.
+
+---
+
+## Pozostałe kroki (Dowódca)
+
+1. TG `/ticket test opis` → signed link na telefonie
+2. Otwórz `/commander/` z JWT — queue + undo60 UI
+3. Merge `feat/design-agent-inspire-v2` → `master` po approve
 
 ---
 
