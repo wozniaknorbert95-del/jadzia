@@ -78,9 +78,9 @@ def parse_telegram_command(message: str, callback_data: Optional[str] = None) ->
         return "cofnij", ""
     if cmd_lower in ("/pomoc", "pomoc", "/help", "help"):
         return "pomoc", ""
-    if cmd_only.startswith("/zadanie"):
+    if cmd_only.startswith("/ticket") or cmd_only.startswith("/zadanie"):
         payload = msg[len(cmd_token):].strip()
-        return "zadanie", payload
+        return "ticket", payload
     if lower in ("tak", "nie", "t", "n", "yes", "no"):
         return "approval", "true" if lower in ("tak", "t", "yes") else "false"
     return "message", msg
@@ -330,7 +330,10 @@ async def _handle_webhook_request(
         if command == "status":
             task_id = _get_task_id_for_chat(chat_id)
             if not task_id:
-                messages = format_response_for_telegram("Brak aktywnego zadania. Użyj /zadanie.", awaiting_input=False)
+                messages = format_response_for_telegram(
+                    "Brak aktywnego zadania SSH. Użyj /ticket aby otworzyć ticket w Commander.",
+                    awaiting_input=False,
+                )
                 return TelegramWebhookResponse(success=True, messages=messages)
             result = await get_task(task_id, jwt_token, base_url)
             response_text = result.get("response", "") or f"Status: {result.get('status', '?')}"
@@ -339,20 +342,58 @@ async def _handle_webhook_request(
             reply_markup = build_inline_keyboard_approval(task_id) if (result.get("status") == "diff_ready" and awaiting) else None
             return TelegramWebhookResponse(success=True, messages=messages, awaiting_input=awaiting, reply_markup=reply_markup)
 
-        instruction = payload if payload else request.message.strip()
-        if not instruction:
-            messages = format_response_for_telegram("Podaj treść zadania, np. /zadanie zmień kolor przycisku", awaiting_input=False)
+        if command == "ticket":
+            description = payload if payload else request.message.strip()
+            if not description or description.lower().startswith("/ticket"):
+                messages = format_response_for_telegram(
+                    "Podaj opis ticketu, np. /ticket naprawa nagłówka WP",
+                    awaiting_input=False,
+                )
+                return TelegramWebhookResponse(success=True, messages=messages)
+
+            from agent.commander.tickets import create_ticket_from_telegram
+
+            ticket_res = create_ticket_from_telegram(description, base_url)
+            if ticket_res.get("status") != "ok":
+                messages = format_response_for_telegram(
+                    "Nie udało się utworzyć ticketu. Spróbuj ponownie.",
+                    awaiting_input=False,
+                )
+                return TelegramWebhookResponse(success=True, messages=messages)
+
+            link = ticket_res["deeplink"]["url"]
+            messages = format_response_for_telegram(
+                f"Ticket #{ticket_res['ticket_id']} utworzony.\n"
+                f"Otwórz w Commander (ważny 15 min):\n{link}\n"
+                f"Wykonanie tylko w dashboardzie — bez SSH z Telegram.",
+                awaiting_input=False,
+            )
             return TelegramWebhookResponse(success=True, messages=messages)
 
-        create_res = await create_task(instruction, chat_id, jwt_token, base_url, test_mode=False)
-        task_id = create_res.get("task_id", "")
-        pos = create_res.get("position_in_queue", 1)
+        instruction = payload if payload else request.message.strip()
+        if not instruction:
+            messages = format_response_for_telegram(
+                "Użyj /ticket <opis> aby utworzyć ticket w Commander (bez SSH z Telegram).",
+                awaiting_input=False,
+            )
+            return TelegramWebhookResponse(success=True, messages=messages)
+
+        # Legacy free-text: redirect to ticket flow (CE-02)
+        from agent.commander.tickets import create_ticket_from_telegram
+
+        ticket_res = create_ticket_from_telegram(instruction, base_url)
+        if ticket_res.get("status") == "ok":
+            link = ticket_res["deeplink"]["url"]
+            messages = format_response_for_telegram(
+                f"Ticket #{ticket_res['ticket_id']} — otwórz Commander:\n{link}",
+                awaiting_input=False,
+            )
+            return TelegramWebhookResponse(success=True, messages=messages)
+
         messages = format_response_for_telegram(
-            f"Przyjęto zadanie (pozycja w kolejce: {pos}). Wyślę wynik, gdy będzie gotowy.",
+            "Nie udało się utworzyć ticketu. Użyj /ticket <opis>.",
             awaiting_input=False,
         )
-        duration_ms = int((time.time() - start_time) * 1000)
-        logger.info("[Telegram] quick_ack: task_id=%s position=%s %dms", task_id, pos, duration_ms)
         return TelegramWebhookResponse(success=True, messages=messages)
 
     except httpx.HTTPStatusError as e:

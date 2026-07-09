@@ -63,6 +63,7 @@ def create_app() -> FastAPI:
     from api.routes.sessions import router as sessions_router
     from api.routes.design_agent import router as design_agent_router
     from api.routes.design_agent_chat import router as design_agent_chat_router
+    from api.routes.commander import router as commander_router
 
     app.include_router(chat_router)
     app.include_router(portal_qualify_router)
@@ -77,6 +78,7 @@ def create_app() -> FastAPI:
     app.include_router(sessions_router)
     app.include_router(design_agent_router)
     app.include_router(design_agent_chat_router)
+    app.include_router(commander_router)
 
     # Design Agent mockup PNGs (nginx may also serve this path on VPS)
     da_output = os.getenv("DESIGN_AGENT_OUTPUT_DIR", "output/design-agent")
@@ -92,6 +94,17 @@ def create_app() -> FastAPI:
         )
     except Exception as e:
         _log.warning("Design Agent static mount skipped: %s", e)
+
+    commander_ui_path = Path(__file__).resolve().parent.parent / "commander-ui"
+    if commander_ui_path.is_dir():
+        try:
+            app.mount(
+                "/commander",
+                StaticFiles(directory=str(commander_ui_path), html=True),
+                name="commander-ui",
+            )
+        except Exception as e:
+            _log.warning("Commander UI static mount skipped: %s", e)
 
     # Telegram router (conditionally included)
     if os.getenv("TELEGRAM_BOT_ENABLED", "") == "1":
@@ -168,6 +181,14 @@ async def _maybe_run_scheduled_fb_publish() -> None:
         from agent.nodes.content_calendar_node import publish_due_scheduled_entries
 
         publish_due_scheduled_entries()
+        try:
+            from agent.commander.escalation import check_sla_escalations
+
+            n = check_sla_escalations()
+            if n:
+                _log.info("[worker_loop] commander SLA escalations=%s", n)
+        except Exception as exc:
+            _log.warning("[worker_loop] commander escalation check failed: %s", exc)
 
     try:
         await asyncio.to_thread(_run)

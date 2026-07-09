@@ -1,12 +1,12 @@
 {
   "project": "Jadzia-Core",
-  "last_updated": "2026-07-08 (spine closure 85% program)",
+  "last_updated": "2026-07-09 (COI Commander v3 — deploy-ready, uncommitted)",
   "status": "active",
-  "plan": "docs/superpowers/specs/2026-07-08-jadzia-spine-closure-design.md",
-  "active_gate": "S1-01-secret-rotation",
-  "active_plan": "docs/superpowers/specs/2026-07-08-jadzia-spine-closure-design.md",
-  "next_human": "Faza 4: wykonaj ćwiczenia E1+E2 w JADZIA-OPERATOR-PLAYBOOK.md i potwierdź w handoff F4",
-  "next_agent": "S1-01 gdy gotowy LUB B3.1 deferred",
+  "plan": "docs/design/coi-commander/COI-COMMANDER-PLAN-v3.md",
+  "active_gate": "COI-CMD-DEPLOY-01",
+  "active_plan": "docs/design/coi-commander/COI-COMMANDER-PLAN-v3.md",
+  "next_human": "Commit + @jadzia-deploy COI Commander; smoke /commander + /ticket TG; ustaw delegat_email",
+  "next_agent": "COI-CMD-DEPLOY-01 prod proof w handoff po deploy",
   "agent_rule": "Nie deployuj autonomicznie (Zasada 11). Nie oznaczaj DEPLOY-01/03 completed bez E2E proof w handoff.",
   "sprints": {
     "remediation": "completed",
@@ -17,7 +17,8 @@
     "deploy_int_009": "completed",
     "coi_phase_b3": "deploy_complete",
     "post_audit_remediation": "deploy_closure_complete_2026-07-05",
-    "spine_closure_85": "completed"
+    "spine_closure_85": "completed",
+    "coi_commander_v3": "deploy_ready_uncommitted"
   },
   "tasks": [
     {
@@ -496,6 +497,75 @@
       "priority": "high",
       "owner": "agent",
       "checklist": "docs/handoffs/2026-07-08-spine-closure-f4-operator-school.md"
+    },
+    {
+      "id": "COI-CMD-F0",
+      "sprint": "COI Commander v3",
+      "task": "F0 spec D0.1-D0.14 + UX brief + audyt GAP",
+      "status": "completed",
+      "priority": "critical",
+      "owner": "agent",
+      "checklist": "docs/design/coi-commander/"
+    },
+    {
+      "id": "COI-CMD-F1",
+      "sprint": "COI Commander v3",
+      "task": "F1 backend control plane APIs + authz + audit",
+      "status": "completed",
+      "priority": "critical",
+      "owner": "agent",
+      "note": "agent/commander + api/routes/commander.py; 10 pytest PASS"
+    },
+    {
+      "id": "COI-CMD-F2",
+      "sprint": "COI Commander v3",
+      "task": "F2 MVP UI commander-ui (4 ekrany PL)",
+      "status": "completed",
+      "priority": "critical",
+      "owner": "agent",
+      "note": "Mount /commander/ — brak prod proof"
+    },
+    {
+      "id": "COI-CMD-F3",
+      "sprint": "COI Commander v3",
+      "task": "F3 agents registry + graduation + TG /ticket",
+      "status": "completed",
+      "priority": "high",
+      "owner": "agent"
+    },
+    {
+      "id": "COI-CMD-DEPLOY-01",
+      "sprint": "COI Commander v3",
+      "task": "Commit + VPS deploy + prod smoke /commander + /ticket",
+      "status": "pending",
+      "priority": "critical",
+      "owner": "human",
+      "checklist": "docs/handoffs/2026-07-09-coi-commander-deploy-ready.md"
+    },
+    {
+      "id": "COI-CMD-GAP-N16",
+      "sprint": "COI Commander v3",
+      "task": "N16 dashboard-down TG health push",
+      "status": "pending",
+      "priority": "medium",
+      "owner": "agent"
+    },
+    {
+      "id": "COI-CMD-GAP-UNDO60",
+      "sprint": "COI Commander v3",
+      "task": "CE-05 60s internal undo timer w UI",
+      "status": "pending",
+      "priority": "medium",
+      "owner": "agent"
+    },
+    {
+      "id": "COI-CMD-WORKSHOP",
+      "sprint": "COI Commander v3",
+      "task": "F0 workshop live + test no-laptop (Dowódca)",
+      "status": "pending",
+      "priority": "high",
+      "owner": "human",
+      "checklist": "docs/design/coi-commander/WORKSHOP-F0-CHECKLIST.md"
     }
   ]
 }

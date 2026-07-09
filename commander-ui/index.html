@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>COI Commander</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <a class="skip-link" href="#main">Przejdź do treści</a>
+  <header class="topbar" role="banner">
+    <h1>COI Commander</h1>
+    <nav aria-label="Główne menu">
+      <button type="button" data-view="home" class="nav-btn active">Home</button>
+      <button type="button" data-view="marketing" class="nav-btn">Marketing</button>
+      <button type="button" data-view="analytics" class="nav-btn">Analytics</button>
+      <button type="button" data-view="agents" class="nav-btn">Agenci</button>
+      <button type="button" data-view="settings" class="nav-btn">Ustawienia</button>
+    </nav>
+  </header>
+
+  <section id="auth-panel" class="panel auth-panel" aria-label="Logowanie JWT">
+    <label for="jwt-input">Token JWT</label>
+    <input id="jwt-input" type="password" autocomplete="off" placeholder="Bearer token" />
+    <button type="button" id="auth-save">Zapisz token</button>
+    <p class="hint">UI po polsku · treści biznesowe NL</p>
+  </section>
+
+  <main id="main" class="main" tabindex="-1">
+    <section id="view-home" class="view active" aria-labelledby="home-title">
+      <h2 id="home-title">Dziś — 3 priorytety</h2>
+      <div id="priorities" class="card-grid" role="list"></div>
+      <h3>Kolejka (CRITICAL + ACTION)</h3>
+      <div id="queue-list" class="queue" role="list"></div>
+      <div id="health-strip" class="health-strip" aria-live="polite"></div>
+    </section>
+
+    <section id="view-marketing" class="view" aria-labelledby="marketing-title" hidden>
+      <h2 id="marketing-title">Marketing Studio</h2>
+      <div id="held-banner" class="banner" hidden></div>
+      <div id="calendar-entries" class="card-grid"></div>
+    </section>
+
+    <section id="view-analytics" class="view" aria-labelledby="analytics-title" hidden>
+      <h2 id="analytics-title">Analytics & Revenue</h2>
+      <div id="analytics-tiles" class="card-grid"></div>
+      <h3>Zamówienia</h3>
+      <div id="orders-list" class="list"></div>
+      <h3>Leady</h3>
+      <div id="leads-list" class="list"></div>
+    </section>
+
+    <section id="view-agents" class="view" aria-labelledby="agents-title" hidden>
+      <h2 id="agents-title">Rejestr agentów</h2>
+      <div id="agents-list" class="card-grid"></div>
+    </section>
+
+    <section id="view-settings" class="view" aria-labelledby="settings-title" hidden>
+      <h2 id="settings-title">Ustawienia</h2>
+      <form id="settings-form" class="form">
+        <label for="delegat-email">Email Delegata (eskalacja 24h)</label>
+        <input id="delegat-email" type="email" />
+        <label for="ui-lang">Język UI</label>
+        <select id="ui-lang"><option value="pl">Polski</option></select>
+        <button type="submit">Zapisz</button>
+      </form>
+    </section>
+  </main>
+
+  <dialog id="confirm-dialog" aria-labelledby="confirm-title">
+    <h2 id="confirm-title">Potwierdź akcję</h2>
+    <p id="confirm-body"></p>
+    <form method="dialog" class="dialog-actions">
+      <button value="cancel">Anuluj</button>
+      <button value="ok" class="primary">Potwierdź</button>
+    </form>
+  </dialog>
+
+  <div id="toast" class="toast" role="status" aria-live="polite" hidden></div>
+  <script src="app.js"></script>
+</body>
+</html>

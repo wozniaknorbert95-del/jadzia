@@ -231,6 +231,90 @@ def _init_schema(conn: sqlite3.Connection):
         ON analytics_snapshots(period, created_at DESC)
     """)
 
+    # COI Commander control plane
+    conn.execute("""
+        CREATE TABLE IF NOT EXISTS commander_audit_log (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            ts TEXT NOT NULL,
+            actor_id TEXT NOT NULL,
+            actor_role TEXT NOT NULL,
+            action TEXT NOT NULL,
+            source TEXT NOT NULL,
+            target_type TEXT,
+            target_id TEXT,
+            before_json TEXT,
+            after_json TEXT,
+            reason TEXT,
+            risk_tier TEXT,
+            session_id TEXT,
+            prev_hash TEXT,
+            row_hash TEXT NOT NULL
+        )
+    """)
+    conn.execute("""
+        CREATE INDEX IF NOT EXISTS idx_commander_audit_ts
+        ON commander_audit_log(ts DESC)
+    """)
+    conn.execute("""
+        CREATE TABLE IF NOT EXISTS commander_tickets (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            title TEXT NOT NULL,
+            description TEXT NOT NULL,
+            severity TEXT NOT NULL DEFAULT 'CRITICAL',
+            status TEXT NOT NULL DEFAULT 'open',
+            source TEXT NOT NULL DEFAULT 'telegram',
+            created_at TEXT NOT NULL,
+            updated_at TEXT NOT NULL
+        )
+    """)
+    conn.execute("""
+        CREATE TABLE IF NOT EXISTS commander_feedback (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            action_type TEXT NOT NULL,
+            feedback_type TEXT NOT NULL,
+            payload_json TEXT,
+            actor_id TEXT,
+            created_at TEXT NOT NULL
+        )
+    """)
+    conn.execute("""
+        CREATE TABLE IF NOT EXISTS commander_agent_state (
+            agent_id TEXT PRIMARY KEY,
+            status TEXT NOT NULL DEFAULT 'LIVE',
+            last_run_at TEXT,
+            last_error TEXT,
+            expected_interval_seconds INTEGER NOT NULL DEFAULT 3600,
+            held_count INTEGER NOT NULL DEFAULT 0,
+            updated_at TEXT NOT NULL
+        )
+    """)
+    conn.execute("""
+        CREATE TABLE IF NOT EXISTS commander_settings (
+            key TEXT PRIMARY KEY,
+            value_json TEXT NOT NULL,
+            updated_at TEXT NOT NULL
+        )
+    """)
+    conn.execute("""
+        CREATE TABLE IF NOT EXISTS commander_deeplinks (
+            token_hash TEXT PRIMARY KEY,
+            ticket_id INTEGER NOT NULL,
+            expires_at TEXT NOT NULL,
+            used_at TEXT,
+            created_at TEXT NOT NULL
+        )
+    """)
+    conn.execute("""
+        CREATE TABLE IF NOT EXISTS commander_daily_actions (
+            action_date TEXT NOT NULL,
+            action_count INTEGER NOT NULL DEFAULT 0,
+            PRIMARY KEY (action_date)
+        )
+    """)
+
+    _migrate_content_calendar_columns(conn)
+    _migrate_commander_calendar_version(conn)
+
     conn.commit()
 
 
@@ -249,6 +333,14 @@ def _migrate_content_calendar_columns(conn: sqlite3.Connection) -> None:
             )
         except sqlite3.OperationalError:
             pass
+
+
+def _migrate_commander_calendar_version(conn: sqlite3.Connection) -> None:
+    """Add optimistic-lock version column for calendar entries."""
+    try:
+        conn.execute("ALTER TABLE content_calendar ADD COLUMN version INTEGER NOT NULL DEFAULT 1")
+    except sqlite3.OperationalError:
+        pass
 
 
 @contextmanager
@@ -1087,7 +1179,7 @@ def _row_to_lead_dict(row: sqlite3.Row) -> Dict:
 # ============================================================================
 
 _VALID_CALENDAR_STATUSES = frozenset(
-    {"draft", "pending_approval", "approved", "published", "cancelled", "failed"}
+    {"draft", "pending_approval", "approved", "published", "cancelled", "failed", "held"}
 )
 _VALID_PLATFORMS = frozenset({"facebook", "tiktok"})
 
@@ -1293,6 +1385,377 @@ def db_list_analytics_snapshots(limit: int = 30) -> List[Dict]:
         (limit,),
     ).fetchall()
     return [dict(row) for row in rows]
+
+
+# ============================================================================
+# Commander control plane (COI Commander)
+# ============================================================================
+
+def db_commander_insert_audit(row: Dict) -> Optional[int]:
+    """Append-only audit log insert. Returns row id."""
+    conn = get_connection()
+    try:
+        cursor = conn.execute(
+            """
+            INSERT INTO commander_audit_log (
+                ts, actor_id, actor_role, action, source,
+                target_type, target_id, before_json, after_json,
+                reason, risk_tier, session_id, prev_hash, row_hash
+            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+            """,
+            (
+                row["ts"],
+                row["actor_id"],
+                row["actor_role"],
+                row["action"],
+                row["source"],
+                row.get("target_type"),
+                row.get("target_id"),
+                row.get("before_json"),
+                row.get("after_json"),
+                row.get("reason"),
+                row.get("risk_tier"),
+                row.get("session_id"),
+                row.get("prev_hash"),
+                row["row_hash"],
+            ),
+        )
+        conn.commit()
+        return cursor.lastrowid
+    except Exception:
+        conn.rollback()
+        return None
+
+
+def db_commander_list_audit(limit: int = 100, offset: int = 0) -> List[Dict]:
+    conn = get_connection()
+    rows = conn.execute(
+        """
+        SELECT * FROM commander_audit_log
+        ORDER BY id DESC
+        LIMIT ? OFFSET ?
+        """,
+        (limit, offset),
+    ).fetchall()
+    return [dict(r) for r in rows]
+
+
+def db_commander_last_audit_hash() -> Optional[str]:
+    conn = get_connection()
+    row = conn.execute(
+        "SELECT row_hash FROM commander_audit_log ORDER BY id DESC LIMIT 1"
+    ).fetchone()
+    return row["row_hash"] if row else None
+
+
+def db_commander_create_ticket(title: str, description: str, source: str = "telegram") -> Optional[int]:
+    now = datetime.now(timezone.utc).isoformat()
+    conn = get_connection()
+    try:
+        cursor = conn.execute(
+            """
+            INSERT INTO commander_tickets (title, description, severity, status, source, created_at, updated_at)
+            VALUES (?, ?, 'CRITICAL', 'open', ?, ?, ?)
+            """,
+            (title, description, source, now, now),
+        )
+        conn.commit()
+        return cursor.lastrowid
+    except Exception:
+        conn.rollback()
+        return None
+
+
+def db_commander_get_ticket(ticket_id: int) -> Optional[Dict]:
+    conn = get_connection()
+    row = conn.execute("SELECT * FROM commander_tickets WHERE id = ?", (ticket_id,)).fetchone()
+    return dict(row) if row else None
+
+
+def db_commander_list_tickets(status: Optional[str] = None, limit: int = 50) -> List[Dict]:
+    conn = get_connection()
+    if status:
+        rows = conn.execute(
+            "SELECT * FROM commander_tickets WHERE status = ? ORDER BY created_at DESC LIMIT ?",
+            (status, limit),
+        ).fetchall()
+    else:
+        rows = conn.execute(
+            "SELECT * FROM commander_tickets ORDER BY created_at DESC LIMIT ?",
+            (limit,),
+        ).fetchall()
+    return [dict(r) for r in rows]
+
+
+def db_commander_save_deeplink(token_hash: str, ticket_id: int, expires_at: str) -> bool:
+    now = datetime.now(timezone.utc).isoformat()
+    conn = get_connection()
+    try:
+        conn.execute(
+            """
+            INSERT INTO commander_deeplinks (token_hash, ticket_id, expires_at, created_at)
+            VALUES (?, ?, ?, ?)
+            """,
+            (token_hash, ticket_id, expires_at, now),
+        )
+        conn.commit()
+        return True
+    except Exception:
+        conn.rollback()
+        return False
+
+
+def db_commander_get_deeplink(token_hash: str) -> Optional[Dict]:
+    conn = get_connection()
+    row = conn.execute(
+        "SELECT * FROM commander_deeplinks WHERE token_hash = ?",
+        (token_hash,),
+    ).fetchone()
+    return dict(row) if row else None
+
+
+def db_commander_mark_deeplink_used(token_hash: str) -> None:
+    now = datetime.now(timezone.utc).isoformat()
+    conn = get_connection()
+    conn.execute(
+        "UPDATE commander_deeplinks SET used_at = ? WHERE token_hash = ?",
+        (now, token_hash),
+    )
+    conn.commit()
+
+
+def db_commander_insert_feedback(
+    action_type: str,
+    feedback_type: str,
+    payload_json: Optional[str],
+    actor_id: Optional[str],
+) -> Optional[int]:
+    now = datetime.now(timezone.utc).isoformat()
+    conn = get_connection()
+    try:
+        cursor = conn.execute(
+            """
+            INSERT INTO commander_feedback (action_type, feedback_type, payload_json, actor_id, created_at)
+            VALUES (?, ?, ?, ?, ?)
+            """,
+            (action_type, feedback_type, payload_json, actor_id, now),
+        )
+        conn.commit()
+        return cursor.lastrowid
+    except Exception:
+        conn.rollback()
+        return None
+
+
+def db_commander_feedback_stats(action_type: str, days: int = 30) -> Dict:
+    """Rolling stats for graduation thresholds."""
+    conn = get_connection()
+    since = (datetime.now(timezone.utc) - timedelta(days=days)).isoformat()
+    rows = conn.execute(
+        """
+        SELECT feedback_type, COUNT(*) AS cnt
+        FROM commander_feedback
+        WHERE action_type = ? AND created_at >= ?
+        GROUP BY feedback_type
+        """,
+        (action_type, since),
+    ).fetchall()
+    stats = {r["feedback_type"]: r["cnt"] for r in rows}
+    total = sum(stats.values()) or 1
+    overrides = stats.get("rejection", 0) + stats.get("correction", 0)
+    approvals = stats.get("approval", 0)
+    return {
+        "action_type": action_type,
+        "total": total,
+        "approvals": approvals,
+        "overrides": overrides,
+        "override_rate_pct": round(overrides / total * 100, 2),
+        "approved_without_edit": approvals,
+    }
+
+
+def db_commander_get_setting(key: str) -> Optional[Dict]:
+    conn = get_connection()
+    row = conn.execute("SELECT * FROM commander_settings WHERE key = ?", (key,)).fetchone()
+    return dict(row) if row else None
+
+
+def db_commander_set_setting(key: str, value_json: str) -> bool:
+    now = datetime.now(timezone.utc).isoformat()
+    conn = get_connection()
+    try:
+        conn.execute(
+            """
+            INSERT INTO commander_settings (key, value_json, updated_at)
+            VALUES (?, ?, ?)
+            ON CONFLICT(key) DO UPDATE SET value_json = excluded.value_json, updated_at = excluded.updated_at
+            """,
+            (key, value_json, now),
+        )
+        conn.commit()
+        return True
+    except Exception:
+        conn.rollback()
+        return False
+
+
+def db_commander_upsert_agent_state(agent_id: str, updates: Dict) -> bool:
+    now = datetime.now(timezone.utc).isoformat()
+    conn = get_connection()
+    existing = conn.execute(
+        "SELECT agent_id FROM commander_agent_state WHERE agent_id = ?",
+        (agent_id,),
+    ).fetchone()
+    if existing:
+        allowed = {"status", "last_run_at", "last_error", "expected_interval_seconds", "held_count"}
+        filtered = {k: v for k, v in updates.items() if k in allowed}
+        if not filtered:
+            return True
+        filtered["updated_at"] = now
+        set_clause = ", ".join(f"{k} = ?" for k in filtered)
+        conn.execute(
+            f"UPDATE commander_agent_state SET {set_clause} WHERE agent_id = ?",
+            list(filtered.values()) + [agent_id],
+        )
+    else:
+        conn.execute(
+            """
+            INSERT INTO commander_agent_state (
+                agent_id, status, last_run_at, last_error,
+                expected_interval_seconds, held_count, updated_at
+            ) VALUES (?, ?, ?, ?, ?, ?, ?)
+            """,
+            (
+                agent_id,
+                updates.get("status", "LIVE"),
+                updates.get("last_run_at"),
+                updates.get("last_error"),
+                updates.get("expected_interval_seconds", 3600),
+                updates.get("held_count", 0),
+                now,
+            ),
+        )
+    conn.commit()
+    return True
+
+
+def db_commander_list_agent_states() -> List[Dict]:
+    conn = get_connection()
+    rows = conn.execute("SELECT * FROM commander_agent_state ORDER BY agent_id").fetchall()
+    return [dict(r) for r in rows]
+
+
+def db_commander_get_agent_state(agent_id: str) -> Optional[Dict]:
+    conn = get_connection()
+    row = conn.execute(
+        "SELECT * FROM commander_agent_state WHERE agent_id = ?",
+        (agent_id,),
+    ).fetchone()
+    return dict(row) if row else None
+
+
+def db_list_orders(limit: int = 50) -> List[Dict]:
+    conn = get_connection()
+    rows = conn.execute(
+        """
+        SELECT order_id, status, total_gross, customer_name, customer_email, created_at, updated_at
+        FROM orders ORDER BY created_at DESC LIMIT ?
+        """,
+        (limit,),
+    ).fetchall()
+    return [dict(r) for r in rows]
+
+
+def db_list_leads(limit: int = 50) -> List[Dict]:
+    conn = get_connection()
+    rows = conn.execute(
+        """
+        SELECT id, email, name, source, game_score, reward_tier, created_at, updated_at
+        FROM leads ORDER BY created_at DESC LIMIT ?
+        """,
+        (limit,),
+    ).fetchall()
+    return [dict(r) for r in rows]
+
+
+def db_update_calendar_entry_versioned(
+    entry_id: int,
+    updates: Dict,
+    expected_version: int,
+) -> tuple[bool, Optional[int]]:
+    """Optimistic lock update. Returns (success, new_version)."""
+    allowed = {
+        "platform", "title", "body_nl", "scheduled_at", "status",
+        "source_order_id", "publish_result", "media_url", "fb_post_id",
+        "scheduled_publish_at",
+    }
+    filtered = {k: v for k, v in updates.items() if k in allowed and v is not None}
+    if not filtered:
+        return True, expected_version
+    if "status" in filtered and filtered["status"] not in _VALID_CALENDAR_STATUSES:
+        return False, None
+
+    new_version = expected_version + 1
+    filtered["updated_at"] = datetime.now(timezone.utc).isoformat()
+    set_clause = ", ".join(f"{k} = ?" for k in filtered)
+    values = list(filtered.values()) + [new_version, entry_id, expected_version]
+
+    conn = get_connection()
+    try:
+        cursor = conn.execute(
+            f"""
+            UPDATE content_calendar
+            SET {set_clause}, version = ?
+            WHERE id = ? AND COALESCE(version, 1) = ?
+            """,
+            values,
+        )
+        conn.commit()
+        if cursor.rowcount == 0:
+            return False, None
+        return True, new_version
+    except Exception:
+        conn.rollback()
+        return False, None
+
+
+def db_commander_increment_daily_actions() -> int:
+    """Increment daily human action counter; returns new count."""
+    today = datetime.now(timezone.utc).strftime("%Y-%m-%d")
+    conn = get_connection()
+    conn.execute(
+        """
+        INSERT INTO commander_daily_actions (action_date, action_count)
+        VALUES (?, 1)
+        ON CONFLICT(action_date) DO UPDATE SET action_count = action_count + 1
+        """,
+        (today,),
+    )
+    conn.commit()
+    row = conn.execute(
+        "SELECT action_count FROM commander_daily_actions WHERE action_date = ?",
+        (today,),
+    ).fetchone()
+    return row["action_count"] if row else 1
+
+
+def db_commander_get_daily_actions() -> int:
+    today = datetime.now(timezone.utc).strftime("%Y-%m-%d")
+    conn = get_connection()
+    row = conn.execute(
+        "SELECT action_count FROM commander_daily_actions WHERE action_date = ?",
+        (today,),
+    ).fetchone()
+    return row["action_count"] if row else 0
+
+
+def db_count_calendar_by_status(status: str) -> int:
+    conn = get_connection()
+    row = conn.execute(
+        "SELECT COUNT(*) AS cnt FROM content_calendar WHERE status = ?",
+        (status,),
+    ).fetchone()
+    return row["cnt"] if row else 0
 
 
 # ============================================================================

@@ -79,3 +79,18 @@ async def verify_jwt(
         return payload
     except jwt.PyJWTError:
         raise HTTPException(status_code=401, detail="Invalid or expired token")
+
+
+def require_scope(scope: str):
+    """FastAPI dependency factory — server-side scope enforcement (N7)."""
+
+    async def _checker(auth: Optional[dict] = Depends(verify_jwt)) -> dict:
+        from agent.commander.authz import has_scope
+
+        if auth is None:
+            return {}
+        if not has_scope(auth, scope):
+            raise HTTPException(status_code=403, detail=f"Missing scope: {scope}")
+        return auth
+
+    return _checker
