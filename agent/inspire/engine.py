@@ -4,13 +4,20 @@ from __future__ import annotations
 
 import base64
 import logging
+import os
 import uuid
 from dataclasses import dataclass
 from pathlib import Path
 from typing import List, Literal
 
+from agent.inspire.brand_strategist import load_playbook, produce_brand_strategy
 from agent.inspire.compose_ref import build_reference_png
+from agent.inspire.creative_director import produce_layout_specs
 from agent.inspire.fal_fullframe import generate_mockup_png
+from agent.inspire.layout_spec import LayoutSpec
+from agent.inspire.marketing_compliance import assert_layout_compliance
+from agent.inspire.mockup_safety import check_mockup_safety, retry_negative_suffix
+from agent.inspire.overlay_renderer import apply_overlay
 from agent.inspire.prompt import BriefContext, VariantId, build_prompt
 from agent.inspire.reco import RecommendedProduct, build_wizard_deeplink, resolve_recommendations
 from agent.inspire.tier_resolver import TierMeta, resolve_tier_skus
@@ -20,6 +27,7 @@ logger = logging.getLogger(__name__)
 Positionering = Literal["strak", "opvallend", "balanced"]
 VARIANTS: tuple[VariantId, ...] = ("tier_b", "tier_a")
 EST_COST_EUR_PER_MOCKUP = 0.11
+EST_COST_EUR_STRATEGIST = 0.01
 
 
 @dataclass
@@ -40,9 +48,15 @@ class InspireResponse:
     wizard_deeplink: str
     cost_eur: float
     positionering: Positionering
-    user_stijl: str  # legacy alias for positionering
+    user_stijl: str
     mockup_b_sku: str
     mockup_a_sku: str
+    engine_mode: str = "enterprise"
+
+
+def _enterprise_enabled() -> bool:
+    raw = os.getenv("INSPIRE_ENTERPRISE", "1").strip().lower()
+    return raw not in ("0", "false", "no", "off")
 
 
 def _save_mockup(
@@ -66,6 +80,45 @@ def _save_mockup(
 
 def _tier_for_variant(variant: VariantId, tier_b: TierMeta, tier_a: TierMeta) -> TierMeta:
     return tier_b if variant == "tier_b" else tier_a
+
+
+def _legacy_generate_variant(
+    *,
+    variant: VariantId,
+    ctx: BriefContext,
+    tier_meta: TierMeta,
+    ref_png: bytes,
+) -> bytes:
+    prompt, negative = build_prompt(ctx, variant, tier_meta)
+    png = generate_mockup_png(ref_png, prompt, negative)
+    safety = check_mockup_safety(png)
+    if not safety.ok:
+        logger.warning("legacy OCR fail variant=%s reasons=%s retry", variant, safety.reasons)
+        png = generate_mockup_png(ref_png, prompt, negative + retry_negative_suffix())
+    return png
+
+
+def _enterprise_generate_variant(
+    *,
+    layout: LayoutSpec,
+    vehicle: str,
+    logo_bytes: bytes,
+    brief_dict: dict,
+    playbook: dict,
+    strategy,
+) -> bytes:
+    assert_layout_compliance(layout, strategy, brief_dict, playbook)
+    ref_png = build_reference_png(vehicle, logo_bytes, layout=layout)
+    bg = generate_mockup_png(ref_png, layout.fal_background_prompt, layout.fal_negative_prompt)
+    safety = check_mockup_safety(bg)
+    if not safety.ok:
+        logger.warning("enterprise OCR fail variant=%s reasons=%s retry", layout.variant, safety.reasons)
+        bg = generate_mockup_png(
+            ref_png,
+            layout.fal_background_prompt,
+            layout.fal_negative_prompt + retry_negative_suffix(),
+        )
+    return apply_overlay(bg, layout, logo_bytes, brief_dict)
 
 
 def generate_inspire_mockups(
@@ -93,23 +146,31 @@ def generate_inspire_mockups(
     tier_matrix_path: Path | None = None,
 ) -> InspireResponse:
     brief_id = str(uuid.uuid4())
-    pos: Positionering
     raw_pos = positionering or stijl
     if raw_pos in ("strak", "opvallend", "balanced"):
-        pos = raw_pos  # type: ignore[assignment]
+        pos: Positionering = raw_pos  # type: ignore[assignment]
     else:
         pos = "balanced"
 
-    brief_dict = {
+    brief_dict: dict = {
+        "vehicle": vehicle,
+        "branche": branche,
+        "bedrijfsnaam": bedrijfsnaam,
+        "telefoon": telefoon,
+        "website": website,
+        "brand_colors": brand_colors,
+        "tekst_opties": tekst_opties,
+        "slogan": slogan,
+        "positionering": pos,
+        "diensten": diensten,
+        "doelgroep": doelgroep,
         "vehicle_use": vehicle_use,
         "branding_goal": branding_goal,
-        "positionering": pos,
-        "stijl": stijl if isinstance(stijl, str) else pos,
         "mockup_b_sku": mockup_b_sku or None,
         "mockup_a_sku": mockup_a_sku or None,
     }
-    tier_b, tier_a = resolve_tier_skus(vehicle, brief_dict, matrix_path=tier_matrix_path)
 
+    tier_b, tier_a = resolve_tier_skus(vehicle, brief_dict, matrix_path=tier_matrix_path)
     ctx = BriefContext(
         vehicle=vehicle,
         branche=branche,
@@ -124,38 +185,89 @@ def generate_inspire_mockups(
         doelgroep=doelgroep,
     )
 
-    ref_png = build_reference_png(vehicle, logo_bytes, bedrijfsnaam, telefoon)
     mockups: List[MockupResult] = []
+    engine_mode = "legacy"
+    cost = 0.0
+
+    use_enterprise = _enterprise_enabled()
+    playbook = None
+    strategy = None
+    layouts: dict[VariantId, LayoutSpec] = {}
+
+    if use_enterprise:
+        try:
+            playbook = load_playbook()
+            strategy = produce_brand_strategy(
+                branche=branche,
+                diensten=diensten,
+                doelgroep=doelgroep,
+                positionering=pos,
+                brand_colors=brand_colors,
+                tier_b=tier_b,
+                tier_a=tier_a,
+            )
+            layout_b, layout_a = produce_layout_specs(
+                vehicle=vehicle,
+                brief=brief_dict,
+                strategy=strategy,
+                tier_b=tier_b,
+                tier_a=tier_a,
+            )
+            layouts = {"tier_b": layout_b, "tier_a": layout_a}
+            engine_mode = "enterprise"
+            cost += EST_COST_EUR_STRATEGIST
+        except Exception as exc:
+            logger.warning("enterprise pipeline fallback to legacy: %s", exc)
+            use_enterprise = False
+
+    ref_png_legacy = build_reference_png(vehicle, logo_bytes, bedrijfsnaam, telefoon)
 
     for variant in VARIANTS:
         tier_meta = _tier_for_variant(variant, tier_b, tier_a)
-        prompt, negative = build_prompt(ctx, variant, tier_meta)
-        logger.info("inspire fal variant=%s sku=%s vehicle=%s", variant, tier_meta.sku, vehicle)
-        png = generate_mockup_png(ref_png, prompt, negative)
+        primary_panel = layouts[variant].panels[0].id if variant in layouts and layouts[variant].panels else "deur"
+
+        if use_enterprise and variant in layouts and playbook and strategy:
+            png = _enterprise_generate_variant(
+                layout=layouts[variant],
+                vehicle=vehicle,
+                logo_bytes=logo_bytes,
+                brief_dict=brief_dict,
+                playbook=playbook,
+                strategy=strategy,
+            )
+        else:
+            png = _legacy_generate_variant(
+                variant=variant,
+                ctx=ctx,
+                tier_meta=tier_meta,
+                ref_png=ref_png_legacy,
+            )
+
         url, data_url = _save_mockup(png, output_dir, brief_id, variant, public_base_url)
         mockups.append(
             MockupResult(
                 variant=variant,
-                panel="deur",
+                panel=primary_panel,
                 url=url,
                 sku=tier_meta.sku,
                 data_url=data_url,
                 degraded=False,
             )
         )
+        cost += EST_COST_EUR_PER_MOCKUP
 
     products = resolve_recommendations(tier_b.sku, tier_a.sku, ssot_path)
     deeplink = build_wizard_deeplink(vehicle, tier_b.sku)
-    cost = EST_COST_EUR_PER_MOCKUP * len(mockups)
 
     return InspireResponse(
         brief_id=brief_id,
         mockups=mockups,
         recommended_products=products,
         wizard_deeplink=deeplink,
-        cost_eur=cost,
+        cost_eur=round(cost, 2),
         positionering=pos,
         user_stijl=pos,
         mockup_b_sku=tier_b.sku,
         mockup_a_sku=tier_a.sku,
+        engine_mode=engine_mode,
     )
