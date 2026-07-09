@@ -7,7 +7,7 @@ import logging
 from pathlib import Path
 from typing import TYPE_CHECKING
 
-from PIL import Image
+from PIL import Image, ImageDraw
 
 if TYPE_CHECKING:
     from agent.inspire.layout_spec import LayoutSpec
@@ -43,6 +43,33 @@ def resolve_assets_dir() -> Path:
     return Path("assets/images")
 
 
+def _hex_to_rgba(hex_color: str, opacity: float) -> tuple[int, int, int, int]:
+    raw = hex_color.lstrip("#")
+    if len(raw) == 3:
+        raw = "".join(ch * 2 for ch in raw)
+    if len(raw) != 6:
+        return 17, 17, 17, int(255 * opacity)
+    r, g, b = int(raw[0:2], 16), int(raw[2:4], 16), int(raw[4:6], 16)
+    return r, g, b, int(255 * opacity)
+
+
+def _paint_vinyl_zones(base: Image.Image, layout: LayoutSpec) -> None:
+    """Paint semi-transparent brand zones — fal kontext guidance (compose_ref v3)."""
+    if not layout.vinyl_zones:
+        return
+    overlay = Image.new("RGBA", base.size, (0, 0, 0, 0))
+    draw = ImageDraw.Draw(overlay)
+    w, h = base.size
+    for zone in layout.vinyl_zones:
+        x1 = int(w * zone.anchor.x_pct)
+        y1 = int(h * zone.anchor.y_pct)
+        x2 = x1 + max(1, int(w * zone.anchor.w_pct))
+        y2 = y1 + max(1, int(h * zone.anchor.h_pct))
+        fill = _hex_to_rgba(zone.fill_hex, zone.opacity)
+        draw.rectangle([x1, y1, x2, y2], fill=fill)
+    base.alpha_composite(overlay)
+
+
 def _paste_logo(base: Image.Image, logo_bytes: bytes, x_pct: float, y_pct: float, w_pct: float) -> None:
     w, h = base.size
     try:
@@ -70,6 +97,7 @@ def build_reference_png_from_layout(
         raise FileNotFoundError(f"Vehicle template not found: {tpl_path}")
 
     base = Image.open(tpl_path).convert("RGBA")
+    _paint_vinyl_zones(base, layout)
     logo_placed = False
     for panel in layout.panels:
         for element in panel.elements:

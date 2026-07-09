@@ -14,7 +14,7 @@ from pydantic import ValidationError
 from agent.inspire.brand_strategy_spec import BrandStrategySpec
 from agent.inspire.brand_strategist import load_panel_map
 from agent.inspire.creative_director_prompts import CREATIVE_DIRECTOR_SYSTEM
-from agent.inspire.layout_spec import ElementAnchor, ElementStyle, LayoutElement, LayoutPanel, LayoutSpec
+from agent.inspire.layout_spec import ElementAnchor, ElementStyle, LayoutElement, LayoutPanel, LayoutSpec, VinylZone
 from agent.inspire.prompt import VEHICLE_LABELS, _positionering_style
 from agent.inspire.tier_resolver import TierMeta
 
@@ -187,6 +187,72 @@ def _build_elements_for_panel(
     return elements
 
 
+def _zone_count(positionering: str, variant: VariantId) -> int:
+    base = {"strak": 1, "balanced": 2, "opvallend": 3}.get(positionering, 2)
+    if variant == "tier_a":
+        base += 1
+    return min(max(base, 1), 4)
+
+
+def _build_vinyl_zones(
+    *,
+    vehicle: str,
+    active_panels: list[str],
+    panel_map: dict[str, Any],
+    strategy: BrandStrategySpec,
+    variant: VariantId,
+    positionering: str,
+    brand_colors: list[str],
+) -> list[VinylZone]:
+    count = _zone_count(positionering, variant)
+    primary = strategy.color_strategy.primary
+    accent = brand_colors[1] if len(brand_colors) > 1 else primary
+    opacity = 0.45 if positionering == "strak" else 0.6 if positionering == "opvallend" else 0.55
+    zones: list[VinylZone] = []
+    for idx, panel_id in enumerate(active_panels[:count]):
+        pid = panel_id if panel_id in ("deur", "zij", "achter", "kap") else "deur"
+        bbox = _panel_bbox(vehicle, pid, panel_map)
+        height_scale = 0.9 if idx == 0 else 0.7
+        zones.append(
+            VinylZone(
+                panel_id=pid,  # type: ignore[arg-type]
+                anchor=ElementAnchor(
+                    x_pct=bbox.x_pct,
+                    y_pct=bbox.y_pct,
+                    w_pct=bbox.w_pct,
+                    h_pct=bbox.h_pct * height_scale,
+                ),
+                fill_hex=primary if idx == 0 else accent,
+                opacity=opacity,
+            )
+        )
+    return zones
+
+
+def _finalize_layout(
+    layout: LayoutSpec,
+    *,
+    vehicle: str,
+    active_panels: list[str],
+    panel_map: dict[str, Any],
+    strategy: BrandStrategySpec,
+    positionering: str,
+    brand_colors: list[str],
+) -> LayoutSpec:
+    if layout.vinyl_zones:
+        return layout
+    zones = _build_vinyl_zones(
+        vehicle=vehicle,
+        active_panels=active_panels,
+        panel_map=panel_map,
+        strategy=strategy,
+        variant=layout.variant,
+        positionering=positionering,
+        brand_colors=brand_colors,
+    )
+    return layout.model_copy(update={"vinyl_zones": zones})
+
+
 def _fal_background_prompt(
     *,
     vehicle: str,
@@ -211,7 +277,8 @@ def _fal_background_prompt(
         f"Industry context: {branche}. Services: {diensten}. Target clients: {doelgroep}. "
         f"Product tier: {tier_code}. Coverage: {tier_meta.coverage}. "
         f"Visual tone for {cluster_tone} trade in Netherlands. "
-        f"Branding: vinyl color blocks and abstract brand shapes on body panels only. "
+        f"Preserve and enhance the semi-transparent vinyl color zones in the reference image on body panels. "
+        f"Branding: vinyl color blocks and abstract brand shapes aligned with reference zones only. "
         f"Absolutely no typography, no letters, no numbers, no words on the vehicle. "
         f"Brand colors: {colors}. Style: {style}. "
         f"Side view 3/4 angle, realistic vinyl wrap, sharp focus, 8k commercial photo."
@@ -278,6 +345,7 @@ def _build_llm_messages(
                 "variant",
                 "sku",
                 "panels[{id, elements[{type, anchor{x_pct,y_pct,w_pct,h_pct}, style?}]}]",
+                "vinyl_zones[{panel_id, anchor, fill_hex, opacity}]",
                 "fal_background_prompt",
                 "fal_negative_prompt",
                 "compliance_checks",
@@ -331,6 +399,26 @@ def _produce_layout_specs_llm(
         _assert_layout_hierarchy(layout_a)
         if len(layout_a.panels) < len(layout_b.panels):
             raise ValueError("tier_a must have >= panels than tier_b")
+        pos = str(brief.get("positionering") or strategy.positionering)
+        colors = list(brief.get("brand_colors") or [])
+        layout_b = _finalize_layout(
+            layout_b,
+            vehicle=vehicle,
+            active_panels=strategy.active_panels_b,
+            panel_map=panel_map,
+            strategy=strategy,
+            positionering=pos,
+            brand_colors=colors,
+        )
+        layout_a = _finalize_layout(
+            layout_a,
+            vehicle=vehicle,
+            active_panels=strategy.active_panels_a,
+            panel_map=panel_map,
+            strategy=strategy,
+            positionering=pos,
+            brand_colors=colors,
+        )
         return layout_b, layout_a
     except (ValidationError, ValueError, KeyError, IndexError, httpx.HTTPError, RuntimeError) as exc:
         logger.warning("creative director LLM fallback to rules: %s", exc)
@@ -374,6 +462,16 @@ def _produce_layout_specs_rules(
             )
             panels.append(LayoutPanel(id=pid, elements=elements))  # type: ignore[arg-type]
 
+        vinyl_zones = _build_vinyl_zones(
+            vehicle=vehicle,
+            active_panels=active_panels,
+            panel_map=panel_map,
+            strategy=strategy,
+            variant=variant,  # type: ignore[arg-type]
+            positionering=positionering,
+            brand_colors=brand_colors,
+        )
+
         fal_pos, fal_neg = _fal_background_prompt(
             vehicle=vehicle,
             branche=str(brief.get("branche", "")),
@@ -390,6 +488,7 @@ def _produce_layout_specs_rules(
                 variant=variant,  # type: ignore[arg-type]
                 sku=tier_meta.sku,
                 panels=panels,
+                vinyl_zones=vinyl_zones,
                 fal_background_prompt=fal_pos,
                 fal_negative_prompt=fal_neg,
                 compliance_checks=["hierarchy_ok", "phone_if_opted", "tier_coverage"],

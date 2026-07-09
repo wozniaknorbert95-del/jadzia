@@ -32,10 +32,18 @@ class LayoutPanel(BaseModel):
     elements: list[LayoutElement] = Field(default_factory=list)
 
 
+class VinylZone(BaseModel):
+    panel_id: Literal["deur", "zij", "achter", "kap"]
+    anchor: ElementAnchor
+    fill_hex: str = "#111111"
+    opacity: float = Field(default=0.55, ge=0.1, le=0.95)
+
+
 class LayoutSpec(BaseModel):
     variant: Literal["tier_b", "tier_a"]
     sku: str
     panels: list[LayoutPanel] = Field(default_factory=list)
+    vinyl_zones: list[VinylZone] = Field(default_factory=list)
     fal_background_prompt: str
     fal_negative_prompt: str = ""
     compliance_checks: list[str] = Field(default_factory=list)

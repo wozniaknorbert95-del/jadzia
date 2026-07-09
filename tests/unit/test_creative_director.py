@@ -81,6 +81,9 @@ def test_layout_specs_quietforge(fixtures: tuple[dict, dict, Path]) -> None:
     assert "logo" in b_types
     assert "bedrijfsnaam" in b_types
     assert len(layout_a.panels) >= len(layout_b.panels)
+    assert len(layout_b.vinyl_zones) >= 1
+    assert len(layout_a.vinyl_zones) > len(layout_b.vinyl_zones)
+    assert "reference" in layout_b.fal_background_prompt.lower() or "zones" in layout_b.fal_background_prompt.lower()
 
 
 def test_layout_specs_llm_mock(fixtures: tuple[dict, dict, Path]) -> None:
