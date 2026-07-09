@@ -263,3 +263,22 @@ async def test_send_telegram_replies_no_call_when_no_messages():
             mock_client_cls.return_value.__aenter__.return_value.post = mock_post
             await _send_telegram_replies("123", response, None)
     mock_post.assert_not_called()
+
+
+# --- get_public_base_url (deeplink host) ---
+
+
+def test_get_public_base_url_prefers_jadzia_public_url(monkeypatch):
+    from api.telegram_client import get_public_base_url
+
+    monkeypatch.setenv("JADZIA_PUBLIC_URL", "https://api.zzpackage.flexgrafik.nl")
+    monkeypatch.delenv("TELEGRAM_BOT_API_BASE_URL", raising=False)
+    assert get_public_base_url() == "https://api.zzpackage.flexgrafik.nl"
+
+
+def test_get_public_base_url_ignores_localhost_internal(monkeypatch):
+    from api.telegram_client import get_public_base_url
+
+    monkeypatch.delenv("JADZIA_PUBLIC_URL", raising=False)
+    monkeypatch.setenv("TELEGRAM_BOT_API_BASE_URL", "http://127.0.0.1:8000")
+    assert get_public_base_url() == "https://api.zzpackage.flexgrafik.nl"

@@ -23,7 +23,15 @@ from agent.telegram_validator import (
     validate_user_whitelist,
     get_jadzia_chat_id,
 )
-from api.telegram_client import get_bot_jwt_token, get_base_url, create_task, get_task, submit_input, do_rollback
+from api.telegram_client import (
+    get_bot_jwt_token,
+    get_base_url,
+    get_public_base_url,
+    create_task,
+    get_task,
+    submit_input,
+    do_rollback,
+)
 
 
 TELEGRAM_BOT_TOKEN = os.getenv("TELEGRAM_BOT_TOKEN", "").strip()
@@ -353,7 +361,7 @@ async def _handle_webhook_request(
 
             from agent.commander.tickets import create_ticket_from_telegram
 
-            ticket_res = create_ticket_from_telegram(description, base_url)
+            ticket_res = create_ticket_from_telegram(description, get_public_base_url())
             if ticket_res.get("status") != "ok":
                 messages = format_response_for_telegram(
                     "Nie udało się utworzyć ticketu. Spróbuj ponownie.",
@@ -381,7 +389,7 @@ async def _handle_webhook_request(
         # Legacy free-text: redirect to ticket flow (CE-02)
         from agent.commander.tickets import create_ticket_from_telegram
 
-        ticket_res = create_ticket_from_telegram(instruction, base_url)
+        ticket_res = create_ticket_from_telegram(instruction, get_public_base_url())
         if ticket_res.get("status") == "ok":
             link = ticket_res["deeplink"]["url"]
             messages = format_response_for_telegram(

@@ -12,6 +12,7 @@ import httpx
 
 
 DEFAULT_BASE_URL = "http://127.0.0.1:8000"
+DEFAULT_PUBLIC_URL = "https://api.zzpackage.flexgrafik.nl"
 TIMEOUT = 120.0
 
 
@@ -37,6 +38,17 @@ def get_bot_jwt_token() -> Optional[str]:
 
 def get_base_url() -> str:
     return os.getenv("TELEGRAM_BOT_API_BASE_URL", "").strip() or DEFAULT_BASE_URL
+
+
+def get_public_base_url() -> str:
+    """HTTPS URL for Commander deeplinks (mobile / Telegram). Never localhost."""
+    explicit = os.getenv("JADZIA_PUBLIC_URL", "").strip()
+    if explicit:
+        return explicit.rstrip("/")
+    internal = os.getenv("TELEGRAM_BOT_API_BASE_URL", "").strip()
+    if internal and "127.0.0.1" not in internal and "localhost" not in internal.lower():
+        return internal.rstrip("/")
+    return DEFAULT_PUBLIC_URL
 
 
 async def create_task(
@@ -101,6 +113,7 @@ async def do_rollback(base_url: Optional[str] = None) -> Dict[str, Any]:
 __all__ = [
     "get_bot_jwt_token",
     "get_base_url",
+    "get_public_base_url",
     "create_task",
     "get_task",
     "submit_input",
