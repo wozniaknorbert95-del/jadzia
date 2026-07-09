@@ -154,3 +154,21 @@ def test_authz_has_scope():
     assert has_scope({"role": "dowodca"}, "agents:pause")
     assert not has_scope({"role": "viewer"}, "agents:pause")
     assert has_scope({"role": "viewer"}, "commander:read")
+
+
+def test_marketing_fb_health(client, temp_db, monkeypatch):
+    with jwt_env():
+        monkeypatch.setattr(
+            "agent.publishers.facebook.check_token_health",
+            lambda: {
+                "ok": True,
+                "configured": True,
+                "token_type": "PAGE",
+                "message_pl": "Token OK (Page)",
+                "days_left": 30,
+            },
+        )
+        r = client.get("/api/v1/commander/marketing/fb-health", headers=_auth_headers())
+    assert r.status_code == 200
+    assert r.json()["ok"] is True
+    assert r.json()["token_type"] == "PAGE"

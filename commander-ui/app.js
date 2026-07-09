@@ -144,6 +144,61 @@ async function loadHome() {
 
 let marketingFilter = "all";
 
+const STATUS_LABELS = {
+  draft: "Szkic",
+  approved: "Zaplanowane",
+  published: "Opublikowane",
+  failed: "Nieudane",
+  cancelled: "Anulowane",
+  pending_approval: "Do zatwierdzenia",
+  held: "Wstrzymane",
+};
+
+function humanizePublishError(publishResultRaw) {
+  if (!publishResultRaw) return "Publikacja nie powiodła się";
+  let pr = publishResultRaw;
+  if (typeof pr === "string") {
+    try {
+      pr = JSON.parse(pr);
+    } catch {
+      return pr.slice(0, 160);
+    }
+  }
+  if (pr.message_pl) return pr.message_pl;
+  let fb = {};
+  if (pr.details) {
+    try {
+      const parsed = typeof pr.details === "string" ? JSON.parse(pr.details) : pr.details;
+      fb = parsed.error || {};
+    } catch {
+      fb = {};
+    }
+  }
+  const msg = String(fb.message || pr.error || pr.message || "");
+  if (fb.code === 190 || fb.error_subcode === 463 || /expired/i.test(msg)) {
+    return "Token Facebook wygasł — odśwież Page Token FlexGrafik";
+  }
+  if (/publish_actions/i.test(msg)) {
+    return "Wymagany Page Token FlexGrafik (nie User Token)";
+  }
+  if (/photo|image|url/i.test(msg)) {
+    return "Meta nie pobrała grafiki — sprawdź udostępnianie pliku na Drive";
+  }
+  return msg.slice(0, 160) || "Publikacja na Facebooku nie powiodła się";
+}
+
+function statusBadgeClass(status) {
+  if (status === "failed") return "status-failed";
+  if (status === "published") return "status-published";
+  if (status === "approved") return "status-approved";
+  return "";
+}
+
+function fbPostUrl(fbPostId) {
+  if (!fbPostId) return null;
+  return `https://www.facebook.com/${fbPostId}`;
+}
+
 function toIsoSchedule(localValue) {
   if (!localValue) return null;
   const d = new Date(localValue);
@@ -211,14 +266,16 @@ function matchesMarketingFilter(entry) {
   if (marketingFilter === "approved") return entry.status === "approved";
   if (marketingFilter === "draft") return entry.status === "draft";
   if (marketingFilter === "published") return entry.status === "published";
+  if (marketingFilter === "failed") return entry.status === "failed";
   return true;
 }
 
 async function loadMarketing() {
-  const [cal, agents, settings] = await Promise.all([
+  const [cal, agents, settings, fbHealth] = await Promise.all([
     api("/api/v1/content-calendar"),
     api("/api/v1/agents"),
     api("/api/v1/commander/settings").catch(() => ({})),
+    api("/api/v1/commander/marketing/fb-health").catch(() => null),
   ]);
 
   const folderUrl = settings.marketing_gdrive_folder_url;
@@ -230,6 +287,21 @@ async function loadMarketing() {
     folderHint.hidden = true;
   }
 
+  const fbStrip = document.getElementById("fb-health-strip");
+  if (fbHealth) {
+    fbStrip.hidden = false;
+    fbStrip.className = "health-strip";
+    if (fbHealth.ok) fbStrip.classList.add("fb-health-ok");
+    else if (fbHealth.configured) fbStrip.classList.add("fb-health-bad");
+    else fbStrip.classList.add("fb-health-warn");
+    const expiry = fbHealth.days_left != null
+      ? ` · ważny jeszcze ${fbHealth.days_left} dni`
+      : "";
+    fbStrip.textContent = `Facebook: ${fbHealth.message_pl || "—"}${expiry}`;
+  } else {
+    fbStrip.hidden = true;
+  }
+
   const entries = (cal.entries || []).slice().sort((a, b) => {
     const da = a.scheduled_publish_at || a.scheduled_at || "";
     const db = b.scheduled_publish_at || b.scheduled_at || "";
@@ -238,12 +310,14 @@ async function loadMarketing() {
 
   const approved = entries.filter((e) => e.status === "approved");
   const drafts = entries.filter((e) => e.status === "draft");
+  const failed = entries.filter((e) => e.status === "failed");
+  const published = entries.filter((e) => e.status === "published");
   const next = approved.find((e) => {
     const t = e.scheduled_publish_at || e.scheduled_at;
     return t && new Date(t) > new Date();
   });
   document.getElementById("marketing-status-strip").textContent =
-    `Następna: ${next ? formatSchedule(next.scheduled_publish_at || next.scheduled_at) : "—"} · Zaplanowane: ${approved.length} · Szkice: ${drafts.length}`;
+    `Następna: ${next ? formatSchedule(next.scheduled_publish_at || next.scheduled_at) : "—"} · Zaplanowane: ${approved.length} · Szkice: ${drafts.length} · Nieudane: ${failed.length} · Opublikowane: ${published.length}`;
 
   const mkt = (agents.agents || []).find((a) => a.agent_id === "marketing");
   const held = document.getElementById("held-banner");
@@ -260,12 +334,19 @@ async function loadMarketing() {
     ? filtered.map((e) => {
         const typeLabel = e.content_type || "text";
         const sched = formatSchedule(e.scheduled_publish_at || e.scheduled_at);
+        const statusLabel = STATUS_LABELS[e.status] || e.status;
+        const statusCls = statusBadgeClass(e.status);
+        const errMsg = e.status === "failed" ? humanizePublishError(e.publish_result) : "";
+        const fbUrl = fbPostUrl(e.fb_post_id);
         const actions = [];
         if (e.status === "draft") {
           actions.push(`<button type="button" data-approve="${e.entry_id}">Zaplanuj</button>`);
         }
         if (e.status === "approved") {
           actions.push(`<button type="button" data-publish="${e.entry_id}">Opublikuj teraz</button>`);
+        }
+        if (e.status === "failed") {
+          actions.push(`<button type="button" class="primary" data-retry="${e.entry_id}">Ponów publikację</button>`);
         }
         if (e.status === "published") {
           actions.push(`<button type="button" data-unpublish="${e.entry_id}">Cofnij publikację</button>`);
@@ -274,15 +355,17 @@ async function loadMarketing() {
           actions.push(`<button type="button" data-cancel="${e.entry_id}">Anuluj</button>`);
         }
         return `
-    <article class="card approval-card">
+    <article class="card approval-card${e.status === "failed" ? " severity-CRITICAL" : ""}">
       <header class="card-header">
         <strong>${e.title}</strong>
-        <span class="badge">${e.status}</span>
+        <span class="badge ${statusCls}">${statusLabel}</span>
         <span class="badge">${typeLabel}</span>
       </header>
       <p class="meta">Publikacja: ${sched}</p>
       <p lang="nl">${(e.body_nl || "").slice(0, 160)}${(e.body_nl || "").length > 160 ? "…" : ""}</p>
       ${e.media_url ? `<p class="hint">Media: <a href="${e.media_url}" target="_blank" rel="noopener">link</a></p>` : ""}
+      ${fbUrl ? `<p class="hint"><a href="${fbUrl}" target="_blank" rel="noopener">Zobacz na Facebooku</a></p>` : ""}
+      ${errMsg ? `<p class="error-box" role="alert">${errMsg}</p>` : ""}
       <div class="actions">${actions.join("")}</div>
     </article>`;
       }).join("")
@@ -304,6 +387,18 @@ async function loadMarketing() {
       if (!(await confirmAction("Opublikować na Facebooku teraz?")).ok) return;
       try {
         await api(`/api/v1/content-calendar/${btn.dataset.publish}/publish`, { method: "POST", body: {} });
+        toast("Opublikowano");
+      } catch (err) {
+        toast(String(err.message));
+      }
+      loadMarketing();
+    };
+  });
+  el.querySelectorAll("[data-retry]").forEach((btn) => {
+    btn.onclick = async () => {
+      if (!(await confirmAction("Ponowić publikację na Facebooku?")).ok) return;
+      try {
+        await api(`/api/v1/content-calendar/${btn.dataset.retry}/publish`, { method: "POST", body: {} });
         toast("Opublikowano");
       } catch (err) {
         toast(String(err.message));

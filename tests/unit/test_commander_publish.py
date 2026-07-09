@@ -79,8 +79,8 @@ def test_publish_version_conflict(client, temp_db, monkeypatch):
             lambda: True,
         )
         monkeypatch.setattr(
-            "agent.commander.publish.publish_post",
-            lambda body: {"status": "success", "post_id": "fb123"},
+            "agent.commander.publish.publish_calendar_content",
+            lambda row: {"status": "success", "post_id": "fb123"},
         )
         eid = _create_approved(monkeypatch)
         r = client.post(
@@ -104,8 +104,8 @@ def test_worker_publish_uses_system_path(temp_db, monkeypatch):
         lambda: True,
     )
     monkeypatch.setattr(
-        "agent.commander.publish.publish_post",
-        lambda body: {"status": "success", "post_id": "fb456"},
+        "agent.commander.publish.publish_calendar_content",
+        lambda row: {"status": "success", "post_id": "fb456"},
     )
     _create_approved(monkeypatch)
     count = publish_due_scheduled_entries()

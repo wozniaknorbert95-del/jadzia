@@ -2,9 +2,11 @@
 
 from __future__ import annotations
 
+import json
 import logging
 import os
-from typing import Optional
+from datetime import datetime, timezone
+from typing import Any, Dict, Optional
 
 import requests
 
@@ -141,6 +143,96 @@ def check_post_status(post_id: str) -> dict:
     except requests.RequestException as exc:
         logger.error("[FacebookPublisher] Status check failed post_id=%s: %s", post_id, exc)
         return {"status": "error", "error": str(exc)}
+
+
+def parse_publish_error(result: Dict[str, Any]) -> str:
+    """Map Graph API / publish errors to operator-facing PL messages."""
+    if not result or result.get("status") == "success":
+        return ""
+
+    raw_error = str(result.get("error") or result.get("message") or "")
+    details_raw = result.get("details")
+    fb_error: Dict[str, Any] = {}
+    if details_raw:
+        try:
+            parsed = json.loads(details_raw) if isinstance(details_raw, str) else details_raw
+            fb_error = (parsed.get("error") or {}) if isinstance(parsed, dict) else {}
+        except (json.JSONDecodeError, TypeError, AttributeError):
+            fb_error = {}
+
+    code = fb_error.get("code")
+    subcode = fb_error.get("error_subcode")
+    msg = str(fb_error.get("message") or raw_error)
+
+    if code == 190 or subcode == 463 or "Session has expired" in msg or "expired" in msg.lower():
+        return "Token Facebook wygasł — odśwież Page Token FlexGrafik"
+    if "publish_actions" in msg or "USER" in msg.upper():
+        return "Wymagany Page Token FlexGrafik (nie User Token z Graph Explorer)"
+    if code == 200 and "permission" in msg.lower():
+        return "Brak uprawnień pages_manage_posts — sprawdź token strony"
+    if "url" in msg.lower() or "photo" in msg.lower() or "image" in msg.lower():
+        return "Meta nie pobrała grafiki — sprawdź udostępnianie pliku na Drive"
+    if "Brak media_url" in raw_error:
+        return "Brak linku do grafiki w wpisie"
+    if raw_error:
+        return raw_error[:200]
+    return "Publikacja na Facebooku nie powiodła się"
+
+
+def check_token_health() -> Dict[str, Any]:
+    """Preflight FB token — type, expiry, no secret in response."""
+    if not is_facebook_configured():
+        return {
+            "ok": False,
+            "configured": False,
+            "message_pl": "Facebook nie skonfigurowany (FB_PAGE_ID / FB_ACCESS_TOKEN)",
+        }
+
+    _, access_token = _get_config()
+    try:
+        resp = requests.get(
+            f"{FACEBOOK_BASE}/debug_token",
+            params={"input_token": access_token, "access_token": access_token},
+            timeout=15,
+        )
+        resp.raise_for_status()
+        data = (resp.json() or {}).get("data") or {}
+    except requests.RequestException as exc:
+        logger.warning("[FacebookPublisher] Token health check failed: %s", exc)
+        return {
+            "ok": False,
+            "configured": True,
+            "message_pl": "Nie udało się sprawdzić tokenu Facebook",
+        }
+
+    token_type = data.get("type") or "UNKNOWN"
+    expires_at = data.get("expires_at")
+    days_left: Optional[int] = None
+    if expires_at:
+        try:
+            exp_dt = datetime.fromtimestamp(int(expires_at), tz=timezone.utc)
+            days_left = max(0, int((exp_dt - datetime.now(timezone.utc)).total_seconds() / 86400))
+        except (ValueError, TypeError, OSError):
+            days_left = None
+
+    ok = data.get("is_valid") and token_type == "PAGE"
+    message_pl = "Token OK (Page)"
+    if not data.get("is_valid"):
+        message_pl = "Token Facebook nieważny"
+    elif token_type != "PAGE":
+        message_pl = "To nie jest Page Token — użyj FlexGrafik Page Token"
+    elif days_left is not None and days_left < 7:
+        message_pl = f"Token wygasa za {days_left} dni — zaplanuj rotację"
+
+    return {
+        "ok": ok,
+        "configured": True,
+        "token_type": token_type,
+        "expires_at": expires_at,
+        "days_left": days_left,
+        "message_pl": message_pl,
+        "page_id": os.getenv("FB_PAGE_ID"),
+    }
 
 
 def delete_post(post_id: str) -> dict:

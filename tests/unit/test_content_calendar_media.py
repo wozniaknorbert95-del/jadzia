@@ -45,7 +45,11 @@ def _auth():
     return {"Authorization": f"Bearer {token}"}
 
 
-def test_create_image_entry_normalizes_gdrive(client, temp_db):
+def test_create_image_entry_normalizes_gdrive(client, temp_db, monkeypatch):
+    monkeypatch.setattr(
+        "agent.media.gdrive.probe_media_url",
+        lambda url: {"ok": True, "mime_type": "image/png", "media_url": url},
+    )
     body = {
         "platform": "facebook",
         "title": "Test grafika",
@@ -77,6 +81,25 @@ def test_create_image_requires_media_url(client, temp_db):
     }
     r = client.post("/api/v1/content-calendar", json=body, headers=_auth())
     assert r.status_code == 400
+
+
+def test_create_image_probe_fails_fast(client, temp_db, monkeypatch):
+    monkeypatch.setattr(
+        "agent.media.gdrive.probe_media_url",
+        lambda url: {"ok": False, "error": "Plik niedostępny — sprawdź udostępnianie (każdy z linkiem)"},
+    )
+    body = {
+        "platform": "facebook",
+        "title": "Prywatny plik",
+        "body_nl": "NL",
+        "scheduled_at": "2026-07-15T09:00:00+00:00",
+        "content_type": "image",
+        "media_url": "https://drive.google.com/file/d/private/view",
+        "status": "draft",
+    }
+    r = client.post("/api/v1/content-calendar", json=body, headers=_auth())
+    assert r.status_code == 400
+    assert "niedostępny" in r.json()["detail"].lower() or "udostępnianie" in r.json()["detail"].lower()
 
 
 def test_publish_routes_photo(monkeypatch, client, temp_db):

@@ -1,12 +1,12 @@
 {
   "project": "Jadzia-Core",
-  "last_updated": "2026-07-09 (COI Content Intake M1 deployed prod)",
+  "last_updated": "2026-07-09 (COI Marketing Publish Hardening Phase B)",
   "status": "active",
   "plan": "docs/design/coi-commander/COI-COMMANDER-PLAN-v3.md",
-  "active_gate": "COI-CONTENT-INTAKE-M1",
-  "active_plan": "docs/superpowers/plans/2026-07-09-coi-content-intake-m1.md",
-  "next_human": "Commander Marketing: utwórz draft z linkiem GDrive (plik grafiki) + opcjonalnie publish test FB",
-  "next_agent": "M2 video/Reels lub COI-CMD-QUEUE-CLEAN po walidacji Dowódcy",
+  "active_gate": "COI-MARKETING-PUBLISH-B",
+  "active_plan": "docs/handoffs/2026-07-09-coi-marketing-publish-B-PROOF.md",
+  "next_human": "Deploy Phase B + sprawdź Marketing: filtr Nieudane, fb-health, retry",
+  "next_agent": "M2 video/Reels lub COI-CMD-QUEUE-CLEAN",
   "agent_rule": "Nie deployuj autonomicznie (Zasada 11). Nie oznaczaj DEPLOY-01/03 completed bez E2E proof w handoff.",
   "sprints": {
     "remediation": "completed",
@@ -617,6 +617,15 @@
       "owner": "agent",
       "checklist": "docs/superpowers/plans/2026-07-09-coi-content-intake-m1.md",
       "note": "Prod @ d40d0d8; GDrive folder 1SYueUiXAtu9hn1tAtTUJsR-NLZZFnsGW; 22 unit tests pass; handoff docs/handoffs/2026-07-09-coi-content-intake-m1-PROOF.md"
+    },
+    {
+      "id": "COI-MARKETING-PUBLISH-B",
+      "sprint": "COI Content Intake",
+      "task": "Publish hardening: failed UX, TG alert, fb-health, retry, probe",
+      "status": "completed",
+      "priority": "critical",
+      "owner": "agent",
+      "note": "Phase B local complete; handoff docs/handoffs/2026-07-09-coi-marketing-publish-B-PROOF.md; deploy pending Dowódca approve"
     }
   ]
 }

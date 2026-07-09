@@ -57,6 +57,12 @@ def _prepare_entry_data(payload: ContentCalendarCreateRequest) -> tuple[dict, Op
             return {}, norm.get("error", "Nieprawidłowy link media")
         entry_data["media_url"] = norm["media_url"]
         entry_data["media_source"] = norm["media_source"]
+        if content_type == "image":
+            from agent.media.gdrive import probe_media_url
+
+            probe = probe_media_url(norm["media_url"])
+            if not probe.get("ok"):
+                return {}, probe.get("error", "Plik niedostępny — sprawdź udostępnianie (każdy z linkiem)")
     elif payload.media_url:
         norm = normalize_media_url(payload.media_url)
         if norm.get("ok"):
@@ -114,13 +120,18 @@ def update_calendar_entry(
 
     updates = payload.model_dump(exclude_none=True)
     if updates.get("media_url"):
-        from agent.media.gdrive import normalize_media_url
+        from agent.media.gdrive import normalize_media_url, probe_media_url
 
         norm = normalize_media_url(updates["media_url"])
         if not norm.get("ok"):
             raise ValueError(norm.get("error", "Nieprawidłowy link media"))
         updates["media_url"] = norm["media_url"]
         updates["media_source"] = norm.get("media_source")
+        ctype = updates.get("content_type") or (db_get_calendar_entry(internal_id) or {}).get("content_type")
+        if ctype == "image":
+            probe = probe_media_url(norm["media_url"])
+            if not probe.get("ok"):
+                raise ValueError(probe.get("error", "Plik niedostępny"))
 
     if not updates:
         row = db_get_calendar_entry(internal_id)

@@ -36,3 +36,29 @@ def test_queue_wp_ticket(temp_db):
     items = build_queue()
     types = {i["queue_type"] for i in items}
     assert "wp_ticket" in types
+
+
+def test_queue_publish_failed(temp_db):
+    import json
+
+    from agent.commander.queue import build_queue
+    from agent.db import db_create_calendar_entry, db_update_calendar_entry
+
+    eid_str, _ = db_create_calendar_entry({
+        "platform": "facebook",
+        "title": "Broken post",
+        "body_nl": "NL",
+        "scheduled_at": "2026-12-01T10:00:00Z",
+        "status": "failed",
+    })
+    db_update_calendar_entry(int(eid_str), {
+        "publish_result": json.dumps({
+            "status": "error",
+            "details": json.dumps({"error": {"code": 190, "message": "expired"}}),
+        }),
+    })
+    items = build_queue()
+    failed = [i for i in items if i["queue_type"] == "publish_failed"]
+    assert len(failed) == 1
+    assert failed[0]["severity"] == "CRITICAL"
+    assert "entry_id" in failed[0]["payload"]

@@ -17,9 +17,11 @@ from agent.db import (
     db_update_calendar_entry_versioned,
 )
 from agent.publishers.calendar_publish import publish_calendar_content
-from agent.publishers.facebook import delete_post, is_facebook_configured
+from agent.publishers.facebook import delete_post, is_facebook_configured, parse_publish_error
 
 logger = logging.getLogger(__name__)
+
+_PUBLISHABLE_STATUSES = frozenset({"approved", "failed"})
 
 
 def _check_daily_budget() -> Optional[Dict]:
@@ -31,6 +33,18 @@ def _check_daily_budget() -> Optional[Dict]:
     if count >= limit:
         return {"status": "error", "message": "Daily human action budget exceeded"}
     return None
+
+
+def _touch_marketing_agent_run(success: bool, error_message: Optional[str] = None) -> None:
+    from datetime import datetime, timezone
+
+    from agent.db import db_commander_upsert_agent_state
+
+    updates: Dict[str, Any] = {
+        "last_run_at": datetime.now(timezone.utc).isoformat(),
+        "last_error": None if success else (error_message or "publish failed")[:500],
+    }
+    db_commander_upsert_agent_state("marketing", updates)
 
 
 def publish_calendar_entry(
@@ -58,14 +72,18 @@ def publish_calendar_entry(
     if row.get("status") == "pending_approval" and is_hotl_mode("fb_post_approve"):
         db_update_calendar_entry(internal_id, {"status": "approved"})
         row = db_get_calendar_entry(internal_id) or row
-    if row.get("status") != "approved":
-        return {"status": "error", "message": f"Entry must be approved, not {row.get('status')}"}
+    if row.get("status") not in _PUBLISHABLE_STATUSES:
+        return {
+            "status": "error",
+            "message": f"Entry must be approved or failed (retry), not {row.get('status')}",
+        }
 
     if not is_facebook_configured():
         return {"status": "error", "message": "Facebook not configured"}
 
     actor_id, actor_role = actor_from_payload(auth_payload)
     result = publish_calendar_content(row)
+    human_error = parse_publish_error(result) if result.get("status") != "success" else ""
     updates = {
         "publish_result": json.dumps(result),
         "fb_post_id": result.get("post_id"),
@@ -78,6 +96,15 @@ def publish_calendar_entry(
     ok, new_ver = db_update_calendar_entry_versioned(internal_id, updates, version)
     if not ok:
         return {"status": "error", "message": "Version conflict", "code": 409}
+
+    if result.get("status") == "success":
+        _touch_marketing_agent_run(True)
+    else:
+        _touch_marketing_agent_run(False, human_error)
+        from agent.commander.publish_errors import notify_publish_failure
+
+        row_after = db_get_calendar_entry(internal_id) or row
+        notify_publish_failure(row_after, result)
 
     db_commander_increment_daily_actions()
     append_audit(
@@ -93,6 +120,8 @@ def publish_calendar_entry(
         risk_tier="sensitive",
     )
     result["version"] = new_ver
+    if human_error:
+        result["message_pl"] = human_error
     return result
 
 

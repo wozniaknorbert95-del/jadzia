@@ -15,6 +15,7 @@ from agent.db import (
     db_list_calendar_entries,
     db_list_leads,
 )
+from agent.publishers.facebook import parse_publish_error
 
 logger = logging.getLogger(__name__)
 
@@ -73,6 +74,33 @@ def build_queue(severity_filter: Optional[str] = None) -> List[Dict]:
                 created_at=ticket["created_at"],
                 payload={"ticket_id": ticket["id"], "description": ticket["description"]},
                 source=ticket.get("source", "telegram"),
+            )
+        )
+
+    for row in db_list_calendar_entries(status="failed", limit=30):
+        pr_raw = row.get("publish_result")
+        pr: dict = {}
+        if pr_raw:
+            try:
+                pr = json.loads(pr_raw) if isinstance(pr_raw, str) else pr_raw
+            except json.JSONDecodeError:
+                pr = {}
+        human = parse_publish_error(pr) if pr else "Publikacja nie powiodła się"
+        qtype = "publish_failed"
+        items.append(
+            _queue_item(
+                item_id=f"failed-{row['entry_id']}",
+                queue_type=qtype,
+                title=f"Publish failed: {row.get('title', 'post')}",
+                severity=QUEUE_SEVERITY[qtype],
+                created_at=row.get("updated_at") or row.get("created_at"),
+                payload={
+                    "entry_id": row["entry_id"],
+                    "error_pl": human,
+                    "content_type": row.get("content_type"),
+                },
+                source="calendar",
+                escalation_reason=human,
             )
         )
 

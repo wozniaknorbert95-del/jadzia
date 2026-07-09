@@ -99,6 +99,23 @@ nav { display: flex; flex-wrap: wrap; gap: 0.5rem; }
 .badge.amber { background: var(--amber); color: #1a1200; }
 .badge.red { background: var(--red); color: #1a0000; }
 .badge.ok { background: var(--ok); color: #001a0e; }
+.badge.status-failed { background: var(--red); color: #1a0000; }
+.badge.status-published { background: var(--ok); color: #001a0e; }
+.badge.status-approved { background: var(--accent); color: #001018; }
+
+.error-box {
+  margin: 0.5rem 0 0;
+  padding: 0.5rem 0.75rem;
+  background: #2a1515;
+  border: 1px solid var(--red);
+  border-radius: 6px;
+  font-size: 0.85rem;
+  color: #ffc9c9;
+}
+
+.fb-health-ok { border-left: 3px solid var(--ok); }
+.fb-health-warn { border-left: 3px solid var(--amber); }
+.fb-health-bad { border-left: 3px solid var(--red); }
 
 .health-strip {
   margin-top: 1rem;

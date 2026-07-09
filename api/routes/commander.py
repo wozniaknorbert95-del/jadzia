@@ -232,6 +232,16 @@ async def get_commander_analytics_snapshot(
     }
 
 
+@router.get("/api/v1/commander/marketing/fb-health")
+async def get_marketing_fb_health(
+    _auth=Depends(require_scope("commander:read")),
+) -> dict:
+    """Facebook Page token preflight — no secrets exposed."""
+    from agent.publishers.facebook import check_token_health
+
+    return check_token_health()
+
+
 @router.post("/api/v1/content-calendar/{entry_id}/publish")
 async def commander_publish_entry(
     entry_id: str,
