@@ -74,6 +74,19 @@ def test_publish_post_missing_config(monkeypatch):
         fb.publish_post("x")
 
 
+def test_publish_photo_success():
+    mock_resp = MagicMock()
+    mock_resp.json.return_value = {"post_id": "491325420727745_888", "id": "photo123"}
+    mock_resp.raise_for_status = MagicMock()
+
+    with patch("agent.publishers.facebook.requests.post", return_value=mock_resp) as post:
+        result = fb.publish_photo("Caption NL", "https://drive.google.com/uc?export=download&id=x")
+
+    assert result["status"] == "success"
+    assert result["post_id"] == "491325420727745_888"
+    assert post.call_args.kwargs["data"]["url"].startswith("https://drive.google.com")
+
+
 def test_check_post_status_success():
     mock_resp = MagicMock()
     mock_resp.json.return_value = {"id": "post123", "message": "hello"}

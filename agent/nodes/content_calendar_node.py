@@ -14,7 +14,8 @@ from agent.db import (
     db_list_calendar_entries,
     db_update_calendar_entry,
 )
-from agent.publishers.facebook import is_facebook_configured, publish_post
+from agent.publishers.calendar_publish import publish_calendar_content
+from agent.publishers.facebook import is_facebook_configured
 from core.models import (
     ContentCalendarCreateRequest,
     ContentCalendarCreateResponse,
@@ -24,6 +25,46 @@ from core.models import (
 )
 
 logger = logging.getLogger(__name__)
+
+_VALID_CONTENT_TYPES = frozenset({"text", "image", "video"})
+
+
+def _prepare_entry_data(payload: ContentCalendarCreateRequest) -> tuple[dict, Optional[str]]:
+    """Build DB row dict; returns (entry_data, error_message)."""
+    from agent.media.gdrive import normalize_media_url
+
+    content_type = payload.content_type or "text"
+    if content_type not in _VALID_CONTENT_TYPES:
+        return {}, f"Invalid content_type: {content_type}"
+
+    sched = payload.scheduled_publish_at or payload.scheduled_at
+    entry_data: dict = {
+        "platform": payload.platform,
+        "title": payload.title,
+        "body_nl": payload.body_nl,
+        "scheduled_at": payload.scheduled_at,
+        "scheduled_publish_at": sched,
+        "status": payload.status or "draft",
+        "source_order_id": payload.source_order_id,
+        "content_type": content_type,
+    }
+
+    if content_type in ("image", "video"):
+        if not payload.media_url:
+            return {}, "Link do media jest wymagany dla grafiki/wideo"
+        norm = normalize_media_url(payload.media_url)
+        if not norm.get("ok"):
+            return {}, norm.get("error", "Nieprawidłowy link media")
+        entry_data["media_url"] = norm["media_url"]
+        entry_data["media_source"] = norm["media_source"]
+    elif payload.media_url:
+        norm = normalize_media_url(payload.media_url)
+        if norm.get("ok"):
+            entry_data["media_url"] = norm["media_url"]
+            entry_data["media_source"] = norm["media_source"]
+            entry_data["content_type"] = "image"
+
+    return entry_data, None
 
 
 def list_calendar_entries(
@@ -41,14 +82,11 @@ def create_calendar_entry(
     payload: ContentCalendarCreateRequest,
 ) -> ContentCalendarCreateResponse:
     """Persist new calendar draft."""
-    entry_data = {
-        "platform": payload.platform,
-        "title": payload.title,
-        "body_nl": payload.body_nl,
-        "scheduled_at": payload.scheduled_at,
-        "status": "draft",
-        "source_order_id": payload.source_order_id,
-    }
+    entry_data, err = _prepare_entry_data(payload)
+    if err:
+        logger.warning("[ContentCalendarNode] Create rejected: %s", err)
+        raise ValueError(err)
+
     entry_id, sync_status = db_create_calendar_entry(entry_data)
 
     if sync_status == "fail" or not entry_id:
@@ -56,9 +94,10 @@ def create_calendar_entry(
         return ContentCalendarCreateResponse(entry_id="", sync_status="fail")
 
     logger.info(
-        "[ContentCalendarNode] Entry created entry_id=%s platform=%s",
+        "[ContentCalendarNode] Entry created entry_id=%s platform=%s type=%s",
         entry_id,
         payload.platform,
+        entry_data.get("content_type"),
     )
     return ContentCalendarCreateResponse(entry_id=entry_id, sync_status="success")
 
@@ -74,6 +113,15 @@ def update_calendar_entry(
         return None
 
     updates = payload.model_dump(exclude_none=True)
+    if updates.get("media_url"):
+        from agent.media.gdrive import normalize_media_url
+
+        norm = normalize_media_url(updates["media_url"])
+        if not norm.get("ok"):
+            raise ValueError(norm.get("error", "Nieprawidłowy link media"))
+        updates["media_url"] = norm["media_url"]
+        updates["media_source"] = norm.get("media_source")
+
     if not updates:
         row = db_get_calendar_entry(internal_id)
         return _row_to_entry(row) if row else None
@@ -155,7 +203,7 @@ def publish_entry(entry_id: str) -> dict:
             "message": "FB_PAGE_ID and FB_ACCESS_TOKEN not configured",
         }
 
-    result = publish_post(row["body_nl"])
+    result = publish_calendar_content(row)
     updates = {
         "publish_result": json.dumps(result),
         "fb_post_id": result.get("post_id"),
@@ -223,6 +271,8 @@ def _row_to_entry(row: dict) -> ContentCalendarEntry:
         publish_result=row.get("publish_result"),
         media_url=row.get("media_url"),
         scheduled_publish_at=row.get("scheduled_publish_at"),
+        content_type=row.get("content_type") or "text",
+        media_source=row.get("media_source"),
         created_at=row["created_at"],
         updated_at=row["updated_at"],
     )

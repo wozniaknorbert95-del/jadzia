@@ -142,14 +142,109 @@ async function loadHome() {
   document.getElementById("delegat-banner").hidden = !!settings.delegat_configured;
 }
 
+let marketingFilter = "all";
+
+function toIsoSchedule(localValue) {
+  if (!localValue) return null;
+  const d = new Date(localValue);
+  if (Number.isNaN(d.getTime())) return null;
+  return d.toISOString();
+}
+
+function formatSchedule(iso) {
+  if (!iso) return "—";
+  try {
+    return new Date(iso).toLocaleString("pl-PL", { dateStyle: "short", timeStyle: "short" });
+  } catch {
+    return iso;
+  }
+}
+
+function toggleMediaField() {
+  const type = document.getElementById("content-type").value;
+  const show = type === "image" || type === "video";
+  document.getElementById("entry-media-url").hidden = !show;
+  document.getElementById("media-url-label").hidden = !show;
+}
+
+async function submitMarketingEntry(status) {
+  const title = document.getElementById("entry-title").value.trim();
+  const body = document.getElementById("entry-body").value.trim();
+  const type = document.getElementById("content-type").value;
+  const mediaUrl = document.getElementById("entry-media-url").value.trim();
+  const schedLocal = document.getElementById("entry-schedule").value;
+  const schedIso = toIsoSchedule(schedLocal) || new Date().toISOString();
+
+  if (!title || !body) {
+    toast("Tytuł i treść są wymagane");
+    return;
+  }
+  if (status === "approved" && !schedLocal) {
+    toast("Ustaw datę publikacji");
+    return;
+  }
+  if ((type === "image" || type === "video") && !mediaUrl) {
+    toast("Wklej link do pliku z Google Drive");
+    return;
+  }
+
+  const payload = {
+    platform: "facebook",
+    title,
+    body_nl: body,
+    scheduled_at: schedIso,
+    scheduled_publish_at: schedIso,
+    content_type: type,
+    status,
+  };
+  if (mediaUrl) payload.media_url = mediaUrl;
+
+  await api("/api/v1/content-calendar", { method: "POST", body: payload });
+  toast(status === "approved" ? "Zaplanowano publikację" : "Szkic zapisany");
+  document.getElementById("marketing-composer").reset();
+  toggleMediaField();
+  loadMarketing();
+}
+
+function matchesMarketingFilter(entry) {
+  if (marketingFilter === "all") return true;
+  if (marketingFilter === "approved") return entry.status === "approved";
+  if (marketingFilter === "draft") return entry.status === "draft";
+  if (marketingFilter === "published") return entry.status === "published";
+  return true;
+}
+
 async function loadMarketing() {
-  const [cal, agents, grad] = await Promise.all([
+  const [cal, agents, settings] = await Promise.all([
     api("/api/v1/content-calendar"),
     api("/api/v1/agents"),
-    api("/api/v1/commander/graduation/fb_post_approve").catch(() => ({ mode: "HITL" })),
+    api("/api/v1/commander/settings").catch(() => ({})),
   ]);
-  document.getElementById("graduation-badge").textContent =
-    `Tryb fb_post_approve: ${grad.mode || "HITL"}`;
+
+  const folderUrl = settings.marketing_gdrive_folder_url;
+  const folderHint = document.getElementById("gdrive-folder-hint");
+  if (folderUrl) {
+    folderHint.hidden = false;
+    folderHint.innerHTML = `Folder media: <a href="${folderUrl}" target="_blank" rel="noopener">COI-Marketing (Drive)</a>`;
+  } else {
+    folderHint.hidden = true;
+  }
+
+  const entries = (cal.entries || []).slice().sort((a, b) => {
+    const da = a.scheduled_publish_at || a.scheduled_at || "";
+    const db = b.scheduled_publish_at || b.scheduled_at || "";
+    return da.localeCompare(db);
+  });
+
+  const approved = entries.filter((e) => e.status === "approved");
+  const drafts = entries.filter((e) => e.status === "draft");
+  const next = approved.find((e) => {
+    const t = e.scheduled_publish_at || e.scheduled_at;
+    return t && new Date(t) > new Date();
+  });
+  document.getElementById("marketing-status-strip").textContent =
+    `Następna: ${next ? formatSchedule(next.scheduled_publish_at || next.scheduled_at) : "—"} · Zaplanowane: ${approved.length} · Szkice: ${drafts.length}`;
+
   const mkt = (agents.agents || []).find((a) => a.agent_id === "marketing");
   const held = document.getElementById("held-banner");
   if (mkt?.status === "PAUSED" || (mkt?.held_count || 0) > 0) {
@@ -158,67 +253,55 @@ async function loadMarketing() {
   } else {
     held.hidden = true;
   }
-  selectedEntries.clear();
-  const pending = (cal.entries || []).filter((e) =>
-    e.status === "draft" || e.status === "pending_approval");
-  const bulkBtn = document.getElementById("bulk-approve-btn");
-  bulkBtn.hidden = pending.length < 2;
-  bulkBtn.onclick = async () => {
-    const ids = [...selectedEntries];
-    if (!ids.length) return;
-    const needReason = ids.length > 5;
-    const c = await confirmAction(
-      `Zatwierdzić ${ids.length} wpisów?`,
-      needReason,
-    );
-    if (!c.ok) return;
-    await api("/api/v1/commander/bulk-approve", {
-      method: "POST",
-      body: { entry_ids: ids, reason: c.reason || null },
-    });
-    toast(`Zatwierdzono ${ids.length}`);
-    loadMarketing();
-  };
 
+  const filtered = entries.filter(matchesMarketingFilter);
   const el = document.getElementById("calendar-entries");
-  el.innerHTML = (cal.entries || []).map((e) => `
+  el.innerHTML = filtered.length
+    ? filtered.map((e) => {
+        const typeLabel = e.content_type || "text";
+        const sched = formatSchedule(e.scheduled_publish_at || e.scheduled_at);
+        const actions = [];
+        if (e.status === "draft") {
+          actions.push(`<button type="button" data-approve="${e.entry_id}">Zaplanuj</button>`);
+        }
+        if (e.status === "approved") {
+          actions.push(`<button type="button" data-publish="${e.entry_id}">Opublikuj teraz</button>`);
+        }
+        if (e.status === "published") {
+          actions.push(`<button type="button" data-unpublish="${e.entry_id}">Cofnij publikację</button>`);
+        }
+        if (e.status !== "published") {
+          actions.push(`<button type="button" data-cancel="${e.entry_id}">Anuluj</button>`);
+        }
+        return `
     <article class="card approval-card">
-      <label><input type="checkbox" data-select="${e.entry_id}"
-        ${e.status === "draft" || e.status === "pending_approval" ? "" : "disabled"} />
-      <strong>${e.title}</strong></label>
-      <p class="badge">${e.status}</p>
-      <p lang="nl">${(e.body_nl || "").slice(0, 120)}…</p>
-      <div class="actions">
-        ${e.status === "draft" || e.status === "pending_approval"
-          ? `<button type="button" data-approve="${e.entry_id}">Zatwierdź</button>` : ""}
-        ${e.status === "approved"
-          ? `<button type="button" data-publish="${e.entry_id}">Opublikuj</button>` : ""}
-        ${e.status === "published"
-          ? `<button type="button" data-unpublish="${e.entry_id}">Cofnij publikację</button>` : ""}
-      </div>
-    </article>`).join("") || "<p>Brak wpisów kalendarza</p>";
+      <header class="card-header">
+        <strong>${e.title}</strong>
+        <span class="badge">${e.status}</span>
+        <span class="badge">${typeLabel}</span>
+      </header>
+      <p class="meta">Publikacja: ${sched}</p>
+      <p lang="nl">${(e.body_nl || "").slice(0, 160)}${(e.body_nl || "").length > 160 ? "…" : ""}</p>
+      ${e.media_url ? `<p class="hint">Media: <a href="${e.media_url}" target="_blank" rel="noopener">link</a></p>` : ""}
+      <div class="actions">${actions.join("")}</div>
+    </article>`;
+      }).join("")
+    : "<p>Brak wpisów — dodaj pierwszy post powyżej</p>";
 
-  el.querySelectorAll("[data-select]").forEach((cb) => {
-    cb.onchange = () => {
-      if (cb.checked) selectedEntries.add(cb.dataset.select);
-      else selectedEntries.delete(cb.dataset.select);
-    };
-  });
   el.querySelectorAll("[data-approve]").forEach((btn) => {
     btn.onclick = async () => {
-      if (!(await confirmAction("Zatwierdzić post (akcja wewnętrzna)?")).ok) return;
       await api(`/api/v1/content-calendar/${btn.dataset.approve}`, {
         method: "PATCH",
         body: { status: "approved" },
       });
-      toast("Zatwierdzono — 60s undo");
+      toast("Zaplanowano");
       showUndoBar(btn.dataset.approve);
       loadMarketing();
     };
   });
   el.querySelectorAll("[data-publish]").forEach((btn) => {
     btn.onclick = async () => {
-      if (!(await confirmAction("Opublikować na Facebooku? Akcja publiczna.")).ok) return;
+      if (!(await confirmAction("Opublikować na Facebooku teraz?")).ok) return;
       try {
         await api(`/api/v1/content-calendar/${btn.dataset.publish}/publish`, { method: "POST", body: {} });
         toast("Opublikowano");
@@ -239,7 +322,35 @@ async function loadMarketing() {
       loadMarketing();
     };
   });
+  el.querySelectorAll("[data-cancel]").forEach((btn) => {
+    btn.onclick = async () => {
+      if (!(await confirmAction("Anulować wpis?")).ok) return;
+      await api(`/api/v1/content-calendar/${btn.dataset.cancel}`, {
+        method: "PATCH",
+        body: { status: "cancelled" },
+      });
+      toast("Anulowano");
+      loadMarketing();
+    };
+  });
 }
+
+document.getElementById("content-type")?.addEventListener("change", toggleMediaField);
+document.getElementById("save-draft")?.addEventListener("click", () => {
+  submitMarketingEntry("draft").catch((e) => toast(e.message));
+});
+document.getElementById("schedule-post")?.addEventListener("click", () => {
+  submitMarketingEntry("approved").catch((e) => toast(e.message));
+});
+document.querySelectorAll("#queue-filters .chip").forEach((chip) => {
+  chip.addEventListener("click", () => {
+    document.querySelectorAll("#queue-filters .chip").forEach((c) => c.classList.remove("active"));
+    chip.classList.add("active");
+    marketingFilter = chip.dataset.filter || "all";
+    loadMarketing().catch((e) => toast(e.message));
+  });
+});
+toggleMediaField();
 
 async function loadAnalytics() {
   const [snap, orders, leads] = await Promise.all([

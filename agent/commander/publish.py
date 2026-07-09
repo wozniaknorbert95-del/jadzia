@@ -16,7 +16,8 @@ from agent.db import (
     db_update_calendar_entry,
     db_update_calendar_entry_versioned,
 )
-from agent.publishers.facebook import delete_post, is_facebook_configured, publish_post
+from agent.publishers.calendar_publish import publish_calendar_content
+from agent.publishers.facebook import delete_post, is_facebook_configured
 
 logger = logging.getLogger(__name__)
 
@@ -64,7 +65,7 @@ def publish_calendar_entry(
         return {"status": "error", "message": "Facebook not configured"}
 
     actor_id, actor_role = actor_from_payload(auth_payload)
-    result = publish_post(row["body_nl"])
+    result = publish_calendar_content(row)
     updates = {
         "publish_result": json.dumps(result),
         "fb_post_id": result.get("post_id"),

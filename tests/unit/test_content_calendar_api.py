@@ -101,11 +101,11 @@ def test_content_calendar_publish_flow(client, temp_db, monkeypatch):
     monkeypatch.setenv("FB_PAGE_ID", "491325420727745")
     monkeypatch.setenv("FB_ACCESS_TOKEN", "test-token")
 
-    def _mock_publish(message, scheduled_publish_time=None):
+    def _mock_publish(row):
         return {"status": "success", "post_id": "491325420727745_99"}
 
     monkeypatch.setattr(
-        "agent.commander.publish.publish_post",
+        "agent.commander.publish.publish_calendar_content",
         _mock_publish,
     )
     monkeypatch.setattr(

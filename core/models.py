@@ -165,11 +165,17 @@ class AnalyticsSnapshotResponse(BaseModel):
 class ContentCalendarCreateRequest(BaseModel):
     """INT-010 inbound — create calendar entry."""
 
-    platform: Literal["facebook", "tiktok"]
+    platform: Literal["facebook", "tiktok"] = "facebook"
     title: str = Field(min_length=1, max_length=200)
     body_nl: str = Field(min_length=1, max_length=5000)
     scheduled_at: str
     source_order_id: Optional[str] = None
+    content_type: Literal["text", "image", "video"] = "text"
+    media_url: Optional[str] = None
+    scheduled_publish_at: Optional[str] = None
+    status: Optional[
+        Literal["draft", "pending_approval", "approved", "published", "cancelled", "failed"]
+    ] = None
 
     @field_validator("title", "body_nl", mode="before")
     @classmethod
@@ -185,6 +191,10 @@ class ContentCalendarUpdateRequest(BaseModel):
     title: Optional[str] = Field(default=None, min_length=1, max_length=200)
     body_nl: Optional[str] = Field(default=None, min_length=1, max_length=5000)
     scheduled_at: Optional[str] = None
+    scheduled_publish_at: Optional[str] = None
+    content_type: Optional[Literal["text", "image", "video"]] = None
+    media_url: Optional[str] = None
+    media_source: Optional[Literal["gdrive", "external"]] = None
     status: Optional[
         Literal["draft", "pending_approval", "approved", "published", "cancelled", "failed"]
     ] = None
@@ -213,6 +223,8 @@ class ContentCalendarEntry(BaseModel):
     publish_result: Optional[str] = None
     media_url: Optional[str] = None
     scheduled_publish_at: Optional[str] = None
+    content_type: Optional[str] = "text"
+    media_source: Optional[str] = None
     created_at: str
     updated_at: str
 

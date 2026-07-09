@@ -326,6 +326,8 @@ def _migrate_content_calendar_columns(conn: sqlite3.Connection) -> None:
         ("media_url", "TEXT"),
         ("fb_post_id", "TEXT"),
         ("scheduled_publish_at", "TEXT"),
+        ("content_type", "TEXT DEFAULT 'text'"),
+        ("media_source", "TEXT"),
     )
     for column_name, column_type in new_columns:
         try:
@@ -1210,8 +1212,9 @@ def db_create_calendar_entry(entry_data: Dict) -> tuple[str, str]:
             """
             INSERT INTO content_calendar (
                 platform, title, body_nl, scheduled_at, status,
-                source_order_id, created_at, updated_at
-            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+                source_order_id, media_url, scheduled_publish_at,
+                content_type, media_source, created_at, updated_at
+            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
             """,
             (
                 platform,
@@ -1220,6 +1223,10 @@ def db_create_calendar_entry(entry_data: Dict) -> tuple[str, str]:
                 entry_data["scheduled_at"],
                 entry_data.get("status", "draft"),
                 entry_data.get("source_order_id"),
+                entry_data.get("media_url"),
+                entry_data.get("scheduled_publish_at"),
+                entry_data.get("content_type", "text"),
+                entry_data.get("media_source"),
                 now,
                 now,
             ),
@@ -1248,7 +1255,7 @@ def db_list_calendar_entries(
         query += " AND platform = ?"
         params.append(platform)
 
-    query += " ORDER BY scheduled_at ASC LIMIT ?"
+    query += " ORDER BY COALESCE(scheduled_publish_at, scheduled_at) ASC LIMIT ?"
     params.append(limit)
 
     rows = conn.execute(query, params).fetchall()
@@ -1277,6 +1284,8 @@ def db_update_calendar_entry(entry_id: int, updates: Dict) -> bool:
         "media_url",
         "fb_post_id",
         "scheduled_publish_at",
+        "content_type",
+        "media_source",
     }
     filtered = {k: v for k, v in updates.items() if k in allowed and v is not None}
     if not filtered:
@@ -1707,7 +1716,7 @@ def db_update_calendar_entry_versioned(
     allowed = {
         "platform", "title", "body_nl", "scheduled_at", "status",
         "source_order_id", "publish_result", "media_url", "fb_post_id",
-        "scheduled_publish_at",
+        "scheduled_publish_at", "content_type", "media_source",
     }
     filtered = {k: v for k, v in updates.items() if k in allowed and v is not None}
     if not filtered:

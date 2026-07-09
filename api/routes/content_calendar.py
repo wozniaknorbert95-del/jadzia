@@ -45,7 +45,10 @@ async def post_content_calendar(
     """Create calendar draft entry (INT-010)."""
     from agent.nodes.content_calendar_node import create_calendar_entry
 
-    return create_calendar_entry(request)
+    try:
+        return create_calendar_entry(request)
+    except ValueError as exc:
+        raise HTTPException(status_code=400, detail=str(exc)) from exc
 
 
 @router.patch("/api/v1/content-calendar/{entry_id}", response_model=ContentCalendarEntry)
@@ -57,11 +60,13 @@ async def patch_content_calendar(
     """Update calendar entry status or copy (INT-010)."""
     from agent.nodes.content_calendar_node import update_calendar_entry
 
-    result = update_calendar_entry(entry_id, request)
+    try:
+        result = update_calendar_entry(entry_id, request)
+    except ValueError as exc:
+        raise HTTPException(status_code=400, detail=str(exc)) from exc
     if not result:
         raise HTTPException(status_code=404, detail="Calendar entry not found")
     return result
-
 
 @router.get("/api/v1/content-calendar/suggestions/orders")
 async def get_case_study_suggestions(
