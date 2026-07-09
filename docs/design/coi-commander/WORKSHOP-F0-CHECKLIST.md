@@ -10,17 +10,19 @@
 
 ## 5 testów
 
-1. **Odwracalność** — public unpublish vs internal 60s undo
-2. **Czy ktoś słucha** — Dowódca 3d offline → Delegat push
-3. **Obciążenie** — Home wireframe ≤7 chunków
-4. **Poniedziałek rano** — dashboard only flow do FB publish
-5. **No-laptop** — telefon + signed link → ticket approve
+1. **Odwracalność** — public unpublish vs internal 60s undo — _opcjonalnie pominięte (brak published posta)_
+2. **Czy ktoś słucha** — Dowódca 3d offline → Delegat push — _odłożone (wymaga 3d; logika w kodzie)_
+3. **Obciążenie** — Home wireframe ≤7 chunków — [x] Dowódca 2026-07-09
+4. **Poniedziałek rano** — dashboard only flow do FB publish — [x] dashboard + JWT OK
+5. **No-laptop** — telefon + signed link → ticket approve — [x] workaround + link fix `1b97201`
 
 ## Deliverables sign-off
 
-- [ ] D0.1–D0.14 approved on paper
-- [ ] Scorecard draft ≥ acceptable
+- [x] D0.1–D0.14 approved on paper (plan v3 APPROVED + prod proof)
+- [x] Scorecard draft ≥ acceptable (6/6 closure)
 
 ## Notatki sesji
 
-_(wypełnić na workshopie)_
+- Delegat email prod: `wozniaknorbert95@gmail.com` (`delegat_configured: true`)
+- Deeplink bug: localhost → fix `get_public_base_url()`
+- Hot leady `deploy02-*` = stare E2E — do wyczyszczenia w osobnej sesji

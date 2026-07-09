@@ -1,43 +1,32 @@
 # Handoff: COI Commander v3 — F0 Workshop PROOF (2026-07-09)
 
 **Plan:** `docs/design/coi-commander/COI-COMMANDER-PLAN-v3.md` — **APPROVED**  
-**Gate:** `COI-CMD-WORKSHOP`  
+**Gate:** `COI-CMD-WORKSHOP` → **DONE**  
 **Prod:** https://api.zzpackage.flexgrafik.nl/commander/
 
 ---
 
-## Automated prep (agent)
+## Dowódca sign-off (2026-07-09)
 
-| Item | Status |
-|------|--------|
-| Plan v3 status → APPROVED | Done |
-| IMPLEMENTATION STATUS section | Done |
-| `deployment/commander-prod-smoke.sh` workshop section | Done |
-| Closure program sprints S0–S7 | In progress |
-
----
-
-## Workshop 5 tests (Dowódca — human sign-off)
-
-| # | Test | Automated | Human |
-|---|------|-----------|-------|
-| 1 | Odwracalność public unpublish vs internal 60s undo | API unpublish OK | Undo UI po S3 |
-| 2 | Dowódca offline → Delegat push | Escalation worker S2 | Simulate 24h |
-| 3 | Home ≤7 chunków | UI structure | Visual check |
-| 4 | Poniedziałek rano dashboard flow | Smoke 7/7 | Walkthrough |
-| 5 | No-laptop signed link | Deeplink mint OK | TG `/ticket` na telefonie |
+| Test | Wynik |
+|------|-------|
+| JWT + dashboard Home/queue | ✅ |
+| TG `/ticket` + link na telefonie | ✅ (po fix deeplink `1b97201`) |
+| Home ≤7 chunków | ✅ |
+| Delegat email | ✅ `wozniaknorbert95@gmail.com` (`delegat_configured: true`) |
+| Audyt / undo60 | ✅ (per Dowódca) |
 
 ---
 
-## D0.1–D0.14 sign-off
+## Uwagi
 
-- [x] Specs committed in `docs/design/coi-commander/`
-- [x] Backend MVP deployed prod
-- [ ] Live TG `/ticket` proof (Dowódca)
-- [ ] Scorecard draft ≥ acceptable on paper
+- Stare hot_leady `deploy02-*` w kolejce — E2E testy, backlog `COI-CMD-QUEUE-CLEAN`
+- Email eskalacji wymaga SMTP na VPS — backlog `COI-CMD-SMTP-01` (brak `SMTP_*` w `.env`)
+- Test „3d offline → Delegat” — odłożony (logika w `escalation.py`)
 
 ---
 
-## Next gate
+## Następny krok
 
-S1 → S7 closure per plan. Active: `coi_commander_v3_closure`.
+**Dowódca:** codzienny loop — Marketing → approve → publish (poniedziałek rano)  
+**Agent:** SMTP eskalacji albo cleanup kolejki E2E
