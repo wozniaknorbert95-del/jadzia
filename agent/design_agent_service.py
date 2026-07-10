@@ -33,8 +33,10 @@ _ALLOWED_LOGO_MIMES = {
 _ALLOWED_LOGO_EXT = {".png", ".jpg", ".jpeg", ".svg", ".pdf"}
 
 TIER_LABELS = {
-    "tier_b": "Smart Start",
-    "tier_a": "Premium Presence",
+    "tier_b": "Standard — Slim zichtbaar starten",
+    "tier_a": "Premium — Maximale merkuitstraling",
+    "standard": "Standard — Slim zichtbaar starten",
+    "premium": "Premium — Maximale merkuitstraling",
 }
 
 

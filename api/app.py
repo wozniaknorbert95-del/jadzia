@@ -63,6 +63,7 @@ def create_app() -> FastAPI:
     from api.routes.sessions import router as sessions_router
     from api.routes.design_agent import router as design_agent_router
     from api.routes.design_agent_chat import router as design_agent_chat_router
+    from api.routes.design_agent_v4 import router as design_agent_v4_router
     from api.routes.commander import router as commander_router
 
     app.include_router(chat_router)
@@ -78,6 +79,7 @@ def create_app() -> FastAPI:
     app.include_router(sessions_router)
     app.include_router(design_agent_router)
     app.include_router(design_agent_chat_router)
+    app.include_router(design_agent_v4_router)
     app.include_router(commander_router)
 
     # Design Agent mockup PNGs (nginx may also serve this path on VPS)

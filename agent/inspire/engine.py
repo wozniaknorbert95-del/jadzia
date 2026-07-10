@@ -5,6 +5,7 @@ from __future__ import annotations
 import base64
 import logging
 import os
+import sys
 import uuid
 from dataclasses import dataclass
 from pathlib import Path
@@ -55,8 +56,100 @@ class InspireResponse:
 
 
 def _enterprise_enabled() -> bool:
-    raw = os.getenv("INSPIRE_ENTERPRISE", "1").strip().lower()
-    return raw not in ("0", "false", "no", "off")
+    if _inspiration_enabled():
+        return False
+    raw = os.getenv("INSPIRE_ENTERPRISE", "0").strip().lower()
+    return raw in ("1", "true", "yes", "on")
+
+
+def _inspiration_enabled() -> bool:
+    raw = os.getenv("INSPIRE_RENDER_MODE", "inspirationOnly").strip().lower()
+    if raw in ("controlled", "pil"):
+        return True
+    return raw in (
+        "oneshot",
+        "sales",
+        "v3",
+        "inspirationonly",
+        "inspiration_only",
+        "v4",
+        "",
+    )
+
+
+def _try_inspiration_generate(**kwargs) -> InspireResponse | None:
+    if not _inspiration_enabled():
+        return None
+    repo = _inspire_repo_path()
+    if not repo.is_dir():
+        logger.warning("inspiration mode but INSPIRE_REPO_PATH missing: %s", repo)
+        return None
+    if str(repo) not in sys.path:
+        sys.path.insert(0, str(repo))
+    os.environ.setdefault("DA_TIER_MATRIX_PATH", str(repo / "brain" / "tier-matrix.json"))
+    try:
+        from engine.v4.intake.legacy_brief_adapter import legacy_brief_to_v4
+        from engine.v4.pipeline import generate_inspiration_mockups
+
+        brief_dict = {
+            "vehicle": kwargs.get("vehicle", "caddy"),
+            "branche": kwargs.get("branche", ""),
+            "bedrijfsnaam": kwargs.get("bedrijfsnaam", ""),
+            "telefoon": kwargs.get("telefoon", ""),
+            "website": kwargs.get("website", ""),
+            "brand_colors": kwargs.get("brand_colors", []),
+            "tekst_opties": kwargs.get("tekst_opties", []),
+            "slogan": kwargs.get("slogan", ""),
+            "positionering": kwargs.get("positionering") or kwargs.get("stijl", "balanced"),
+            "diensten": kwargs.get("diensten", ""),
+            "doelgroep": kwargs.get("doelgroep", ""),
+            "vehicle_usage": kwargs.get("vehicle_use", "zakelijk"),
+            "budget_range": kwargs.get("budget_range", "weet_ik_niet"),
+            "brief_confirmed": True,
+            "mockup_goal_acknowledged": True,
+        }
+        design_brief = legacy_brief_to_v4(brief_dict)
+        design_brief.consent.brief_confirmed = True
+        raw = generate_inspiration_mockups(
+            design_brief,
+            logo_bytes=kwargs.get("logo_bytes"),
+            output_dir=kwargs.get("output_dir"),
+            public_base_url=kwargs.get("public_base_url", ""),
+            ssot_path=kwargs.get("ssot_path"),
+        )
+        mockups = [
+            MockupResult(
+                variant="tier_b" if m.variant == "standard" else "tier_a",
+                panel=m.panel,
+                url=m.url,
+                sku=m.sku,
+                data_url=m.data_url,
+                degraded=False,
+            )
+            for m in (raw.standard, raw.premium)
+        ]
+        return InspireResponse(
+            brief_id=raw.brief_id,
+            mockups=mockups,
+            recommended_products=raw.recommended_products,
+            wizard_deeplink=raw.wizard_deeplink,
+            cost_eur=raw.cost_eur,
+            positionering=kwargs.get("positionering") or kwargs.get("stijl", "balanced"),
+            user_stijl=kwargs.get("stijl", "balanced"),
+            mockup_b_sku=raw.mockup_b_sku,
+            mockup_a_sku=raw.mockup_a_sku,
+            engine_mode=raw.engine_mode,
+        )
+    except Exception as exc:
+        logger.warning("inspiration engine failed, fallback: %s", exc)
+        return None
+
+
+def _inspire_repo_path() -> Path:
+    env = os.getenv("INSPIRE_REPO_PATH", "").strip()
+    if env:
+        return Path(env)
+    return Path(__file__).resolve().parents[3].parent / "flexgrafik-inspire"
 
 
 def _save_mockup(
@@ -145,6 +238,33 @@ def generate_inspire_mockups(
     public_base_url: str = "",
     tier_matrix_path: Path | None = None,
 ) -> InspireResponse:
+    oneshot_kwargs = dict(
+        vehicle=vehicle,
+        branche=branche,
+        bedrijfsnaam=bedrijfsnaam,
+        telefoon=telefoon,
+        website=website,
+        brand_colors=brand_colors,
+        tekst_opties=tekst_opties,
+        slogan=slogan,
+        stijl=stijl,
+        positionering=positionering,
+        diensten=diensten,
+        doelgroep=doelgroep,
+        vehicle_use=vehicle_use,
+        budget_range=os.getenv("INSPIRE_DEFAULT_BUDGET", "weet_ik_niet"),
+        mockup_b_sku=mockup_b_sku,
+        mockup_a_sku=mockup_a_sku,
+        logo_bytes=logo_bytes,
+        output_dir=output_dir,
+        ssot_path=ssot_path,
+        public_base_url=public_base_url,
+        tier_matrix_path=tier_matrix_path,
+    )
+    inspiration = _try_inspiration_generate(**oneshot_kwargs)
+    if inspiration is not None:
+        return inspiration
+
     brief_id = str(uuid.uuid4())
     raw_pos = positionering or stijl
     if raw_pos in ("strak", "opvallend", "balanced"):
