@@ -12,7 +12,10 @@ from typing import Optional
 
 from dotenv import load_dotenv
 from fastapi import FastAPI
+from fastapi.exceptions import RequestValidationError
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import JSONResponse
+from starlette.requests import Request
 
 from api._state import health_metrics
 from core.config import validate_production_config
@@ -31,6 +34,26 @@ def create_app() -> FastAPI:
         description="AI Agent for online store management",
         version="1.0.0",
     )
+
+    @app.exception_handler(RequestValidationError)
+    async def design_agent_validation_handler(
+        request: Request, exc: RequestValidationError
+    ) -> JSONResponse:
+        if "/api/v1/design-agent/generate" in request.url.path:
+            for err in exc.errors():
+                if "logo" in err.get("loc", ()):
+                    return JSONResponse(
+                        status_code=400,
+                        content={
+                            "detail": {
+                                "error_code": "LOGO_INVALID",
+                                "message": "Logo is verplicht.",
+                            }
+                        },
+                    )
+        from fastapi.exception_handlers import request_validation_exception_handler
+
+        return await request_validation_exception_handler(request, exc)
 
     # ── CORS ──
     app.add_middleware(

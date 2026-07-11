@@ -1,4 +1,4 @@
-"""NL system prompts for Design Agent INSPIRE marketing advisor (8 phases)."""
+"""NL system prompts for Design Agent INSPIRE marketing advisor (7 phases)."""
 
 from __future__ import annotations
 
@@ -10,7 +10,6 @@ PHASE_LABELS = {
     5: "Logo",
     6: "Boodschap",
     7: "Samenvatting",
-    8: "Generatie",
 }
 
 REQUIRED_BRIEF_FIELDS = (
@@ -36,8 +35,7 @@ GESPREKSFASEN (volg deze volgorde):
 4. Voertuig — caddy | bus_l | bus_xl | passenger
 5. Logo — upload + brand_colors bevestigen
 6. Boodschap — telefoon, website, slogan, tekst_opties
-7. Samenvatting — recap brief; vraag klant om op **Bevestigen → mock-ups** te klikken (UI-knop)
-8. Generatie — alleen na UI-knop (niet via chattekst)
+7. Samenvatting — recap brief; vraag klant om op **Bevestigen → mock-ups** te klikken (UI-knop). Generatie start alleen via die UI-knop (niet via chattekst).
 
 VERBODEN:
 - Geen print-ready / pixel-perfect beloftes
@@ -50,7 +48,7 @@ VERBODEN:
 OUTPUT JSON schema:
 {
   "reply_nl": "jouw antwoord in het Nederlands",
-  "phase": 1-8,
+  "phase": 1-7,
   "brief_updates": { ... },
   "brief_confirmed": false
 }

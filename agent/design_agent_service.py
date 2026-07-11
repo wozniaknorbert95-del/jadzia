@@ -253,6 +253,29 @@ async def process_design_agent_generate(
     opts = _parse_json_list(tekst_opties)
     user_positionering = _resolve_positionering(positionering, stijl)
 
+    if not mockup_b_sku.strip() or not mockup_a_sku.strip():
+        try:
+            from agent.inspire.tier_resolver import resolve_tier_skus
+
+            tier_b, tier_a = resolve_tier_skus(
+                vehicle,
+                {
+                    "branche": branche,
+                    "bedrijfsnaam": bedrijfsnaam,
+                    "positionering": user_positionering,
+                },
+            )
+            if not mockup_b_sku.strip():
+                mockup_b_sku = tier_b.sku
+            if not mockup_a_sku.strip():
+                mockup_a_sku = tier_a.sku
+        except (ValueError, FileNotFoundError) as exc:
+            raise _api_error(
+                400,
+                "SKU_RESOLVE_FAILED",
+                f"Kon geen product-SKU bepalen voor voertuig '{vehicle}'.",
+            ) from exc
+
     output_root = Path(os.getenv("DESIGN_AGENT_OUTPUT_DIR", "output/design-agent"))
     ssot_path = Path(
         os.getenv(

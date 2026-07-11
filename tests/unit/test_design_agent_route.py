@@ -15,6 +15,13 @@ from core.models import DesignAgentGenerateResponse, DesignAgentMockupItem, Desi
 
 
 @pytest.fixture(autouse=True)
+def _tier_matrix_env(monkeypatch: pytest.MonkeyPatch) -> None:
+    matrix = Path(__file__).resolve().parents[3] / "flexgrafik-inspire" / "brain" / "tier-matrix.json"
+    if matrix.is_file():
+        monkeypatch.setenv("DA_TIER_MATRIX_PATH", str(matrix))
+
+
+@pytest.fixture(autouse=True)
 def _isolated_rate_store(monkeypatch: pytest.MonkeyPatch, tmp_path: Path) -> None:
     from agent import rate_store
 
@@ -199,3 +206,19 @@ def test_design_agent_rate_limit_survives_restart(
     with pytest.raises(Exception) as exc:
         design_agent_service._check_rate_limit("127.0.0.1", "persist-session")
     assert exc.value.status_code == 429
+
+
+def test_design_agent_generate_missing_logo_400(client: TestClient) -> None:
+    resp = client.post(
+        "/api/v1/design-agent/generate",
+        data={
+            "vehicle": "caddy",
+            "bedrijfsnaam": "Test BV",
+            "branche": "Elektricien",
+            "diensten": "Installatie",
+            "doelgroep": "Particulieren",
+            "brief_confirmed": "true",
+        },
+    )
+    assert resp.status_code == 400
+    assert resp.json()["detail"]["error_code"] == "LOGO_INVALID"

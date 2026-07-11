@@ -567,3 +567,4 @@ class DesignAgentChatSessionResponse(BaseModel):
     missing_fields: list[str] = []
     logo_reupload_required: bool = False
     last_reply_nl: str = ""
+    messages_tail: list[dict] = []

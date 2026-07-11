@@ -15,6 +15,7 @@ import httpx
 from cachetools import TTLCache
 
 from agent.inspire.chat_prompts import REQUIRED_BRIEF_FIELDS, SYSTEM_PROMPT
+from agent.inspire import chat_session_store
 from agent.inspire.tier_resolver import resolve_tier_skus
 
 logger = logging.getLogger(__name__)
@@ -45,6 +46,37 @@ class ChatTurnResult:
     brief_confirmed: bool
     missing_fields: list[str]
     logo_reupload_required: bool
+
+
+def _session_to_dict(session: ChatSession) -> dict[str, Any]:
+    return {
+        "session_id": session.session_id,
+        "phase": session.phase,
+        "brief_partial": session.brief_partial,
+        "brief_confirmed": session.brief_confirmed,
+        "messages": session.messages,
+        "created_at": session.created_at,
+    }
+
+
+def _session_from_dict(data: dict[str, Any]) -> ChatSession:
+    return ChatSession(
+        session_id=str(data["session_id"]),
+        phase=int(data.get("phase", 1)),
+        brief_partial=dict(data.get("brief_partial") or {}),
+        brief_confirmed=bool(data.get("brief_confirmed")),
+        messages=list(data.get("messages") or []),
+        created_at=str(data.get("created_at") or datetime.now(timezone.utc).isoformat()),
+    )
+
+
+def _persist_session(session: ChatSession) -> None:
+    SESSIONS[session.session_id] = session
+    chat_session_store.save_session(session.session_id, _session_to_dict(session))
+
+
+def _has_contact_cta(brief: dict[str, Any]) -> bool:
+    return bool(str(brief.get("telefoon") or "").strip() or str(brief.get("website") or "").strip())
 
 
 def set_llm_callable(fn: Callable[[list[dict[str, str]]], dict[str, Any]] | None) -> None:
@@ -117,8 +149,10 @@ def _resolve_tier_skus_if_ready(session: ChatSession) -> None:
         session.brief_partial.setdefault("mockup_b_sku", tier_b.sku)
         session.brief_partial.setdefault("mockup_a_sku", tier_a.sku)
     except (ValueError, FileNotFoundError) as exc:
-        logger.warning("tier resolve skipped: %s", exc)
+        logger.warning("tier resolve failed: %s", exc)
         session.brief_partial["_tier_resolve_failed"] = True
+        session.brief_partial.pop("mockup_b_sku", None)
+        session.brief_partial.pop("mockup_a_sku", None)
 
 
 def _normalize_vehicle_id(raw: str) -> str:
@@ -173,6 +207,15 @@ def parse_summary_fields(brief: dict[str, Any], reply_nl: str) -> dict[str, Any]
 
     if updates.get("vehicle"):
         updates["vehicle"] = _normalize_vehicle_id(str(updates["vehicle"]))
+
+    if not str(brief.get("primary_cta") or "").strip():
+        website = str(updates.get("website") or brief.get("website") or "").strip()
+        telefoon = str(updates.get("telefoon") or brief.get("telefoon") or "").strip()
+        if website:
+            updates["primary_cta"] = "website"
+        elif telefoon:
+            updates["primary_cta"] = "telefoon"
+
     return updates
 
 
@@ -199,6 +242,10 @@ def _compute_ready(session: ChatSession) -> bool:
     """Brief complete for mockups — confirmation is UI-only (not via chat LLM)."""
     if session.phase < 7:
         return False
+    if session.brief_partial.get("_tier_resolve_failed"):
+        return False
+    if not _has_contact_cta(session.brief_partial):
+        return False
     return len(_missing_fields(session.brief_partial)) == 0
 
 
@@ -206,6 +253,7 @@ def mark_brief_confirmed(session_id: str) -> None:
     """Set confirmed after explicit client action (generate form / future confirm endpoint)."""
     session = get_or_create_session(session_id)
     session.brief_confirmed = True
+    _persist_session(session)
 
 
 def compute_ready(session: ChatSession) -> bool:
@@ -213,21 +261,31 @@ def compute_ready(session: ChatSession) -> bool:
 
 
 def get_session(session_id: str) -> ChatSession | None:
-    return SESSIONS.get(session_id)
+    if session_id in SESSIONS:
+        return SESSIONS[session_id]
+    raw = chat_session_store.load_session(session_id)
+    if not raw:
+        return None
+    session = _session_from_dict(raw)
+    SESSIONS[session_id] = session
+    return session
 
 
 def get_or_create_session(session_id: str | None) -> ChatSession:
-    if session_id and session_id in SESSIONS:
-        return SESSIONS[session_id]
+    if session_id:
+        existing = get_session(session_id)
+        if existing:
+            return existing
     sid = session_id or str(uuid.uuid4())
     session = ChatSession(session_id=sid)
-    SESSIONS[sid] = session
+    _persist_session(session)
     return session
 
 
 def attach_logo(session_id: str, filename: str) -> None:
     session = get_or_create_session(session_id)
     session.brief_partial["logo_file"] = filename
+    _persist_session(session)
 
 
 def process_chat_turn(
@@ -263,13 +321,8 @@ def process_chat_turn(
 
     parsed = _call_llm(llm_messages)
     reply_nl = str(parsed.get("reply_nl", "")).strip() or "Kun je dat iets uitgebreider toelichten?"
-    if session.brief_partial.pop("_tier_resolve_failed", False):
-        reply_nl += (
-            "\n\n*(Let op: we konden je voertuigtype nog niet koppelen aan producten — "
-            "controleer je voertuigkeuze.)*"
-        )
     session.phase = int(parsed.get("phase", session.phase))
-    session.phase = max(1, min(8, session.phase))
+    session.phase = max(1, min(7, session.phase))
 
     updates = parsed.get("brief_updates") or {}
     if isinstance(updates, dict):
@@ -283,6 +336,11 @@ def process_chat_turn(
     # brief_confirmed is never set from LLM JSON — only mark_brief_confirmed() / generate path.
 
     _resolve_tier_skus_if_ready(session)
+    if session.brief_partial.get("_tier_resolve_failed"):
+        reply_nl = (
+            "**Voertuigtype niet herkend.** Kies opnieuw: Caddy, Bus L, Bus XL of Personenbus. "
+            "Mock-ups zijn pas mogelijk na een geldige voertuigkeuze.\n\n" + reply_nl
+        )
     ready = _compute_ready(session)
     missing = _missing_fields(session.brief_partial)
     if not ready and session.phase >= 7:
@@ -293,6 +351,7 @@ def process_chat_turn(
         )
 
     session.messages.append({"role": "assistant", "content": reply_nl})
+    _persist_session(session)
 
     return ChatTurnResult(
         session_id=session.session_id,

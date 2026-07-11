@@ -143,6 +143,7 @@ async def design_agent_chat_session(
         if msg.get("role") == "assistant":
             last_reply = str(msg.get("content") or "")
             break
+    tail = session.messages[-5:] if session.messages else []
     return DesignAgentChatSessionResponse(
         session_id=session.session_id,
         brief_partial=brief,
@@ -153,4 +154,5 @@ async def design_agent_chat_session(
         missing_fields=missing_fields(brief),
         logo_reupload_required=logo_reupload_required(brief),
         last_reply_nl=last_reply,
+        messages_tail=tail,
     )

@@ -13,6 +13,13 @@ from api.app import create_app
 
 
 @pytest.fixture(autouse=True)
+def _tier_matrix_env(monkeypatch: pytest.MonkeyPatch) -> None:
+    matrix = Path(__file__).resolve().parents[3] / "flexgrafik-inspire" / "brain" / "tier-matrix.json"
+    if matrix.is_file():
+        monkeypatch.setenv("DA_TIER_MATRIX_PATH", str(matrix))
+
+
+@pytest.fixture(autouse=True)
 def _isolated_rate_store(monkeypatch: pytest.MonkeyPatch, tmp_path: Path) -> None:
     from agent import rate_store
 
@@ -21,12 +28,17 @@ def _isolated_rate_store(monkeypatch: pytest.MonkeyPatch, tmp_path: Path) -> Non
 
 
 @pytest.fixture(autouse=True)
-def clear_sessions():
+def clear_sessions(monkeypatch: pytest.MonkeyPatch, tmp_path: Path):
+    from agent.inspire import chat_session_store
+
+    monkeypatch.setenv("DA_CHAT_SESSION_DB", str(tmp_path / "chat-sessions.sqlite3"))
+    chat_session_store.clear_all()
     SESSIONS.clear()
     set_llm_callable(None)
     yield
     SESSIONS.clear()
     set_llm_callable(None)
+    chat_session_store.clear_all()
 
 
 @pytest.fixture
@@ -140,6 +152,7 @@ def test_confirm_full_brief_ready(client: TestClient) -> None:
                     "brand_colors": ["#003366"],
                     "mockup_b_sku": "MA-005",
                     "mockup_a_sku": "CS-SET-PRO-ZZP",
+                    "telefoon": "06-12345678",
                 },
                 "brief_confirmed": True,
             }
@@ -318,3 +331,65 @@ def test_chat_rate_limit_429(client: TestClient, monkeypatch: pytest.MonkeyPatch
     r3 = client.post("/api/v1/design-agent/chat", json={"message": "c", "session_id": sid})
     assert r2.status_code == 200
     assert r3.status_code == 429
+
+
+def test_session_persists_across_memory_clear(client: TestClient) -> None:
+    _mock_llm([{"reply_nl": "ok", "phase": 1, "brief_updates": {}, "brief_confirmed": False}])
+    resp = client.post("/api/v1/design-agent/chat", json={"message": "hi"})
+    sid = resp.json()["session_id"]
+    SESSIONS.clear()
+    restored = chat_advisor.get_session(sid)
+    assert restored is not None
+    assert restored.session_id == sid
+
+
+def test_chat_session_messages_tail(client: TestClient) -> None:
+    _mock_llm(
+        [
+            {"reply_nl": "fase1", "phase": 1, "brief_updates": {}, "brief_confirmed": False},
+            {"reply_nl": "fase2", "phase": 2, "brief_updates": {}, "brief_confirmed": False},
+        ]
+    )
+    r1 = client.post("/api/v1/design-agent/chat", json={"message": "a"})
+    sid = r1.json()["session_id"]
+    client.post("/api/v1/design-agent/chat", json={"message": "b", "session_id": sid})
+    get = client.get(f"/api/v1/design-agent/chat/{sid}")
+    assert get.status_code == 200
+    tail = get.json()["messages_tail"]
+    assert len(tail) >= 2
+    assert tail[-1]["role"] == "assistant"
+
+
+def test_tier_resolve_failed_blocks_ready(client: TestClient) -> None:
+    _mock_llm(
+        [
+            {
+                "reply_nl": "samenvatting",
+                "phase": 7,
+                "brief_updates": {
+                    "vehicle": "spaceship",
+                    "bedrijfsnaam": "X",
+                    "branche": "Y",
+                    "diensten": "Z",
+                    "doelgroep": "A",
+                    "positionering": "strak",
+                    "logo_file": "l.png",
+                    "brand_colors": ["#000"],
+                    "telefoon": "06-123",
+                },
+                "brief_confirmed": False,
+            }
+        ]
+    )
+    resp = client.post("/api/v1/design-agent/chat", json={"message": "klaar"})
+    data = resp.json()
+    assert data["ready_to_generate"] is False
+    assert "Voertuigtype niet herkend" in data["reply_nl"]
+
+
+def test_parse_summary_sets_primary_cta_website() -> None:
+    from agent.inspire.chat_advisor import parse_summary_fields
+
+    brief = {"website": "https://x.nl"}
+    updates = parse_summary_fields(brief, "Samenvatting")
+    assert updates.get("primary_cta") == "website"
