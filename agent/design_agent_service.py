@@ -6,7 +6,6 @@ import json
 import logging
 import os
 import sys
-import time
 from pathlib import Path
 
 from fastapi import HTTPException, UploadFile
@@ -19,7 +18,8 @@ from core.models import (
 
 logger = logging.getLogger(__name__)
 
-_RATE: dict[str, list[float]] = {}
+from agent.rate_store import check_and_record
+
 _RATE_LIMIT = 2
 _RATE_WINDOW_SEC = 3600
 
@@ -35,10 +35,8 @@ _ALLOWED_LOGO_MIMES = {
     "image/png",
     "image/jpeg",
     "image/jpg",
-    "image/svg+xml",
-    "application/pdf",
 }
-_ALLOWED_LOGO_EXT = {".png", ".jpg", ".jpeg", ".svg", ".pdf"}
+_ALLOWED_LOGO_EXT = {".png", ".jpg", ".jpeg"}
 
 TIER_LABELS = {
     "tier_b": "Standard — Slim zichtbaar starten",
@@ -81,10 +79,10 @@ def _validate_logo_upload(logo: UploadFile, logo_bytes: bytes) -> None:
     filename = (logo.filename or "").lower()
     ext = Path(filename).suffix
     if ext and ext not in _ALLOWED_LOGO_EXT:
-        raise _api_error(400, "LOGO_INVALID", "Logo moet PNG, JPG, SVG of PDF zijn.")
+        raise _api_error(400, "LOGO_INVALID", "Logo moet PNG of JPG zijn.")
     content_type = (logo.content_type or "").split(";")[0].strip().lower()
     if content_type and content_type not in _ALLOWED_LOGO_MIMES:
-        raise _api_error(400, "LOGO_INVALID", "Logo moet PNG, JPG, SVG of PDF zijn.")
+        raise _api_error(400, "LOGO_INVALID", "Logo moet PNG of JPG zijn.")
     if len(logo_bytes) < 32:
         raise _api_error(400, "LOGO_INVALID", "Logo-bestand is te klein of beschadigd.")
 
@@ -133,18 +131,21 @@ def _log_generation_cost(brief_id: str, vehicle: str, cost_eur: float) -> None:
 
 
 def _check_rate_limit(client_ip: str, session_id: str | None = None) -> None:
-    now = time.time()
     bucket = f"session:{session_id.strip()}" if session_id and session_id.strip() else f"ip:{client_ip}"
-    hits = _RATE.get(bucket, [])
-    hits = [t for t in hits if now - t < _RATE_WINDOW_SEC]
-    if len(hits) >= _RATE_LIMIT:
-        raise _api_error(
-            429,
-            "RATE_LIMIT",
-            "Te veel verzoeken. Probeer het over een uur opnieuw.",
+    try:
+        check_and_record(
+            bucket,
+            window_sec=_RATE_WINDOW_SEC,
+            limit=_RATE_LIMIT,
         )
-    hits.append(now)
-    _RATE[bucket] = hits
+    except ValueError as exc:
+        if str(exc) == "RATE_LIMIT":
+            raise _api_error(
+                429,
+                "RATE_LIMIT",
+                "Te veel verzoeken. Probeer het over een uur opnieuw.",
+            ) from exc
+        raise
 
 
 def _ensure_vge_import() -> None:

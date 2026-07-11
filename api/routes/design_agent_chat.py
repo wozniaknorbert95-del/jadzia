@@ -5,6 +5,7 @@ from __future__ import annotations
 from fastapi import APIRouter, File, Form, Header, HTTPException, Request, UploadFile
 
 from agent.design_agent_service import _verify_api_key
+from agent.rate_store import check_and_record
 from agent.inspire.chat_advisor import (
     compute_ready,
     get_session,
@@ -20,7 +21,6 @@ from core.models import (
 
 router = APIRouter(tags=["design-agent"])
 
-_CHAT_RATE: dict[str, list[float]] = {}
 _CHAT_RATE_WINDOW_SEC = 3600
 
 
@@ -41,20 +41,21 @@ def _rate_bucket(client_ip: str, session_id: str | None) -> str:
 
 
 def _check_chat_rate_limit(client_ip: str, session_id: str | None = None) -> None:
-    import time
-
     limit = _chat_rate_limit()
     bucket = _rate_bucket(client_ip, session_id)
-    now = time.time()
-    hits = _CHAT_RATE.get(bucket, [])
-    hits = [t for t in hits if now - t < _CHAT_RATE_WINDOW_SEC]
-    if len(hits) >= limit:
-        raise HTTPException(
-            status_code=429,
-            detail="Te veel chatberichten. Probeer het over een uur opnieuw.",
+    try:
+        check_and_record(
+            bucket,
+            window_sec=_CHAT_RATE_WINDOW_SEC,
+            limit=limit,
         )
-    hits.append(now)
-    _CHAT_RATE[bucket] = hits
+    except ValueError as exc:
+        if str(exc) == "RATE_LIMIT":
+            raise HTTPException(
+                status_code=429,
+                detail="Te veel chatberichten. Probeer het over een uur opnieuw.",
+            ) from exc
+        raise
 
 
 @router.post("/api/v1/design-agent/chat", response_model=DesignAgentChatResponse)

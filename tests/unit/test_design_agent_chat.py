@@ -2,12 +2,22 @@
 
 from __future__ import annotations
 
+from pathlib import Path
+
 import pytest
 from fastapi.testclient import TestClient
 
 from agent.inspire import chat_advisor
 from agent.inspire.chat_advisor import SESSIONS, set_llm_callable
 from api.app import create_app
+
+
+@pytest.fixture(autouse=True)
+def _isolated_rate_store(monkeypatch: pytest.MonkeyPatch, tmp_path: Path) -> None:
+    from agent import rate_store
+
+    monkeypatch.setenv("DA_RATE_STORE_PATH", str(tmp_path / "rate.json"))
+    rate_store.clear_store()
 
 
 @pytest.fixture(autouse=True)
@@ -287,10 +297,13 @@ def test_chat_turn_empty_message_no_logo_400(client: TestClient) -> None:
     assert resp.status_code == 400
 
 
-def test_chat_rate_limit_429(client: TestClient, monkeypatch: pytest.MonkeyPatch) -> None:
+def test_chat_rate_limit_429(client: TestClient, monkeypatch: pytest.MonkeyPatch, tmp_path: Path) -> None:
+    from agent import rate_store
     from api.routes import design_agent_chat as chat_routes
 
-    chat_routes._CHAT_RATE.clear()
+    store = tmp_path / "chat-rate.json"
+    monkeypatch.setenv("DA_RATE_STORE_PATH", str(store))
+    rate_store.clear_store()
     monkeypatch.setattr(chat_routes, "_chat_rate_limit", lambda: 1)
     _mock_llm(
         [

@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 from io import BytesIO
+from pathlib import Path
 from unittest.mock import AsyncMock, patch
 
 import pytest
@@ -11,6 +12,14 @@ from PIL import Image
 
 from api.app import create_app
 from core.models import DesignAgentGenerateResponse, DesignAgentMockupItem, DesignAgentProductItem
+
+
+@pytest.fixture(autouse=True)
+def _isolated_rate_store(monkeypatch: pytest.MonkeyPatch, tmp_path: Path) -> None:
+    from agent import rate_store
+
+    monkeypatch.setenv("DA_RATE_STORE_PATH", str(tmp_path / "rate.json"))
+    rate_store.clear_store()
 
 
 def _logo_png() -> bytes:
@@ -141,12 +150,52 @@ def test_design_agent_generate_400_incomplete_brief(client: TestClient) -> None:
     assert detail["error_code"] == "BRIEF_INCOMPLETE"
 
 
-def test_design_agent_generate_429_rate_limit(monkeypatch: pytest.MonkeyPatch) -> None:
-    from agent import design_agent_service
+def test_design_agent_generate_400_svg_logo_rejected(client: TestClient) -> None:
+    svg = b'<svg xmlns="http://www.w3.org/2000/svg"><rect width="10" height="10"/></svg>'
+    resp = client.post(
+        "/api/v1/design-agent/generate",
+        data={
+            "vehicle": "caddy",
+            "bedrijfsnaam": "Test BV",
+            "branche": "Elektricien",
+            "diensten": "Installatie",
+            "doelgroep": "Particulieren",
+            "brief_confirmed": "true",
+        },
+        files={"logo": ("logo.svg", svg, "image/svg+xml")},
+    )
+    assert resp.status_code == 400
+    assert resp.json()["detail"]["error_code"] == "LOGO_INVALID"
 
-    design_agent_service._RATE.clear()
+
+def test_design_agent_generate_429_rate_limit(
+    monkeypatch: pytest.MonkeyPatch, tmp_path: Path
+) -> None:
+    from agent import design_agent_service
+    from agent import rate_store
+
+    store = tmp_path / "rate.json"
+    monkeypatch.setenv("DA_RATE_STORE_PATH", str(store))
+    rate_store.clear_store()
     monkeypatch.setattr(design_agent_service, "_RATE_LIMIT", 1)
     design_agent_service._check_rate_limit("127.0.0.1", "rate-test-session")
     with pytest.raises(Exception) as exc:
         design_agent_service._check_rate_limit("127.0.0.1", "rate-test-session")
+    assert exc.value.status_code == 429
+
+
+def test_design_agent_rate_limit_survives_restart(
+    monkeypatch: pytest.MonkeyPatch, tmp_path: Path
+) -> None:
+    from agent import design_agent_service
+    from agent import rate_store
+
+    store = tmp_path / "rate.json"
+    monkeypatch.setenv("DA_RATE_STORE_PATH", str(store))
+    rate_store.clear_store()
+    monkeypatch.setattr(design_agent_service, "_RATE_LIMIT", 1)
+    design_agent_service._check_rate_limit("127.0.0.1", "persist-session")
+    rate_store.reset_memory_cache()
+    with pytest.raises(Exception) as exc:
+        design_agent_service._check_rate_limit("127.0.0.1", "persist-session")
     assert exc.value.status_code == 429
