@@ -86,7 +86,7 @@ def test_missing_diensten_blocks_ready(client: TestClient) -> None:
     _mock_llm(
         [
             {
-                "reply_nl": "Bevestig je brief.",
+                "reply_nl": "Bevestig je brief via de knop.",
                 "phase": 7,
                 "brief_updates": {
                     "bedrijfsnaam": "Test BV",
@@ -109,7 +109,7 @@ def test_missing_diensten_blocks_ready(client: TestClient) -> None:
     )
     assert resp.status_code == 200
     body = resp.json()
-    assert body["brief_confirmed"] is True
+    assert body["brief_confirmed"] is False
     assert body["ready_to_generate"] is False
 
 
@@ -117,7 +117,7 @@ def test_confirm_full_brief_ready(client: TestClient) -> None:
     _mock_llm(
         [
             {
-                "reply_nl": "Perfect, ik ga twee voorstellen maken.",
+                "reply_nl": "Klik op Bevestigen om mock-ups te maken.",
                 "phase": 7,
                 "brief_updates": {
                     "bedrijfsnaam": "Test BV",
@@ -141,8 +141,83 @@ def test_confirm_full_brief_ready(client: TestClient) -> None:
     )
     assert resp.status_code == 200
     body = resp.json()
+    assert body["brief_confirmed"] is False
     assert body["ready_to_generate"] is True
     assert body["brief_partial"]["diensten"]
+    assert body["missing_fields"] == []
+
+
+def test_missing_fields_in_response(client: TestClient) -> None:
+    _mock_llm(
+        [
+            {
+                "reply_nl": "Samenvatting",
+                "phase": 7,
+                "brief_updates": {
+                    "bedrijfsnaam": "Test BV",
+                    "branche": "Elektricien",
+                    "doelgroep": "Particulieren",
+                    "positionering": "strak",
+                    "vehicle": "caddy",
+                    "logo_file": "logo.png",
+                    "brand_colors": ["#003366"],
+                    "mockup_b_sku": "MA-005",
+                    "mockup_a_sku": "CS-SET-PRO-ZZP",
+                },
+                "brief_confirmed": False,
+            }
+        ]
+    )
+    resp = client.post("/api/v1/design-agent/chat", json={"message": "ok"})
+    body = resp.json()
+    assert body["ready_to_generate"] is False
+    assert "diensten" in body["missing_fields"]
+
+
+def test_logo_reupload_required_on_get_session(client: TestClient) -> None:
+    _mock_llm(
+        [
+            {
+                "reply_nl": "Upload logo",
+                "phase": 5,
+                "brief_updates": {"logo_file": "logo.png"},
+                "brief_confirmed": False,
+            }
+        ]
+    )
+    post = client.post("/api/v1/design-agent/chat", json={"message": "logo"})
+    sid = post.json()["session_id"]
+    get = client.get(f"/api/v1/design-agent/chat/{sid}")
+    body = get.json()
+    assert body["logo_reupload_required"] is True
+    assert body["brief_partial"]["logo_file"] == "logo.png"
+
+
+def test_parse_summary_fields_backfills_diensten() -> None:
+    from agent.inspire.chat_advisor import parse_summary_fields
+
+    brief = {"bedrijfsnaam": "X"}
+    reply = "**Diensten:** Storingen en onderhoud\n**Voertuig:** Caddy (caddy)"
+    updates = parse_summary_fields(brief, reply)
+    assert updates["diensten"] == "Storingen en onderhoud"
+    assert updates["vehicle"] == "caddy"
+
+
+def test_llm_brief_confirmed_flag_ignored(client: TestClient) -> None:
+    """LLM must not set server brief_confirmed — UI button only."""
+    _mock_llm(
+        [
+            {
+                "reply_nl": "Bedankt!",
+                "phase": 7,
+                "brief_updates": {"bedrijfsnaam": "X"},
+                "brief_confirmed": True,
+            }
+        ]
+    )
+    resp = client.post("/api/v1/design-agent/chat", json={"message": "bevestig"})
+    assert resp.status_code == 200
+    assert resp.json()["brief_confirmed"] is False
 
 
 def test_get_session(client: TestClient) -> None:
@@ -166,3 +241,67 @@ def test_get_session(client: TestClient) -> None:
 def test_get_session_404(client: TestClient) -> None:
     resp = client.get("/api/v1/design-agent/chat/nonexistent-id")
     assert resp.status_code == 404
+
+
+def test_parse_summary_fields_telefoon_website_slogan() -> None:
+    from agent.inspire.chat_advisor import parse_summary_fields
+
+    brief: dict = {}
+    reply = (
+        "**Telefoon:** 06-12345678\n"
+        "**Website:** https://example.nl\n"
+        "**Slogan:** Altijd paraat\n"
+    )
+    updates = parse_summary_fields(brief, reply)
+    assert updates["telefoon"] == "06-12345678"
+    assert updates["website"] == "https://example.nl"
+    assert updates["slogan"] == "Altijd paraat"
+
+
+def test_chat_turn_multipart_logo(client: TestClient) -> None:
+    _mock_llm(
+        [
+            {
+                "reply_nl": "Logo ontvangen!",
+                "phase": 5,
+                "brief_updates": {},
+                "brief_confirmed": False,
+            }
+        ]
+    )
+    resp = client.post(
+        "/api/v1/design-agent/chat/turn",
+        data={"message": "Logo geüpload", "session_id": ""},
+        files={"logo": ("logo.png", b"\x89PNG\r\n\x1a\n" + b"x" * 64, "image/png")},
+    )
+    assert resp.status_code == 200
+    body = resp.json()
+    assert body["brief_partial"]["logo_file"] == "logo.png"
+
+
+def test_chat_turn_empty_message_no_logo_400(client: TestClient) -> None:
+    resp = client.post(
+        "/api/v1/design-agent/chat/turn",
+        data={"message": "", "session_id": ""},
+    )
+    assert resp.status_code == 400
+
+
+def test_chat_rate_limit_429(client: TestClient, monkeypatch: pytest.MonkeyPatch) -> None:
+    from api.routes import design_agent_chat as chat_routes
+
+    chat_routes._CHAT_RATE.clear()
+    monkeypatch.setattr(chat_routes, "_chat_rate_limit", lambda: 1)
+    _mock_llm(
+        [
+            {"reply_nl": "ok", "phase": 1, "brief_updates": {}, "brief_confirmed": False},
+            {"reply_nl": "ok2", "phase": 1, "brief_updates": {}, "brief_confirmed": False},
+        ]
+    )
+    r1 = client.post("/api/v1/design-agent/chat", json={"message": "a"})
+    assert r1.status_code == 200
+    sid = r1.json()["session_id"]
+    r2 = client.post("/api/v1/design-agent/chat", json={"message": "b", "session_id": sid})
+    r3 = client.post("/api/v1/design-agent/chat", json={"message": "c", "session_id": sid})
+    assert r2.status_code == 200
+    assert r3.status_code == 429

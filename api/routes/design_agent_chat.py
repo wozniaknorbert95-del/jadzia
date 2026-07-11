@@ -5,7 +5,13 @@ from __future__ import annotations
 from fastapi import APIRouter, File, Form, Header, HTTPException, Request, UploadFile
 
 from agent.design_agent_service import _verify_api_key
-from agent.inspire.chat_advisor import compute_ready, get_session, process_chat_turn
+from agent.inspire.chat_advisor import (
+    compute_ready,
+    get_session,
+    logo_reupload_required,
+    missing_fields,
+    process_chat_turn,
+)
 from core.models import (
     DesignAgentChatRequest,
     DesignAgentChatResponse,
@@ -15,23 +21,40 @@ from core.models import (
 router = APIRouter(tags=["design-agent"])
 
 _CHAT_RATE: dict[str, list[float]] = {}
-_CHAT_RATE_LIMIT = 30
 _CHAT_RATE_WINDOW_SEC = 3600
 
 
-def _check_chat_rate_limit(client_ip: str) -> None:
+def _chat_rate_limit() -> int:
+    import os
+
+    try:
+        return max(30, int(os.getenv("DA_CHAT_RATE_LIMIT", "200")))
+    except ValueError:
+        return 200
+
+
+def _rate_bucket(client_ip: str, session_id: str | None) -> str:
+    """Per-session when known; otherwise per IP (shared NAT friendly for one intake)."""
+    if session_id and session_id.strip():
+        return f"session:{session_id.strip()}"
+    return f"ip:{client_ip}"
+
+
+def _check_chat_rate_limit(client_ip: str, session_id: str | None = None) -> None:
     import time
 
+    limit = _chat_rate_limit()
+    bucket = _rate_bucket(client_ip, session_id)
     now = time.time()
-    hits = _CHAT_RATE.get(client_ip, [])
+    hits = _CHAT_RATE.get(bucket, [])
     hits = [t for t in hits if now - t < _CHAT_RATE_WINDOW_SEC]
-    if len(hits) >= _CHAT_RATE_LIMIT:
+    if len(hits) >= limit:
         raise HTTPException(
             status_code=429,
             detail="Te veel chatberichten. Probeer het over een uur opnieuw.",
         )
     hits.append(now)
-    _CHAT_RATE[client_ip] = hits
+    _CHAT_RATE[bucket] = hits
 
 
 @router.post("/api/v1/design-agent/chat", response_model=DesignAgentChatResponse)
@@ -43,7 +66,7 @@ async def design_agent_chat(
     """GPT marketing advisor chat turn (JSON body)."""
     _verify_api_key(x_fg_design_agent_key)
     client_ip = request.client.host if request.client else "unknown"
-    _check_chat_rate_limit(client_ip)
+    _check_chat_rate_limit(client_ip, request_body.session_id)
     try:
         result = process_chat_turn(
             session_id=request_body.session_id,
@@ -60,6 +83,8 @@ async def design_agent_chat(
         phase=result.phase,
         ready_to_generate=result.ready_to_generate,
         brief_confirmed=result.brief_confirmed,
+        missing_fields=result.missing_fields,
+        logo_reupload_required=result.logo_reupload_required,
     )
 
 
@@ -74,7 +99,7 @@ async def design_agent_chat_multipart(
     """Chat turn with optional logo upload (multipart)."""
     _verify_api_key(x_fg_design_agent_key)
     client_ip = request.client.host if request.client else "unknown"
-    _check_chat_rate_limit(client_ip)
+    _check_chat_rate_limit(client_ip, session_id or None)
     logo_name = logo.filename if logo and logo.filename else None
     try:
         result = process_chat_turn(
@@ -93,6 +118,8 @@ async def design_agent_chat_multipart(
         phase=result.phase,
         ready_to_generate=result.ready_to_generate,
         brief_confirmed=result.brief_confirmed,
+        missing_fields=result.missing_fields,
+        logo_reupload_required=result.logo_reupload_required,
     )
 
 
@@ -109,11 +136,20 @@ async def design_agent_chat_session(
     session = get_session(session_id)
     if not session:
         raise HTTPException(status_code=404, detail="Sessie niet gevonden of verlopen.")
+    brief = dict(session.brief_partial)
+    last_reply = ""
+    for msg in reversed(session.messages):
+        if msg.get("role") == "assistant":
+            last_reply = str(msg.get("content") or "")
+            break
     return DesignAgentChatSessionResponse(
         session_id=session.session_id,
-        brief_partial=dict(session.brief_partial),
+        brief_partial=brief,
         phase=session.phase,
         ready_to_generate=compute_ready(session),
         brief_confirmed=session.brief_confirmed,
         messages_count=len(session.messages),
+        missing_fields=missing_fields(brief),
+        logo_reupload_required=logo_reupload_required(brief),
+        last_reply_nl=last_reply,
     )

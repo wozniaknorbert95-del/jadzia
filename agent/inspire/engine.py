@@ -1,4 +1,4 @@
-"""Inspire engine — 2 fal full-frame mockups per session (tier B/A)."""
+"""Inspire engine — INSPIRE v4 inspiration mockups (inspirationOnly default; fal legacy disabled)."""
 
 from __future__ import annotations
 
@@ -53,6 +53,7 @@ class InspireResponse:
     mockup_b_sku: str
     mockup_a_sku: str
     engine_mode: str = "enterprise"
+    generator_provider: str = ""
 
 
 def _enterprise_enabled() -> bool:
@@ -108,6 +109,8 @@ def _try_inspiration_generate(**kwargs) -> InspireResponse | None:
             "brief_confirmed": True,
             "mockup_goal_acknowledged": True,
         }
+        if kwargs.get("logo_bytes"):
+            brief_dict["logo_status"] = "uploaded_png"
         design_brief = legacy_brief_to_v4(brief_dict)
         design_brief.consent.brief_confirmed = True
         raw = generate_inspiration_mockups(
@@ -139,8 +142,12 @@ def _try_inspiration_generate(**kwargs) -> InspireResponse | None:
             mockup_b_sku=raw.mockup_b_sku,
             mockup_a_sku=raw.mockup_a_sku,
             engine_mode=raw.engine_mode,
+            generator_provider=os.getenv("INSPIRE_GENERATOR_PROVIDER", "stub").strip().lower(),
         )
     except Exception as exc:
+        if _inspiration_enabled():
+            logger.error("inspiration engine failed (strict, no fal fallback): %s", exc)
+            raise ValueError(f"Inspiration generation failed: {exc}") from exc
         logger.warning("inspiration engine failed, fallback: %s", exc)
         return None
 
@@ -264,6 +271,11 @@ def generate_inspire_mockups(
     inspiration = _try_inspiration_generate(**oneshot_kwargs)
     if inspiration is not None:
         return inspiration
+
+    if _inspiration_enabled():
+        raise ValueError(
+            "Inspiration pipeline unavailable — fal fallback disabled in inspirationOnly mode."
+        )
 
     brief_id = str(uuid.uuid4())
     raw_pos = positionering or stijl

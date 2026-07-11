@@ -104,7 +104,9 @@ def test_design_agent_generate_400_brief_not_confirmed(client: TestClient) -> No
         files={"logo": ("logo.png", _logo_png(), "image/png")},
     )
     assert resp.status_code == 400
-    assert "Bevestig je briefing eerst" in resp.json()["detail"]
+    detail = resp.json()["detail"]
+    msg = detail["message"] if isinstance(detail, dict) else detail
+    assert "Bevestig je briefing eerst" in msg
 
 
 def test_design_agent_generate_401_without_key(client: TestClient) -> None:
@@ -122,3 +124,29 @@ def test_design_agent_generate_401_without_key(client: TestClient) -> None:
             files={"logo": ("logo.png", _logo_png(), "image/png")},
         )
     assert resp.status_code == 401
+
+
+def test_design_agent_generate_400_incomplete_brief(client: TestClient) -> None:
+    resp = client.post(
+        "/api/v1/design-agent/generate",
+        data={
+            "vehicle": "caddy",
+            "bedrijfsnaam": "Test BV",
+            "brief_confirmed": "true",
+        },
+        files={"logo": ("logo.png", _logo_png(), "image/png")},
+    )
+    assert resp.status_code == 400
+    detail = resp.json()["detail"]
+    assert detail["error_code"] == "BRIEF_INCOMPLETE"
+
+
+def test_design_agent_generate_429_rate_limit(monkeypatch: pytest.MonkeyPatch) -> None:
+    from agent import design_agent_service
+
+    design_agent_service._RATE.clear()
+    monkeypatch.setattr(design_agent_service, "_RATE_LIMIT", 1)
+    design_agent_service._check_rate_limit("127.0.0.1", "rate-test-session")
+    with pytest.raises(Exception) as exc:
+        design_agent_service._check_rate_limit("127.0.0.1", "rate-test-session")
+    assert exc.value.status_code == 429

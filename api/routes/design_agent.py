@@ -28,10 +28,11 @@ async def design_agent_generate(
     mockup_b_sku: str = Form(""),
     mockup_a_sku: str = Form(""),
     brief_confirmed: str = Form("false"),
+    session_id: str = Form(""),
     logo: UploadFile = File(...),
     x_fg_design_agent_key: str | None = Header(None, alias="X-FG-Design-Agent-Key"),
 ) -> DesignAgentGenerateResponse:
-    """Generate 2 photoreal inspiration mockups (INSPIRE v2 fal full-frame)."""
+    """Generate 2 inspiration mockups (INSPIRE v4 — inspirationOnly, no fal customer path)."""
     client_ip = request.client.host if request.client else "unknown"
     return await process_design_agent_generate(
         vehicle=vehicle,
@@ -52,4 +53,5 @@ async def design_agent_generate(
         logo=logo,
         client_ip=client_ip,
         api_key=x_fg_design_agent_key,
+        session_id=session_id or None,
     )

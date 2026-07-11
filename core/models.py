@@ -510,7 +510,7 @@ class CostEstimateResponse(BaseModel):
 
 
 class DesignAgentMockupItem(BaseModel):
-    variant: str  # tier_b | tier_a
+    variant: str  # standard | premium (client); legacy tier_b | tier_a internal
     panel: str
     url: str
     sku: str = ""
@@ -537,6 +537,8 @@ class DesignAgentGenerateResponse(BaseModel):
     mockup_b_sku: str = ""
     mockup_a_sku: str = ""
     user_stijl: str = "strak"  # legacy alias for positionering
+    engine_mode: str = "inspirationOnly"
+    generator_provider: str = ""
 
 
 class DesignAgentChatRequest(BaseModel):
@@ -551,6 +553,8 @@ class DesignAgentChatResponse(BaseModel):
     phase: int = 1
     ready_to_generate: bool = False
     brief_confirmed: bool = False
+    missing_fields: list[str] = []
+    logo_reupload_required: bool = False
 
 
 class DesignAgentChatSessionResponse(BaseModel):
@@ -560,3 +564,6 @@ class DesignAgentChatSessionResponse(BaseModel):
     ready_to_generate: bool = False
     brief_confirmed: bool = False
     messages_count: int = 0
+    missing_fields: list[str] = []
+    logo_reupload_required: bool = False
+    last_reply_nl: str = ""

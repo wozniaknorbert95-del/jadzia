@@ -5,6 +5,7 @@ from __future__ import annotations
 import json
 import logging
 import os
+import re
 import uuid
 from dataclasses import dataclass, field
 from datetime import datetime, timezone
@@ -42,6 +43,8 @@ class ChatTurnResult:
     phase: int
     ready_to_generate: bool
     brief_confirmed: bool
+    missing_fields: list[str]
+    logo_reupload_required: bool
 
 
 def set_llm_callable(fn: Callable[[list[dict[str, str]]], dict[str, Any]] | None) -> None:
@@ -74,7 +77,16 @@ def _default_openrouter_call(messages: list[dict[str, str]]) -> dict[str, Any]:
         )
         resp.raise_for_status()
         content = resp.json()["choices"][0]["message"]["content"]
-        return json.loads(content)
+        try:
+            return json.loads(content)
+        except json.JSONDecodeError as exc:
+            logger.warning("LLM returned invalid JSON: %s", exc)
+            return {
+                "reply_nl": "Sorry, even een technische hapering. Kun je je vraag kort herhalen?",
+                "phase": 1,
+                "brief_updates": {},
+                "brief_confirmed": False,
+            }
 
 
 def _call_llm(messages: list[dict[str, str]]) -> dict[str, Any]:
@@ -106,6 +118,72 @@ def _resolve_tier_skus_if_ready(session: ChatSession) -> None:
         session.brief_partial.setdefault("mockup_a_sku", tier_a.sku)
     except (ValueError, FileNotFoundError) as exc:
         logger.warning("tier resolve skipped: %s", exc)
+        session.brief_partial["_tier_resolve_failed"] = True
+
+
+def _normalize_vehicle_id(raw: str) -> str:
+    if not raw:
+        return ""
+    v = str(raw).lower().replace("*", "").strip()
+    if v in ("bestelbus_l", "bestelbus l") or "bus_l" in v:
+        return "bus_l"
+    if "bus_xl" in v:
+        return "bus_xl"
+    if "caddy" in v or "partner" in v:
+        return "caddy"
+    if "passenger" in v or "kombi" in v:
+        return "passenger"
+    return v.replace(" ", "_").lstrip("_")
+
+
+def parse_summary_fields(brief: dict[str, Any], reply_nl: str) -> dict[str, Any]:
+    """Backfill brief from phase-7 summary when LLM omits brief_updates (F-011)."""
+    updates: dict[str, Any] = {}
+
+    def pick(key: str, pattern: str) -> None:
+        if str(brief.get(key) or "").strip():
+            return
+        m = re.search(pattern, reply_nl, re.IGNORECASE)
+        if m:
+            updates[key] = m.group(1).strip().replace("*", "").strip()
+
+    pick("bedrijfsnaam", r"(?:\*\*)?Bedrijfsnaam(?:\*\*)?:\s*([^\n]+)")
+    pick("branche", r"(?:\*\*)?Branche(?:\*\*)?:\s*([^\n]+)")
+    pick("diensten", r"(?:\*\*)?Diensten(?:\*\*)?:\s*([^\n]+)")
+    pick("doelgroep", r"(?:\*\*)?Doelgroep(?:\*\*)?:\s*([^\n]+)")
+    pick("positionering", r"(?:\*\*)?Positionering(?:\*\*)?:\s*([^\n]+)")
+    pick("telefoon", r"(?:\*\*)?Telefoon(?:\*\*)?:\s*([^\n]+)")
+    pick("website", r"(?:\*\*)?Website(?:\*\*)?:\s*([^\n]+)")
+    pick("slogan", r"(?:\*\*)?Slogan(?:\*\*)?:\s*([^\n]+)")
+
+    if not str(brief.get("vehicle") or "").strip():
+        veh = re.search(
+            r"(?:\*\*)?Voertuig(?:\*\*)?:\s*([^(\n]+)(?:\s*\(([a-z_]+)\))?",
+            reply_nl,
+            re.IGNORECASE,
+        )
+        if veh:
+            updates["vehicle"] = _normalize_vehicle_id(veh.group(2) or veh.group(1))
+        else:
+            vid = re.search(r"\((bus_l|bus_xl|caddy|passenger)\)", reply_nl, re.IGNORECASE)
+            if vid:
+                updates["vehicle"] = vid.group(1).lower()
+            elif re.search(r"\bbus_l\b", reply_nl, re.IGNORECASE):
+                updates["vehicle"] = "bus_l"
+
+    if updates.get("vehicle"):
+        updates["vehicle"] = _normalize_vehicle_id(str(updates["vehicle"]))
+    return updates
+
+
+def missing_fields(brief: dict[str, Any]) -> list[str]:
+    """Public wrapper for brief completeness checks (API + tests)."""
+    return _missing_fields(brief)
+
+
+def logo_reupload_required(brief: dict[str, Any]) -> bool:
+    """Server stores logo filename only — client must hold File bytes for generate."""
+    return bool(str(brief.get("logo_file") or "").strip())
 
 
 def _missing_fields(brief: dict[str, Any]) -> list[str]:
@@ -118,9 +196,16 @@ def _missing_fields(brief: dict[str, Any]) -> list[str]:
 
 
 def _compute_ready(session: ChatSession) -> bool:
-    if not session.brief_confirmed:
+    """Brief complete for mockups — confirmation is UI-only (not via chat LLM)."""
+    if session.phase < 7:
         return False
     return len(_missing_fields(session.brief_partial)) == 0
+
+
+def mark_brief_confirmed(session_id: str) -> None:
+    """Set confirmed after explicit client action (generate form / future confirm endpoint)."""
+    session = get_or_create_session(session_id)
+    session.brief_confirmed = True
 
 
 def compute_ready(session: ChatSession) -> bool:
@@ -178,6 +263,11 @@ def process_chat_turn(
 
     parsed = _call_llm(llm_messages)
     reply_nl = str(parsed.get("reply_nl", "")).strip() or "Kun je dat iets uitgebreider toelichten?"
+    if session.brief_partial.pop("_tier_resolve_failed", False):
+        reply_nl += (
+            "\n\n*(Let op: we konden je voertuigtype nog niet koppelen aan producten — "
+            "controleer je voertuigkeuze.)*"
+        )
     session.phase = int(parsed.get("phase", session.phase))
     session.phase = max(1, min(8, session.phase))
 
@@ -185,11 +275,22 @@ def process_chat_turn(
     if isinstance(updates, dict):
         _merge_brief(session, updates)
 
-    if parsed.get("brief_confirmed") is True:
-        session.brief_confirmed = True
+    if session.phase >= 7 and reply_nl:
+        summary_updates = parse_summary_fields(session.brief_partial, reply_nl)
+        if summary_updates:
+            _merge_brief(session, summary_updates)
+
+    # brief_confirmed is never set from LLM JSON — only mark_brief_confirmed() / generate path.
 
     _resolve_tier_skus_if_ready(session)
     ready = _compute_ready(session)
+    missing = _missing_fields(session.brief_partial)
+    if not ready and session.phase >= 7:
+        logger.info(
+            "ready_to_generate=false session_id=%s missing_fields=%s",
+            session.session_id,
+            missing,
+        )
 
     session.messages.append({"role": "assistant", "content": reply_nl})
 
@@ -200,4 +301,6 @@ def process_chat_turn(
         phase=session.phase,
         ready_to_generate=ready,
         brief_confirmed=session.brief_confirmed,
+        missing_fields=missing,
+        logo_reupload_required=logo_reupload_required(session.brief_partial),
     )

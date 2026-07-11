@@ -1,4 +1,4 @@
-"""Design Agent REST handler — INSPIRE v2 (fal full-frame) or legacy VGE."""
+"""Design Agent REST handler — INSPIRE v4 inspirationOnly (legacy VGE optional)."""
 
 from __future__ import annotations
 
@@ -23,6 +23,14 @@ _RATE: dict[str, list[float]] = {}
 _RATE_LIMIT = 2
 _RATE_WINDOW_SEC = 3600
 
+_GENERATE_REQUIRED = (
+    "bedrijfsnaam",
+    "branche",
+    "diensten",
+    "doelgroep",
+    "vehicle",
+)
+
 _ALLOWED_LOGO_MIMES = {
     "image/png",
     "image/jpeg",
@@ -40,26 +48,72 @@ TIER_LABELS = {
 }
 
 
+def _client_variant(variant: str) -> str:
+    if variant in ("tier_b", "standard"):
+        return "standard"
+    if variant in ("tier_a", "premium"):
+        return "premium"
+    return variant
+
+
+def _resolve_engine_meta(result: object) -> tuple[str, str]:
+    engine_mode = getattr(result, "engine_mode", None) or os.getenv(
+        "INSPIRE_RENDER_MODE", "inspirationOnly"
+    )
+    provider = getattr(result, "generator_provider", None) or os.getenv(
+        "INSPIRE_GENERATOR_PROVIDER", "stub"
+    )
+    return str(engine_mode).strip(), str(provider).strip().lower()
+
+
 def _engine_mode() -> str:
     return os.getenv("DESIGN_AGENT_ENGINE", "inspire").strip().lower()
+
+
+def _api_error(status: int, error_code: str, message: str) -> HTTPException:
+    return HTTPException(
+        status_code=status,
+        detail={"error_code": error_code, "message": message},
+    )
 
 
 def _validate_logo_upload(logo: UploadFile, logo_bytes: bytes) -> None:
     filename = (logo.filename or "").lower()
     ext = Path(filename).suffix
     if ext and ext not in _ALLOWED_LOGO_EXT:
-        raise HTTPException(
-            status_code=400,
-            detail="Logo moet PNG, JPG, SVG of PDF zijn.",
-        )
+        raise _api_error(400, "LOGO_INVALID", "Logo moet PNG, JPG, SVG of PDF zijn.")
     content_type = (logo.content_type or "").split(";")[0].strip().lower()
     if content_type and content_type not in _ALLOWED_LOGO_MIMES:
-        raise HTTPException(
-            status_code=400,
-            detail="Logo moet PNG, JPG, SVG of PDF zijn.",
-        )
+        raise _api_error(400, "LOGO_INVALID", "Logo moet PNG, JPG, SVG of PDF zijn.")
     if len(logo_bytes) < 32:
-        raise HTTPException(status_code=400, detail="Logo-bestand is te klein of beschadigd.")
+        raise _api_error(400, "LOGO_INVALID", "Logo-bestand is te klein of beschadigd.")
+
+
+def _validate_generate_brief(
+    *,
+    bedrijfsnaam: str,
+    branche: str,
+    diensten: str,
+    doelgroep: str,
+    vehicle: str,
+) -> None:
+    missing: list[str] = []
+    if not bedrijfsnaam.strip():
+        missing.append("bedrijfsnaam")
+    if not branche.strip():
+        missing.append("branche")
+    if not diensten.strip():
+        missing.append("diensten")
+    if not doelgroep.strip():
+        missing.append("doelgroep")
+    if not vehicle.strip():
+        missing.append("vehicle")
+    if missing:
+        raise _api_error(
+            400,
+            "BRIEF_INCOMPLETE",
+            f"Briefing incompleet — ontbrekend: {', '.join(missing)}.",
+        )
 
 
 def _log_generation_cost(brief_id: str, vehicle: str, cost_eur: float) -> None:
@@ -70,19 +124,27 @@ def _log_generation_cost(brief_id: str, vehicle: str, cost_eur: float) -> None:
         cost_eur,
         _engine_mode(),
     )
+    if cost_eur > 0.50:
+        logger.warning(
+            "Z05 cost cap exceeded brief_id=%s cost_eur=%.4f (log only, no block)",
+            brief_id,
+            cost_eur,
+        )
 
 
-def _check_rate_limit(client_ip: str) -> None:
+def _check_rate_limit(client_ip: str, session_id: str | None = None) -> None:
     now = time.time()
-    hits = _RATE.get(client_ip, [])
+    bucket = f"session:{session_id.strip()}" if session_id and session_id.strip() else f"ip:{client_ip}"
+    hits = _RATE.get(bucket, [])
     hits = [t for t in hits if now - t < _RATE_WINDOW_SEC]
     if len(hits) >= _RATE_LIMIT:
-        raise HTTPException(
-            status_code=429,
-            detail="Te veel verzoeken. Probeer het over een uur opnieuw.",
+        raise _api_error(
+            429,
+            "RATE_LIMIT",
+            "Te veel verzoeken. Probeer het over een uur opnieuw.",
         )
     hits.append(now)
-    _RATE[client_ip] = hits
+    _RATE[bucket] = hits
 
 
 def _ensure_vge_import() -> None:
@@ -162,19 +224,28 @@ async def process_design_agent_generate(
     logo: UploadFile,
     client_ip: str,
     api_key: str | None,
+    session_id: str | None = None,
 ) -> DesignAgentGenerateResponse:
     _verify_api_key(api_key)
-    _check_rate_limit(client_ip)
+    _check_rate_limit(client_ip, session_id)
 
     if not _parse_bool_form(brief_confirmed):
-        raise HTTPException(status_code=400, detail="Bevestig je briefing eerst.")
+        raise _api_error(400, "BRIEF_INCOMPLETE", "Bevestig je briefing eerst.")
 
     if not bedrijfsnaam.strip():
-        raise HTTPException(status_code=400, detail="Bedrijfsnaam is verplicht.")
+        raise _api_error(400, "BRIEF_INCOMPLETE", "Bedrijfsnaam is verplicht.")
+
+    _validate_generate_brief(
+        bedrijfsnaam=bedrijfsnaam,
+        branche=branche,
+        diensten=diensten,
+        doelgroep=doelgroep,
+        vehicle=vehicle,
+    )
 
     logo_bytes = await logo.read()
     if len(logo_bytes) > 5 * 1024 * 1024:
-        raise HTTPException(status_code=400, detail="Logo mag maximaal 5 MB zijn.")
+        raise _api_error(400, "LOGO_INVALID", "Logo mag maximaal 5 MB zijn.")
     _validate_logo_upload(logo, logo_bytes)
 
     colors = _parse_json_list(brand_colors)
@@ -246,7 +317,7 @@ async def process_design_agent_generate(
                 public_base_url=public_base,
             )
     except ValueError as exc:
-        raise HTTPException(status_code=400, detail=str(exc)) from exc
+        raise _api_error(400, "GENERATION_FAILED", str(exc)) from exc
     except RuntimeError as exc:
         logger.exception("design-agent inspire runtime error")
         raise HTTPException(status_code=503, detail=str(exc)) from exc
@@ -259,21 +330,31 @@ async def process_design_agent_generate(
 
     _log_generation_cost(result.brief_id, vehicle, result.cost_eur)
 
+    if session_id and session_id.strip():
+        try:
+            from agent.inspire.chat_advisor import mark_brief_confirmed
+
+            mark_brief_confirmed(session_id.strip())
+        except Exception:
+            logger.debug("mark_brief_confirmed skipped session_id=%s", session_id)
+
     ssot_rows = _load_ssot_rows(ssot_path)
+    engine_mode, generator_provider = _resolve_engine_meta(result)
     mockups: list[DesignAgentMockupItem] = []
     for m in result.mockups:
         url = m.url or m.data_url or ""
         sku = m.sku or ""
+        client_variant = _client_variant(m.variant)
         naam, price = _ssot_product(ssot_rows, sku) if sku else ("", 0.0)
         mockups.append(
             DesignAgentMockupItem(
-                variant=m.variant,
+                variant=client_variant,
                 panel=m.panel,
                 url=url,
                 sku=sku,
                 naam=naam,
                 price_suggested=price,
-                label_nl=TIER_LABELS.get(m.variant, ""),
+                label_nl=TIER_LABELS.get(client_variant, TIER_LABELS.get(m.variant, "")),
                 degraded=m.degraded,
             )
         )
@@ -300,4 +381,6 @@ async def process_design_agent_generate(
         mockup_b_sku=getattr(result, "mockup_b_sku", ""),
         mockup_a_sku=getattr(result, "mockup_a_sku", ""),
         user_stijl=pos,
+        engine_mode=engine_mode,
+        generator_provider=generator_provider,
     )
