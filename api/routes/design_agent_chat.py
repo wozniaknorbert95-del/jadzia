@@ -94,6 +94,7 @@ async def design_agent_chat_multipart(
     request: Request,
     message: str = Form(""),
     session_id: str = Form(""),
+    brand_colors: str = Form("[]"),
     logo: UploadFile | None = File(None),
     x_fg_design_agent_key: str | None = Header(None, alias="X-FG-Design-Agent-Key"),
 ) -> DesignAgentChatResponse:
@@ -107,6 +108,7 @@ async def design_agent_chat_multipart(
             session_id=session_id or None,
             message=message,
             logo_filename=logo_name,
+            brand_colors=brand_colors,
         )
     except ValueError as exc:
         raise HTTPException(status_code=400, detail=str(exc)) from exc

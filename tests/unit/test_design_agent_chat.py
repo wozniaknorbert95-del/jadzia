@@ -393,3 +393,87 @@ def test_parse_summary_sets_primary_cta_website() -> None:
     brief = {"website": "https://x.nl"}
     updates = parse_summary_fields(brief, "Samenvatting")
     assert updates.get("primary_cta") == "website"
+
+
+def test_parse_user_message_fields_e2e_schilder() -> None:
+    from agent.inspire.chat_advisor import parse_user_message_fields
+
+    brief: dict = {}
+    msg = (
+        "Bedrijfsnaam: Schilder Janssen. Branche: schilder. "
+        "Diensten: binnen- en buitenschilderwerk en behangen. "
+        "Doelgroep: woningeigenaren en VvE's in Noord-Brabant."
+    )
+    updates = parse_user_message_fields(brief, msg)
+    assert updates["bedrijfsnaam"] == "Schilder Janssen"
+    assert updates["branche"] == "schilder"
+    assert "buitenschilderwerk" in updates["diensten"]
+
+    brief2 = {}
+    veh = parse_user_message_fields(brief2, "Bestelbus L (bus_l), zakelijk gebruik.")
+    assert veh["vehicle"] == "bus_l"
+
+    brief3 = {}
+    contact = parse_user_message_fields(
+        brief3, "Telefoon: 06-98765432. Website: www.janssen-schilder.nl."
+    )
+    assert contact["telefoon"] == "06-98765432"
+    assert contact["website"] == "www.janssen-schilder.nl"
+    assert contact["primary_cta"] == "website"
+
+
+def test_chat_turn_brand_colors_persist(client: TestClient) -> None:
+    _mock_llm(
+        [
+            {
+                "reply_nl": "Logo ontvangen!",
+                "phase": 5,
+                "brief_updates": {},
+                "brief_confirmed": False,
+            }
+        ]
+    )
+    resp = client.post(
+        "/api/v1/design-agent/chat/turn",
+        data={
+            "message": "Logo geüpload",
+            "session_id": "",
+            "brand_colors": '["#111111","#222222"]',
+        },
+        files={"logo": ("logo.png", b"\x89PNG\r\n\x1a\n" + b"x" * 64, "image/png")},
+    )
+    assert resp.status_code == 200
+    body = resp.json()
+    assert body["brief_partial"]["brand_colors"] == ["#111111", "#222222"]
+    assert body["brief_partial"]["logo_file"] == "logo.png"
+
+
+def test_ready_without_brand_colors_when_logo_present(client: TestClient) -> None:
+    """logo_file satisfies readiness; colors ship at generate (F-077)."""
+    _mock_llm(
+        [
+            {
+                "reply_nl": "Samenvatting klaar.",
+                "phase": 7,
+                "brief_updates": {
+                    "bedrijfsnaam": "Test BV",
+                    "branche": "schilder",
+                    "diensten": "Schilderwerk",
+                    "doelgroep": "Particulieren",
+                    "positionering": "balanced",
+                    "vehicle": "bus_l",
+                    "logo_file": "logo.png",
+                    "mockup_b_sku": "BLS-SET-LOGO-CONTACT",
+                    "mockup_a_sku": "NA-WRAP-PRO",
+                    "telefoon": "06-12345678",
+                },
+                "brief_confirmed": False,
+            }
+        ]
+    )
+    resp = client.post("/api/v1/design-agent/chat", json={"message": "klaar"})
+    assert resp.status_code == 200
+    data = resp.json()
+    assert data["ready_to_generate"] is True
+    assert "brand_colors" not in data["missing_fields"]
+

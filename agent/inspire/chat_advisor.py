@@ -170,39 +170,80 @@ def _normalize_vehicle_id(raw: str) -> str:
     return v.replace(" ", "_").lstrip("_")
 
 
-def parse_summary_fields(brief: dict[str, Any], reply_nl: str) -> dict[str, Any]:
-    """Backfill brief from phase-7 summary when LLM omits brief_updates (F-011)."""
-    updates: dict[str, Any] = {}
+def _parse_brand_colors(raw: str | list[Any] | None) -> list[str]:
+    """Parse brand_colors from JSON form field or list (F-077 client → server)."""
+    if raw is None:
+        return []
+    if isinstance(raw, list):
+        return [str(c).strip() for c in raw if str(c).strip()]
+    text = str(raw).strip()
+    if not text or text == "[]":
+        return []
+    try:
+        parsed = json.loads(text)
+        if isinstance(parsed, list):
+            return [str(c).strip() for c in parsed if str(c).strip()]
+    except json.JSONDecodeError:
+        pass
+    return []
 
-    def pick(key: str, pattern: str) -> None:
+
+def extract_brief_fields_from_text(
+    brief: dict[str, Any],
+    text: str,
+    *,
+    inline: bool = False,
+) -> dict[str, Any]:
+    """Backfill brief from NL user message or phase-7 summary (F-011/F-017)."""
+    updates: dict[str, Any] = {}
+    if not text or not str(text).strip():
+        return updates
+
+    val_pat = r"([^\n.]+)" if inline else r"([^\n]+)"
+
+    def pick(key: str, label: str, *, pattern: str | None = None) -> None:
         if str(brief.get(key) or "").strip():
             return
-        m = re.search(pattern, reply_nl, re.IGNORECASE)
+        if pattern is None:
+            pattern = rf"(?:\*\*)?{label}(?:\*\*)?:\s*{val_pat}"
+        m = re.search(pattern, text, re.IGNORECASE)
         if m:
-            updates[key] = m.group(1).strip().replace("*", "").strip()
+            val = m.group(1).strip().replace("*", "").strip()
+            if inline and val.endswith("."):
+                val = val[:-1].strip()
+            updates[key] = val
 
-    pick("bedrijfsnaam", r"(?:\*\*)?Bedrijfsnaam(?:\*\*)?:\s*([^\n]+)")
-    pick("branche", r"(?:\*\*)?Branche(?:\*\*)?:\s*([^\n]+)")
-    pick("diensten", r"(?:\*\*)?Diensten(?:\*\*)?:\s*([^\n]+)")
-    pick("doelgroep", r"(?:\*\*)?Doelgroep(?:\*\*)?:\s*([^\n]+)")
-    pick("positionering", r"(?:\*\*)?Positionering(?:\*\*)?:\s*([^\n]+)")
-    pick("telefoon", r"(?:\*\*)?Telefoon(?:\*\*)?:\s*([^\n]+)")
-    pick("website", r"(?:\*\*)?Website(?:\*\*)?:\s*([^\n]+)")
-    pick("slogan", r"(?:\*\*)?Slogan(?:\*\*)?:\s*([^\n]+)")
+    pick("bedrijfsnaam", "Bedrijfsnaam")
+    pick("branche", "Branche")
+    pick("diensten", "Diensten")
+    pick("doelgroep", "Doelgroep")
+    pick("positionering", "Positionering")
+    pick("telefoon", "Telefoon")
+    if inline:
+        pick("website", "Website", pattern=rf"(?:\*\*)?Website(?:\*\*)?:\s*([\w./-]+(?:\.[\w./-]+)*)")
+    else:
+        pick("website", "Website")
+    pick("slogan", "Slogan")
+
+    if not str(brief.get("positionering") or "").strip() and not updates.get("positionering"):
+        if re.search(r"\bbalanced\b", text, re.IGNORECASE):
+            updates["positionering"] = "balanced"
+        elif re.search(r"\bstrak\b", text, re.IGNORECASE):
+            updates["positionering"] = "strak"
 
     if not str(brief.get("vehicle") or "").strip():
         veh = re.search(
-            r"(?:\*\*)?Voertuig(?:\*\*)?:\s*([^(\n]+)(?:\s*\(([a-z_]+)\))?",
-            reply_nl,
+            r"(?:\*\*)?Voertuig(?:\*\*)?:\s*([^(\n.]+)(?:\s*\(([a-z_]+)\))?",
+            text,
             re.IGNORECASE,
         )
         if veh:
             updates["vehicle"] = _normalize_vehicle_id(veh.group(2) or veh.group(1))
         else:
-            vid = re.search(r"\((bus_l|bus_xl|caddy|passenger)\)", reply_nl, re.IGNORECASE)
+            vid = re.search(r"\((bus_l|bus_xl|caddy|passenger)\)", text, re.IGNORECASE)
             if vid:
                 updates["vehicle"] = vid.group(1).lower()
-            elif re.search(r"\bbus_l\b", reply_nl, re.IGNORECASE):
+            elif re.search(r"\bbus_l\b", text, re.IGNORECASE):
                 updates["vehicle"] = "bus_l"
 
     if updates.get("vehicle"):
@@ -219,6 +260,16 @@ def parse_summary_fields(brief: dict[str, Any], reply_nl: str) -> dict[str, Any]
     return updates
 
 
+def parse_user_message_fields(brief: dict[str, Any], message: str) -> dict[str, Any]:
+    """Structured fields from client chat input (inline NL format)."""
+    return extract_brief_fields_from_text(brief, message, inline=True)
+
+
+def parse_summary_fields(brief: dict[str, Any], reply_nl: str) -> dict[str, Any]:
+    """Backfill brief from phase-7 summary when LLM omits brief_updates (F-011)."""
+    return extract_brief_fields_from_text(brief, reply_nl, inline=False)
+
+
 def missing_fields(brief: dict[str, Any]) -> list[str]:
     """Public wrapper for brief completeness checks (API + tests)."""
     return _missing_fields(brief)
@@ -231,7 +282,11 @@ def logo_reupload_required(brief: dict[str, Any]) -> bool:
 
 def _missing_fields(brief: dict[str, Any]) -> list[str]:
     missing: list[str] = []
+    has_logo = bool(str(brief.get("logo_file") or "").strip())
     for fld in REQUIRED_BRIEF_FIELDS:
+        # brand_colors extracted client-side from logo; generate sends JSON (brain/inspiration-contract)
+        if fld == "brand_colors" and has_logo:
+            continue
         val = brief.get(fld)
         if val is None or val == "" or val == []:
             missing.append(fld)
@@ -293,10 +348,15 @@ def process_chat_turn(
     session_id: str | None,
     message: str,
     logo_filename: str | None = None,
+    brand_colors: str | list[Any] | None = None,
 ) -> ChatTurnResult:
     session = get_or_create_session(session_id)
     if logo_filename:
         session.brief_partial["logo_file"] = logo_filename
+
+    colors = _parse_brand_colors(brand_colors)
+    if colors:
+        session.brief_partial["brand_colors"] = colors
 
     user_msg = message.strip()
     if not user_msg and not logo_filename:
@@ -304,6 +364,10 @@ def process_chat_turn(
 
     if user_msg:
         session.messages.append({"role": "user", "content": user_msg})
+        user_updates = parse_user_message_fields(session.brief_partial, user_msg)
+        if user_updates:
+            _merge_brief(session, user_updates)
+        _resolve_tier_skus_if_ready(session)
 
     context = json.dumps(
         {
