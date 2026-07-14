@@ -131,7 +131,10 @@ def _log_generation_cost(brief_id: str, vehicle: str, cost_eur: float) -> None:
 
 
 def _check_rate_limit(client_ip: str, session_id: str | None = None) -> None:
-    bucket = f"session:{session_id.strip()}" if session_id and session_id.strip() else f"ip:{client_ip}"
+    if session_id and session_id.strip():
+        bucket = f"generate:session:{session_id.strip()}"
+    else:
+        bucket = f"generate:ip:{client_ip}"
     try:
         check_and_record(
             bucket,

@@ -208,6 +208,24 @@ def test_design_agent_rate_limit_survives_restart(
     assert exc.value.status_code == 429
 
 
+def test_chat_hits_do_not_block_generate_rate_limit(
+    monkeypatch: pytest.MonkeyPatch, tmp_path: Path
+) -> None:
+    from agent import design_agent_service
+    from agent import rate_store
+    from api.routes import design_agent_chat as chat_routes
+
+    store = tmp_path / "rate.json"
+    monkeypatch.setenv("DA_RATE_STORE_PATH", str(store))
+    rate_store.clear_store()
+    monkeypatch.setattr(chat_routes, "_chat_rate_limit", lambda: 200)
+
+    for _ in range(10):
+        chat_routes._check_chat_rate_limit("127.0.0.1", "shared-session")
+
+    design_agent_service._check_rate_limit("127.0.0.1", "shared-session")
+
+
 def test_design_agent_generate_missing_logo_400(client: TestClient) -> None:
     resp = client.post(
         "/api/v1/design-agent/generate",
