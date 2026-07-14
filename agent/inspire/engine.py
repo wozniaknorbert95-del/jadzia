@@ -39,6 +39,10 @@ class MockupResult:
     sku: str = ""
     data_url: str | None = None
     degraded: bool = False
+    label_nl: str | None = None
+    naam: str | None = None
+    price_suggested: float | None = None
+    budget_note_nl: str | None = None
 
 
 @dataclass
@@ -132,6 +136,10 @@ def _try_inspiration_generate(**kwargs) -> InspireResponse | None:
                 sku=m.sku,
                 data_url=m.data_url,
                 degraded=False,
+                label_nl=getattr(m, "label_nl", None),
+                naam=getattr(m, "name_nl", None),
+                price_suggested=getattr(m, "price_from", None),
+                budget_note_nl=getattr(m, "budget_note_nl", None),
             )
             for m in (raw.standard, raw.premium)
         ]
