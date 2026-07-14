@@ -543,7 +543,10 @@ class DesignAgentGenerateResponse(BaseModel):
 
 class DesignAgentChatRequest(BaseModel):
     session_id: str | None = None
-    message: str
+    message: str = ""
+    field_updates: dict | None = None
+    quick_reply_id: str | None = None
+    quick_reply_field: str | None = None
 
 
 class DesignAgentChatResponse(BaseModel):
@@ -555,6 +558,11 @@ class DesignAgentChatResponse(BaseModel):
     brief_confirmed: bool = False
     missing_fields: list[str] = []
     logo_reupload_required: bool = False
+    stap: int = 1
+    stap_label: str = ""
+    quick_replies: list[dict] = []
+    quick_reply_field: str = ""
+    opening_source: str = "brain"
 
 
 class DesignAgentChatSessionResponse(BaseModel):
@@ -568,3 +576,6 @@ class DesignAgentChatSessionResponse(BaseModel):
     logo_reupload_required: bool = False
     last_reply_nl: str = ""
     messages_tail: list[dict] = []
+    stap: int = 1
+    stap_label: str = ""
+    quick_replies: list[dict] = []

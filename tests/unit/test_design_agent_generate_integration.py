@@ -52,6 +52,8 @@ def test_generate_value_error_returns_400_not_503(client: TestClient) -> None:
                 "session_id": "integration-test",
                 "mockup_b_sku": "MA-005",
                 "mockup_a_sku": "CS-SET-PRO-ZZP",
+                "budget_range": "300_600",
+                "budget_explicit": "true",
             },
             files={"logo": ("logo.png", _logo_png(), "image/png")},
         )
@@ -96,6 +98,8 @@ def test_generate_resolves_empty_sku(client: TestClient) -> None:
                 "brief_confirmed": "true",
                 "mockup_b_sku": "",
                 "mockup_a_sku": "",
+                "budget_range": "300_600",
+                "budget_explicit": "true",
             },
             files={"logo": ("logo.png", _logo_png(), "image/png")},
         )

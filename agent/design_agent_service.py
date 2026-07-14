@@ -87,6 +87,25 @@ def _validate_logo_upload(logo: UploadFile, logo_bytes: bytes) -> None:
         raise _api_error(400, "LOGO_INVALID", "Logo-bestand is te klein of beschadigd.")
 
 
+def _parse_bool_form(value: str) -> bool:
+    return str(value).strip().lower() in ("1", "true", "yes", "on")
+
+
+def _validate_budget_explicit(budget_range: str, budget_explicit: str) -> None:
+    if not _parse_bool_form(budget_explicit):
+        raise _api_error(
+            400,
+            "BRIEF_INCOMPLETE",
+            "Budget is nog niet expliciet gekozen — rond stap 6 af in de chat.",
+        )
+    if not str(budget_range or "").strip():
+        raise _api_error(
+            400,
+            "BRIEF_INCOMPLETE",
+            "Budget ontbreekt in je briefing.",
+        )
+
+
 def _validate_generate_brief(
     *,
     bedrijfsnaam: str,
@@ -181,10 +200,6 @@ def _parse_json_list(raw: str) -> list:
         return []
 
 
-def _parse_bool_form(raw: str) -> bool:
-    return raw.strip().lower() in ("true", "1", "yes")
-
-
 def _resolve_positionering(positionering: str, stijl: str) -> str:
     pos = (positionering or "").strip().lower()
     if pos in ("strak", "opvallend", "balanced"):
@@ -222,6 +237,11 @@ async def process_design_agent_generate(
     doelgroep: str,
     positionering: str,
     stijl: str,
+    regio: str = "",
+    vehicle_usage: str = "",
+    desired_impression: str = "",
+    budget_range: str = "",
+    budget_explicit: str = "false",
     mockup_b_sku: str,
     mockup_a_sku: str,
     brief_confirmed: str,
@@ -246,6 +266,7 @@ async def process_design_agent_generate(
         doelgroep=doelgroep,
         vehicle=vehicle,
     )
+    _validate_budget_explicit(budget_range, budget_explicit)
 
     logo_bytes = await logo.read()
     if len(logo_bytes) > 5 * 1024 * 1024:
@@ -313,6 +334,10 @@ async def process_design_agent_generate(
                 positionering=user_positionering,  # type: ignore[arg-type]
                 diensten=diensten,
                 doelgroep=doelgroep,
+                regio=regio,
+                vehicle_use=vehicle_usage,
+                desired_impression=desired_impression,
+                budget_range=budget_range,
                 mockup_b_sku=mockup_b_sku,
                 mockup_a_sku=mockup_a_sku,
                 logo_bytes=logo_bytes,

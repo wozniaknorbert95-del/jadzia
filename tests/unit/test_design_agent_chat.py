@@ -32,6 +32,7 @@ def clear_sessions(monkeypatch: pytest.MonkeyPatch, tmp_path: Path):
     from agent.inspire import chat_session_store
 
     monkeypatch.setenv("DA_CHAT_SESSION_DB", str(tmp_path / "chat-sessions.sqlite3"))
+    monkeypatch.setenv("DA_CHAT_ENGINE", "legacy")
     chat_session_store.clear_all()
     SESSIONS.clear()
     set_llm_callable(None)
@@ -62,6 +63,7 @@ def test_chat_route_registered(client: TestClient) -> None:
     assert openapi.status_code == 200
     paths = set(openapi.json().get("paths", {}).keys())
     assert "/api/v1/design-agent/chat" in paths
+    assert "/api/v1/design-agent/chat/opening" in paths
     assert "/api/v1/design-agent/chat/{session_id}" in paths
 
 

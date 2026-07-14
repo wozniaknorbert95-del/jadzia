@@ -8,6 +8,7 @@ from agent.design_agent_service import _verify_api_key
 from agent.rate_store import check_and_record
 from agent.inspire.chat_advisor import (
     compute_ready,
+    get_chat_opening,
     get_session,
     logo_reupload_required,
     missing_fields,
@@ -34,7 +35,6 @@ def _chat_rate_limit() -> int:
 
 
 def _rate_bucket(client_ip: str, session_id: str | None) -> str:
-    """Per-session when known; otherwise per IP (shared NAT friendly for one intake)."""
     if session_id and session_id.strip():
         return f"session:{session_id.strip()}"
     return f"ip:{client_ip}"
@@ -58,6 +58,41 @@ def _check_chat_rate_limit(client_ip: str, session_id: str | None = None) -> Non
         raise
 
 
+def _to_response(result) -> DesignAgentChatResponse:
+    return DesignAgentChatResponse(
+        session_id=result.session_id,
+        reply_nl=result.reply_nl,
+        brief_partial=result.brief_partial,
+        phase=result.phase,
+        ready_to_generate=result.ready_to_generate,
+        brief_confirmed=result.brief_confirmed,
+        missing_fields=result.missing_fields,
+        logo_reupload_required=result.logo_reupload_required,
+        stap=result.stap,
+        stap_label=result.stap_label,
+        quick_replies=result.quick_replies,
+        quick_reply_field=result.quick_reply_field,
+        opening_source=result.opening_source,
+    )
+
+
+@router.get("/api/v1/design-agent/chat/opening", response_model=DesignAgentChatResponse)
+async def design_agent_chat_opening(
+    request: Request,
+    session_id: str | None = None,
+    x_fg_design_agent_key: str | None = Header(None, alias="X-FG-Design-Agent-Key"),
+) -> DesignAgentChatResponse:
+    """Deterministic brain opening — no LLM, no 'Hoi'."""
+    _verify_api_key(x_fg_design_agent_key)
+    client_ip = request.client.host if request.client else "unknown"
+    _check_chat_rate_limit(client_ip, session_id)
+    try:
+        result = get_chat_opening(session_id)
+    except RuntimeError as exc:
+        raise HTTPException(status_code=503, detail=str(exc)) from exc
+    return _to_response(result)
+
+
 @router.post("/api/v1/design-agent/chat", response_model=DesignAgentChatResponse)
 async def design_agent_chat(
     request: Request,
@@ -68,25 +103,25 @@ async def design_agent_chat(
     _verify_api_key(x_fg_design_agent_key)
     client_ip = request.client.host if request.client else "unknown"
     _check_chat_rate_limit(client_ip, request_body.session_id)
+    if (
+        not request_body.message.strip()
+        and not request_body.field_updates
+        and not request_body.quick_reply_id
+    ):
+        raise HTTPException(status_code=400, detail="Bericht mag niet leeg zijn.")
     try:
         result = process_chat_turn(
             session_id=request_body.session_id,
             message=request_body.message,
+            field_updates=request_body.field_updates,
+            quick_reply_id=request_body.quick_reply_id,
+            quick_reply_field=request_body.quick_reply_field,
         )
     except ValueError as exc:
         raise HTTPException(status_code=400, detail=str(exc)) from exc
     except RuntimeError as exc:
         raise HTTPException(status_code=503, detail=str(exc)) from exc
-    return DesignAgentChatResponse(
-        session_id=result.session_id,
-        reply_nl=result.reply_nl,
-        brief_partial=result.brief_partial,
-        phase=result.phase,
-        ready_to_generate=result.ready_to_generate,
-        brief_confirmed=result.brief_confirmed,
-        missing_fields=result.missing_fields,
-        logo_reupload_required=result.logo_reupload_required,
-    )
+    return _to_response(result)
 
 
 @router.post("/api/v1/design-agent/chat/turn", response_model=DesignAgentChatResponse)
@@ -95,6 +130,8 @@ async def design_agent_chat_multipart(
     message: str = Form(""),
     session_id: str = Form(""),
     brand_colors: str = Form("[]"),
+    quick_reply_id: str = Form(""),
+    quick_reply_field: str = Form(""),
     logo: UploadFile | None = File(None),
     x_fg_design_agent_key: str | None = Header(None, alias="X-FG-Design-Agent-Key"),
 ) -> DesignAgentChatResponse:
@@ -109,21 +146,14 @@ async def design_agent_chat_multipart(
             message=message,
             logo_filename=logo_name,
             brand_colors=brand_colors,
+            quick_reply_id=quick_reply_id or None,
+            quick_reply_field=quick_reply_field or None,
         )
     except ValueError as exc:
         raise HTTPException(status_code=400, detail=str(exc)) from exc
     except RuntimeError as exc:
         raise HTTPException(status_code=503, detail=str(exc)) from exc
-    return DesignAgentChatResponse(
-        session_id=result.session_id,
-        reply_nl=result.reply_nl,
-        brief_partial=result.brief_partial,
-        phase=result.phase,
-        ready_to_generate=result.ready_to_generate,
-        brief_confirmed=result.brief_confirmed,
-        missing_fields=result.missing_fields,
-        logo_reupload_required=result.logo_reupload_required,
-    )
+    return _to_response(result)
 
 
 @router.get(
@@ -146,6 +176,7 @@ async def design_agent_chat_session(
             last_reply = str(msg.get("content") or "")
             break
     tail = session.messages[-5:] if session.messages else []
+    stap = int(brief.get("_stap") or session.phase)
     return DesignAgentChatSessionResponse(
         session_id=session.session_id,
         brief_partial=brief,
@@ -157,4 +188,7 @@ async def design_agent_chat_session(
         logo_reupload_required=logo_reupload_required(brief),
         last_reply_nl=last_reply,
         messages_tail=tail,
+        stap=stap,
+        stap_label="",
+        quick_replies=[],
     )

@@ -9,6 +9,7 @@ import re
 import uuid
 from dataclasses import dataclass, field
 from datetime import datetime, timezone
+from pathlib import Path
 from typing import Any, Callable
 
 import httpx
@@ -46,6 +47,58 @@ class ChatTurnResult:
     brief_confirmed: bool
     missing_fields: list[str]
     logo_reupload_required: bool
+    stap: int = 1
+    stap_label: str = ""
+    quick_replies: list[dict[str, str]] = field(default_factory=list)
+    quick_reply_field: str = ""
+    opening_source: str = "legacy"
+
+
+def _chat_engine() -> str:
+    return os.getenv("DA_CHAT_ENGINE", "orchestrator").strip().lower()
+
+
+def _use_orchestrator() -> bool:
+    return _chat_engine() != "legacy"
+
+
+def get_chat_opening(session_id: str | None = None) -> ChatTurnResult:
+    if _use_orchestrator():
+        from agent.inspire import chat_orchestrator_bridge
+
+        return chat_orchestrator_bridge.get_opening(session_id)
+    session = get_or_create_session(session_id)
+    from engine.v4.intake.intake_copy import get_opening_nl
+
+    try:
+        _ensure_inspire_path()
+        opening = get_opening_nl()
+    except Exception:
+        opening = (
+            "Mooi — ik pak dit aan zoals een professionele voertuig-reclame studio dat zou doen. "
+            "Daarna maak ik twee richtingen: Standard en Premium."
+        )
+    return ChatTurnResult(
+        session_id=session.session_id,
+        reply_nl=opening,
+        brief_partial=dict(session.brief_partial),
+        phase=1,
+        ready_to_generate=False,
+        brief_confirmed=False,
+        missing_fields=_missing_fields(session.brief_partial),
+        logo_reupload_required=logo_reupload_required(session.brief_partial),
+        stap=1,
+        stap_label="Bedrijf",
+        opening_source="brain",
+    )
+
+
+def _ensure_inspire_path() -> None:
+    repo = Path(os.getenv("INSPIRE_REPO_PATH", "/opt/inspire"))
+    import sys
+
+    if str(repo) not in sys.path:
+        sys.path.insert(0, str(repo))
 
 
 def _session_to_dict(session: ChatSession) -> dict[str, Any]:
@@ -272,6 +325,15 @@ def parse_summary_fields(brief: dict[str, Any], reply_nl: str) -> dict[str, Any]
 
 def missing_fields(brief: dict[str, Any]) -> list[str]:
     """Public wrapper for brief completeness checks (API + tests)."""
+    if _use_orchestrator():
+        try:
+            _ensure_inspire_path()
+            from engine.v4.intake import chat_bridge
+
+            _, missing = chat_bridge.compute_ready_pre_confirm(brief)
+            return missing
+        except Exception:
+            pass
     return _missing_fields(brief)
 
 
@@ -306,20 +368,46 @@ def _compute_ready(session: ChatSession) -> bool:
 
 def mark_brief_confirmed(session_id: str) -> None:
     """Set confirmed after explicit client action (generate form / future confirm endpoint)."""
+    if _use_orchestrator():
+        from agent.inspire import chat_orchestrator_bridge
+
+        raw = chat_session_store.load_session(session_id)
+        if raw and int(raw.get("schema_version") or 0) == 2:
+            raw["brief_confirmed"] = True
+            chat_session_store.save_session(session_id, raw)
+            return
     session = get_or_create_session(session_id)
     session.brief_confirmed = True
     _persist_session(session)
 
 
 def compute_ready(session: ChatSession) -> bool:
+    if _use_orchestrator():
+        try:
+            _ensure_inspire_path()
+            from engine.v4.intake import chat_bridge
+
+            ready, _ = chat_bridge.compute_ready_pre_confirm(session.brief_partial)
+            return ready and session.phase >= 7
+        except Exception:
+            pass
     return _compute_ready(session)
 
 
 def get_session(session_id: str) -> ChatSession | None:
     if session_id in SESSIONS:
         return SESSIONS[session_id]
+    if _use_orchestrator():
+        from agent.inspire import chat_orchestrator_bridge
+
+        orch = chat_orchestrator_bridge.load_chat_session(session_id)
+        if orch:
+            SESSIONS[session_id] = orch
+            return orch
     raw = chat_session_store.load_session(session_id)
     if not raw:
+        return None
+    if int(raw.get("schema_version") or 0) == 2:
         return None
     session = _session_from_dict(raw)
     SESSIONS[session_id] = session
@@ -349,7 +437,24 @@ def process_chat_turn(
     message: str,
     logo_filename: str | None = None,
     brand_colors: str | list[Any] | None = None,
+    field_updates: dict[str, Any] | None = None,
+    quick_reply_id: str | None = None,
+    quick_reply_field: str | None = None,
 ) -> ChatTurnResult:
+    if _use_orchestrator():
+        from agent.inspire import chat_orchestrator_bridge
+
+        colors = _parse_brand_colors(brand_colors)
+        return chat_orchestrator_bridge.process_turn(
+            session_id=session_id,
+            message=message,
+            field_updates=field_updates,
+            quick_reply_id=quick_reply_id,
+            quick_reply_field=quick_reply_field,
+            logo_filename=logo_filename,
+            brand_colors=colors or None,
+        )
+
     session = get_or_create_session(session_id)
     if logo_filename:
         session.brief_partial["logo_file"] = logo_filename
@@ -426,4 +531,7 @@ def process_chat_turn(
         brief_confirmed=session.brief_confirmed,
         missing_fields=missing,
         logo_reupload_required=logo_reupload_required(session.brief_partial),
+        stap=session.phase,
+        stap_label="",
+        opening_source="legacy",
     )

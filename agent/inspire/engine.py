@@ -104,8 +104,12 @@ def _try_inspiration_generate(**kwargs) -> InspireResponse | None:
             "positionering": kwargs.get("positionering") or kwargs.get("stijl", "balanced"),
             "diensten": kwargs.get("diensten", ""),
             "doelgroep": kwargs.get("doelgroep", ""),
-            "vehicle_usage": kwargs.get("vehicle_use", "zakelijk"),
-            "budget_range": kwargs.get("budget_range", "weet_ik_niet"),
+            "regio": kwargs.get("regio", ""),
+            "vehicle_usage": kwargs.get("vehicle_use") or kwargs.get("vehicle_usage", "zakelijk"),
+            "desired_impression": kwargs.get("desired_impression")
+            or kwargs.get("positionering")
+            or kwargs.get("stijl", "balanced"),
+            "budget_range": kwargs.get("budget_range", ""),
             "brief_confirmed": True,
             "mockup_goal_acknowledged": True,
         }

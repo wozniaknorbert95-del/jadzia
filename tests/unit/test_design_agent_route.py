@@ -13,6 +13,8 @@ from PIL import Image
 from api.app import create_app
 from core.models import DesignAgentGenerateResponse, DesignAgentMockupItem, DesignAgentProductItem
 
+_BUDGET_OK = {"budget_range": "300_600", "budget_explicit": "true"}
+
 
 @pytest.fixture(autouse=True)
 def _tier_matrix_env(monkeypatch: pytest.MonkeyPatch) -> None:
@@ -94,6 +96,7 @@ def test_design_agent_generate_200_mocked(mock_proc: AsyncMock, client: TestClie
             "doelgroep": "Particulieren",
             "positionering": "strak",
             "brief_confirmed": "true",
+            **_BUDGET_OK,
         },
         files={"logo": ("logo.png", _logo_png(), "image/png")},
     )
@@ -157,6 +160,27 @@ def test_design_agent_generate_400_incomplete_brief(client: TestClient) -> None:
     assert detail["error_code"] == "BRIEF_INCOMPLETE"
 
 
+def test_design_agent_generate_400_missing_budget_explicit(client: TestClient) -> None:
+    resp = client.post(
+        "/api/v1/design-agent/generate",
+        data={
+            "vehicle": "caddy",
+            "bedrijfsnaam": "Test BV",
+            "branche": "Elektricien",
+            "diensten": "Installatie",
+            "doelgroep": "Particulieren",
+            "brief_confirmed": "true",
+            "budget_range": "300_600",
+            "budget_explicit": "false",
+        },
+        files={"logo": ("logo.png", _logo_png(), "image/png")},
+    )
+    assert resp.status_code == 400
+    detail = resp.json()["detail"]
+    assert detail["error_code"] == "BRIEF_INCOMPLETE"
+    assert "budget" in detail["message"].lower()
+
+
 def test_design_agent_generate_400_svg_logo_rejected(client: TestClient) -> None:
     svg = b'<svg xmlns="http://www.w3.org/2000/svg"><rect width="10" height="10"/></svg>'
     resp = client.post(
@@ -168,6 +192,7 @@ def test_design_agent_generate_400_svg_logo_rejected(client: TestClient) -> None
             "diensten": "Installatie",
             "doelgroep": "Particulieren",
             "brief_confirmed": "true",
+            **_BUDGET_OK,
         },
         files={"logo": ("logo.svg", svg, "image/svg+xml")},
     )
@@ -236,6 +261,7 @@ def test_design_agent_generate_missing_logo_400(client: TestClient) -> None:
             "diensten": "Installatie",
             "doelgroep": "Particulieren",
             "brief_confirmed": "true",
+            **_BUDGET_OK,
         },
     )
     assert resp.status_code == 400
