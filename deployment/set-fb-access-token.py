@@ -93,6 +93,8 @@ def main() -> int:
             return proc.returncode
         if proc.stdout.strip():
             print(proc.stdout.strip())
+        # Subprocess wrote PAGE token to .env — reload into this process
+        _load_env_into_os()
         health = check_token_health()
 
     days_left = health.get("days_left")

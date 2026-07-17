@@ -1,13 +1,13 @@
 {
   "project": "Jadzia-Core",
-  "last_updated": "2026-07-17 (/handoff — DA-INSIRE-ENTERPRISE merged+deployed @ 46e4fc2)",
+  "last_updated": "2026-07-17 (/handoff — FB long-lived PAGE expires_at=0 LIVE; text+photo smoke PASS)",
   "status": "active",
-  "plan": "docs/handoffs/2026-07-17-da-insire-enterprise-merge-PROOF.md",
-  "active_gate": "FB-TOKEN-ROTATION",
-  "active_plan": "docs/ops/FB-TOKEN-ROTATION.md",
-  "next_human": "Rotacja FB Page Token (~5 min) — odblokuje Marketing + M2 Graph E2E.",
-  "next_agent": "Po token: run-m2-video-e2e.py. Alternatywa: COI-CMD-SMTP-01 (gdy sekrety).",
-  "agent_rule": "Deploy w tej sesji zatwierdzony przez Dowódcę. Nie oznaczaj E2E completed bez proof.",
+  "plan": "docs/handoffs/2026-07-17-fb-long-lived-token-PROOF.md",
+  "active_gate": "COI-CONTENT-INTAKE-M2-E2E",
+  "active_plan": "docs/handoffs/2026-07-17-fb-long-lived-token-PROOF.md",
+  "next_human": "Opcjonalnie: link publicznego MP4 na Drive do M2 video E2E. Opcjonalnie: rotacja App Secret (był w czacie).",
+  "next_agent": "Po M2_TEST_GDRIVE_URL: run-m2-video-e2e.py. Albo COI-CMD-SMTP-01.",
+  "agent_rule": "Deploy zatwierdzony w sesji. Nie commituj FB_APP_SECRET / tokenów.",
   "sprints": {
     "remediation": "completed",
     "coi_phase_a": "deploy_complete",
@@ -645,11 +645,11 @@
       "id": "FB-TOKEN-ROTATION",
       "sprint": "COI Content Intake",
       "task": "Rotate FlexGrafik Facebook Page Token (expired 2026-07-09)",
-      "status": "pending",
+      "status": "completed",
       "priority": "critical",
       "owner": "human",
-      "checklist": "docs/ops/FB-TOKEN-ROTATION.md",
-      "note": "Blocks all FB publish; discovered during M2 Graph E2E 2026-07-17"
+      "checklist": "docs/handoffs/2026-07-17-fb-long-lived-token-PROOF.md",
+      "note": "2026-07-17: PAGE expires_at=0; text+photo smoke PASS; App credentials on VPS"
     },
     {
       "id": "COI-CONTENT-INTAKE-M2-E2E",
@@ -658,8 +658,8 @@
       "status": "pending",
       "priority": "high",
       "owner": "agent",
-      "checklist": "docs/handoffs/2026-07-17-coi-content-intake-m2-DEPLOY-PROOF.md",
-      "note": "python3 deployment/run-m2-video-e2e.py on VPS"
+      "checklist": "docs/handoffs/2026-07-17-fb-long-lived-token-PROOF.md",
+      "note": "Token OK; needs public GDrive MP4 (M2_TEST_GDRIVE_URL); GCS sample rejected by Meta"
     },
     {
       "id": "DA-INSIRE-ENTERPRISE-MERGE",

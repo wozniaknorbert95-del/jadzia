@@ -4,8 +4,8 @@
 
 - **Canonical brain**: `brain.md` (this repo)
 - **Canonical backlog**: `todo.json` (this repo)
-- **Active plan / gate**: `todo.json` → `active_gate` = `FB-TOKEN-ROTATION` (DA INSPIRE LIVE @ `46e4fc2`; M2 Graph E2E parked)
-- **Latest handoff**: `docs/handoffs/2026-07-17-da-insire-enterprise-merge-PROOF.md`
+- **Active plan / gate**: `todo.json` → `active_gate` = `COI-CONTENT-INTAKE-M2-E2E` (FB PAGE token `expires_at=0` LIVE)
+- **Latest handoff**: `docs/handoffs/2026-07-17-fb-long-lived-token-PROOF.md`
 - **Module spec (COI)**: `flexgrafik-meta/docs/core/modules/module-jadzia-core.md`
 - **COI charter**: `flexgrafik-meta/docs/core/jadzia-operating-charter.md`
 - **Integration contracts**: `flexgrafik-meta/docs/core/integration-contracts.md`
