@@ -73,3 +73,61 @@ def test_escalation_dedup(temp_db, monkeypatch):
     n2 = check_sla_escalations()
     assert n1 >= 1
     assert n2 == 0
+
+
+def test_send_delegat_email_skipped_without_host(monkeypatch):
+    from agent.commander.escalation import _send_delegat_email
+
+    monkeypatch.delenv("SMTP_HOST", raising=False)
+    monkeypatch.delenv("SMTP_USER", raising=False)
+    monkeypatch.delenv("SMTP_PASSWORD", raising=False)
+    assert _send_delegat_email("subj", "body", "d@test.nl") is False
+
+
+def test_send_delegat_email_ok(monkeypatch):
+    from agent.commander import escalation as esc
+
+    monkeypatch.setenv("SMTP_HOST", "smtp.test.local")
+    monkeypatch.setenv("SMTP_PORT", "587")
+    monkeypatch.setenv("SMTP_USER", "sender@test.nl")
+    monkeypatch.setenv("SMTP_PASSWORD", "secret")
+    monkeypatch.setenv("SMTP_FROM", "sender@test.nl")
+
+    class _FakeSMTP:
+        def __init__(self, host, port, timeout=15):
+            self.host = host
+            self.port = port
+            self.timeout = timeout
+            self.started_tls = False
+            self.logged_in = None
+            self.sent = None
+
+        def __enter__(self):
+            return self
+
+        def __exit__(self, *args):
+            return False
+
+        def starttls(self):
+            self.started_tls = True
+
+        def login(self, user, password):
+            self.logged_in = (user, password)
+
+        def send_message(self, msg):
+            self.sent = msg
+
+    fake = {"smtp": None}
+
+    def _factory(*args, **kwargs):
+        fake["smtp"] = _FakeSMTP(*args, **kwargs)
+        return fake["smtp"]
+
+    monkeypatch.setattr(esc.smtplib, "SMTP", _factory)
+    assert esc._send_delegat_email("SLA", "body text", "d@test.nl") is True
+    smtp = fake["smtp"]
+    assert smtp is not None
+    assert smtp.started_tls is True
+    assert smtp.logged_in == ("sender@test.nl", "secret")
+    assert smtp.sent["To"] == "d@test.nl"
+    assert smtp.sent["Subject"] == "SLA"

@@ -1,12 +1,12 @@
 {
   "project": "Jadzia-Core",
-  "last_updated": "2026-07-17 (/handoff — session close; M2 video LIVE; next COI-CMD-SMTP-01)",
+  "last_updated": "2026-07-17 (/handoff — COI-CMD-SMTP-01 CLOSED; next OPS-FB-HYGIENE-01)",
   "status": "active",
-  "plan": "docs/handoffs/2026-07-17-session-close-M2-SMTP-next.md",
-  "active_gate": "COI-CMD-SMTP-01",
-  "active_plan": "docs/handoffs/2026-07-17-session-close-M2-SMTP-next.md",
-  "next_human": "Na SMTP: Gmail app password (Delegat). Opcjonalnie: usuń FB test posts; rotacja FB App Secret.",
-  "next_agent": "Autonomous prep: /vibe-init → /blast COI-CMD-SMTP-01 → .env.example + playbook + smoke. STOP na sekrety SMTP. Potem apply + PROOF.",
+  "plan": "docs/handoffs/2026-07-17-coi-cmd-smtp-01-CLOSE.md",
+  "active_gate": "OPS-FB-HYGIENE-01",
+  "active_plan": "docs/handoffs/2026-07-17-coi-cmd-smtp-01-CLOSE.md",
+  "next_human": "OPS-FB-HYGIENE-01: usuń FB smoke posts (text/photo/video). Opcjonalnie: rotacja FB App Secret (był w czacie).",
+  "next_agent": "/vibe-init → OPS-FB-HYGIENE-01: checklista postów + komendy delete. Nie TikTok/BFG bez approve.",
   "agent_rule": "Nie deployuj autonomicznie bez approve. Nie commituj sekretów.",
   "sprints": {
     "remediation": "completed",
@@ -597,10 +597,20 @@
       "id": "COI-CMD-SMTP-01",
       "sprint": "COI Commander v3",
       "task": "SMTP na VPS — eskalacja email do Delegata (Gmail app password)",
-      "status": "pending",
+      "status": "completed",
       "priority": "medium",
       "owner": "agent",
-      "note": "delegat_email ustawiony; brak SMTP_HOST w .env — email eskalacji nie wychodzi"
+      "checklist": "docs/handoffs/2026-07-17-coi-cmd-smtp-01-CLOSE.md",
+      "note": "2026-07-17 CLOSED: smoke PASS + inbox OK + git sync; playbook docs/ops/SMTP-DELEGAT-ESCALATION.md"
+    },
+    {
+      "id": "OPS-FB-HYGIENE-01",
+      "sprint": "Ops — Hygiene",
+      "task": "Usuń FB smoke/test posts (text/photo/video) + opcjonalnie rotacja App Secret",
+      "status": "pending",
+      "priority": "medium",
+      "owner": "human",
+      "note": "Next gate after SMTP CLOSE; agent prepares checklist"
     },
     {
       "id": "COI-CMD-QUEUE-CLEAN",

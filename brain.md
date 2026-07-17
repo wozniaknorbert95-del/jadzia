@@ -35,7 +35,7 @@ Szczegóły charter: `flexgrafik-meta/docs/core/jadzia-operating-charter.md`
 | Portal qualification | `api/routes/portal_qualify.py` | LIVE (INT-012) |
 | **Management CLI** | `cli/main.py` → `jadzia` cmd | LIVE (5 cmds) |
 | Design Agent INSPIRE v2/enterprise | `api/routes/design_agent*.py` + `agent/inspire/` | LIVE (merge `46e4fc2` 2026-07-17) |
-| **COI Commander** | `commander-ui/` + `api/routes/commander.py` | LIVE (master merge + VPS 2026-07-09) |
+| **COI Commander** | `commander-ui/` + `api/routes/commander.py` | LIVE (master merge + VPS 2026-07-09; SMTP Delegat eskalacja LIVE 2026-07-17) |
 | **Marketing intake** | `commander-ui` Marketing + `agent/media/gdrive.py` | LIVE (M1 + M2 video E2E PASS 2026-07-17) |
 | Facebook photo publish | `agent/publishers/facebook.py` `publish_photo` | LIVE (entry #16 QR + smoke 2026-07-17) |
 | Facebook video publish | `agent/publishers/facebook.py` `publish_video` | LIVE (entry #21 `fb_post_id=1483779380183430`) |
@@ -111,7 +111,7 @@ Pełne kontrakty: `flexgrafik-meta/docs/core/integration-contracts.md`
 - **Workflow:** `.agents/workflows/README.md` (L0-L4)
 - **Backlog:** `todo.json`
 - **PRD:** `docs/PRD-core.md`
-- **Active plan:** `docs/handoffs/2026-07-17-restore-footing.md` — footing DONE; next gate `COI-CONTENT-INTAKE-M2`
+- **Active plan:** `docs/handoffs/2026-07-17-coi-cmd-smtp-01-CLOSE.md` — SMTP CLOSED; next `OPS-FB-HYGIENE-01`
 - **Parked DA track:** `feat/da-insire-enterprise` (+14 vs master) — merge w osobnej sesji
 - **QUEUE-CLEAN:** completed 2026-07-17 — Home bez E2E `deploy02-*` / `int004-e2e-*`
 - **Prior closure:** `docs/handoffs/2026-07-09-coi-marketing-session-HANDOFF.md`

@@ -4,8 +4,8 @@
 
 - **Canonical brain**: `brain.md` (this repo)
 - **Canonical backlog**: `todo.json` (this repo)
-- **Active plan / gate**: `todo.json` → `active_gate` = `COI-CMD-SMTP-01` (M2 video LIVE; session closed 2026-07-17)
-- **Latest handoff**: `docs/handoffs/2026-07-17-session-close-M2-SMTP-next.md`
+- **Active plan / gate**: `todo.json` → `active_gate` = `OPS-FB-HYGIENE-01` (SMTP CLOSED 2026-07-17)
+- **Latest handoff**: `docs/handoffs/2026-07-17-coi-cmd-smtp-01-CLOSE.md`
 - **Module spec (COI)**: `flexgrafik-meta/docs/core/modules/module-jadzia-core.md`
 - **COI charter**: `flexgrafik-meta/docs/core/jadzia-operating-charter.md`
 - **Integration contracts**: `flexgrafik-meta/docs/core/integration-contracts.md`
