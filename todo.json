@@ -1,13 +1,13 @@
 {
   "project": "Jadzia-Core",
-  "last_updated": "2026-07-17 (/handoff — FB long-lived PAGE expires_at=0 LIVE; text+photo smoke PASS)",
+  "last_updated": "2026-07-17 (/handoff — M2 video E2E PASS entry_id=21 fb_post_id=1483779380183430)",
   "status": "active",
-  "plan": "docs/handoffs/2026-07-17-fb-long-lived-token-PROOF.md",
-  "active_gate": "COI-CONTENT-INTAKE-M2-E2E",
-  "active_plan": "docs/handoffs/2026-07-17-fb-long-lived-token-PROOF.md",
-  "next_human": "Opcjonalnie: link publicznego MP4 na Drive do M2 video E2E. Opcjonalnie: rotacja App Secret (był w czacie).",
-  "next_agent": "Po M2_TEST_GDRIVE_URL: run-m2-video-e2e.py. Albo COI-CMD-SMTP-01.",
-  "agent_rule": "Deploy zatwierdzony w sesji. Nie commituj FB_APP_SECRET / tokenów.",
+  "plan": "docs/handoffs/2026-07-17-coi-content-intake-m2-video-E2E-PROOF.md",
+  "active_gate": "COI-CMD-SMTP-01",
+  "active_plan": "docs/handoffs/2026-07-17-coi-content-intake-m2-video-E2E-PROOF.md",
+  "next_human": "Opcjonalnie: usuń testowy post wideo z FB. Opcjonalnie: rotacja App Secret (był w czacie).",
+  "next_agent": "COI-CMD-SMTP-01 (gdy sekrety SMTP) albo kolejny priorytet z todo.",
+  "agent_rule": "Deploy zatwierdzony w sesji. Nie commituj sekretów.",
   "sprints": {
     "remediation": "completed",
     "coi_phase_a": "deploy_complete",
@@ -20,7 +20,7 @@
     "spine_closure_85": "completed",
     "coi_commander_v3": "merged_master_deploy_2026-07-09",
     "content_intake_m1": "completed_2026-07-09",
-    "content_intake_m2": "deploy_complete_2026-07-17_e2e_token_blocked",
+    "content_intake_m2": "deploy_complete_e2e_pass_2026-07-17",
     "marketing_publish_b": "completed_2026-07-09"
   },
   "tasks": [
@@ -655,11 +655,11 @@
       "id": "COI-CONTENT-INTAKE-M2-E2E",
       "sprint": "COI Content Intake",
       "task": "Retry M2 Graph video E2E → fb_post_id PROOF after token rotation",
-      "status": "pending",
+      "status": "completed",
       "priority": "high",
       "owner": "agent",
-      "checklist": "docs/handoffs/2026-07-17-fb-long-lived-token-PROOF.md",
-      "note": "Token OK; needs public GDrive MP4 (M2_TEST_GDRIVE_URL); GCS sample rejected by Meta"
+      "checklist": "docs/handoffs/2026-07-17-coi-content-intake-m2-video-E2E-PROOF.md",
+      "note": "2026-07-17 PASS entry_id=21 fb_post_id=1483779380183430 GDrive 1uKNDev26FnFmmZN6G5CHYmds3OX7I_fq"
     },
     {
       "id": "DA-INSIRE-ENTERPRISE-MERGE",
