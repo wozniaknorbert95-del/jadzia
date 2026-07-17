@@ -4,7 +4,8 @@
 
 - **Canonical brain**: `brain.md` (this repo)
 - **Canonical backlog**: `todo.json` (this repo)
-- **Active plan**: `docs/plans/PLAN-COI-PHASE-B.md`
+- **Active plan / gate**: `todo.json` → `active_gate` / `active_plan` (obecnie restore footing + `COI-CMD-QUEUE-CLEAN`)
+- **Latest handoff**: `docs/handoffs/2026-07-17-restore-footing.md`
 - **Module spec (COI)**: `flexgrafik-meta/docs/core/modules/module-jadzia-core.md`
 - **COI charter**: `flexgrafik-meta/docs/core/jadzia-operating-charter.md`
 - **Integration contracts**: `flexgrafik-meta/docs/core/integration-contracts.md`

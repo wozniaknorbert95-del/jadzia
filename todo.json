@@ -1,12 +1,12 @@
 {
   "project": "Jadzia-Core",
-  "last_updated": "2026-07-09 (/handoff — M1 + Phase B prod, session close)",
+  "last_updated": "2026-07-17 (restore footing — master synced, QUEUE-CLEAN active)",
   "status": "active",
-  "plan": "docs/design/coi-commander/COI-COMMANDER-PLAN-v3.md",
-  "active_gate": null,
-  "active_plan": null,
-  "next_human": "Marketing UI smoke 2 min (fb-health, filtry, wpis QR). Opcjonalnie: rotacja FB token.",
-  "next_agent": "COI-CMD-QUEUE-CLEAN — docs/handoffs/2026-07-09-coi-marketing-session-HANDOFF.md",
+  "plan": "docs/handoffs/2026-07-17-restore-footing.md",
+  "active_gate": "COI-CMD-QUEUE-CLEAN",
+  "active_plan": "docs/handoffs/2026-07-17-restore-footing.md",
+  "next_human": "Marketing smoke 2 min (fb-health, QR). Opcjonalnie: rotacja FB token.",
+  "next_agent": "COI-CMD-QUEUE-CLEAN (in progress) → potem COI-CONTENT-INTAKE-M2 lub INSPIRE merge (osobna sesja)",
   "agent_rule": "Nie deployuj autonomicznie (Zasada 11). Nie oznaczaj DEPLOY-01/03 completed bez E2E proof w handoff.",
   "sprints": {
     "remediation": "completed",
@@ -18,7 +18,9 @@
     "coi_phase_b3": "deploy_complete",
     "post_audit_remediation": "deploy_closure_complete_2026-07-05",
     "spine_closure_85": "completed",
-    "coi_commander_v3": "merged_master_deploy_2026-07-09"
+    "coi_commander_v3": "merged_master_deploy_2026-07-09",
+    "content_intake_m1": "completed_2026-07-09",
+    "marketing_publish_b": "completed_2026-07-09"
   },
   "tasks": [
     {
@@ -603,10 +605,11 @@
       "id": "COI-CMD-QUEUE-CLEAN",
       "sprint": "COI Commander v3",
       "task": "Wyczyść stare E2E hot_lead z kolejki (deploy02-*)",
-      "status": "pending",
-      "priority": "low",
+      "status": "in_progress",
+      "priority": "critical",
       "owner": "agent",
-      "note": "Home szum — testowe leady z INT-004 deploy"
+      "checklist": "docs/handoffs/2026-07-17-restore-footing.md",
+      "note": "Match: deploy02-*@ / int004-e2e-*@; keep real leads (jan@, bob@)"
     },
     {
       "id": "COI-CONTENT-INTAKE-M1",
@@ -625,7 +628,16 @@
       "status": "completed",
       "priority": "critical",
       "owner": "agent",
-      "note": "Phase B local complete; handoff docs/handoffs/2026-07-09-coi-marketing-publish-B-PROOF.md; deploy pending Dowódca approve"
+      "note": "Prod @ 1036d6e; handoff docs/handoffs/2026-07-09-coi-marketing-publish-B-PROOF.md"
+    },
+    {
+      "id": "COI-CONTENT-INTAKE-M2",
+      "sprint": "COI Content Intake",
+      "task": "Video/Reels publish from GDrive URL (Facebook)",
+      "status": "pending",
+      "priority": "high",
+      "owner": "agent",
+      "note": "Po QUEUE-CLEAN + Marketing smoke; /blast w osobnej sesji"
     }
   ]
 }
