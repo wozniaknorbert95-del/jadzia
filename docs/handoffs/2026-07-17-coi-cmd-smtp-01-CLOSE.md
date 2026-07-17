@@ -12,9 +12,10 @@
 | Step | Result |
 |------|--------|
 | Inbox `[SMOKE] COI Commander SMTP` | **OK** (wozniaknorbert95@gmail.com) |
-| Commit+push SMTP prep (no secrets) | master (this commit) |
-| VPS `git pull --ff-only` | SHA = origin/master |
-| Smoke #2 after sync | see deploy notes below |
+| Commit+push SMTP prep (no secrets) | `722728b` on origin/master |
+| VPS `git pull --ff-only` | `0ef9c67` → **`722728b`** |
+| Smoke #2 after sync | **SMTP_SMOKE=PASS** (post-pull) |
+| `jadzia` service | **active** |
 | `SMTP_*` on VPS `.env` | preserved (not in git) |
 
 ---
