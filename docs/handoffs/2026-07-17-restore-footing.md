@@ -29,28 +29,28 @@
 
 ---
 
-## Faza 1 — COI-CMD-QUEUE-CLEAN
+## Faza 1 — COI-CMD-QUEUE-CLEAN — DONE (prod 2026-07-17)
 
-**Prod leads (2026-07-17 inspect):**
+| Step | Result |
+|------|--------|
+| VPS sync | `reset --hard origin/master` @ `33e58b9` (local dirty tree stashed as `vps-pre-queue-clean-20260717`) |
+| DB backup | `data/jadzia.db.bak.*-queue-clean` |
+| Dry-run | 3 matches (`deploy02-*`, `int004-e2e-*`) |
+| Apply | **deleted=3** |
+| Remaining | `jan@bouw.com`, `bob@gamil.com` only |
+| `jadzia` | active |
 
-| id | email | Keep? |
-|----|-------|-------|
-| 1 | `deploy02-int004-…@flexgrafik.nl` | DELETE (E2E) |
-| 2 | `deploy02-php-…@flexgrafik.nl` | DELETE (E2E) |
-| 3 | `int004-e2e-…@flexgrafik.nl` | DELETE (E2E) |
-| 4 | `jan@bouw.com` | KEEP |
-| 5 | `bob@gamil.com` | KEEP |
-
-**Script:** `deployment/cleanup-e2e-hot-leads.py`  
-**Match:** email `deploy02-%` OR `int004-e2e-%`
+**Gate:** `COI-CMD-QUEUE-CLEAN` → **completed**
 
 ---
 
-## Faza 2 — NEXT session (not this commit's code)
+## Faza 2 — NEXT session (expansion)
 
-1. Human: Marketing smoke (fb-health, QR published)
-2. Agent: `/blast` → `COI-CONTENT-INTAKE-M2` **or** separate INSPIRE merge review
-3. Optional: FB token rotation (`docs/ops/FB-TOKEN-ROTATION.md`)
+1. **Human:** Marketing smoke 2 min — https://api.zzpackage.flexgrafik.nl/commander/ → fb-health, filtr Opublikowane (QR)
+2. **Agent COI:** `/blast` → `COI-CONTENT-INTAKE-M2` (video/Reels)
+3. **Agent DA (osobna sesja):** review/merge `feat/da-insire-enterprise`; resolve `stash@{0}` inspire safety vs enterprise `engine.py`
+
+Optional: FB token rotation (`docs/ops/FB-TOKEN-ROTATION.md`)
 
 ---
 

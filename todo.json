@@ -1,12 +1,12 @@
 {
   "project": "Jadzia-Core",
-  "last_updated": "2026-07-17 (restore footing — master synced, QUEUE-CLEAN active)",
+  "last_updated": "2026-07-17 (restore footing + QUEUE-CLEAN prod DONE)",
   "status": "active",
   "plan": "docs/handoffs/2026-07-17-restore-footing.md",
-  "active_gate": "COI-CMD-QUEUE-CLEAN",
-  "active_plan": "docs/handoffs/2026-07-17-restore-footing.md",
+  "active_gate": null,
+  "active_plan": null,
   "next_human": "Marketing smoke 2 min (fb-health, QR). Opcjonalnie: rotacja FB token.",
-  "next_agent": "COI-CMD-QUEUE-CLEAN (in progress) → potem COI-CONTENT-INTAKE-M2 lub INSPIRE merge (osobna sesja)",
+  "next_agent": "COI-CONTENT-INTAKE-M2 (/blast) LUB feat/da-insire-enterprise merge — osobne sesje; see restore handoff Faza 2",
   "agent_rule": "Nie deployuj autonomicznie (Zasada 11). Nie oznaczaj DEPLOY-01/03 completed bez E2E proof w handoff.",
   "sprints": {
     "remediation": "completed",
@@ -605,11 +605,11 @@
       "id": "COI-CMD-QUEUE-CLEAN",
       "sprint": "COI Commander v3",
       "task": "Wyczyść stare E2E hot_lead z kolejki (deploy02-*)",
-      "status": "in_progress",
+      "status": "completed",
       "priority": "critical",
       "owner": "agent",
       "checklist": "docs/handoffs/2026-07-17-restore-footing.md",
-      "note": "Match: deploy02-*@ / int004-e2e-*@; keep real leads (jan@, bob@)"
+      "note": "Prod 2026-07-17: deleted 3 E2E leads; kept jan@bouw.com + bob@gamil.com; VPS @ 33e58b9"
     },
     {
       "id": "COI-CONTENT-INTAKE-M1",
