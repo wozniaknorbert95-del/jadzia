@@ -34,7 +34,7 @@ Szczegóły charter: `flexgrafik-meta/docs/core/jadzia-operating-charter.md`
 | Weekly COI brief | `agent/nodes/brief_node.py` | LIVE (worker hook) |
 | Portal qualification | `api/routes/portal_qualify.py` | LIVE (INT-012) |
 | **Management CLI** | `cli/main.py` → `jadzia` cmd | LIVE (5 cmds) |
-| Design Agent INSPIRE v2 | `api/routes/design_agent.py` | LIVE (separate track — handoff 2026-07-08) |
+| Design Agent INSPIRE v2/enterprise | `api/routes/design_agent*.py` + `agent/inspire/` | LIVE (merge `46e4fc2` 2026-07-17) |
 | **COI Commander** | `commander-ui/` + `api/routes/commander.py` | LIVE (master merge + VPS 2026-07-09) |
 | **Marketing intake** | `commander-ui` Marketing + `agent/media/gdrive.py` | LIVE (M1 + M2 video code @ `c7338c9`) |
 | Facebook photo publish | `agent/publishers/facebook.py` `publish_photo` | LIVE (entry #16 QR E2E) |

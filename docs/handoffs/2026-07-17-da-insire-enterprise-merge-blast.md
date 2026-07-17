@@ -1,8 +1,8 @@
 # BLAST — DA-INSIRE-ENTERPRISE-MERGE (queued)
 
 **Date:** 2026-07-17  
-**Status:** QUEUED — start after FB token rotation + optional M2 Graph E2E retry  
-**Branch:** `feat/da-insire-enterprise` @ `57c9541` (+14 commits vs master `c7338c9`)
+**Status:** DONE 2026-07-17 — see `docs/handoffs/2026-07-17-da-insire-enterprise-merge-PROOF.md`  
+**Branch:** merged into `master` @ `46e4fc2`
 
 ---
 

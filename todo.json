@@ -1,13 +1,13 @@
 {
   "project": "Jadzia-Core",
-  "last_updated": "2026-07-17 (/handoff — M2 DEPLOY LIVE; gate → DA-INSIRE-ENTERPRISE-MERGE; FB token parallel human)",
+  "last_updated": "2026-07-17 (/handoff — DA-INSIRE-ENTERPRISE merged+deployed @ 46e4fc2)",
   "status": "active",
-  "plan": "docs/handoffs/2026-07-17-da-insire-enterprise-merge-blast.md",
-  "active_gate": "DA-INSIRE-ENTERPRISE-MERGE",
-  "active_plan": "docs/handoffs/2026-07-17-da-insire-enterprise-merge-blast.md",
-  "next_human": "Opcjonalnie równolegle: rotacja FB Page Token (docs/ops/FB-TOKEN-ROTATION.md) — odblokuje Marketing publish.",
-  "next_agent": "DA-INSIRE-ENTERPRISE-MERGE: stash review → merge master into feat → pytest → merge master → deploy (sesja: deploy approved).",
-  "agent_rule": "Deploy w tej sesji: zatwierdzony przez Dowódcę. Nie oznaczaj E2E completed bez proof w handoff.",
+  "plan": "docs/handoffs/2026-07-17-da-insire-enterprise-merge-PROOF.md",
+  "active_gate": "FB-TOKEN-ROTATION",
+  "active_plan": "docs/ops/FB-TOKEN-ROTATION.md",
+  "next_human": "Rotacja FB Page Token (~5 min) — odblokuje Marketing + M2 Graph E2E.",
+  "next_agent": "Po token: run-m2-video-e2e.py. Alternatywa: COI-CMD-SMTP-01 (gdy sekrety).",
+  "agent_rule": "Deploy w tej sesji zatwierdzony przez Dowódcę. Nie oznaczaj E2E completed bez proof.",
   "sprints": {
     "remediation": "completed",
     "coi_phase_a": "deploy_complete",
@@ -665,11 +665,11 @@
       "id": "DA-INSIRE-ENTERPRISE-MERGE",
       "sprint": "Design Agent INSPIRE",
       "task": "Review stash + merge feat/da-insire-enterprise → master",
-      "status": "pending",
+      "status": "completed",
       "priority": "high",
       "owner": "agent",
-      "checklist": "docs/handoffs/2026-07-17-da-insire-enterprise-merge-blast.md",
-      "note": "Queued; +14 commits; 0 git conflicts with M2; stash review required"
+      "checklist": "docs/handoffs/2026-07-17-da-insire-enterprise-merge-PROOF.md",
+      "note": "Merged+deployed 2026-07-17 @ 46e4fc2; smoke PASS; stash dropped (superseded)"
     }
   ]
 }
