@@ -94,11 +94,11 @@ def test_publish_entry_no_fb_config(temp_db, monkeypatch):
 def test_publish_entry_success(temp_db, fb_env, monkeypatch):
     entry_id = _create_approved_facebook_entry()
 
-    def _mock_publish(message, scheduled_publish_time=None):
+    def _mock_publish(row):
         return {"status": "success", "post_id": "491325420727745_42"}
 
     monkeypatch.setattr(
-        "agent.nodes.content_calendar_node.publish_post",
+        "agent.nodes.content_calendar_node.publish_calendar_content",
         _mock_publish,
     )
     result = publish_entry(entry_id)
@@ -113,8 +113,8 @@ def test_publish_entry_success(temp_db, fb_env, monkeypatch):
 def test_publish_entry_failure_sets_failed(temp_db, fb_env, monkeypatch):
     entry_id = _create_approved_facebook_entry()
     monkeypatch.setattr(
-        "agent.nodes.content_calendar_node.publish_post",
-        lambda *a, **k: {"status": "error", "error": "Graph API down"},
+        "agent.nodes.content_calendar_node.publish_calendar_content",
+        lambda row: {"status": "error", "error": "Graph API down"},
     )
     result = publish_entry(entry_id)
     assert result["status"] == "error"
@@ -151,8 +151,8 @@ def test_publish_due_scheduled_entries_publishes_past(temp_db, fb_env, monkeypat
     )
 
     monkeypatch.setattr(
-        "agent.nodes.content_calendar_node.publish_entry",
-        lambda eid: {"status": "success", "post_id": "491325420727745_1"},
+        "agent.commander.publish.publish_calendar_entry_system",
+        lambda entry_id, expected_version=None: {"status": "success", "post_id": "491325420727745_1"},
     )
     count = publish_due_scheduled_entries()
     assert count == 1

@@ -136,3 +136,66 @@ def test_publish_routes_photo(monkeypatch, client, temp_db):
     r = client.post(f"/api/v1/content-calendar/{eid}/publish", headers=_auth(), json={})
     assert r.status_code == 200
     assert called.get("url") == "https://drive.google.com/uc?export=download&id=abc"
+
+
+def test_create_video_entry_normalizes_gdrive(client, temp_db, monkeypatch):
+    monkeypatch.setattr(
+        "agent.media.gdrive.probe_media_url",
+        lambda url: {"ok": True, "mime_type": "video/mp4", "media_url": url},
+    )
+    body = {
+        "platform": "facebook",
+        "title": "Test wideo",
+        "body_nl": "NL video caption",
+        "scheduled_at": "2026-07-15T09:00:00+00:00",
+        "scheduled_publish_at": "2026-07-15T09:00:00+00:00",
+        "content_type": "video",
+        "media_url": "https://drive.google.com/file/d/vidXYZ789/view",
+        "status": "draft",
+    }
+    r = client.post("/api/v1/content-calendar", json=body, headers=_auth())
+    assert r.status_code == 200
+    assert r.json()["sync_status"] == "success"
+
+    listed = client.get("/api/v1/content-calendar", headers=_auth()).json()
+    entry = listed["entries"][-1]
+    assert "uc?export=download&id=vidXYZ789" in entry["media_url"]
+    assert entry["content_type"] == "video"
+
+
+def test_publish_routes_video(monkeypatch, client, temp_db):
+    from agent.db import db_create_calendar_entry, db_update_calendar_entry
+
+    eid, _ = db_create_calendar_entry({
+        "platform": "facebook",
+        "title": "Video post",
+        "body_nl": "NL video",
+        "scheduled_at": "2026-07-15T09:00:00+00:00",
+        "status": "approved",
+        "content_type": "video",
+        "media_url": "https://drive.google.com/uc?export=download&id=vid",
+        "media_source": "gdrive",
+    })
+    db_update_calendar_entry(int(eid), {"status": "approved"})
+
+    called = {}
+
+    def fake_publish(row):
+        called["type"] = row.get("content_type")
+        called["url"] = row.get("media_url")
+        return {"status": "success", "post_id": "page_video_1"}
+
+    monkeypatch.setenv("FB_PAGE_ID", "491325420727745")
+    monkeypatch.setenv("FB_ACCESS_TOKEN", "test-token")
+    monkeypatch.setattr("agent.commander.publish.publish_calendar_content", fake_publish)
+    monkeypatch.setattr(
+        "agent.commander.publish.db_update_calendar_entry_versioned",
+        lambda *a, **k: (True, 2),
+    )
+    monkeypatch.setattr("agent.commander.publish.db_commander_increment_daily_actions", lambda: 1)
+    monkeypatch.setattr("agent.commander.publish.append_audit", lambda **k: None)
+
+    r = client.post(f"/api/v1/content-calendar/{eid}/publish", headers=_auth(), json={})
+    assert r.status_code == 200
+    assert called.get("type") == "video"
+    assert "vid" in (called.get("url") or "")

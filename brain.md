@@ -2,18 +2,20 @@
 status: "[ACTIVE]"
 title: "Jadzia-Core Brain (Canonical)"
 owner: "Norbert Wozniak"
-updated: "2026-07-08"
-readiness_overall: "~85% operational spine"
+updated: "2026-07-17"
+readiness_overall: "~87% operational spine (Commander + Marketing intake LIVE)"
 ---
 
 ## 1) Misja modułu
 
 **TO-BE (wizja):** Jadzia jako **Chief Operating Intelligence (COI)** — prawa ręka Dowódcy: sense → think → plan → act → guard (Kaizen).
 
-**AS-IS (dziś, uczciwie):** FastAPI backend na VPS z trzema filarami LIVE:
+**AS-IS (dziś, uczciwie):** FastAPI backend na VPS z filarami LIVE:
 - WP code agent (SSH read/write/rollback) via Telegram + worker queue + HITL
 - Customer sales chat widget dla Wizarda (INT-001)
 - Task/session management w SQLite (`jadzia.db`)
+- **COI Commander** (queue, Marketing, audit, JWT) — prod 2026-07-09
+- **Content Intake M1 + Publish Hardening B** — FB text/photo z GDrive URL
 
 Szczegóły charter: `flexgrafik-meta/docs/core/jadzia-operating-charter.md`
 
@@ -33,6 +35,10 @@ Szczegóły charter: `flexgrafik-meta/docs/core/jadzia-operating-charter.md`
 | Portal qualification | `api/routes/portal_qualify.py` | LIVE (INT-012) |
 | **Management CLI** | `cli/main.py` → `jadzia` cmd | LIVE (5 cmds) |
 | Design Agent INSPIRE v2 | `api/routes/design_agent.py` | LIVE (separate track — handoff 2026-07-08) |
+| **COI Commander** | `commander-ui/` + `api/routes/commander.py` | LIVE (master merge + VPS 2026-07-09) |
+| **Marketing intake** | `commander-ui` Marketing + `agent/media/gdrive.py` | LIVE (M1 + M2 video code @ `c7338c9`) |
+| Facebook photo publish | `agent/publishers/facebook.py` `publish_photo` | LIVE (entry #16 QR E2E) |
+| Facebook video publish | `agent/publishers/facebook.py` `publish_video` | DEPLOYED (Graph `/videos`; live E2E blocked — FB token expired 2026-07-09) |
 
 **Pipeline:** `routing → commands | intent | planning | generate | approval → SSH write → HITL diff`
 
@@ -52,7 +58,8 @@ Szczegóły charter: `flexgrafik-meta/docs/core/jadzia-operating-charter.md`
 | `analytics_node` | `agent/nodes/analytics_node.py` | LIVE |
 | Content calendar | INT-010 `GET/POST/PATCH /api/v1/content-calendar` | LIVE (VPS) |
 | `content_calendar_node` | `agent/nodes/content_calendar_node.py` | LIVE |
-| Facebook publish | INT-011 `POST/GET …/publish` | LIVE (VPS E2E PASS 2026-07-01) |
+| Facebook publish | INT-011 `POST/GET …/publish` | LIVE (text/photo; video deployed `c7338c9`; token rotacja pending) |
+| Commander Marketing | composer + GDrive + failed UX | LIVE (M1 + Phase B) |
 
 Plan Phase A (completed): `docs/archive/plans/PLAN-COI-PHASE-A.md`  
 Plan Phase B (completed): `docs/archive/plans/PLAN-COI-PHASE-B.md`
@@ -90,9 +97,10 @@ Pełne kontrakty: `flexgrafik-meta/docs/core/integration-contracts.md`
 | Worker queue/HITL | 85% | 90% |
 | Operational OS (orders/leads) | 85% | 90% |
 | Analytics integration | 80% | 80% |
-| Content calendar | 75% | 75% |
+| Content calendar | 90% (intake + photo publish) | 95% |
+| COI Commander | 90% | 95% |
 | COI strategy synthesis | 40% (brief LIVE; no auto-spawn) | 85% |
-| **Overall** | **~85%** operational spine | **85%** full COI vision |
+| **Overall** | **~87%** operational spine | **85%** full COI vision |
 
 ## 7) Source of Truth
 
@@ -103,7 +111,10 @@ Pełne kontrakty: `flexgrafik-meta/docs/core/integration-contracts.md`
 - **Workflow:** `.agents/workflows/README.md` (L0-L4)
 - **Backlog:** `todo.json`
 - **PRD:** `docs/PRD-core.md`
-- **Active plan:** `docs/superpowers/specs/2026-07-08-jadzia-spine-closure-design.md`
+- **Active plan:** `docs/handoffs/2026-07-17-restore-footing.md` — footing DONE; next gate `COI-CONTENT-INTAKE-M2`
+- **Parked DA track:** `feat/da-insire-enterprise` (+14 vs master) — merge w osobnej sesji
+- **QUEUE-CLEAN:** completed 2026-07-17 — Home bez E2E `deploy02-*` / `int004-e2e-*`
+- **Prior closure:** `docs/handoffs/2026-07-09-coi-marketing-session-HANDOFF.md`
 
 ## 8) Workflow Framework (v2.0)
 

@@ -1,13 +1,13 @@
 {
   "project": "Jadzia-Core",
-  "last_updated": "2026-07-09 (/handoff — M1 + Phase B prod, session close)",
+  "last_updated": "2026-07-17 (/handoff — M2 DEPLOY LIVE; gate → DA-INSIRE-ENTERPRISE-MERGE; FB token parallel human)",
   "status": "active",
-  "plan": "docs/design/coi-commander/COI-COMMANDER-PLAN-v3.md",
-  "active_gate": null,
-  "active_plan": null,
-  "next_human": "Marketing UI smoke 2 min (fb-health, filtry, wpis QR). Opcjonalnie: rotacja FB token.",
-  "next_agent": "COI-CMD-QUEUE-CLEAN — docs/handoffs/2026-07-09-coi-marketing-session-HANDOFF.md",
-  "agent_rule": "Nie deployuj autonomicznie (Zasada 11). Nie oznaczaj DEPLOY-01/03 completed bez E2E proof w handoff.",
+  "plan": "docs/handoffs/2026-07-17-da-insire-enterprise-merge-blast.md",
+  "active_gate": "DA-INSIRE-ENTERPRISE-MERGE",
+  "active_plan": "docs/handoffs/2026-07-17-da-insire-enterprise-merge-blast.md",
+  "next_human": "Opcjonalnie równolegle: rotacja FB Page Token (docs/ops/FB-TOKEN-ROTATION.md) — odblokuje Marketing publish.",
+  "next_agent": "DA-INSIRE-ENTERPRISE-MERGE: stash review → merge master into feat → pytest → merge master → deploy (sesja: deploy approved).",
+  "agent_rule": "Deploy w tej sesji: zatwierdzony przez Dowódcę. Nie oznaczaj E2E completed bez proof w handoff.",
   "sprints": {
     "remediation": "completed",
     "coi_phase_a": "deploy_complete",
@@ -18,7 +18,10 @@
     "coi_phase_b3": "deploy_complete",
     "post_audit_remediation": "deploy_closure_complete_2026-07-05",
     "spine_closure_85": "completed",
-    "coi_commander_v3": "merged_master_deploy_2026-07-09"
+    "coi_commander_v3": "merged_master_deploy_2026-07-09",
+    "content_intake_m1": "completed_2026-07-09",
+    "content_intake_m2": "deploy_complete_2026-07-17_e2e_token_blocked",
+    "marketing_publish_b": "completed_2026-07-09"
   },
   "tasks": [
     {
@@ -603,10 +606,11 @@
       "id": "COI-CMD-QUEUE-CLEAN",
       "sprint": "COI Commander v3",
       "task": "Wyczyść stare E2E hot_lead z kolejki (deploy02-*)",
-      "status": "pending",
-      "priority": "low",
+      "status": "completed",
+      "priority": "critical",
       "owner": "agent",
-      "note": "Home szum — testowe leady z INT-004 deploy"
+      "checklist": "docs/handoffs/2026-07-17-restore-footing.md",
+      "note": "Prod 2026-07-17: deleted 3 E2E leads; kept jan@bouw.com + bob@gamil.com; VPS @ 33e58b9"
     },
     {
       "id": "COI-CONTENT-INTAKE-M1",
@@ -625,7 +629,47 @@
       "status": "completed",
       "priority": "critical",
       "owner": "agent",
-      "note": "Phase B local complete; handoff docs/handoffs/2026-07-09-coi-marketing-publish-B-PROOF.md; deploy pending Dowódca approve"
+      "note": "Prod @ 1036d6e; handoff docs/handoffs/2026-07-09-coi-marketing-publish-B-PROOF.md"
+    },
+    {
+      "id": "COI-CONTENT-INTAKE-M2",
+      "sprint": "COI Content Intake",
+      "task": "Video/Reels publish from GDrive URL (Facebook)",
+      "status": "completed",
+      "priority": "high",
+      "owner": "agent",
+      "checklist": "docs/handoffs/2026-07-17-coi-content-intake-m2-PROOF.md",
+      "note": "Prod @ c7338c9; MIME gate PASS; Graph /videos reached; live fb_post_id BLOCKED expired token 2026-07-09; handoff docs/handoffs/2026-07-17-coi-content-intake-m2-DEPLOY-PROOF.md"
+    },
+    {
+      "id": "FB-TOKEN-ROTATION",
+      "sprint": "COI Content Intake",
+      "task": "Rotate FlexGrafik Facebook Page Token (expired 2026-07-09)",
+      "status": "pending",
+      "priority": "critical",
+      "owner": "human",
+      "checklist": "docs/ops/FB-TOKEN-ROTATION.md",
+      "note": "Blocks all FB publish; discovered during M2 Graph E2E 2026-07-17"
+    },
+    {
+      "id": "COI-CONTENT-INTAKE-M2-E2E",
+      "sprint": "COI Content Intake",
+      "task": "Retry M2 Graph video E2E → fb_post_id PROOF after token rotation",
+      "status": "pending",
+      "priority": "high",
+      "owner": "agent",
+      "checklist": "docs/handoffs/2026-07-17-coi-content-intake-m2-DEPLOY-PROOF.md",
+      "note": "python3 deployment/run-m2-video-e2e.py on VPS"
+    },
+    {
+      "id": "DA-INSIRE-ENTERPRISE-MERGE",
+      "sprint": "Design Agent INSPIRE",
+      "task": "Review stash + merge feat/da-insire-enterprise → master",
+      "status": "pending",
+      "priority": "high",
+      "owner": "agent",
+      "checklist": "docs/handoffs/2026-07-17-da-insire-enterprise-merge-blast.md",
+      "note": "Queued; +14 commits; 0 git conflicts with M2; stash review required"
     }
   ]
 }

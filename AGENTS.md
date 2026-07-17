@@ -4,7 +4,9 @@
 
 - **Canonical brain**: `brain.md` (this repo)
 - **Canonical backlog**: `todo.json` (this repo)
-- **Active plan**: `docs/plans/PLAN-COI-PHASE-B.md`
+- **Active plan / gate**: `todo.json` → `active_gate` = `DA-INSIRE-ENTERPRISE-MERGE` (M2 deploy LIVE @ `c7338c9`/`9495a10`; Graph E2E parked — FB token)
+- **Latest handoff**: `docs/handoffs/2026-07-17-coi-content-intake-m2-DEPLOY-PROOF.md`
+- **Queued next (agent)**: `docs/handoffs/2026-07-17-da-insire-enterprise-merge-blast.md`
 - **Module spec (COI)**: `flexgrafik-meta/docs/core/modules/module-jadzia-core.md`
 - **COI charter**: `flexgrafik-meta/docs/core/jadzia-operating-charter.md`
 - **Integration contracts**: `flexgrafik-meta/docs/core/integration-contracts.md`
