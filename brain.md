@@ -48,9 +48,9 @@ Szczegóły charter: `flexgrafik-meta/docs/core/jadzia-operating-charter.md`
 
 | Element | Kontrakt | Status |
 |---------|----------|--------|
-| Order ingestion | INT-002 `POST /webhooks/woocommerce/order` | LIVE (WC order 3149 on prod) |
+| Order ingestion | INT-002 `POST /webhooks/woocommerce/order` | v1 LIVE; v2 consumer CODE PASS, deploy blocked on 02A/02B integration |
 | `order_node` | `agent/nodes/order_node.py` | LIVE |
-| `orders` table | `jadzia.db` — `agent/db.py` | LIVE |
+| `orders` table | `jadzia.db` — `agent/db.py` | LIVE v1; additive v2 evidence migration tested |
 | Lead ingestion | INT-004 `POST /api/v1/leads` | LIVE (DEPLOY-02 E2E PASS) |
 | `lead_node` | `agent/nodes/lead_node.py` | LIVE |
 | `leads` table | `jadzia.db` | LIVE |
@@ -78,7 +78,7 @@ Plan Phase B (completed): `docs/archive/plans/PLAN-COI-PHASE-B.md`
 | ID | Kierunek | Status |
 |----|----------|--------|
 | INT-001 | Wizard → widget chat | LIVE |
-| INT-002 | WC → order webhook | LIVE |
+| INT-002 | WC → order webhook | v1 LIVE; v2 consumer ready, not deployed |
 | INT-003 | Game → Wizard coupon | LIVE (app side) |
 | INT-004 | app → `POST /api/v1/leads` | LIVE (DEPLOY-02 E2E PASS) |
 | INT-009 | GA4 → analytics snapshot | LIVE |
@@ -111,7 +111,7 @@ Pełne kontrakty: `flexgrafik-meta/docs/core/integration-contracts.md`
 - **Workflow:** `.agents/workflows/README.md` (L0-L4)
 - **Backlog:** `todo.json`
 - **PRD:** `docs/PRD-core.md`
-- **Active plan:** `docs/handoffs/2026-07-17-coi-cmd-smtp-01-CLOSE.md` — SMTP CLOSED; next `OPS-FB-HYGIENE-01`
+- **Active plan:** `docs/handoffs/2026-07-17-rev-r0-02c-int002-consumer-PROOF.md` — consumer CODE PASS; deploy blocked pending 02A/02B integration
 - **Parked DA track:** `feat/da-insire-enterprise` (+14 vs master) — merge w osobnej sesji
 - **QUEUE-CLEAN:** completed 2026-07-17 — Home bez E2E `deploy02-*` / `int004-e2e-*`
 - **Prior closure:** `docs/handoffs/2026-07-09-coi-marketing-session-HANDOFF.md`

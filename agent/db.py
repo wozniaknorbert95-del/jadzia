@@ -154,10 +154,61 @@ def _init_schema(conn: sqlite3.Connection):
             customer_name TEXT,
             total_gross REAL NOT NULL,
             payment_id TEXT,
+            schema_version TEXT NOT NULL DEFAULT 'int-002.v1',
+            currency TEXT,
+            total_net REAL,
+            tax_total REAL,
+            payment_status TEXT,
+            payment_method TEXT,
+            payment_provider TEXT,
+            payment_mode TEXT,
+            paid_at TEXT,
+            classification TEXT NOT NULL DEFAULT 'unknown',
+            classification_reason TEXT,
+            is_test INTEGER,
+            test_reason TEXT,
+            checkout_id TEXT,
+            checkout_started_at TEXT,
+            checkout_environment TEXT,
+            attribution_json TEXT NOT NULL DEFAULT '{}',
             created_at TEXT NOT NULL,
             updated_at TEXT NOT NULL
         )
     """)
+    order_v2_columns = {
+        "schema_version": "TEXT NOT NULL DEFAULT 'int-002.v1'",
+        "currency": "TEXT",
+        "total_net": "REAL",
+        "tax_total": "REAL",
+        "payment_status": "TEXT",
+        "payment_method": "TEXT",
+        "payment_provider": "TEXT",
+        "payment_mode": "TEXT",
+        "paid_at": "TEXT",
+        "classification": "TEXT NOT NULL DEFAULT 'unknown'",
+        "classification_reason": "TEXT",
+        "is_test": "INTEGER",
+        "test_reason": "TEXT",
+        "checkout_id": "TEXT",
+        "checkout_started_at": "TEXT",
+        "checkout_environment": "TEXT",
+        "attribution_json": "TEXT NOT NULL DEFAULT '{}'",
+    }
+    try:
+        existing_order_columns = {
+            row[1] for row in conn.execute("PRAGMA table_info(orders)").fetchall()
+        }
+        for column_name, column_type in order_v2_columns.items():
+            if column_name not in existing_order_columns:
+                conn.execute(
+                    f"ALTER TABLE orders ADD COLUMN {column_name} {column_type}"
+                )
+    except Exception as e:
+        import logging
+        logging.getLogger(__name__).error(
+            "[DB] INT-002 v2 migration failed: %s", e
+        )
+        raise
     conn.execute("""
         CREATE INDEX IF NOT EXISTS idx_orders_status
         ON orders(status)
@@ -165,6 +216,11 @@ def _init_schema(conn: sqlite3.Connection):
     conn.execute("""
         CREATE INDEX IF NOT EXISTS idx_orders_created_at
         ON orders(created_at)
+    """)
+    conn.execute("""
+        CREATE UNIQUE INDEX IF NOT EXISTS idx_orders_checkout_id
+        ON orders(checkout_id)
+        WHERE checkout_id IS NOT NULL AND checkout_id != ''
     """)
 
     # Game / web leads (INT-004)
@@ -1001,29 +1057,88 @@ def db_upsert_order(order_data: Dict) -> Optional[str]:
             ).fetchone()
 
             if existing:
-                conn.execute(
-                    """
-                    UPDATE orders SET
-                        status = ?,
-                        items_json = ?,
-                        customer_email = ?,
-                        customer_name = ?,
-                        total_gross = ?,
-                        payment_id = ?,
-                        updated_at = ?
-                    WHERE order_id = ?
-                    """,
-                    (
-                        order_data["status"],
-                        json.dumps(items),
-                        customer.get("email"),
-                        customer.get("name"),
-                        order_data["total_gross"],
-                        order_data.get("payment_id"),
-                        now,
-                        order_id,
-                    ),
-                )
+                if order_data.get("schema_version") == "int-002.v2":
+                    conn.execute(
+                        """
+                        UPDATE orders SET
+                            status = ?,
+                            items_json = ?,
+                            customer_email = ?,
+                            customer_name = ?,
+                            total_gross = ?,
+                            payment_id = ?,
+                            schema_version = ?,
+                            currency = ?,
+                            total_net = ?,
+                            tax_total = ?,
+                            payment_status = ?,
+                            payment_method = ?,
+                            payment_provider = ?,
+                            payment_mode = ?,
+                            paid_at = ?,
+                            classification = ?,
+                            classification_reason = ?,
+                            is_test = ?,
+                            test_reason = ?,
+                            checkout_id = ?,
+                            checkout_started_at = ?,
+                            checkout_environment = ?,
+                            attribution_json = ?,
+                            updated_at = ?
+                        WHERE order_id = ?
+                        """,
+                        (
+                            order_data["status"],
+                            json.dumps(items),
+                            customer.get("email"),
+                            customer.get("name"),
+                            order_data["total_gross"],
+                            order_data.get("payment_id"),
+                            order_data["schema_version"],
+                            order_data.get("currency"),
+                            order_data.get("total_net"),
+                            order_data.get("tax_total"),
+                            order_data.get("payment_status"),
+                            order_data.get("payment_method"),
+                            order_data.get("payment_provider"),
+                            order_data.get("payment_mode"),
+                            order_data.get("paid_at"),
+                            order_data.get("classification", "unknown"),
+                            order_data.get("classification_reason"),
+                            _optional_bool_to_int(order_data.get("is_test")),
+                            order_data.get("test_reason"),
+                            order_data.get("checkout_id"),
+                            order_data.get("checkout_started_at"),
+                            order_data.get("checkout_environment"),
+                            json.dumps(order_data.get("attribution") or {}),
+                            now,
+                            order_id,
+                        ),
+                    )
+                else:
+                    conn.execute(
+                        """
+                        UPDATE orders SET
+                            status = ?,
+                            items_json = ?,
+                            customer_email = ?,
+                            customer_name = ?,
+                            total_gross = ?,
+                            payment_id = ?,
+                            updated_at = ?
+                        WHERE order_id = ?
+                        """,
+                        (
+                            order_data["status"],
+                            json.dumps(items),
+                            customer.get("email"),
+                            customer.get("name"),
+                            order_data["total_gross"],
+                            order_data.get("payment_id"),
+                            now,
+                            order_id,
+                        ),
+                    )
                 internal_id = str(existing["id"])
             else:
                 cursor = conn.execute(
@@ -1031,9 +1146,20 @@ def db_upsert_order(order_data: Dict) -> Optional[str]:
                     INSERT INTO orders (
                         order_id, status, items_json,
                         customer_email, customer_name,
-                        total_gross, payment_id,
+                        total_gross, payment_id, schema_version,
+                        currency, total_net, tax_total,
+                        payment_status, payment_method, payment_provider,
+                        payment_mode, paid_at,
+                        classification, classification_reason,
+                        is_test, test_reason,
+                        checkout_id, checkout_started_at, checkout_environment,
+                        attribution_json,
                         created_at, updated_at
-                    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+                    ) VALUES (
+                        ?, ?, ?, ?, ?, ?, ?, ?,
+                        ?, ?, ?, ?, ?, ?, ?, ?, ?,
+                        ?, ?, ?, ?, ?, ?, ?, ?, ?
+                    )
                     """,
                     (
                         order_id,
@@ -1043,6 +1169,23 @@ def db_upsert_order(order_data: Dict) -> Optional[str]:
                         customer.get("name"),
                         order_data["total_gross"],
                         order_data.get("payment_id"),
+                        order_data.get("schema_version", "int-002.v1"),
+                        order_data.get("currency"),
+                        order_data.get("total_net"),
+                        order_data.get("tax_total"),
+                        order_data.get("payment_status"),
+                        order_data.get("payment_method"),
+                        order_data.get("payment_provider"),
+                        order_data.get("payment_mode"),
+                        order_data.get("paid_at"),
+                        order_data.get("classification", "unknown"),
+                        order_data.get("classification_reason"),
+                        _optional_bool_to_int(order_data.get("is_test")),
+                        order_data.get("test_reason"),
+                        order_data.get("checkout_id"),
+                        order_data.get("checkout_started_at"),
+                        order_data.get("checkout_environment"),
+                        json.dumps(order_data.get("attribution") or {}),
                         now,
                         now,
                     ),
@@ -1056,6 +1199,13 @@ def db_upsert_order(order_data: Dict) -> Optional[str]:
             "[DB] db_upsert_order failed order_id=%s: %s", order_id, e
         )
         return None
+
+
+def _optional_bool_to_int(value: Any) -> Optional[int]:
+    """Convert nullable producer classification to SQLite representation."""
+    if value is None:
+        return None
+    return int(bool(value))
 
 
 def db_get_order_by_wc_id(order_id: str) -> Optional[Dict]:
@@ -1092,6 +1242,16 @@ def _row_to_order_dict(row: sqlite3.Row) -> Dict:
     else:
         order["items"] = []
     order.pop("items_json", None)
+    if order.get("attribution_json"):
+        try:
+            order["attribution"] = json.loads(order["attribution_json"])
+        except Exception:
+            order["attribution"] = {}
+    else:
+        order["attribution"] = {}
+    order.pop("attribution_json", None)
+    if order.get("is_test") is not None:
+        order["is_test"] = bool(order["is_test"])
     order["customer"] = {
         "email": order.pop("customer_email", None),
         "name": order.pop("customer_name", None),

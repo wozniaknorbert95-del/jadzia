@@ -2,11 +2,11 @@
 
 from __future__ import annotations
 
+import re
+from datetime import datetime
 from typing import Any, Dict, List, Literal, Optional
 
-import re
-
-from pydantic import BaseModel, ConfigDict, Field, field_validator
+from pydantic import BaseModel, ConfigDict, Field, field_validator, model_validator
 
 
 # ──────────────────────────────────────────────
@@ -67,15 +67,56 @@ class WooOrderCustomer(BaseModel):
     name: str = ""
 
 
+class WooOrderAttribution(BaseModel):
+    """PII-free first/last-touch evidence from the Wizard checkout."""
+
+    first_touch_source: Optional[str] = None
+    first_touch_medium: Optional[str] = None
+    first_touch_campaign: Optional[str] = None
+    first_touch_at: Optional[datetime] = None
+    last_touch_source: Optional[str] = None
+    last_touch_medium: Optional[str] = None
+    last_touch_campaign: Optional[str] = None
+    last_touch_at: Optional[datetime] = None
+    partner_code: Optional[str] = None
+    wizard_link_id: Optional[str] = None
+    ga_client_id: Optional[str] = None
+    utm_source: Optional[str] = None
+    utm_medium: Optional[str] = None
+    utm_campaign: Optional[str] = None
+    attribution_status: Literal["known", "partial", "unknown", "conflicted"]
+
+
 class WooOrderWebhookRequest(BaseModel):
     """INT-002 inbound payload from zzpackage WooCommerce."""
 
+    model_config = ConfigDict(extra="ignore")
+
+    schema_version: Literal["int-002.v1", "int-002.v2"] = "int-002.v1"
     order_id: str = Field(min_length=1)
     status: Literal["processing", "completed"]
     items: List[WooOrderItem] = Field(min_length=1)
     customer: WooOrderCustomer
     total_gross: float = Field(ge=0)
     payment_id: str = ""
+    currency: Optional[Literal["EUR"]] = None
+    total_net: Optional[float] = Field(default=None, ge=0)
+    tax_total: Optional[float] = Field(default=None, ge=0)
+    payment_status: Optional[Literal["paid", "unknown"]] = None
+    payment_method: Optional[str] = None
+    payment_provider: Optional[str] = None
+    payment_mode: Optional[Literal["live", "test"]] = None
+    paid_at: Optional[datetime] = None
+    classification: Optional[Literal["real", "test", "unknown"]] = None
+    classification_reason: Optional[str] = None
+    is_test: Optional[bool] = None
+    test_reason: Optional[str] = None
+    checkout_id: Optional[str] = None
+    checkout_started_at: Optional[datetime] = None
+    checkout_environment: Optional[
+        Literal["production", "staging", "development", "local", "test", "unknown"]
+    ] = None
+    attribution: Optional[WooOrderAttribution] = None
 
     @field_validator("order_id", "payment_id", mode="before")
     @classmethod
@@ -83,6 +124,74 @@ class WooOrderWebhookRequest(BaseModel):
         if isinstance(v, str):
             return v.strip()
         return v
+
+    @field_validator("paid_at", "checkout_started_at", mode="before")
+    @classmethod
+    def _empty_datetime_is_unknown(cls, v: object) -> object:
+        return None if v == "" else v
+
+    @model_validator(mode="after")
+    def _validate_v2_evidence(self) -> "WooOrderWebhookRequest":
+        if self.schema_version != "int-002.v2":
+            return self
+
+        required_v2_fields = {
+            "currency",
+            "total_net",
+            "tax_total",
+            "payment_status",
+            "payment_method",
+            "payment_provider",
+            "payment_mode",
+            "paid_at",
+            "classification",
+            "classification_reason",
+            "is_test",
+            "test_reason",
+            "checkout_id",
+            "checkout_started_at",
+            "checkout_environment",
+            "attribution",
+        }
+        missing = sorted(required_v2_fields - self.model_fields_set)
+        if missing:
+            raise ValueError(f"INT-002 v2 missing explicit fields: {', '.join(missing)}")
+        if not self.order_id.isdigit():
+            raise ValueError("INT-002 v2 order_id must be the canonical numeric WooCommerce ID")
+        if self.attribution is None:
+            raise ValueError("INT-002 v2 attribution must be explicit")
+        if not self.classification_reason:
+            raise ValueError("INT-002 v2 classification_reason must be non-empty")
+        if self.total_net is None or self.tax_total is None:
+            raise ValueError("INT-002 v2 totals must be explicit")
+        if abs((self.total_net + self.tax_total) - self.total_gross) > 0.02:
+            raise ValueError("INT-002 v2 total_net + tax_total must equal total_gross")
+
+        if self.payment_status == "paid" and (not self.payment_id or self.paid_at is None):
+            raise ValueError("paid INT-002 v2 order requires payment_id and paid_at")
+        if self.classification == "real":
+            if self.is_test is not False or self.test_reason is not None:
+                raise ValueError(
+                    "real INT-002 v2 order requires is_test=false and test_reason=null"
+                )
+            if (
+                self.payment_status != "paid"
+                or self.payment_mode != "live"
+                or self.checkout_environment != "production"
+            ):
+                raise ValueError(
+                    "real INT-002 v2 order requires paid live payment in production"
+                )
+        elif self.classification == "test":
+            if self.is_test is not True or not self.test_reason:
+                raise ValueError("test INT-002 v2 order requires is_test=true and test_reason")
+        elif self.classification == "unknown":
+            if self.is_test is not None or self.test_reason is not None:
+                raise ValueError("unknown INT-002 v2 order requires null test evidence")
+        else:
+            raise ValueError("INT-002 v2 classification must be explicit")
+
+        return self
 
 
 class WooOrderWebhookResponse(BaseModel):
