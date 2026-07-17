@@ -36,8 +36,9 @@ Szczegóły charter: `flexgrafik-meta/docs/core/jadzia-operating-charter.md`
 | **Management CLI** | `cli/main.py` → `jadzia` cmd | LIVE (5 cmds) |
 | Design Agent INSPIRE v2 | `api/routes/design_agent.py` | LIVE (separate track — handoff 2026-07-08) |
 | **COI Commander** | `commander-ui/` + `api/routes/commander.py` | LIVE (master merge + VPS 2026-07-09) |
-| **Marketing intake** | `commander-ui` Marketing + `agent/media/gdrive.py` | LIVE (M1 + Phase B publish hardening) |
+| **Marketing intake** | `commander-ui` Marketing + `agent/media/gdrive.py` | LIVE (M1 + M2 video code @ `c7338c9`) |
 | Facebook photo publish | `agent/publishers/facebook.py` `publish_photo` | LIVE (entry #16 QR E2E) |
+| Facebook video publish | `agent/publishers/facebook.py` `publish_video` | DEPLOYED (Graph `/videos`; live E2E blocked — FB token expired 2026-07-09) |
 
 **Pipeline:** `routing → commands | intent | planning | generate | approval → SSH write → HITL diff`
 
@@ -57,7 +58,7 @@ Szczegóły charter: `flexgrafik-meta/docs/core/jadzia-operating-charter.md`
 | `analytics_node` | `agent/nodes/analytics_node.py` | LIVE |
 | Content calendar | INT-010 `GET/POST/PATCH /api/v1/content-calendar` | LIVE (VPS) |
 | `content_calendar_node` | `agent/nodes/content_calendar_node.py` | LIVE |
-| Facebook publish | INT-011 `POST/GET …/publish` | LIVE (photo + text; Phase B 2026-07-09) |
+| Facebook publish | INT-011 `POST/GET …/publish` | LIVE (text/photo; video deployed `c7338c9`; token rotacja pending) |
 | Commander Marketing | composer + GDrive + failed UX | LIVE (M1 + Phase B) |
 
 Plan Phase A (completed): `docs/archive/plans/PLAN-COI-PHASE-A.md`  

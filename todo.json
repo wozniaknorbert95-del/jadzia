@@ -1,12 +1,12 @@
 {
   "project": "Jadzia-Core",
-  "last_updated": "2026-07-17 (/handoff — COI-CONTENT-INTAKE-M2 code complete, deploy pending Dowódca)",
+  "last_updated": "2026-07-17 (/handoff — M2 DEPLOY LIVE @ c7338c9; Graph E2E blocked by expired FB token)",
   "status": "active",
-  "plan": "docs/handoffs/2026-07-17-coi-content-intake-m2-PROOF.md",
-  "active_gate": "COI-CONTENT-INTAKE-M2-DEPLOY",
-  "active_plan": "docs/handoffs/2026-07-17-coi-content-intake-m2-PROOF.md",
-  "next_human": "Deploy M2 na VPS (checklist w handoff) + E2E wideo FB. FB token rotacja opcjonalnie.",
-  "next_agent": "Po deploy E2E proof: zamknij gate. Alternatywa: feat/da-insire-enterprise (osobna sesja) lub COI-CMD-SMTP-01.",
+  "plan": "docs/handoffs/2026-07-17-coi-content-intake-m2-DEPLOY-PROOF.md",
+  "active_gate": "FB-TOKEN-ROTATION",
+  "active_plan": "docs/ops/FB-TOKEN-ROTATION.md",
+  "next_human": "Rotacja FB Page Token (docs/ops/FB-TOKEN-ROTATION.md) — blokuje publish text/photo/video.",
+  "next_agent": "Po token: rerun deployment/run-m2-video-e2e.py → fb_post_id PROOF. Potem /vibe-init DA-INSIRE-ENTERPRISE-MERGE (blast ready).",
   "agent_rule": "Nie deployuj autonomicznie (Zasada 11). Nie oznaczaj DEPLOY-01/03 completed bez E2E proof w handoff.",
   "sprints": {
     "remediation": "completed",
@@ -20,7 +20,7 @@
     "spine_closure_85": "completed",
     "coi_commander_v3": "merged_master_deploy_2026-07-09",
     "content_intake_m1": "completed_2026-07-09",
-    "content_intake_m2": "code_complete_2026-07-17",
+    "content_intake_m2": "deploy_complete_2026-07-17_e2e_token_blocked",
     "marketing_publish_b": "completed_2026-07-09"
   },
   "tasks": [
@@ -639,7 +639,37 @@
       "priority": "high",
       "owner": "agent",
       "checklist": "docs/handoffs/2026-07-17-coi-content-intake-m2-PROOF.md",
-      "note": "Code + 257 pytest PASS 2026-07-17; prod E2E = Dowódca deploy checklist (Zasada 11)"
+      "note": "Prod @ c7338c9; MIME gate PASS; Graph /videos reached; live fb_post_id BLOCKED expired token 2026-07-09; handoff docs/handoffs/2026-07-17-coi-content-intake-m2-DEPLOY-PROOF.md"
+    },
+    {
+      "id": "FB-TOKEN-ROTATION",
+      "sprint": "COI Content Intake",
+      "task": "Rotate FlexGrafik Facebook Page Token (expired 2026-07-09)",
+      "status": "pending",
+      "priority": "critical",
+      "owner": "human",
+      "checklist": "docs/ops/FB-TOKEN-ROTATION.md",
+      "note": "Blocks all FB publish; discovered during M2 Graph E2E 2026-07-17"
+    },
+    {
+      "id": "COI-CONTENT-INTAKE-M2-E2E",
+      "sprint": "COI Content Intake",
+      "task": "Retry M2 Graph video E2E → fb_post_id PROOF after token rotation",
+      "status": "pending",
+      "priority": "high",
+      "owner": "agent",
+      "checklist": "docs/handoffs/2026-07-17-coi-content-intake-m2-DEPLOY-PROOF.md",
+      "note": "python3 deployment/run-m2-video-e2e.py on VPS"
+    },
+    {
+      "id": "DA-INSIRE-ENTERPRISE-MERGE",
+      "sprint": "Design Agent INSPIRE",
+      "task": "Review stash + merge feat/da-insire-enterprise → master",
+      "status": "pending",
+      "priority": "high",
+      "owner": "agent",
+      "checklist": "docs/handoffs/2026-07-17-da-insire-enterprise-merge-blast.md",
+      "note": "Queued; +14 commits; 0 git conflicts with M2; stash review required"
     }
   ]
 }
