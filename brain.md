@@ -110,8 +110,9 @@ Pełne kontrakty: `flexgrafik-meta/docs/core/integration-contracts.md`
 - **Workflow:** `.agents/workflows/README.md` (L0-L4)
 - **Backlog:** `todo.json`
 - **PRD:** `docs/PRD-core.md`
-- **Active plan:** `docs/handoffs/2026-07-17-restore-footing.md` (gate: `COI-CMD-QUEUE-CLEAN`)
+- **Active plan:** `docs/handoffs/2026-07-17-restore-footing.md` — footing DONE; next gate `COI-CONTENT-INTAKE-M2`
 - **Parked DA track:** `feat/da-insire-enterprise` (+14 vs master) — merge w osobnej sesji
+- **QUEUE-CLEAN:** completed 2026-07-17 — Home bez E2E `deploy02-*` / `int004-e2e-*`
 - **Prior closure:** `docs/handoffs/2026-07-09-coi-marketing-session-HANDOFF.md`
 
 ## 8) Workflow Framework (v2.0)

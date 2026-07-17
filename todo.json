@@ -1,12 +1,12 @@
 {
   "project": "Jadzia-Core",
-  "last_updated": "2026-07-17 (restore footing + QUEUE-CLEAN prod DONE)",
+  "last_updated": "2026-07-17 (restore footing VERIFIED — expansion-ready)",
   "status": "active",
   "plan": "docs/handoffs/2026-07-17-restore-footing.md",
-  "active_gate": null,
-  "active_plan": null,
+  "active_gate": "COI-CONTENT-INTAKE-M2",
+  "active_plan": "docs/handoffs/2026-07-17-restore-footing.md",
   "next_human": "Marketing smoke 2 min (fb-health, QR). Opcjonalnie: rotacja FB token.",
-  "next_agent": "COI-CONTENT-INTAKE-M2 (/blast) LUB feat/da-insire-enterprise merge — osobne sesje; see restore handoff Faza 2",
+  "next_agent": "COI-CONTENT-INTAKE-M2 — /blast w nowej sesji. Alternatywa DA: feat/da-insire-enterprise merge (osobna sesja).",
   "agent_rule": "Nie deployuj autonomicznie (Zasada 11). Nie oznaczaj DEPLOY-01/03 completed bez E2E proof w handoff.",
   "sprints": {
     "remediation": "completed",
