@@ -78,6 +78,52 @@ def publish_post(message: str, scheduled_publish_time: Optional[int] = None) -> 
         }
 
 
+def publish_video(
+    description: str,
+    file_url: str,
+    scheduled_publish_time: Optional[int] = None,
+) -> dict:
+    """Publish a video to Facebook Page using a remote file URL (Meta fetches file_url)."""
+    page_id, access_token = _get_config()
+    url = f"{FACEBOOK_BASE}/{page_id}/videos"
+
+    payload: dict[str, str] = {
+        "description": description,
+        "file_url": file_url,
+        "access_token": access_token,
+    }
+    if scheduled_publish_time is not None:
+        payload["published"] = "false"
+        payload["scheduled_publish_time"] = str(scheduled_publish_time)
+
+    try:
+        resp = requests.post(url, data=payload, timeout=120)
+        resp.raise_for_status()
+        data = resp.json()
+        post_id = data.get("id")
+        logger.info(
+            "[FacebookPublisher] Published video post_id=%s scheduled=%s",
+            post_id,
+            bool(scheduled_publish_time),
+        )
+        return {
+            "status": "success",
+            "post_id": post_id,
+            "scheduled": bool(scheduled_publish_time),
+        }
+    except requests.RequestException as exc:
+        details = None
+        response = getattr(exc, "response", None)
+        if response is not None:
+            details = response.text
+        logger.error("[FacebookPublisher] Video publish failed: %s", exc)
+        return {
+            "status": "error",
+            "error": str(exc),
+            "details": details,
+        }
+
+
 def publish_photo(
     message: str,
     image_url: str,
@@ -170,6 +216,11 @@ def parse_publish_error(result: Dict[str, Any]) -> str:
         return "Wymagany Page Token FlexGrafik (nie User Token z Graph Explorer)"
     if code == 200 and "permission" in msg.lower():
         return "Brak uprawnień pages_manage_posts — sprawdź token strony"
+    if "video" in msg.lower() or "file_url" in msg.lower():
+        return (
+            "Meta nie pobrała wideo — sprawdź udostępnianie pliku na Drive "
+            "(MP4, każdy z linkiem)"
+        )
     if "url" in msg.lower() or "photo" in msg.lower() or "image" in msg.lower():
         return "Meta nie pobrała grafiki — sprawdź udostępnianie pliku na Drive"
     if "Brak media_url" in raw_error:

@@ -4,8 +4,8 @@
 
 - **Canonical brain**: `brain.md` (this repo)
 - **Canonical backlog**: `todo.json` (this repo)
-- **Active plan / gate**: `todo.json` → `active_gate` = `COI-CONTENT-INTAKE-M2` (footing restore DONE 2026-07-17)
-- **Latest handoff**: `docs/handoffs/2026-07-17-restore-footing.md`
+- **Active plan / gate**: `todo.json` → `active_gate` = `COI-CONTENT-INTAKE-M2-DEPLOY` (M2 code DONE 2026-07-17)
+- **Latest handoff**: `docs/handoffs/2026-07-17-coi-content-intake-m2-PROOF.md`
 - **Module spec (COI)**: `flexgrafik-meta/docs/core/modules/module-jadzia-core.md`
 - **COI charter**: `flexgrafik-meta/docs/core/jadzia-operating-charter.md`
 - **Integration contracts**: `flexgrafik-meta/docs/core/integration-contracts.md`

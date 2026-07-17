@@ -1,12 +1,12 @@
 {
   "project": "Jadzia-Core",
-  "last_updated": "2026-07-17 (restore footing VERIFIED — expansion-ready)",
+  "last_updated": "2026-07-17 (/handoff — COI-CONTENT-INTAKE-M2 code complete, deploy pending Dowódca)",
   "status": "active",
-  "plan": "docs/handoffs/2026-07-17-restore-footing.md",
-  "active_gate": "COI-CONTENT-INTAKE-M2",
-  "active_plan": "docs/handoffs/2026-07-17-restore-footing.md",
-  "next_human": "Marketing smoke 2 min (fb-health, QR). Opcjonalnie: rotacja FB token.",
-  "next_agent": "COI-CONTENT-INTAKE-M2 — /blast w nowej sesji. Alternatywa DA: feat/da-insire-enterprise merge (osobna sesja).",
+  "plan": "docs/handoffs/2026-07-17-coi-content-intake-m2-PROOF.md",
+  "active_gate": "COI-CONTENT-INTAKE-M2-DEPLOY",
+  "active_plan": "docs/handoffs/2026-07-17-coi-content-intake-m2-PROOF.md",
+  "next_human": "Deploy M2 na VPS (checklist w handoff) + E2E wideo FB. FB token rotacja opcjonalnie.",
+  "next_agent": "Po deploy E2E proof: zamknij gate. Alternatywa: feat/da-insire-enterprise (osobna sesja) lub COI-CMD-SMTP-01.",
   "agent_rule": "Nie deployuj autonomicznie (Zasada 11). Nie oznaczaj DEPLOY-01/03 completed bez E2E proof w handoff.",
   "sprints": {
     "remediation": "completed",
@@ -20,6 +20,7 @@
     "spine_closure_85": "completed",
     "coi_commander_v3": "merged_master_deploy_2026-07-09",
     "content_intake_m1": "completed_2026-07-09",
+    "content_intake_m2": "code_complete_2026-07-17",
     "marketing_publish_b": "completed_2026-07-09"
   },
   "tasks": [
@@ -634,10 +635,11 @@
       "id": "COI-CONTENT-INTAKE-M2",
       "sprint": "COI Content Intake",
       "task": "Video/Reels publish from GDrive URL (Facebook)",
-      "status": "pending",
+      "status": "completed",
       "priority": "high",
       "owner": "agent",
-      "note": "Po QUEUE-CLEAN + Marketing smoke; /blast w osobnej sesji"
+      "checklist": "docs/handoffs/2026-07-17-coi-content-intake-m2-PROOF.md",
+      "note": "Code + 257 pytest PASS 2026-07-17; prod E2E = Dowódca deploy checklist (Zasada 11)"
     }
   ]
 }

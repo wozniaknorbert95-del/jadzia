@@ -60,8 +60,8 @@ def test_delegat_can_publish_route(client, temp_db, monkeypatch):
             lambda: True,
         )
         monkeypatch.setattr(
-            "agent.commander.publish.publish_post",
-            lambda body: {"status": "success", "post_id": "x"},
+            "agent.commander.publish.publish_calendar_content",
+            lambda row: {"status": "success", "post_id": "x"},
         )
         eid_str, _ = db_create_calendar_entry(
             {
