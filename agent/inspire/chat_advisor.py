@@ -7,10 +7,10 @@ import logging
 import os
 import re
 import uuid
-from dataclasses import dataclass, field
+from dataclasses import dataclass, field, replace
 from datetime import datetime, timezone
 from pathlib import Path
-from typing import Any, Callable
+from typing import Any, Callable, Optional
 
 import httpx
 from cachetools import TTLCache
@@ -25,6 +25,12 @@ SESSION_TTL_SEC = 2 * 3600
 SESSIONS: TTLCache = TTLCache(maxsize=500, ttl=SESSION_TTL_SEC)
 
 _LLM_CALLABLE: Callable[[list[dict[str, str]]], dict[str, Any]] | None = None
+
+_EMAIL_RE = re.compile(r"[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+")
+_CONSENT_RE = re.compile(
+    r"\b(consent|akkoord|toestemming|zgoda|ja\s*mag|mag\s*bewaren)\b",
+    re.IGNORECASE,
+)
 
 
 @dataclass
@@ -52,6 +58,7 @@ class ChatTurnResult:
     quick_replies: list[dict[str, str]] = field(default_factory=list)
     quick_reply_field: str = ""
     opening_source: str = "legacy"
+    lead_id: Optional[str] = None
 
 
 def _chat_engine() -> str:
@@ -431,6 +438,110 @@ def attach_logo(session_id: str, filename: str) -> None:
     _persist_session(session)
 
 
+def _extract_inspire_email(
+    message: str,
+    field_updates: dict[str, Any] | None,
+    brief_partial: dict[str, Any] | None,
+) -> Optional[str]:
+    for blob in (field_updates, brief_partial):
+        if not isinstance(blob, dict):
+            continue
+        raw = blob.get("email")
+        if isinstance(raw, str) and raw.strip():
+            m = _EMAIL_RE.search(raw.strip())
+            if m:
+                return m.group(0).lower()
+    m = _EMAIL_RE.search(message or "")
+    return m.group(0).lower() if m else None
+
+
+def _has_inspire_consent(
+    message: str,
+    field_updates: dict[str, Any] | None,
+    brief_partial: dict[str, Any] | None,
+) -> bool:
+    for blob in (field_updates, brief_partial):
+        if isinstance(blob, dict) and blob.get("consent_lead_storage") is True:
+            return True
+    return bool(_CONSENT_RE.search(message or ""))
+
+
+def _maybe_persist_inspire_lead(
+    *,
+    session_id: str,
+    message: str,
+    field_updates: dict[str, Any] | None,
+    brief_partial: dict[str, Any] | None,
+) -> Optional[str]:
+    """Durable lead only with email + consent (RODO). REV-DEMAND-03."""
+    email = _extract_inspire_email(message, field_updates, brief_partial)
+    if not email or not _has_inspire_consent(message, field_updates, brief_partial):
+        return None
+    try:
+        from agent.db import db_create_lead
+    except Exception as e:
+        logger.error(
+            "[INSPIRE] lead import failed session=%s: %s",
+            session_id,
+            e,
+            exc_info=True,
+        )
+        return None
+
+    name = None
+    if isinstance(brief_partial, dict):
+        raw_name = brief_partial.get("bedrijfsnaam") or brief_partial.get("name")
+        if isinstance(raw_name, str) and raw_name.strip():
+            name = raw_name.strip()[:120]
+
+    try:
+        lead_id, status = db_create_lead(
+            {
+                "email": email,
+                "name": name,
+                "source": "inspire",
+                "consent_status": True,
+                "game_score": None,
+                "reward_tier": f"inspire:{(session_id or '')[:32]}",
+            }
+        )
+    except Exception as e:
+        logger.error(
+            "[INSPIRE] lead persist failed session=%s: %s - %s",
+            session_id,
+            type(e).__name__,
+            e,
+            exc_info=True,
+        )
+        return None
+    if status in ("success", "duplicate") and lead_id:
+        logger.info(
+            "[INSPIRE] lead %s id=%s session=%s",
+            status,
+            lead_id,
+            session_id,
+        )
+        return str(lead_id)
+    return None
+
+
+def _attach_inspire_lead(
+    result: ChatTurnResult,
+    *,
+    message: str,
+    field_updates: dict[str, Any] | None,
+) -> ChatTurnResult:
+    lead_id = _maybe_persist_inspire_lead(
+        session_id=result.session_id,
+        message=message,
+        field_updates=field_updates,
+        brief_partial=result.brief_partial,
+    )
+    if not lead_id:
+        return result
+    return replace(result, lead_id=lead_id)
+
+
 def process_chat_turn(
     *,
     session_id: str | None,
@@ -445,7 +556,7 @@ def process_chat_turn(
         from agent.inspire import chat_orchestrator_bridge
 
         colors = _parse_brand_colors(brand_colors)
-        return chat_orchestrator_bridge.process_turn(
+        result = chat_orchestrator_bridge.process_turn(
             session_id=session_id,
             message=message,
             field_updates=field_updates,
@@ -453,6 +564,9 @@ def process_chat_turn(
             quick_reply_field=quick_reply_field,
             logo_filename=logo_filename,
             brand_colors=colors or None,
+        )
+        return _attach_inspire_lead(
+            result, message=message, field_updates=field_updates
         )
 
     session = get_or_create_session(session_id)
@@ -522,7 +636,7 @@ def process_chat_turn(
     session.messages.append({"role": "assistant", "content": reply_nl})
     _persist_session(session)
 
-    return ChatTurnResult(
+    result = ChatTurnResult(
         session_id=session.session_id,
         reply_nl=reply_nl,
         brief_partial=dict(session.brief_partial),
@@ -534,4 +648,7 @@ def process_chat_turn(
         stap=session.phase,
         stap_label="",
         opening_source="legacy",
+    )
+    return _attach_inspire_lead(
+        result, message=user_msg or message, field_updates=field_updates
     )

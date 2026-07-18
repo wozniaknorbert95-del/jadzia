@@ -675,6 +675,7 @@ class DesignAgentChatResponse(BaseModel):
     quick_replies: list[dict] = []
     quick_reply_field: str = ""
     opening_source: str = "brain"
+    lead_id: Optional[str] = None
 
 
 class DesignAgentChatSessionResponse(BaseModel):

@@ -1,12 +1,12 @@
 {
   "project": "Jadzia-Core",
-  "last_updated": "2026-07-18 (REV-DEMAND-02 LIVE on VPS 60635e8)",
+  "last_updated": "2026-07-18 (REV-DEMAND-03 INSPIRE lead bridge code+tests — await GO)",
   "status": "active",
-  "plan": "docs/handoffs/2026-07-18-rev-demand-02-CLOSE.md",
+  "plan": "docs/handoffs/2026-07-18-rev-demand-03-CLOSE.md",
   "active_gate": "REV-DEMAND-03",
-  "active_plan": "02 LIVE. Next: REV-DEMAND-03 INSPIRE→lead bridge (consent). Parks untouched.",
-  "next_human": "Optional dogfood. OPS-FB / S1 / Gate D parked.",
-  "next_agent": "REV-DEMAND-03 INSPIRE→lead (1-1-1). No Gate D/B3/TikTok.",
+  "active_plan": "03 ready_for_deploy. VPS still 02 @ 644b34e. Parks untouched. Next after LIVE: REV-DEMAND-04.",
+  "next_human": "GO commit+redeploy 03 INSPIRE lead. OPS-FB / S1 / Gate D parked.",
+  "next_agent": "After GO+redeploy 03: REV-DEMAND-04 brief HITL. No Gate D/B3/TikTok.",
   "agent_rule": "Nie pytaj Dowódcy o decyzje A/B. Deploy tylko ze zgodą. Nie commituj sekretów. Nie kasuj parków w todo.",
   "sprints": {
     "remediation": "completed",
@@ -85,10 +85,10 @@
       "id": "REV-DEMAND-03",
       "sprint": "Revenue Demand Engine",
       "task": "F6: INSPIRE → lead bridge (consent)",
-      "status": "pending",
+      "status": "ready_for_deploy",
       "priority": "high",
       "owner": "agent",
-      "note": "Start after REV-DEMAND-02 or parallel only if 01 done"
+      "note": "Code+tests DONE (source=inspire, lead_id on chat). Await GO. Handoff: 2026-07-18-rev-demand-03-CLOSE.md. No _recover_*."
     },
     {
       "id": "REV-DEMAND-04",

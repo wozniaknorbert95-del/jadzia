@@ -73,6 +73,7 @@ def _to_response(result) -> DesignAgentChatResponse:
         quick_replies=result.quick_replies,
         quick_reply_field=result.quick_reply_field,
         opening_source=result.opening_source,
+        lead_id=getattr(result, "lead_id", None),
     )
 
 
