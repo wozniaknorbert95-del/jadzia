@@ -2,10 +2,11 @@
 
 **Date:** 2026-07-18  
 **Repo:** jadzia-core ONLY  
-**FEATURE_SHA:** *(set at commit)*  
-**TIP_SHA:** *(set after deploy)*  
-**VPS:** `/opt/jadzia`  
-**Status:** SUCCESS (implement; deploy in-session)  
+**FEATURE_SHA:** `d643b72`  
+**TIP_SHA:** `d643b72` (VPS SoT)  
+**VPS:** `/opt/jadzia` @ `d643b72`, `jadzia.service` **active**  
+**Backup:** `/opt/jadzia/data/jadzia-pre-rev-demand-01-20260718-141316.db` (ok)  
+**Status:** SUCCESS — LIVE  
 **Session verdict:** SUCCESS  
 **Owner:** Control plane / Commander
 
@@ -17,14 +18,14 @@
 | Home system map | Agent OS + VCMS + VCMS docs deep-links; localhost removed |
 | Settings list | Same prod URLs (read-only) |
 | Agents tab | Still `https://os.flexgrafik.nl` (`noopener noreferrer`) — no localhost regress |
+| Deploy | LIVE tip `d643b72`; health active; widget CTA smoke OK |
 | Scope | jadzia-core only; no Agent OS / VCMS merge; no Nginx/Basic Auth changes |
 
-## DoD (verify)
+## LEFT (human)
 
-- [ ] Phone/desktop: Home → Agent OS → `os.flexgrafik.nl` (Basic Auth OK)
-- [ ] Home → VCMS → `cmd.flexgrafik.nl`
-- [ ] Settings lista zgodna z Home
-- [ ] ADR nie traktuje VCMS jako „nie runtime” / Agent OS tylko localhost jako prod
+1. Phone/desktop: Home → tap Agent OS → `os.flexgrafik.nl` (Basic Auth OK)
+2. Tap VCMS → `cmd.flexgrafik.nl` (+ optional docs)
+3. Settings lista zgodna z Home
 
 ## CRITICAL WARNINGS
 
@@ -35,6 +36,6 @@
 ## NEXT
 
 ```text
-STATE: MAP-01 ready_for_deploy
-NEXT: push master → VPS tip pull/restart → human phone tap verify
+STATE: MAP-01 LIVE
+NEXT: human phone tap verify → idle (active_gate NONE)
 ```
