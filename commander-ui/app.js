@@ -86,6 +86,9 @@ async function api(path, options = {}) {
   if (options.body && typeof options.body === "object") {
     headers["Content-Type"] = "application/json";
     options.body = JSON.stringify(options.body);
+  } else if (typeof options.body === "string" && !headers["Content-Type"]) {
+    // Call sites that pre-stringify still need JSON content-type
+    headers["Content-Type"] = "application/json";
   }
   const res = await fetch(`${API_BASE}${path}`, { ...options, headers });
   if (res.status === 401) {
