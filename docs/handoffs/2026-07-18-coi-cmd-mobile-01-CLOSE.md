@@ -2,8 +2,8 @@
 
 **Date:** 2026-07-18  
 **Repo:** jadzia-core  
-**TIP_SHA:** `87d7912` (local = origin = VPS)  
-**VPS:** `/opt/jadzia` @ `87d7912`, `jadzia.service` **active**  
+**TIP_SHA:** `01b1903` (docs tip; FEATURE UI `87d7912`)  
+**VPS:** `/opt/jadzia` @ `01b1903`, `jadzia.service` **active**  
 **Backup:** `/opt/jadzia/data/jadzia-pre-rev-demand-01-20260718-121016.db`  
 **Status:** SUCCESS — LIVE  
 **Session verdict:** SUCCESS  
@@ -20,6 +20,7 @@
 | Smoke | `/commander/` 200; map + bottom-nav in HTML; css/js 200 |
 | Widget CTA | still deeplink True post-redeploy |
 | Backlog | `COI-CMD-MOBILE-01` completed; `active_gate` → `REV-DEMAND-04` |
+| Tip | FEATURE `87d7912` + docs tip `01b1903` |
 
 ## CRITICAL WARNINGS
 
@@ -29,7 +30,7 @@
 ## NEXT SESSION START
 
 ```text
-STATE: SSoT clean; COI-CMD-MOBILE-01 LIVE tip 87d7912; Demand 01-03 evidence PASS
+STATE: SSoT clean; COI-CMD-MOBILE-01 LIVE tip 01b1903 (feature 87d7912); Demand 01-03 evidence PASS
 NEXT: @blast REV-DEMAND-04 brief HITL → sales CTA tickets
 ALT_ONLY_IF_HUB_BROKEN: fix mobile hub (1-1-1) before 04
 STOP: Gate D; Mollie; park deletes; Agent OS merge
@@ -37,5 +38,5 @@ STOP: Gate D; Mollie; park deletes; Agent OS merge
 
 ```text
 SESSION_VERDICT: SUCCESS
-DEPLOY_STATE: Jadzia master 87d7912 active
+DEPLOY_STATE: Jadzia master 01b1903 active
 ```

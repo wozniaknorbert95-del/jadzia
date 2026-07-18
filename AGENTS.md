@@ -4,7 +4,7 @@
 
 - **Canonical brain**: `brain.md` (this repo)
 - **Canonical backlog**: `todo.json` (this repo)
-- **Active program**: REV-DEMAND next **04**; phone hub **COI-CMD-MOBILE-01** LIVE tip `87d7912`
+- **Active program**: REV-DEMAND next **04**; phone hub **COI-CMD-MOBILE-01** LIVE tip `01b1903` (feature `87d7912`)
 - **Active plan / gate**: `todo.json` → `active_gate` = `REV-DEMAND-04`
 - **Latest handoff**: `docs/handoffs/2026-07-18-coi-cmd-mobile-01-CLOSE.md`
 - **Phone hub ADR**: `docs/design/coi-commander/adr/D0.6-phone-hub-not-merge.md`
@@ -24,7 +24,7 @@
 - **Least privilege**: do not read or process secrets (`.env*`, keys) or large binaries.
 - **1-1-1 rule**: implement one change at a time; finish with a handoff note in `docs/handoffs/`.
 - **REV deploy order**: integrate REV-R0-02A → deploy Jadzia INT-002 v2 consumer → deploy zzpackage producer → controlled E2E.
-- **Current prod state**: Jadzia VPS **`master` tip `87d7912`** (mobile hub + Demand-03 FEATURE `367549f`); producer theme `@ bfe8485`; Gate C PASS (#3209); COD OFF; iDEAL-only; Mollie TEST; **Gate D parked**; min 199 unchanged.
+- **Current prod state**: Jadzia VPS **`master` tip `01b1903`** (mobile hub FEATURE `87d7912` + Demand-03 FEATURE `367549f`); producer theme `@ bfe8485`; Gate C PASS (#3209); COD OFF; iDEAL-only; Mollie TEST; **Gate D parked**; min 199 unchanged.
 
 ## Copy & languages
 
