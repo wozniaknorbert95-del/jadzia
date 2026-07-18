@@ -22,7 +22,7 @@
 - **Least privilege**: no secrets / large binaries.
 - **1-1-1**: one gate per session; handoff required.
 - **Honesty:** nie oznaczać PASS/completed bez dogfood lub liczby (OPS-AI).
-- **Current:** tip `d97939a` PASS OPS-AI **60.6%**; next `COI-PM-01`; Gate D parked.
+- **Current:** tip `b7299be` (PASS measure @ `d97939a` **60.6%**); next `COI-PM-01`; Gate D parked.
 
 ## Copy & languages
 
