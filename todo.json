@@ -1,15 +1,15 @@
 {
   "project": "Jadzia-Core",
-  "last_updated": "2026-07-18 (COI-CMD-UX-POLISH-01 CLOSE local)",
+  "last_updated": "2026-07-18 (COI-CMD-UX-POLISH-01 LIVE 2ddc942)",
   "status": "active",
   "plan": "docs/handoffs/2026-07-18-coi-cmd-ux-polish-01-CLOSE.md",
   "active_gate": "COI-CMD-OPS-GUIDE-01",
-  "active_plan": "UX-POLISH-01 Home DONE local. Next: OPS-GUIDE VCMS study. MBA human PASS open. Gate D parked. standing_go off.",
+  "active_plan": "UX-POLISH-01 LIVE tip 2ddc942. Next: OPS-GUIDE VCMS study. MBA human PASS open. Gate D parked. standing_go off.",
   "standing_go_closeout": false,
   "closeout_queue": [],
   "closeout_expires": "2026-07-25",
-  "next_human": "GO deploy polish01b → tip SoT. MBA Year PASS osobno. Gate D parked.",
-  "next_agent": "/vibe-init COI-CMD-OPS-GUIDE-01 (flex-vcms study handbook) LUB czekaj na GO deploy polish.",
+  "next_human": "MBA Year PASS osobno. Gate D parked.",
+  "next_agent": "/vibe-init COI-CMD-OPS-GUIDE-01 (flex-vcms study handbook).",
   "agent_rule": "Nie pytaj A/B. Deploy tylko ze zgodą (standing_go_closeout off). Nie sekrety. Nie kasuj parków. Hard STOP: Gate D/Mollie/fake PASS.",
   "sprints": {
     "remediation": "completed",
@@ -433,7 +433,7 @@
       "priority": "critical",
       "owner": "agent",
       "checklist": "docs/handoffs/2026-07-18-coi-cmd-ux-polish-01-CLOSE.md",
-      "note": "2026-07-18 local dogfood PASS (P1–P6). Prod tip po GO. Cache-bust polish01b."
+      "note": "2026-07-18 LIVE tip 2ddc942. Dogfood P1–P6 + prod cold-open PASS. Cache-bust polish01b."
     },
     {
       "id": "COI-CMD-OPS-GUIDE-01",

@@ -1,8 +1,7 @@
-# COI-CMD-UX-POLISH-01 CLOSE
+# COI-CMD-UX-POLISH-01 LIVE
 
-- Gate: completed (local dogfood PASS)
-- CLOSE: docs/handoffs/2026-07-18-coi-cmd-ux-polish-01-CLOSE.md
-- Cache-bust: styles?v=polish01b app.js?v=polish01
-- standing_go_closeout: false — VPS dopiero po GO
-- Next: COI-CMD-OPS-GUIDE-01 (VCMS study) OR human GO deploy
+- Tip: 2ddc942
+- GO deploy DONE 2026-07-18
+- Health OK · polish01b on /commander/
+- Next: COI-CMD-OPS-GUIDE-01 (VCMS study)
 - PARK: Gate D, Mollie, mint/recover, OS merge

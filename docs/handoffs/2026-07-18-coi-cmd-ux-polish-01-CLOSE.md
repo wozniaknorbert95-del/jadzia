@@ -1,8 +1,8 @@
 # CLOSE — COI-CMD-UX-POLISH-01 (Home enterprise polish)
 
 **Date:** 2026-07-18  
-**Gate:** `COI-CMD-UX-POLISH-01` → **completed** (code + local dogfood)  
-**Prod tip:** pending GO (`standing_go_closeout=false`)  
+**Gate:** `COI-CMD-UX-POLISH-01` → **completed** (code + local dogfood + **LIVE**)  
+**Prod tip:** `2ddc942` @ `/opt/jadzia` (GO deploy 2026-07-18)  
 **BLAST:** `docs/handoffs/2026-07-18-coi-cmd-ux-polish-01-BLAST.md`
 
 ## Shipped
@@ -25,19 +25,26 @@
 | Cache-bust polish01b / polish01 | PASS |
 | Checklist POLISH P1–P6 | PASS → `UX-DOGFOOD-PHONE.md` |
 
-Live disposition + prod tip: **po GO deploy**.
+### Prod evidence (GO deploy)
+
+| Check | Result |
+|-------|--------|
+| Tip | `2ddc942` |
+| Health | `{"status":"ok"}` · jadzia active |
+| HTML | `styles.css?v=polish01b` + `.home-eyebrow` |
+| URL | https://api.zzpackage.flexgrafik.nl/commander/ |
+| Browser | cold-open Start LIVE; sesja JWT collapsed |
 
 ## PARK (nietknięte)
 
-Gate D · Mollie · mint/recover · OS merge · MBA regen · VPS bez GO
+Gate D · Mollie · mint/recover · OS merge · MBA regen
 
 ## NEXT
 
-1. Human **GO** → deploy Commander UI → tip SoT  
-2. `/vibe-init` → `COI-CMD-OPS-GUIDE-01` (flex-vcms `docs/study/` handbook, 5 scenariuszy z dogfood)
+`/vibe-init` → `COI-CMD-OPS-GUIDE-01` (flex-vcms `docs/study/` handbook)
 
 ```text
 HANDOFF_FILE: docs/handoffs/2026-07-18-coi-cmd-ux-polish-01-CLOSE.md
 BACKLOG_ID: COI-CMD-UX-POLISH-01
-STATE: completed local; awaiting GO for prod tip
+STATE: LIVE tip 2ddc942
 ```

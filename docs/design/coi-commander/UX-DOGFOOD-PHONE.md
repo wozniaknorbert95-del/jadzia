@@ -37,8 +37,8 @@
 
 ## POLISH-01 — Home enterprise (COI-CMD-UX-POLISH-01)
 
-**Run:** 2026-07-18 local static + structure dogfood · cache-bust `?v=polish01`  
-**Prod tip:** pending GO deploy (`standing_go_closeout=false`)
+**Run:** 2026-07-18 local + prod @ tip **`2ddc942`** · cache-bust `?v=polish01b`  
+**Prod tip:** `2ddc942` LIVE (GO deploy)
 
 | # | Krok | PASS/FAIL |
 |---|------|-----------|
