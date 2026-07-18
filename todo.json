@@ -1,15 +1,15 @@
 {
   "project": "Jadzia-Core",
-  "last_updated": "2026-07-18 (COI-CMD-UX-POLISH-01 LIVE 2ddc942)",
+  "last_updated": "2026-07-18 (COI-CMD-OPS-GUIDE-01 CLOSE)",
   "status": "active",
-  "plan": "docs/handoffs/2026-07-18-coi-cmd-ux-polish-01-CLOSE.md",
-  "active_gate": "COI-CMD-OPS-GUIDE-01",
-  "active_plan": "UX-POLISH-01 LIVE tip 2ddc942. Next: OPS-GUIDE VCMS study. MBA human PASS open. Gate D parked. standing_go off.",
+  "plan": "docs/handoffs/2026-07-18-coi-cmd-ops-guide-01-CLOSE.md",
+  "active_gate": null,
+  "active_plan": "OPS-GUIDE + UX-POLISH DONE. MBA human PASS open. Gate D parked. standing_go off.",
   "standing_go_closeout": false,
   "closeout_queue": [],
   "closeout_expires": "2026-07-25",
-  "next_human": "MBA Year PASS osobno. Gate D parked.",
-  "next_agent": "/vibe-init COI-CMD-OPS-GUIDE-01 (flex-vcms study handbook).",
+  "next_human": "MBA Year PASS. Optional: VCMS Deploy-VPS for study handbook. Gate D parked.",
+  "next_agent": "/vibe-init — next non-MBA feature only.",
   "agent_rule": "Nie pytaj A/B. Deploy tylko ze zgodą (standing_go_closeout off). Nie sekrety. Nie kasuj parków. Hard STOP: Gate D/Mollie/fake PASS.",
   "sprints": {
     "remediation": "completed",
@@ -439,10 +439,11 @@
       "id": "COI-CMD-OPS-GUIDE-01",
       "sprint": "Commander UX Enterprise",
       "task": "VCMS study: professional COI Commander ops handbook (5 scenarios from dogfood)",
-      "status": "pending",
+      "status": "completed",
       "priority": "high",
       "owner": "agent",
-      "note": "Repo flex-vcms docs/study/. UX-POLISH-01 CLOSE done — scenariusze z dogfood. Optional: wait GO tip first."
+      "checklist": "docs/handoffs/2026-07-18-coi-cmd-ops-guide-01-CLOSE.md",
+      "note": "2026-07-18 DONE. Handbook + study-index Ops + docs/index NAUKA in flex-vcms. VCMS prod deploy optional GO."
     },
     {
       "id": "COI-PROC-00",
