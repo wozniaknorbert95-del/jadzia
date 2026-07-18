@@ -287,6 +287,26 @@ def _init_schema(conn: sqlite3.Connection):
         ON analytics_snapshots(period, created_at DESC)
     """)
 
+    # Append-only legacy revenue classification audit (REV-R0-02).
+    conn.execute("""
+        CREATE TABLE IF NOT EXISTS revenue_classification_events (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            entity_type TEXT NOT NULL
+                CHECK (entity_type IN ('order', 'lead', 'portal_qual_lead')),
+            entity_key TEXT NOT NULL,
+            classification TEXT NOT NULL
+                CHECK (classification IN ('real', 'test', 'unknown')),
+            reason_code TEXT NOT NULL,
+            evidence_json TEXT NOT NULL DEFAULT '{}',
+            classified_at TEXT NOT NULL,
+            classified_by TEXT NOT NULL
+        )
+    """)
+    conn.execute("""
+        CREATE INDEX IF NOT EXISTS idx_revenue_classification_entity
+        ON revenue_classification_events(entity_type, entity_key, id DESC)
+    """)
+
     # COI Commander control plane
     conn.execute("""
         CREATE TABLE IF NOT EXISTS commander_audit_log (
@@ -1843,28 +1863,186 @@ def db_commander_get_agent_state(agent_id: str) -> Optional[Dict]:
     return dict(row) if row else None
 
 
+# ============================================================================
+# Revenue classification audit (REV-R0-02)
+# ============================================================================
+
+def db_record_revenue_classification(
+    entity_type: str,
+    entity_key: str,
+    classification: str,
+    reason_code: str,
+    evidence: Optional[Dict[str, Any]] = None,
+    classified_by: str = "rule:revenue_event.v1",
+) -> Optional[int]:
+    """Append a classification unless the latest value is identical."""
+    if entity_type not in {"order", "lead", "portal_qual_lead"}:
+        raise ValueError("invalid revenue classification entity_type")
+    if classification not in {"real", "test", "unknown"}:
+        raise ValueError("invalid revenue classification")
+    if not entity_key or not reason_code:
+        raise ValueError("entity_key and reason_code are required")
+
+    evidence_json = json.dumps(evidence or {}, sort_keys=True)
+    now = datetime.now(timezone.utc).replace(microsecond=0).isoformat()
+    conn = get_connection()
+    latest = conn.execute(
+        """
+        SELECT id, classification, reason_code, evidence_json, classified_by
+        FROM revenue_classification_events
+        WHERE entity_type = ? AND entity_key = ?
+        ORDER BY id DESC
+        LIMIT 1
+        """,
+        (entity_type, entity_key),
+    ).fetchone()
+    if latest and (
+        latest["classification"] == classification
+        and latest["reason_code"] == reason_code
+        and latest["evidence_json"] == evidence_json
+        and latest["classified_by"] == classified_by
+    ):
+        return int(latest["id"])
+
+    try:
+        cursor = conn.execute(
+            """
+            INSERT INTO revenue_classification_events (
+                entity_type, entity_key, classification, reason_code,
+                evidence_json, classified_at, classified_by
+            ) VALUES (?, ?, ?, ?, ?, ?, ?)
+            """,
+            (
+                entity_type,
+                entity_key,
+                classification,
+                reason_code,
+                evidence_json,
+                now,
+                classified_by,
+            ),
+        )
+        conn.commit()
+        return int(cursor.lastrowid)
+    except Exception:
+        conn.rollback()
+        raise
+
+
+def db_get_revenue_classification(entity_type: str, entity_key: str) -> Optional[Dict]:
+    """Return the latest append-only classification for one legacy entity."""
+    conn = get_connection()
+    row = conn.execute(
+        """
+        SELECT id, entity_type, entity_key, classification, reason_code,
+               evidence_json, classified_at, classified_by
+        FROM revenue_classification_events
+        WHERE entity_type = ? AND entity_key = ?
+        ORDER BY id DESC
+        LIMIT 1
+        """,
+        (entity_type, entity_key),
+    ).fetchone()
+    if not row:
+        return None
+    result = dict(row)
+    result["evidence"] = json.loads(result.pop("evidence_json") or "{}")
+    return result
+
+
+def db_list_revenue_classifications() -> List[Dict]:
+    """Return only the latest classification per entity."""
+    conn = get_connection()
+    rows = conn.execute(
+        """
+        SELECT event.id, event.entity_type, event.entity_key, event.classification,
+               event.reason_code, event.evidence_json, event.classified_at,
+               event.classified_by
+        FROM revenue_classification_events AS event
+        JOIN (
+            SELECT entity_type, entity_key, MAX(id) AS latest_id
+            FROM revenue_classification_events
+            GROUP BY entity_type, entity_key
+        ) AS latest ON latest.latest_id = event.id
+        ORDER BY event.entity_type, event.entity_key
+        """
+    ).fetchall()
+    result = []
+    for row in rows:
+        item = dict(row)
+        item["evidence"] = json.loads(item.pop("evidence_json") or "{}")
+        result.append(item)
+    return result
+
+
 def db_list_orders(limit: int = 50) -> List[Dict]:
     conn = get_connection()
     rows = conn.execute(
         """
-        SELECT order_id, status, total_gross, customer_name, customer_email, created_at, updated_at
-        FROM orders ORDER BY created_at DESC LIMIT ?
+        SELECT orders.order_id, orders.status, orders.total_gross,
+               orders.customer_name, orders.customer_email,
+               orders.created_at, orders.updated_at,
+               classification.classification,
+               classification.reason_code AS classification_reason
+        FROM orders
+        LEFT JOIN revenue_classification_events AS classification
+          ON classification.id = (
+              SELECT MAX(latest.id)
+              FROM revenue_classification_events AS latest
+              WHERE latest.entity_type = 'order'
+                AND latest.entity_key = orders.order_id
+          )
+        ORDER BY orders.created_at DESC
+        LIMIT ?
         """,
         (limit,),
     ).fetchall()
-    return [dict(r) for r in rows]
+    result = []
+    for row in rows:
+        item = dict(row)
+        item["classification"] = item.get("classification") or "unknown"
+        item["is_test"] = (
+            True
+            if item["classification"] == "test"
+            else False if item["classification"] == "real" else None
+        )
+        result.append(item)
+    return result
 
 
 def db_list_leads(limit: int = 50) -> List[Dict]:
     conn = get_connection()
     rows = conn.execute(
         """
-        SELECT id, email, name, source, game_score, reward_tier, created_at, updated_at
-        FROM leads ORDER BY created_at DESC LIMIT ?
+        SELECT leads.id, leads.email, leads.name, leads.source,
+               leads.game_score, leads.reward_tier,
+               leads.created_at, leads.updated_at,
+               classification.classification,
+               classification.reason_code AS classification_reason
+        FROM leads
+        LEFT JOIN revenue_classification_events AS classification
+          ON classification.id = (
+              SELECT MAX(latest.id)
+              FROM revenue_classification_events AS latest
+              WHERE latest.entity_type = 'lead'
+                AND latest.entity_key = CAST(leads.id AS TEXT)
+          )
+        ORDER BY leads.created_at DESC
+        LIMIT ?
         """,
         (limit,),
     ).fetchall()
-    return [dict(r) for r in rows]
+    result = []
+    for row in rows:
+        item = dict(row)
+        item["classification"] = item.get("classification") or "unknown"
+        item["is_test"] = (
+            True
+            if item["classification"] == "test"
+            else False if item["classification"] == "real" else None
+        )
+        result.append(item)
+    return result
 
 
 def db_update_calendar_entry_versioned(

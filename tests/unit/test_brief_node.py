@@ -1,18 +1,22 @@
 """Tests for weekly COI brief node (S3-02)."""
 
 import os
+from datetime import UTC, datetime
 from unittest.mock import patch
 
 import pytest
 
-from agent.db import db_save_analytics_snapshot, db_upsert_order
+from agent.db import (
+    db_record_revenue_classification,
+    db_save_analytics_snapshot,
+    db_upsert_order,
+)
 from agent.nodes.brief_node import build_weekly_brief, send_weekly_brief
 
 
 @pytest.fixture
 def temp_db(monkeypatch):
     import tempfile
-    from datetime import datetime, timezone
 
     fd, path = tempfile.mkstemp(suffix=".db")
     os.close(fd)
@@ -23,7 +27,7 @@ def temp_db(monkeypatch):
         db_mod._local.conn.close()
         db_mod._local.conn = None
 
-    now = datetime.now(timezone.utc).replace(microsecond=0).isoformat()
+    now = datetime.now(UTC).replace(microsecond=0).isoformat()
     db_upsert_order(
         {
             "order_id": "9001",
@@ -35,6 +39,28 @@ def temp_db(monkeypatch):
             "created_at": now,
             "updated_at": now,
         }
+    )
+    db_record_revenue_classification(
+        "order",
+        "9001",
+        "real",
+        "production_order_evidence",
+    )
+    db_upsert_order(
+        {
+            "order_id": "SMOKE-1",
+            "status": "completed",
+            "items": [{"sku": "TEST", "qty": 1, "price": 999.0}],
+            "customer": {"email": "smoke@test.nl", "name": "Smoke"},
+            "total_gross": 999.0,
+            "payment_id": "tr_test_smoke",
+        }
+    )
+    db_record_revenue_classification(
+        "order",
+        "SMOKE-1",
+        "test",
+        "known_test_order_pattern",
     )
     db_save_analytics_snapshot(
         {
@@ -54,7 +80,8 @@ def temp_db(monkeypatch):
 
 def test_build_weekly_brief_includes_orders_and_ga4(temp_db):
     text = build_weekly_brief()
-    assert "Orders (7d):" in text
+    assert "Orders KPI-eligible (7d): 1 | EUR 199.00" in text
+    assert "Orders excluded: test=1 unknown=0" in text
     assert "GA4" in text
     assert "wizard sessions=5" in text
 

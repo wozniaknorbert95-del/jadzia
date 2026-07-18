@@ -6,8 +6,10 @@
 - **Canonical backlog**: `todo.json` (this repo)
 - **Active program**: Revenue War Room — revenue truth before demand work
 - **Active plan / gate**: `todo.json` → `active_gate` = `REV-R0-02C`
-- **Latest handoff**: `docs/handoffs/2026-07-17-rev-r0-02c-int002-consumer-PROOF.md`
+- **Latest handoff**: `docs/handoffs/2026-07-17-rev-r0-02c-deploy-EXECUTION.md`
 - **Deploy runbook**: `docs/ops/INT-002-V2-DEPLOY.md`
+- **Reconciliation runbook**: `docs/ops/REVENUE-RECONCILIATION.md`
+- **Approved contract**: `docs/contracts/REVENUE-EVENT-CONTRACT-v1.md`
 - **Module spec (COI)**: `flexgrafik-meta/docs/core/modules/module-jadzia-core.md`
 - **COI charter**: `flexgrafik-meta/docs/core/jadzia-operating-charter.md`
 - **Integration contracts**: `flexgrafik-meta/docs/core/integration-contracts.md`
@@ -20,7 +22,7 @@
 - **Least privilege**: do not read or process secrets (`.env*`, keys) or large binaries.
 - **1-1-1 rule**: implement one change at a time; finish with a handoff note in `docs/handoffs/`.
 - **REV deploy order**: integrate REV-R0-02A → deploy Jadzia INT-002 v2 consumer → deploy zzpackage producer → controlled E2E.
-- **REV-R0-02C blocker**: current branch base lacks the uncommitted 02A artifacts; do not deploy until they are recovered and reviewed.
+- **Current prod state**: consumer @ `f266e30` and producer @ `bfe8485` deployed 2026-07-17; E2E gate open.
 
 ## Copy & languages
 

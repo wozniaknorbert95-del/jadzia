@@ -1,12 +1,12 @@
 {
   "project": "Jadzia-Core",
-  "last_updated": "2026-07-17 (REV-R0-02C consumer CODE PASS; deploy blocked on 02A/02B integration)",
+  "last_updated": "2026-07-18 (REV-R0-02A recovered; deploy live; E2E pending)",
   "status": "active",
-  "plan": "docs/handoffs/2026-07-17-rev-r0-02c-int002-consumer-PROOF.md",
+  "plan": "docs/handoffs/2026-07-17-rev-r0-02c-deploy-EXECUTION.md",
   "active_gate": "REV-R0-02C",
-  "active_plan": "docs/handoffs/2026-07-17-rev-r0-02c-int002-consumer-PROOF.md",
-  "next_human": "Zintegruj/commituj REV-R0-02A i zzpackage REV-R0-02B; potem manualny backup i deploy consumer-first wg runbooka.",
-  "next_agent": "Po integracji: review trzech slice'ów, bez deployu autonomicznego; przygotuj operatora do kontrolowanego E2E.",
+  "active_plan": "docs/checklists/REV-R0-02C-controlled-e2e.md",
+  "next_human": "Kontrolowany E2E Mollie (Gate C) + autoryzowany real order (Gate D).",
+  "next_agent": "Po E2E: PR merge obu branchy, handoff CLOSE, bez deployu autonomicznego.",
   "agent_rule": "Nie deployuj autonomicznie bez approve. Nie commituj sekretów.",
   "sprints": {
     "remediation": "completed",
@@ -28,11 +28,11 @@
       "id": "REV-R0-02C",
       "sprint": "Revenue War Room — Revenue Truth",
       "task": "INT-002 v2 consumer validation + durable SQLite evidence",
-      "status": "code_complete_deploy_blocked",
+      "status": "deploy_live_e2e_pending",
       "priority": "critical",
       "owner": "agent",
       "checklist": "docs/ops/INT-002-V2-DEPLOY.md",
-      "note": "17 focused tests PASS; deploy blocked until REV-R0-02A and zzpackage REV-R0-02B are committed/integrated, then manual backup and consumer-first deploy."
+      "note": "Consumer+producer deployed 2026-07-17; REV-R0-02A recovered 2026-07-18; controlled E2E remains."
     },
     {
       "id": "DEPLOY-01",

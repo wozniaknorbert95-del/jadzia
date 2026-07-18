@@ -3,8 +3,8 @@
 **Date:** 2026-07-17  
 **Branch:** `feat/rev-r0-02c-int002-consumer`  
 **Base:** `master` @ `4b583dc`  
-**Status:** CODE PASS / DEPLOY BLOCKED  
-**Deploy/data apply:** not performed
+**Status:** CODE PASS / DEPLOY EXECUTED (see execution handoff)
+**Deploy/data apply:** performed 2026-07-17 — `docs/handoffs/2026-07-17-rev-r0-02c-deploy-EXECUTION.md`
 
 ## DONE
 
@@ -107,8 +107,9 @@ manual operator deployment and the prerequisites above are not satisfied.
 
 ```text
 STATE: REV-R0-02C consumer code ready
-DEPLOY_STATE: BLOCKED — integrate 02A + commit 02B + manual backup
+DEPLOY_STATE: LIVE — consumer + producer deployed; E2E + 02A pending
 RUNBOOK: docs/ops/INT-002-V2-DEPLOY.md
-NEXT: manual integration/review gate, then operator deployment
-SESSION_VERDICT: SUCCESS_WITH_DEPLOY_BLOCKER
+EXECUTION: docs/handoffs/2026-07-17-rev-r0-02c-deploy-EXECUTION.md
+NEXT: controlled Mollie E2E + REV-R0-02A integration + PR merge
+SESSION_VERDICT: SUCCESS
 ```

@@ -4,13 +4,13 @@ from __future__ import annotations
 
 import json
 import logging
-from datetime import datetime, timedelta, timezone
+from datetime import UTC, datetime, timedelta
 
 logger = logging.getLogger(__name__)
 
 
 def _utc_now() -> datetime:
-    return datetime.now(timezone.utc)
+    return datetime.now(UTC)
 
 
 def build_weekly_brief() -> str:
@@ -22,9 +22,31 @@ def build_weekly_brief() -> str:
 
     orders_row = conn.execute(
         """
-        SELECT COUNT(*) AS cnt, COALESCE(SUM(total_gross), 0) AS revenue
+        SELECT
+            COALESCE(SUM(
+                CASE WHEN classification.classification = 'real' THEN 1 ELSE 0 END
+            ), 0) AS cnt,
+            COALESCE(SUM(
+                CASE WHEN classification.classification = 'real'
+                     THEN orders.total_gross ELSE 0 END
+            ), 0) AS revenue,
+            COALESCE(SUM(
+                CASE WHEN classification.classification = 'test' THEN 1 ELSE 0 END
+            ), 0) AS test_count,
+            COALESCE(SUM(
+                CASE WHEN classification.classification IS NULL
+                          OR classification.classification = 'unknown'
+                     THEN 1 ELSE 0 END
+            ), 0) AS unknown_count
         FROM orders
-        WHERE created_at >= ?
+        LEFT JOIN revenue_classification_events AS classification
+          ON classification.id = (
+              SELECT MAX(latest.id)
+              FROM revenue_classification_events AS latest
+              WHERE latest.entity_type = 'order'
+                AND latest.entity_key = orders.order_id
+          )
+        WHERE orders.created_at >= ?
         """,
         (since,),
     ).fetchone()
@@ -39,6 +61,8 @@ def build_weekly_brief() -> str:
 
     order_count = int(orders_row["cnt"]) if orders_row else 0
     revenue = float(orders_row["revenue"]) if orders_row else 0.0
+    test_count = int(orders_row["test_count"]) if orders_row else 0
+    unknown_count = int(orders_row["unknown_count"]) if orders_row else 0
     lead_count = int(leads_row["cnt"]) if leads_row else 0
 
     snapshot = db_get_latest_analytics_snapshot()
@@ -56,7 +80,8 @@ def build_weekly_brief() -> str:
 
     return (
         "<b>Jadzia — weekly brief</b>\n"
-        f"Orders (7d): {order_count} | EUR {revenue:.2f}\n"
+        f"Orders KPI-eligible (7d): {order_count} | EUR {revenue:.2f}\n"
+        f"Orders excluded: test={test_count} unknown={unknown_count}\n"
         f"Leads (7d): {lead_count}\n"
         f"{ga4_line}"
     )

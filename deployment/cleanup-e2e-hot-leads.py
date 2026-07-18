@@ -1,14 +1,17 @@
 #!/usr/bin/env python3
-"""Remove INT-004 / Deploy02 E2E hot leads from SQLite (Commander Home noise).
+"""Locate legacy INT-004 E2E leads without deleting revenue history.
 
 Usage:
   PYTHONPATH=. python deployment/cleanup-e2e-hot-leads.py --dry-run
-  PYTHONPATH=. python deployment/cleanup-e2e-hot-leads.py --apply
+
+Destructive apply was disabled by REV-R0-02. Use:
+  PYTHONPATH=. python scripts/revenue_reconcile.py --apply-classifications
 
 Match (email LIKE):
   deploy02-%
   int004-e2e-%
 """
+
 from __future__ import annotations
 
 import argparse
@@ -20,7 +23,6 @@ from pathlib import Path
 _root = Path(__file__).resolve().parent.parent
 DEFAULT_DB = _root / "data" / "jadzia.db"
 
-# SQL LIKE patterns (case-insensitive via lower())
 EMAIL_PATTERNS = (
     "deploy02-%",
     "int004-e2e-%",
@@ -46,12 +48,11 @@ def find_e2e_leads(conn: sqlite3.Connection) -> list[dict]:
 
 
 def delete_leads(conn: sqlite3.Connection, ids: list[int]) -> int:
-    if not ids:
-        return 0
-    placeholders = ",".join("?" for _ in ids)
-    cur = conn.execute(f"DELETE FROM leads WHERE id IN ({placeholders})", ids)
-    conn.commit()
-    return cur.rowcount
+    """Block the legacy destructive operation; retained only for explicit failure."""
+    del conn, ids
+    raise RuntimeError(
+        "Revenue history deletion is disabled; use revenue_reconcile.py classifications"
+    )
 
 
 def main() -> int:
@@ -69,7 +70,7 @@ def main() -> int:
     conn = _connect(args.db)
     matches = find_e2e_leads(conn)
     payload = {
-        "status": "dry_run" if args.dry_run else "applied",
+        "status": "dry_run" if args.dry_run else "blocked",
         "db": str(args.db),
         "match_count": len(matches),
         "leads": matches,
@@ -79,10 +80,13 @@ def main() -> int:
         print(json.dumps(payload, ensure_ascii=False, indent=2))
         return 0
 
-    deleted = delete_leads(conn, [int(r["id"]) for r in matches])
-    payload["deleted"] = deleted
+    payload["deleted"] = 0
+    payload["message"] = (
+        "Deletion disabled by REV-R0-02; use scripts/revenue_reconcile.py "
+        "--apply-classifications"
+    )
     print(json.dumps(payload, ensure_ascii=False, indent=2))
-    return 0
+    return 2
 
 
 if __name__ == "__main__":
