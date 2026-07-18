@@ -1,15 +1,15 @@
 {
   "project": "Jadzia-Core",
-  "last_updated": "2026-07-18 (Q2 Agent CLOSE W26; CHECKPOINT — commit W10–W26 before Q3)",
+  "last_updated": "2026-07-18 (MBA Agent YEAR CLOSE W08–W52; Dowódca PASS open)",
   "status": "active",
-  "plan": "docs/handoffs/2026-07-18-session-CLOSE-mba-q2-checkpoint.md",
+  "plan": "docs/handoffs/2026-07-18-session-CLOSE-mba-YEAR-agent.md",
   "active_gate": null,
-  "active_plan": "MBA Q2 Agent CLOSE. PAUSE: commit W10–W26 before Q3. Next after hygiene: COI-MBA-20 W27. Gate D parked. standing_go off.",
+  "active_plan": "MBA Agent YEAR CLOSE. Next: human Dowódca PASS / Year zaliczenie OR new non-MBA feature. Gate D parked. standing_go off.",
   "standing_go_closeout": false,
   "closeout_queue": [],
   "closeout_expires": "2026-07-25",
-  "next_human": "CHECKPOINT: commit/push MBA W10–W26. Optional Dowódca PASS Q1/Q2. Gate D parked.",
-  "next_agent": "PO COMMIT: /vibe-init → /blast COI-MBA-20 (W27). Nie startuj Q3 na brudnym tree. Nie Gate D.",
+  "next_human": "Optional push. Dowódca PASS W0–W52 + Year zaliczenie. Gate D parked. Nie commit _mint_*.",
+  "next_agent": "/vibe-init — nowy feature poza MBA. Nie regeneruj weeks W08–W52. Nie Gate D. Nie fake Dowódca PASS.",
   "agent_rule": "Nie pytaj A/B. Deploy tylko ze zgodą (standing_go_closeout off). Nie sekrety. Nie kasuj parków. Hard STOP: Gate D/Mollie/fake PASS.",
   "sprints": {
     "remediation": "completed",
@@ -347,6 +347,16 @@
       "owner": "agent",
       "checklist": "docs/handoffs/2026-07-18-coi-mba-19-CLOSE.md",
       "note": "DONE 2026-07-18: W26-q2-gate-review.md + Q2 Agent CLOSE. Checkpoint before Q3."
+    },
+    {
+      "id": "COI-MBA-YEAR",
+      "sprint": "FlexGrafik AI OS",
+      "task": "MBA Agent YEAR CLOSE — weeks W27–W52 batch + spine Agent sync",
+      "status": "completed",
+      "priority": "high",
+      "owner": "agent",
+      "checklist": "docs/handoffs/2026-07-18-coi-mba-YEAR-Agent-CLOSE.md",
+      "note": "DONE 2026-07-18: W27–W52 week files; spine Agent YEAR; Dowódca untouched; Gate D parked. GO kompleksowo."
     },
     {
       "id": "COI-KNOW-00",

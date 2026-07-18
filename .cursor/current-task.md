@@ -1,4 +1,4 @@
-# CHECKPOINT — Q2 Agent CLOSE
+# MBA Agent YEAR CLOSE — DONE
 
-Do not start W27 until commit W10–W26.
-Next: COI-MBA-20 after hygiene.
+Do not regenerate W08–W52.
+Next: human Dowódca PASS or new feature vibe-init.

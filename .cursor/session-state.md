@@ -1,7 +1,8 @@
-# Session state — Q2 CHECKPOINT
+# Session state — MBA Agent YEAR CLOSE
 
-- Q2 Agent CLOSE (W26)
-- Tip committed: `2386b47` (W08–W09 only)
-- **PAUZA:** commit W10–W26 before Q3 batch
-- Next after hygiene: COI-MBA-20 W27
-- Handoff: `docs/handoffs/2026-07-18-session-CLOSE-mba-q2-checkpoint.md`
+- Tips: `f69374e` (Q2) + YEAR commit
+- weeks/W08–W52 present
+- Spine Agent [x] 0–52; Dowódca all [ ]
+- Parks: Gate D, Mollie, secrets, no mint in commits
+- Handoff: `docs/handoffs/2026-07-18-session-CLOSE-mba-YEAR-agent.md`
+- Next: human PASS / push / non-MBA feature

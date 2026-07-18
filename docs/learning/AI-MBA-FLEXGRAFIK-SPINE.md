@@ -1,9 +1,11 @@
 # AI MBA FlexGrafik — Spine 52 tygodnie
 
-**Status:** ACTIVE (COI-MBA-19) — **Q2 Agent CLOSE**; weeks/ W08–W26; **pauza przed Q3** (checkpoint commit)  
+**Status:** ACTIVE (COI-MBA-YEAR) — **Agent YEAR CLOSE** weeks/W08–W52; Dowódca PASS open  
+**Tip baseline:** `f69374e` (Q2) + YEAR commit  
 **Date:** 2026-07-18  
 **Zasada:** lekcja bez wdrożenia w firmie = **niezaliczona**.  
-**Zakaz G0:** nie generować 400+ lekcji naraz; mikro-lekcje tygodniowo w `docs/learning/weeks/`.  
+**Zakaz G0:** domyślnie mikro tygodniowo; batch W27–W52 tylko pod GO „kompleksowo” 2026-07-18.  
+
 **Post-CLOSEOUT:** AI OS scorecard #1–9 LIVE — kolumna **Agent** = dowód wdrożenia w todo/handoff; kolumna **Dowódca** = rytuał human (nie auto-PASS).
 
 ## Definicja produktu
@@ -61,40 +63,41 @@ Cel „400+ lekcji” ≈ ~8 mikro-lekcji/tydzień × 52 — powstają przy wdro
 | 26 | Q2 gate review | Scorecard 5 roles LIVE/GAP clear | MBA Q2 CLOSE | [x] | [ ] |
 | 27 | Ops AI 60% window | OPS-AI-01 evidence 60.6% | COI-OPS-AI-01 | [x] | [ ] |
 | 28 | PWA install ritual | PWA foundation LIVE | COI-CMD-MOBILE-02 | [x] | [ ] |
-| 29 | Home performance tune | Skeleton/latency notes | UX-03 follow | [ ] | [ ] |
-| 30 | Process L2 drill-downs | 2 critical processes L2 | PROC L2 | [ ] | [ ] |
-| 31 | Revenue recon ritual | REVENUE-RECONCILIATION run | REV ops | [ ] | [ ] |
-| 32 | Widget demand QA | No-pay dogfood chain | DEMAND QA | [ ] | [ ] |
-| 33 | Knowledge graph lite | Catalog cross-links complete | KNOW | [ ] | [ ] |
-| 34 | Automation safe list | What may auto without HITL | OPS policy | [ ] | [ ] |
-| 35 | Failure modes catalog | Empty/error/stale across hub | D0.17 apply | [ ] | [ ] |
-| 36 | VCMS weekly scan habit | conflicts=0 ritual | VCMS | [ ] | [ ] |
-| 37 | Agent OS weekly habit | Mission Control cadence | Agent OS | [ ] | [ ] |
+| 29 | Home performance tune | Skeleton/latency notes | UX-03 follow | [x] | [ ] |
+| 30 | Process L2 drill-downs | 2 critical processes L2 | PROC L2 | [x] | [ ] |
+| 31 | Revenue recon ritual | REVENUE-RECONCILIATION run | REV ops | [x] | [ ] |
+| 32 | Widget demand QA | No-pay dogfood chain | DEMAND QA | [x] | [ ] |
+| 33 | Knowledge graph lite | Catalog cross-links complete | KNOW | [x] | [ ] |
+| 34 | Automation safe list | What may auto without HITL | OPS policy | [x] | [ ] |
+| 35 | Failure modes catalog | Empty/error/stale across hub | D0.17 apply | [x] | [ ] |
+| 36 | VCMS weekly scan habit | conflicts=0 ritual | VCMS | [x] | [ ] |
+| 37 | Agent OS weekly habit | Mission Control cadence | Agent OS | [x] | [ ] |
 | 38 | Scorecard hard refresh | All 9 rows LIVE evidence | AI-OS-CLOSEOUT | [x] | [ ] |
-| 39 | Q3 gate review | 60% + knowledge PASS target | MBA Q3 CLOSE | [ ] | [ ] |
-| 40 | Governance hardening | Audit+Delegat month proof | GOV | [ ] | [ ] |
-| 41 | Graduation experiment | One HOTL candidate | D0.11 | [ ] | [ ] |
-| 42 | CS retention loop | CS metrics first read | CS-01+ | [ ] | [ ] |
-| 43 | Sales funnel review | Leads disposition hygiene | Sales | [ ] | [ ] |
-| 44 | Marketing calendar OS | Content intake link | MKT | [ ] | [ ] |
-| 45 | Finance/revenue process card | INT-002 consumer ritual | REV | [ ] | [ ] |
-| 46 | Emergency no-laptop drill | TG `/commander` + ticket | D0.14 | [ ] | [ ] |
-| 47 | Ecosystem map refresh | ADR URLs + scorecard | MAP | [ ] | [ ] |
-| 48 | MBA content backlog | Generate remaining micro-lessons from spine | MBA | [ ] | [ ] |
-| 49 | Year evidence pack | Links scorecard+catalog+ops | YEAR | [ ] | [ ] |
-| 50 | Delegat coverage week | Dowódca off / Delegat on | CE-09 | [ ] | [ ] |
-| 51 | Stop-list audit | Parks Gate D still parked | STOP | [ ] | [ ] |
-| 52 | Year CLOSE | AI OS zaliczenie review | MBA YEAR CLOSE | [ ] | [ ] |
+| 39 | Q3 gate review | 60% + knowledge PASS target | MBA Q3 CLOSE | [x] | [ ] |
+| 40 | Governance hardening | Audit+Delegat month proof | GOV | [x] | [ ] |
+| 41 | Graduation experiment | One HOTL candidate | D0.11 | [x] | [ ] |
+| 42 | CS retention loop | CS metrics first read | CS-01+ | [x] | [ ] |
+| 43 | Sales funnel review | Leads disposition hygiene | Sales | [x] | [ ] |
+| 44 | Marketing calendar OS | Content intake link | MKT | [x] | [ ] |
+| 45 | Finance/revenue process card | INT-002 consumer ritual | REV | [x] | [ ] |
+| 46 | Emergency no-laptop drill | TG `/commander` + ticket | D0.14 | [x] | [ ] |
+| 47 | Ecosystem map refresh | ADR URLs + scorecard | MAP | [x] | [ ] |
+| 48 | MBA content backlog | Generate remaining micro-lessons from spine | MBA | [x] | [ ] |
+| 49 | Year evidence pack | Links scorecard+catalog+ops | YEAR | [x] | [ ] |
+| 50 | Delegat coverage week | Dowódca off / Delegat on | CE-09 | [x] | [ ] |
+| 51 | Stop-list audit | Parks Gate D still parked | STOP | [x] | [ ] |
+| 52 | Year CLOSE | AI OS zaliczenie review | MBA YEAR CLOSE | [x] | [ ] |
 
-### Truth-repair note (COI-MBA-01)
+### Truth-repair note (COI-MBA-01 + YEAR Agent)
 
-Agent `[x]` tylko z mapy BLAST / completed todo + evidence. Nie oznacza Dowódca PASS. **Q1+Q2 Agent CLOSE** (W13, W26). Pauza przed Q3 — commit W10–W26. Następna lekcja po checkpoincie: **W27**. Autonomia ON, ale nie batchuj Q3 bez hygiene.
+Agent `[x]` = week file + LIVE maintain evidence (nie Dowódca PASS).
+**Q1–Q4 Agent CLOSE** 2026-07-18 (docs). Gate D / Mollie nadal parked.
+Kolumna Dowódca = rytuał human na Year zaliczenie.
 
 ## Folder lekcji
 
 ```text
-docs/learning/weeks/W08 … W26-q2-gate-review.md  # COI-MBA-01 … COI-MBA-19
-# Q3+ dopiero po commit checkpoint
+docs/learning/weeks/W08-…W52-*.md  # COI-MBA-01 … YEAR
 ```
 
 Szablon Week N: cel | treść (mikro) | wdrożenie (link handoff/PR) | Dowódca PASS/FAIL.
