@@ -61,6 +61,19 @@
       <div id="priorities" class="card-grid" role="list" aria-live="polite"></div>
       <h3>Kolejka (CRITICAL + ACTION)</h3>
       <div id="queue-list" class="queue" role="list" aria-live="polite"></div>
+      <form id="cs-followup-form" class="composer panel" aria-labelledby="cs-followup-title">
+        <h3 id="cs-followup-title">Customer Success — follow-up</h3>
+        <p class="hint">Ręczny post-sale ticket (COI-CS-02). Bez auto-maila do klienta.</p>
+        <label for="cs-order-id">Numer zamówienia</label>
+        <input id="cs-order-id" type="text" maxlength="128" required placeholder="np. ORD-123" autocomplete="off" />
+        <label for="cs-customer">Klient (opcjonalnie)</label>
+        <input id="cs-customer" type="text" maxlength="256" placeholder="email / nazwa" autocomplete="off" />
+        <label for="cs-note">Notatka (opcjonalnie)</label>
+        <input id="cs-note" type="text" maxlength="1000" placeholder="Post-sale check-in" autocomplete="off" />
+        <div class="composer-actions">
+          <button type="submit" class="primary" id="cs-spawn-btn">Utwórz follow-up CS</button>
+        </div>
+      </form>
       <div id="health-strip" class="health-strip" aria-live="polite"></div>
       <section class="system-map" aria-labelledby="system-map-title">
         <h3 id="system-map-title">Mapa systemu</h3>
@@ -194,6 +207,6 @@
   </dialog>
 
   <div id="toast" class="toast" role="status" aria-live="polite" hidden></div>
-  <script src="app.js?v=disp-fix1"></script>
+  <script src="app.js?v=cs02"></script>
 </body>
 </html>

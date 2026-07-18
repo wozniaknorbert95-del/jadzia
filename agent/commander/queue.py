@@ -111,7 +111,7 @@ def build_queue(severity_filter: Optional[str] = None) -> List[Dict]:
                 source=ticket_source,
                 escalation_reason="Customer Success follow-up (post-sale)",
             )
-            item["available_actions"] = ["approve", "reject", "defer"]
+            item["available_actions"] = ["acked", "snoozed", "closed"]
             items.append(item)
             continue
 

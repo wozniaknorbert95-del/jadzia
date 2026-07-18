@@ -171,11 +171,26 @@ function leadDispositionActions(item) {
   `;
 }
 
+function ticketDispositionActions(item) {
+  if (item.queue_type !== "cs_followup") return "";
+  const ticketId = item.payload?.ticket_id;
+  if (!ticketId) return "";
+  return `
+    <button type="button" data-ticket-disp="${ticketId}" data-disp="acked">Potwierdź</button>
+    <button type="button" data-ticket-disp="${ticketId}" data-disp="snoozed">Odłóż</button>
+    <button type="button" data-ticket-disp="${ticketId}" data-disp="closed">Zamknij</button>
+  `;
+}
+
+function queueItemActions(item) {
+  return leadDispositionActions(item) + ticketDispositionActions(item);
+}
+
 function renderQueue(items) {
   const filtered = items.filter((i) => i.severity !== "INFO");
   const el = document.getElementById("queue-list");
   el.innerHTML = filtered.length
-    ? filtered.map((q) => approvalCard(q, leadDispositionActions(q))).join("")
+    ? filtered.map((q) => approvalCard(q, queueItemActions(q))).join("")
     : "<p>Kolejka pusta</p>";
   el.querySelectorAll("[data-lead-disp]").forEach((btn) => {
     btn.onclick = async () => {
@@ -190,6 +205,22 @@ function renderQueue(items) {
         loadHome().catch((e) => toast(e.message));
       } catch (e) {
         toast(e.message || "Nie udało się zmienić statusu leada");
+      }
+    };
+  });
+  el.querySelectorAll("[data-ticket-disp]").forEach((btn) => {
+    btn.onclick = async () => {
+      const id = btn.dataset.ticketDisp;
+      const disp = btn.dataset.disp;
+      try {
+        await api(`/api/v1/commander/tickets/${id}/disposition`, {
+          method: "POST",
+          body: JSON.stringify({ disposition: disp }),
+        });
+        toast(`Ticket ${id} → ${disp}`);
+        loadHome().catch((e) => toast(e.message));
+      } catch (e) {
+        toast(e.message || "Nie udało się zmienić statusu ticketu");
       }
     };
   });
@@ -661,7 +692,7 @@ async function loadAgents() {
     <article class="card"><strong>AI Sprzedawca</strong><p>LIVE — widget + sales_cta</p></article>
     <article class="card"><strong>AI Marketing</strong><p>LIVE — kolejka publikacji</p></article>
     <article class="card"><strong>AI Project Manager</strong><p>LIVE — hop Agent OS</p></article>
-    <article class="card"><strong>AI Customer Success</strong><p>PARTIAL — cs_followup queue (COI-CS-01)</p></article>
+    <article class="card"><strong>AI Customer Success</strong><p>LIVE — spawn API + kolejka HITL (COI-CS-02)</p></article>
     <article class="card"><strong>AI Asystent Zarządu</strong><p>LIVE — brief HITL</p></article>`;
 
   document.querySelectorAll("[data-pause]").forEach((btn) => {
@@ -796,6 +827,32 @@ if (authToggle) {
     setAuthExpanded(!!body?.hidden);
   };
 }
+
+document.getElementById("cs-followup-form").onsubmit = async (e) => {
+  e.preventDefault();
+  const orderId = document.getElementById("cs-order-id").value.trim();
+  if (!orderId) {
+    toast("Podaj numer zamówienia");
+    return;
+  }
+  try {
+    const res = await api("/api/v1/commander/cs/followup", {
+      method: "POST",
+      body: {
+        order_id: orderId,
+        customer_hint: document.getElementById("cs-customer").value.trim(),
+        note: document.getElementById("cs-note").value.trim(),
+      },
+    });
+    toast(`CS follow-up #${res.ticket_id} utworzony`);
+    document.getElementById("cs-order-id").value = "";
+    document.getElementById("cs-customer").value = "";
+    document.getElementById("cs-note").value = "";
+    loadHome().catch((err) => toast(err.message));
+  } catch (err) {
+    toast(err.message || "Nie udało się utworzyć CS follow-up");
+  }
+};
 
 document.getElementById("settings-form").onsubmit = async (e) => {
   e.preventDefault();

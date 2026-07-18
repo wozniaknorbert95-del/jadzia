@@ -1815,6 +1815,29 @@ def db_commander_get_ticket(ticket_id: int) -> Optional[Dict]:
     return dict(row) if row else None
 
 
+def db_commander_update_ticket_status(ticket_id: int, status: str) -> bool:
+    """HITL disposition for Commander tickets (acked / snoozed / closed / open)."""
+    allowed = {"open", "acked", "snoozed", "closed"}
+    if status not in allowed:
+        return False
+    now = datetime.now(timezone.utc).isoformat()
+    conn = get_connection()
+    try:
+        cur = conn.execute(
+            """
+            UPDATE commander_tickets
+            SET status = ?, updated_at = ?
+            WHERE id = ?
+            """,
+            (status, now, ticket_id),
+        )
+        conn.commit()
+        return cur.rowcount > 0
+    except Exception:
+        conn.rollback()
+        return False
+
+
 def db_commander_list_tickets(status: Optional[str] = None, limit: int = 50) -> List[Dict]:
     conn = get_connection()
     if status:

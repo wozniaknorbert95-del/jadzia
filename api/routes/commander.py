@@ -66,6 +66,16 @@ class BulkApproveRequest(BaseModel):
     reason: Optional[str] = None
 
 
+class CsFollowupRequest(BaseModel):
+    order_id: str = Field(min_length=1, max_length=128)
+    customer_hint: str = Field(default="", max_length=256)
+    note: str = Field(default="", max_length=1000)
+
+
+class TicketDispositionRequest(BaseModel):
+    disposition: Literal["open", "acked", "closed", "snoozed"]
+
+
 @router.post("/api/v1/commander/auth/exchange")
 async def exchange_commander_login_code(body: LoginExchangeRequest) -> dict:
     """One-time login code → session JWT (MOBILE-02). No Bearer required."""
@@ -413,3 +423,70 @@ async def post_commander_ticket(
     if not ticket_id:
         raise HTTPException(status_code=500, detail="Failed to create ticket")
     return {"ticket_id": ticket_id, "deeplink": mint_deeplink(ticket_id, base_url)}
+
+
+@router.post("/api/v1/commander/cs/followup")
+async def post_cs_followup(
+    body: CsFollowupRequest,
+    auth=Depends(require_scope("queue:act")),
+) -> dict:
+    """Manual Customer Success follow-up spawn (COI-CS-02). No auto-email."""
+    from agent.commander.audit import append_audit
+    from agent.commander.authz import actor_from_payload
+    from agent.commander.cs_followup import spawn_cs_followup_ticket
+
+    ticket_id = spawn_cs_followup_ticket(
+        order_id=body.order_id.strip(),
+        customer_hint=body.customer_hint.strip(),
+        note=body.note.strip(),
+    )
+    if not ticket_id:
+        raise HTTPException(status_code=500, detail="Failed to create CS follow-up")
+    actor_id, actor_role = actor_from_payload(auth)
+    append_audit(
+        actor_id=actor_id,
+        actor_role=actor_role,
+        action="cs_followup_spawn",
+        source="commander",
+        target_type="ticket",
+        target_id=str(ticket_id),
+        after={"order_id": body.order_id.strip(), "source": "cs_followup"},
+        risk_tier="sensitive",
+    )
+    return {
+        "ticket_id": ticket_id,
+        "queue_type": "cs_followup",
+        "ok": True,
+    }
+
+
+@router.post("/api/v1/commander/tickets/{ticket_id}/disposition")
+async def post_ticket_disposition(
+    ticket_id: int,
+    body: TicketDispositionRequest,
+    auth=Depends(require_scope("queue:act")),
+) -> dict:
+    """HITL disposition for Commander tickets (CS / brief / wp)."""
+    from agent.commander.audit import append_audit
+    from agent.commander.authz import actor_from_payload
+    from agent.db import db_commander_get_ticket, db_commander_update_ticket_status
+
+    row = db_commander_get_ticket(ticket_id)
+    if not row:
+        raise HTTPException(status_code=404, detail="Ticket not found")
+    ok = db_commander_update_ticket_status(ticket_id, body.disposition)
+    if not ok:
+        raise HTTPException(status_code=400, detail="Invalid disposition")
+    actor_id, actor_role = actor_from_payload(auth)
+    append_audit(
+        actor_id=actor_id,
+        actor_role=actor_role,
+        action="ticket_disposition",
+        source="commander",
+        target_type="ticket",
+        target_id=str(ticket_id),
+        before={"status": row.get("status")},
+        after={"status": body.disposition, "source": row.get("source")},
+        risk_tier="sensitive",
+    )
+    return {"ticket_id": ticket_id, "disposition": body.disposition, "ok": True}
