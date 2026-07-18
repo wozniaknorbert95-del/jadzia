@@ -2,7 +2,7 @@
 
 **Date:** 2026-07-18  
 **Repo:** jadzia-core  
-**TIP_SHA (local=origin=VPS):** `36417c0`  
+**TIP_SHA (local=origin=VPS):** `447f8a6`  
 **FEATURE Demand-04:** `51b3ef0`  
 **Verdict:** **GO for next feature** (after Dowódca names it)  
 **Session verdict:** SUCCESS  
