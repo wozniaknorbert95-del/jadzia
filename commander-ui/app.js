@@ -104,11 +104,15 @@ async function api(path, options = {}) {
   return res.json();
 }
 
-function toast(msg) {
+function toast(msg, kind = "") {
   const el = document.getElementById("toast");
   el.textContent = msg;
+  el.classList.remove("toast-ok", "toast-err");
+  if (kind === "ok") el.classList.add("toast-ok");
+  if (kind === "err") el.classList.add("toast-err");
   el.hidden = false;
-  setTimeout(() => { el.hidden = true; }, 4000);
+  clearTimeout(toast._timer);
+  toast._timer = setTimeout(() => { el.hidden = true; }, 4000);
 }
 
 function confirmAction(message, requireReason = false) {
@@ -153,11 +157,17 @@ function approvalCard(item, actionsHtml = "") {
     </article>`;
 }
 
+function homeSkeleton(rows = 2) {
+  return `<div class="skeleton-stack" aria-busy="true" aria-label="Ładowanie">${
+    Array.from({ length: rows }, () => '<div class="skeleton-card"></div>').join("")
+  }</div>`;
+}
+
 function renderPriorities(items) {
   const el = document.getElementById("priorities");
   el.innerHTML = items.length
     ? items.map((p) => approvalCard(p)).join("")
-    : "<p>Brak priorytetów — spokój ✓</p>";
+    : "<p class=\"state-empty\">Brak priorytetów na dziś — spokój. Sprawdź kolejkę poniżej lub mapę systemu.</p>";
 }
 
 function leadDispositionActions(item) {
@@ -165,9 +175,9 @@ function leadDispositionActions(item) {
   const leadId = item.payload?.lead_id || item.payload?.id;
   if (!leadId) return "";
   return `
-    <button type="button" data-lead-disp="${leadId}" data-disp="acked">Potwierdź</button>
-    <button type="button" data-lead-disp="${leadId}" data-disp="snoozed">Odłóż</button>
-    <button type="button" data-lead-disp="${leadId}" data-disp="closed">Zamknij</button>
+    <button type="button" class="primary" data-lead-disp="${leadId}" data-disp="acked">Potwierdź</button>
+    <button type="button" class="secondary" data-lead-disp="${leadId}" data-disp="snoozed">Odłóż</button>
+    <button type="button" class="danger" data-lead-disp="${leadId}" data-disp="closed">Zamknij</button>
   `;
 }
 
@@ -176,9 +186,9 @@ function ticketDispositionActions(item) {
   const ticketId = item.payload?.ticket_id;
   if (!ticketId) return "";
   return `
-    <button type="button" data-ticket-disp="${ticketId}" data-disp="acked">Potwierdź</button>
-    <button type="button" data-ticket-disp="${ticketId}" data-disp="snoozed">Odłóż</button>
-    <button type="button" data-ticket-disp="${ticketId}" data-disp="closed">Zamknij</button>
+    <button type="button" class="primary" data-ticket-disp="${ticketId}" data-disp="acked">Potwierdź</button>
+    <button type="button" class="secondary" data-ticket-disp="${ticketId}" data-disp="snoozed">Odłóż</button>
+    <button type="button" class="danger" data-ticket-disp="${ticketId}" data-disp="closed">Zamknij</button>
   `;
 }
 
@@ -186,44 +196,48 @@ function queueItemActions(item) {
   return leadDispositionActions(item) + ticketDispositionActions(item);
 }
 
+function bindDispositionButtons(root, selector, idFromBtn, pathPrefix, label) {
+  root.querySelectorAll(selector).forEach((btn) => {
+    btn.onclick = async () => {
+      const entityId = idFromBtn(btn);
+      const disp = btn.dataset.disp;
+      const siblings = btn.parentElement?.querySelectorAll("button") || [btn];
+      siblings.forEach((b) => { b.disabled = true; });
+      try {
+        await api(`${pathPrefix}/${entityId}/disposition`, {
+          method: "POST",
+          body: JSON.stringify({ disposition: disp }),
+        });
+        toast(`${label} ${entityId} → ${disp}`, "ok");
+        loadHome().catch((e) => toast(e.message, "err"));
+      } catch (e) {
+        siblings.forEach((b) => { b.disabled = false; });
+        toast(e.message || `Nie udało się zmienić statusu (${label})`, "err");
+      }
+    };
+  });
+}
+
 function renderQueue(items) {
   const filtered = items.filter((i) => i.severity !== "INFO");
   const el = document.getElementById("queue-list");
   el.innerHTML = filtered.length
     ? filtered.map((q) => approvalCard(q, queueItemActions(q))).join("")
-    : "<p>Kolejka pusta</p>";
-  el.querySelectorAll("[data-lead-disp]").forEach((btn) => {
-    btn.onclick = async () => {
-      const id = btn.dataset.leadDisp;
-      const disp = btn.dataset.disp;
-      try {
-        await api(`/api/v1/commander/leads/${id}/disposition`, {
-          method: "POST",
-          body: JSON.stringify({ disposition: disp }),
-        });
-        toast(`Lead ${id} → ${disp}`);
-        loadHome().catch((e) => toast(e.message));
-      } catch (e) {
-        toast(e.message || "Nie udało się zmienić statusu leada");
-      }
-    };
-  });
-  el.querySelectorAll("[data-ticket-disp]").forEach((btn) => {
-    btn.onclick = async () => {
-      const id = btn.dataset.ticketDisp;
-      const disp = btn.dataset.disp;
-      try {
-        await api(`/api/v1/commander/tickets/${id}/disposition`, {
-          method: "POST",
-          body: JSON.stringify({ disposition: disp }),
-        });
-        toast(`Ticket ${id} → ${disp}`);
-        loadHome().catch((e) => toast(e.message));
-      } catch (e) {
-        toast(e.message || "Nie udało się zmienić statusu ticketu");
-      }
-    };
-  });
+    : "<p class=\"state-empty\">Kolejka pusta — brak CRITICAL/ACTION. Możesz utworzyć follow-up CS poniżej.</p>";
+  bindDispositionButtons(
+    el,
+    "[data-lead-disp]",
+    (btn) => btn.dataset.leadDisp,
+    "/api/v1/commander/leads",
+    "Lead",
+  );
+  bindDispositionButtons(
+    el,
+    "[data-ticket-disp]",
+    (btn) => btn.dataset.ticketDisp,
+    "/api/v1/commander/tickets",
+    "Ticket",
+  );
 }
 
 function showUndoBar(entryId) {
@@ -244,12 +258,27 @@ function showUndoBar(entryId) {
   }, 1000);
 }
 
+function bindSystemMapHops() {
+  const root = document.getElementById("system-map-links");
+  if (!root || root.dataset.hopsBound === "1") return;
+  root.dataset.hopsBound = "1";
+  root.querySelectorAll("a.map-link").forEach((link) => {
+    link.addEventListener("click", () => {
+      const name = link.dataset.hop || link.querySelector(".hop-label")?.textContent || "system";
+      link.classList.add("is-opening");
+      toast(`Otwieram: ${name} (sesja Commander zostaje)`, "ok");
+      setTimeout(() => link.classList.remove("is-opening"), 1200);
+    });
+  });
+}
+
 async function loadHome() {
   const prioEl = document.getElementById("priorities");
   const queueEl = document.getElementById("queue-list");
   const healthEl = document.getElementById("health-strip");
-  prioEl.innerHTML = "<p class=\"hint\">Ładowanie priorytetów…</p>";
-  queueEl.innerHTML = "<p class=\"hint\">Ładowanie kolejki…</p>";
+  prioEl.innerHTML = homeSkeleton(2);
+  queueEl.innerHTML = homeSkeleton(2);
+  healthEl.textContent = "Ładowanie statusu systemu…";
 
   let prio;
   let queue;
@@ -261,10 +290,11 @@ async function loadHome() {
     renderPriorities(prio.priorities || []);
     renderQueue(queue.items || []);
   } catch (e) {
-    prioEl.innerHTML = `<p class="state-error">Nie udało się pobrać priorytetów. <button type="button" id="home-retry">Spróbuj ponownie</button></p>`;
+    prioEl.innerHTML = `<p class="state-error">Nie udało się pobrać priorytetów. <button type="button" class="primary" id="home-retry">Spróbuj ponownie</button></p>`;
     queueEl.innerHTML = `<p class="state-error">Nie udało się pobrać kolejki.</p>`;
+    healthEl.textContent = "Status częściowy — odśwież po naprawie sesji.";
     const retry = document.getElementById("home-retry");
-    if (retry) retry.onclick = () => loadHome().catch((err) => toast(err.message));
+    if (retry) retry.onclick = () => loadHome().catch((err) => toast(err.message, "err"));
     throw e;
   }
 
@@ -280,6 +310,7 @@ async function loadHome() {
   healthEl.textContent =
     `Agenci SLA breach: ${slaBad} · GA4: ${fresh} · Worker: ${worker}${staleNote}`;
   document.getElementById("delegat-banner").hidden = !!settings.delegat_configured;
+  bindSystemMapHops();
 }
 
 let marketingFilter = "all";
@@ -801,6 +832,7 @@ function bindNavButtons(selector) {
 
 bindNavButtons("#main-nav .nav-btn");
 bindNavButtons("#bottom-nav .nav-btn");
+bindSystemMapHops();
 
 const settingsToAudit = document.getElementById("settings-to-audit");
 if (settingsToAudit) {
@@ -832,9 +864,11 @@ document.getElementById("cs-followup-form").onsubmit = async (e) => {
   e.preventDefault();
   const orderId = document.getElementById("cs-order-id").value.trim();
   if (!orderId) {
-    toast("Podaj numer zamówienia");
+    toast("Podaj numer zamówienia", "err");
     return;
   }
+  const spawnBtn = document.getElementById("cs-spawn-btn");
+  if (spawnBtn) spawnBtn.disabled = true;
   try {
     const res = await api("/api/v1/commander/cs/followup", {
       method: "POST",
@@ -844,13 +878,15 @@ document.getElementById("cs-followup-form").onsubmit = async (e) => {
         note: document.getElementById("cs-note").value.trim(),
       },
     });
-    toast(`CS follow-up #${res.ticket_id} utworzony`);
+    toast(`CS follow-up #${res.ticket_id} utworzony`, "ok");
     document.getElementById("cs-order-id").value = "";
     document.getElementById("cs-customer").value = "";
     document.getElementById("cs-note").value = "";
-    loadHome().catch((err) => toast(err.message));
+    loadHome().catch((err) => toast(err.message, "err"));
   } catch (err) {
-    toast(err.message || "Nie udało się utworzyć CS follow-up");
+    toast(err.message || "Nie udało się utworzyć CS follow-up", "err");
+  } finally {
+    if (spawnBtn) spawnBtn.disabled = false;
   }
 };
 

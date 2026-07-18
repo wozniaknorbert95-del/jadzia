@@ -32,3 +32,21 @@
 - Live TG `/commander` one-time link nie kliknięty w TG (mint/JWT równoważny).
 - Stary HTML bez `?v=` potrafi cache’ować `app.js` bez query — cold open z cache-bust lub hard refresh.
 - OPS-AI nadal **FAIL 45.8%** (osobny gate).
+
+---
+
+## POLISH-01 — Home enterprise (COI-CMD-UX-POLISH-01)
+
+**Run:** 2026-07-18 local static + structure dogfood · cache-bust `?v=polish01`  
+**Prod tip:** pending GO deploy (`standing_go_closeout=false`)
+
+| # | Krok | PASS/FAIL |
+|---|------|-----------|
+| P1 | Cold-open Home: eyebrow + tytuł + sub; sekcje Priorytety / Kolejka | **PASS** |
+| P2 | Tokeny: accent CTA, danger Zamknij, secondary Odłóż; touch ≥44px | **PASS** |
+| P3 | Skeleton loading (nie surowy „Ładowanie…” text-only) | **PASS** |
+| P4 | Empty states PL (`state-empty`) gdy brak priorytetów/kolejki | **PASS** |
+| P5 | Mapa hops: label + meta; toast „Otwieram…” bez czyszczenia JWT | **PASS** |
+| P6 | Cache-bust `styles.css?v=polish01` + `app.js?v=polish01` | **PASS** |
+
+**POLISH Home PASS** = P1–P6 → **PASS** (local). Live disposition toast + prod tip → po GO.

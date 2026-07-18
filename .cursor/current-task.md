@@ -1,5 +1,6 @@
-# MBA Agent YEAR 100% — COMPLETE
+# COI-CMD-UX-POLISH-01 — COMPLETE (local)
 
-Do not continue MBA drip.
-Do not mark Dowódca PASS.
-Next: human OR non-MBA vibe-init.
+**CLOSE:** `docs/handoffs/2026-07-18-coi-cmd-ux-polish-01-CLOSE.md`  
+**Prod tip:** await GO deploy  
+**Next gate:** `COI-CMD-OPS-GUIDE-01` → flex-vcms `docs/study/`  
+**PARK:** Gate D, Mollie, mint/recover, OS merge

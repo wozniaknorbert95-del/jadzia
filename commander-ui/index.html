@@ -3,14 +3,14 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-  <meta name="theme-color" content="#0f1419" />
+  <meta name="theme-color" content="#0c1117" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
   <title>COI Commander</title>
   <link rel="manifest" href="manifest.webmanifest" />
   <link rel="icon" href="icon-192.png" type="image/png" />
   <link rel="apple-touch-icon" href="icon-192.png" />
-  <link rel="stylesheet" href="styles.css?v=5830d1e" />
+  <link rel="stylesheet" href="styles.css?v=polish01b" />
 </head>
 <body>
   <a class="skip-link" href="#main">Przejdź do treści</a>
@@ -57,9 +57,14 @@
 
   <main id="main" class="main" tabindex="-1">
     <section id="view-home" class="view active" aria-labelledby="home-title">
-      <h2 id="home-title">Dziś — 3 priorytety</h2>
+      <header class="home-hero">
+        <p class="home-eyebrow">COI Commander · Start</p>
+        <h2 id="home-title">Dziś — 3 priorytety</h2>
+        <p class="home-sub">Wybierz jedną akcję. Potwierdź → odłóż → zamknij. Mapa systemu na dole — hops bez merge kodu.</p>
+      </header>
+      <h3 class="home-section-title">Priorytety</h3>
       <div id="priorities" class="card-grid" role="list" aria-live="polite"></div>
-      <h3>Kolejka (CRITICAL + ACTION)</h3>
+      <h3 class="home-section-title">Kolejka (CRITICAL + ACTION)</h3>
       <div id="queue-list" class="queue" role="list" aria-live="polite"></div>
       <form id="cs-followup-form" class="composer panel" aria-labelledby="cs-followup-title">
         <h3 id="cs-followup-title">Customer Success — follow-up</h3>
@@ -77,14 +82,32 @@
       <div id="health-strip" class="health-strip" aria-live="polite"></div>
       <section class="system-map" aria-labelledby="system-map-title">
         <h3 id="system-map-title">Mapa systemu</h3>
-        <p class="hint">Osobne systemy — otwieraj z hubu (ADR D0.6 / D0.19). Bez merge kodu. Basic Auth u właściciela hosta (OS/VCMS).</p>
-        <div class="system-map-links">
-          <a class="map-link" href="https://api.zzpackage.flexgrafik.nl/commander/" target="_blank" rel="noopener noreferrer">Commander (ten hub)</a>
-          <a class="map-link" href="https://os.flexgrafik.nl" target="_blank" rel="noopener noreferrer">Agent OS Mission Control</a>
-          <a class="map-link" href="https://cmd.flexgrafik.nl" target="_blank" rel="noopener noreferrer">VCMS Command Center</a>
-          <a class="map-link" href="https://cmd.flexgrafik.nl/docs/" target="_blank" rel="noopener noreferrer">VCMS docs</a>
-          <a class="map-link" href="https://zzpackage.flexgrafik.nl/wizard/" target="_blank" rel="noopener noreferrer">Wizard</a>
-          <a class="map-link" href="https://api.zzpackage.flexgrafik.nl/api/v1/design-agent/health" target="_blank" rel="noopener noreferrer">Design Agent health</a>
+        <p class="hint">Osobne systemy — otwieraj z hubu (ADR D0.6 / D0.19). Basic Auth u właściciela hosta (OS/VCMS). Sesja JWT w Commanderze zostaje.</p>
+        <div class="system-map-links" id="system-map-links">
+          <a class="map-link" href="https://api.zzpackage.flexgrafik.nl/commander/" target="_blank" rel="noopener noreferrer" data-hop="Commander">
+            <span class="hop-label">Commander (ten hub)</span>
+            <span class="hop-meta">api.zzpackage · bieżąca sesja</span>
+          </a>
+          <a class="map-link" href="https://os.flexgrafik.nl" target="_blank" rel="noopener noreferrer" data-hop="Agent OS">
+            <span class="hop-label">Agent OS Mission Control</span>
+            <span class="hop-meta">os.flexgrafik.nl · Basic Auth</span>
+          </a>
+          <a class="map-link" href="https://cmd.flexgrafik.nl" target="_blank" rel="noopener noreferrer" data-hop="VCMS">
+            <span class="hop-label">VCMS Command Center</span>
+            <span class="hop-meta">cmd.flexgrafik.nl · Basic Auth</span>
+          </a>
+          <a class="map-link" href="https://cmd.flexgrafik.nl/docs/" target="_blank" rel="noopener noreferrer" data-hop="VCMS docs">
+            <span class="hop-label">VCMS docs</span>
+            <span class="hop-meta">Dokumentacja ekosystemu</span>
+          </a>
+          <a class="map-link" href="https://zzpackage.flexgrafik.nl/wizard/" target="_blank" rel="noopener noreferrer" data-hop="Wizard">
+            <span class="hop-label">Wizard</span>
+            <span class="hop-meta">zzpackage · ścieżka zakupu</span>
+          </a>
+          <a class="map-link" href="https://api.zzpackage.flexgrafik.nl/api/v1/design-agent/health" target="_blank" rel="noopener noreferrer" data-hop="Design Agent">
+            <span class="hop-label">Design Agent health</span>
+            <span class="hop-meta">JSON health probe</span>
+          </a>
         </div>
       </section>
     </section>
@@ -207,6 +230,6 @@
   </dialog>
 
   <div id="toast" class="toast" role="status" aria-live="polite" hidden></div>
-  <script src="app.js?v=cs02"></script>
+  <script src="app.js?v=polish01"></script>
 </body>
 </html>
