@@ -1,12 +1,12 @@
 {
   "project": "Jadzia-Core",
-  "last_updated": "2026-07-18 (seq deploy+verify OK; VCMS online; next OPS-AI-01)",
+  "last_updated": "2026-07-18 (SESSION CLOSE — tip 66d7203; VCMS online; ready OPS-AI-01)",
   "status": "active",
-  "plan": "docs/handoffs/2026-07-18-coi-ops-ai-01-BLAST.md",
+  "plan": "docs/handoffs/2026-07-18-session-CLOSE-ops-ai-ready.md",
   "active_gate": "COI-OPS-AI-01",
-  "active_plan": "Dashboard+CS+Knowledge LIVE; VCMS pm2 online. Next 1-1-1: OPS-AI-01 instrument+measure ≥60%. PM ritual parked.",
-  "next_human": "GO na OPS-AI-01 (prefer). PM ritual tylko jeśli instrumentacja zablokowana. Gate D parked.",
-  "next_agent": "Wykonaj BLAST COI-OPS-AI-01: re-measure → instrumentacja widget/AI ops → ratio≥60% lub blocker. Nie completed bez liczby.",
+  "active_plan": "Dashboard+CS+Knowledge LIVE; VCMS online. NEXT: implement BLAST OPS-AI-01 (≥60%). PM parked. Gate D parked.",
+  "next_human": "GO OPS-AI-01 w nowej sesji (prefer). Gate D parked.",
+  "next_agent": "Nowa sesja: @implement COI-OPS-AI-01 per docs/handoffs/2026-07-18-coi-ops-ai-01-BLAST.md. Re-measure VPS → instrument → ≥60% lub blocker. Nie completed bez liczby.",
   "agent_rule": "Nie pytaj Dowódcy o decyzje A/B. Deploy tylko ze zgodą. Nie commituj sekretów. Nie kasuj parków w todo.",
   "sprints": {
     "remediation": "completed",

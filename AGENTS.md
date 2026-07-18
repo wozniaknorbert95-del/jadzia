@@ -6,7 +6,7 @@
 - **Canonical backlog**: `todo.json` (this repo)
 - **Active program**: FlexGrafik AI OS — Dashboard + CS + Knowledge LIVE; reszta surowa
 - **Active plan / gate**: `active_gate` = `COI-OPS-AI-01` (45.8% FAIL)
-- **Latest handoff**: `docs/handoffs/2026-07-18-seq-deploy-verify-CLOSE.md` (+ OPS-AI BLAST)
+- **Latest handoff**: `docs/handoffs/2026-07-18-session-CLOSE-ops-ai-ready.md`
 - **Scorecard (surowy)**: `docs/ops/SCORECARD-AI-OS-ZALICZENIE.md` — Dashboard+CS+Wiedza **LIVE**; PM/PROC PARTIAL; OPS-AI **45.8% FAIL**
 - **AI MBA spine**: `docs/learning/AI-MBA-FLEXGRAFIK-SPINE.md` (spine only)
 - **Knowledge index**: `docs/ops/KNOWLEDGE-SYSTEM-INDEX.md` (+ meta/VCMS mirrors COI-KNOW-01)
@@ -22,7 +22,7 @@
 - **Least privilege**: no secrets / large binaries.
 - **1-1-1**: one gate per session; handoff required.
 - **Honesty:** nie oznaczać PASS/completed bez dogfood lub liczby (OPS-AI).
-- **Current:** tip `b3824e5`; VCMS `vcms-core` online; KNOW `/docs/...` 200; OPS-AI-01 next @ 45.8%; Gate D parked.
+- **Current:** tip `66d7203`; VCMS online; KNOW `/docs/...` 200; next implement `COI-OPS-AI-01` @ 45.8%; Gate D parked.
 
 ## Copy & languages
 
