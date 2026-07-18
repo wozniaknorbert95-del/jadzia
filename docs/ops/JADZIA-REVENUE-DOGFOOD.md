@@ -1,6 +1,6 @@
 # Jadzia — Revenue Dogfood (no payment)
 
-**Purpose:** smoke Demand Engine 01→03 without Mollie / live charge.  
+**Purpose:** smoke Demand Engine 01→04 without Mollie / live charge.  
 **Prerequisite:** VPS `/opt/jadzia` on `master` tip ≥ Demand-03 (FEATURE `367549f`, tip docs may be newer).  
 **Canonical host:** `https://api.zzpackage.flexgrafik.nl` (prod nginx → jadzia `:8000`). Local/SSH: `http://127.0.0.1:8000`.  
 **STOP:** no checkout pay, no Gate D, no plugin updates, no `_recover_*.py`.
