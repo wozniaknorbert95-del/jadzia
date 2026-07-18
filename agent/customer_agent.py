@@ -137,7 +137,28 @@ def _infer_vehicle(user_input: str, parsed: Dict[str, Any], history: List[Dict])
     return m.group(1).lower() if m else "caddy"
 
 
-def _should_attach_cta(score: int, intent: str) -> bool:
+def _cta_effective_score(ai_score: int, scorer_score: int) -> int:
+    """CTA uses the stronger of AI lead.score and LeadScorer."""
+    return max(int(ai_score or 0), int(scorer_score or 0))
+
+
+def _cta_intent_is_high(ai_intent: Any, scorer_intent: Any) -> bool:
+    """True if either AI or LeadScorer reports high intent."""
+    return str(ai_intent or "").lower() == "high" or str(scorer_intent or "").lower() == "high"
+
+
+def _should_attach_cta(
+    score: int,
+    intent: str,
+    *,
+    ai_intent: Any = None,
+    scorer_intent: Any = None,
+) -> bool:
+    """Attach Wizard CTA when effective score >= 40 or either intent is high."""
+    if ai_intent is not None or scorer_intent is not None:
+        if _cta_intent_is_high(ai_intent, scorer_intent):
+            return True
+        return score >= 40
     return score >= 40 or str(intent).lower() == "high"
 
 
@@ -273,11 +294,27 @@ async def process_customer_message(session_id: str, user_input: str) -> Dict[str
             )
             return {"error": "system_temporarily_unavailable", "code": 503}
 
-        score = int(parsed.get("lead_score") or lead_info.get("score") or 0)
-        intent = str(parsed.get("intent") or lead_info.get("intent") or "low")
+        ai_score = int(lead_info.get("score") or 0)
+        try:
+            scorer_score = int(parsed.get("lead_score") or 0)
+        except (TypeError, ValueError):
+            scorer_score = 0
+        score = _cta_effective_score(ai_score, scorer_score)
+        ai_intent = lead_info.get("intent") or "low"
+        scorer_intent = parsed.get("intent") or "low"
+        intent = (
+            "high"
+            if _cta_intent_is_high(ai_intent, scorer_intent)
+            else str(scorer_intent or ai_intent or "low")
+        )
         cta_sku = None
         wizard_deeplink = None
-        if _should_attach_cta(score, intent):
+        if _should_attach_cta(
+            score,
+            intent,
+            ai_intent=ai_intent,
+            scorer_intent=scorer_intent,
+        ):
             raw_sku = parsed.get("suggested_sku")
             cta_sku = (
                 str(raw_sku).strip()

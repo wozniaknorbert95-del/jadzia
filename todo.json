@@ -1,12 +1,12 @@
 {
   "project": "Jadzia-Core",
-  "last_updated": "2026-07-18 (REV-DEMAND-01 LIVE on VPS 3746f9e — session CLOSE)",
+  "last_updated": "2026-07-18 (REV-DEMAND-02a CTA hotfix code+tests — await GO redeploy)",
   "status": "active",
-  "plan": "docs/handoffs/2026-07-18-rev-demand-01-session-CLOSE.md",
+  "plan": "docs/handoffs/2026-07-18-rev-demand-02a-CLOSE.md",
   "active_gate": "REV-DEMAND-02a",
-  "active_plan": "P0 CTA score hotfix then REV-DEMAND-02 durability. VPS LIVE 3746f9e. Parks untouched.",
-  "next_human": "Authorize redeploy after 02a. Optional dogfood playbook. OPS-FB / S1 / Gate D parked.",
-  "next_agent": "REV-DEMAND-02a CTA hotfix (1-1-1). Then 02 durability. No Gate D/B3/TikTok.",
+  "active_plan": "02a CTA hotfix ready — Dowódca GO → redeploy → then REV-DEMAND-02 durability. Parks untouched.",
+  "next_human": "GO redeploy Jadzia master (02a CTA hotfix). Then optional dogfood. OPS-FB / S1 / Gate D parked.",
+  "next_agent": "After GO+redeploy 02a: REV-DEMAND-02 session durability (1-1-1). No Gate D/B3/TikTok.",
   "agent_rule": "Nie pytaj Dowódcy o decyzje A/B. Deploy tylko ze zgodą. Nie commituj sekretów. Nie kasuj parków w todo.",
   "sprints": {
     "remediation": "completed",
@@ -67,10 +67,10 @@
       "id": "REV-DEMAND-02a",
       "sprint": "Revenue Demand Engine",
       "task": "Widget CTA: use max(AI lead.score, LeadScorer) or intent=high for deeplink",
-      "status": "pending",
+      "status": "ready_for_deploy",
       "priority": "critical",
       "owner": "agent",
-      "note": "P0 after VPS smoke: AI score 65/high but scorer 30 → deeplink null. Fix before durability. Handoff: 2026-07-18-rev-demand-01-session-CLOSE.md"
+      "note": "Code+tests DONE (8 pytest). Await Dowódca GO redeploy. Handoff: 2026-07-18-rev-demand-02a-CLOSE.md. Do not ship _recover_*.py."
     },
     {
       "id": "REV-DEMAND-02",

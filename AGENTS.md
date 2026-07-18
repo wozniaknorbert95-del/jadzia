@@ -4,9 +4,9 @@
 
 - **Canonical brain**: `brain.md` (this repo)
 - **Canonical backlog**: `todo.json` (this repo)
-- **Active program**: REV-DEMAND (01 LIVE @ `3746f9e`; next **02a** CTA hotfix → **02** session durability)
+- **Active program**: REV-DEMAND (01 LIVE @ `3746f9e`; **02a** CTA hotfix ready_for_deploy → then **02** durability)
 - **Active plan / gate**: `todo.json` → `active_gate` = `REV-DEMAND-02a`
-- **Latest handoff**: `docs/handoffs/2026-07-18-rev-demand-01-session-CLOSE.md`
+- **Latest handoff**: `docs/handoffs/2026-07-18-rev-demand-02a-CLOSE.md`
 - **Dogfood playbook**: `docs/ops/JADZIA-REVENUE-DOGFOOD.md`
 - **Deploy runbook**: `docs/ops/INT-002-V2-DEPLOY.md` (+ `deployment/rev-demand-01-deploy-vps.sh`)
 - **Reconciliation runbook**: `docs/ops/REVENUE-RECONCILIATION.md`
