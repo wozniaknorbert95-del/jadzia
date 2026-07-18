@@ -4,9 +4,9 @@
 
 - **Canonical brain**: `brain.md` (this repo)
 - **Canonical backlog**: `todo.json` (this repo)
-- **Active program**: Revenue War Room — revenue truth before demand work
-- **Active plan / gate**: `todo.json` → `active_gate` = `REV-R0-02C` (`gate_c_pass_gate_d_deferred`, parked)
-- **Latest handoff**: `docs/handoffs/2026-07-18-rev-r0-VERIFY-CLOSE.md` (+ before/after: `2026-07-18-jadzia-before-after-REV-R0.md`)
+- **Active program**: COI readiness A+ (strategy HITL); Revenue Gate D parked
+- **Active plan / gate**: `todo.json` → `active_gate` = `COI-STRATEGY-HITL-01` (completed this session)
+- **Latest handoff**: `docs/handoffs/2026-07-18-coi-readiness-Aplus-CLOSE.md`
 - **Deploy runbook**: `docs/ops/INT-002-V2-DEPLOY.md`
 - **Reconciliation runbook**: `docs/ops/REVENUE-RECONCILIATION.md`
 - **Approved contract**: `docs/contracts/REVENUE-EVENT-CONTRACT-v1.md`
@@ -18,6 +18,7 @@
 
 ## Guardrails
 
+- **No-ask (Dowódca):** Never ask clarifying A/B/C questions. Recommend one path, justify briefly, decide and execute (or park human-only blockers with a checklist). See `.cursor/rules/dowodca-no-ask.mdc`.
 - **Manual deploy only** (Zasada 11). Agents may prepare commands and checklists, but do not deploy autonomously.
 - **Least privilege**: do not read or process secrets (`.env*`, keys) or large binaries.
 - **1-1-1 rule**: implement one change at a time; finish with a handoff note in `docs/handoffs/`.

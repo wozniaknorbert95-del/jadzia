@@ -1,13 +1,13 @@
 {
   "project": "Jadzia-Core",
-  "last_updated": "2026-07-18 (REV-R0 VERIFIED CLOSE — Gate D parked, no top-up)",
+  "last_updated": "2026-07-18 (COI A+ — STRATEGY-HITL-01 + backlog park)",
   "status": "active",
-  "plan": "docs/handoffs/2026-07-18-rev-r0-VERIFY-CLOSE.md",
-  "active_gate": "REV-R0-02C",
-  "active_plan": "Parked: Gate D deferred indefinitely until real budget. Min checkout 199 unchanged. Before/after: 2026-07-18-jadzia-before-after-REV-R0.md",
-  "next_human": "Optional later: budget ≥199 + Mollie LIVE + GO Gate D. Otherwise pick next non-revenue gate (e.g. OPS-FB-HYGIENE-01).",
-  "next_agent": "PARKED on Gate D. Do not place paid order. Do not change min checkout. Resume only from gate-d-GO-pack.md after explicit GO.",
-  "agent_rule": "Nie deployuj autonomicznie bez approve. Nie commituj sekretów.",
+  "plan": "docs/handoffs/2026-07-18-coi-readiness-Aplus-CLOSE.md",
+  "active_gate": "COI-STRATEGY-HITL-01",
+  "active_plan": "COMPLETED this session. Next agent: pick non-blocked work or stay parked. Human: OPS-FB / S1-01 / Gate D when ready.",
+  "next_human": "OPS-FB-HYGIENE-01 checklist. S1-01 secrets/BFG when ready. Gate D only with budget.",
+  "next_agent": "No open agent-critical gate. Do not unpark B3/TikTok/Gate D without recorded GO. Prefer ops hygiene support over new programs.",
+  "agent_rule": "Nie pytaj Dowódcy o decyzje A/B. Nie deployuj autonomicznie. Nie commituj sekretów.",
   "sprints": {
     "remediation": "completed",
     "coi_phase_a": "deploy_complete",
@@ -25,6 +25,16 @@
   },
   "tasks": [
     {
+      "id": "COI-STRATEGY-HITL-01",
+      "sprint": "COI — Strategy synthesis",
+      "task": "Weekly brief → Commander HITL draft tickets (no auto-execute)",
+      "status": "completed",
+      "priority": "critical",
+      "owner": "agent",
+      "checklist": "docs/handoffs/2026-07-18-coi-readiness-Aplus-CLOSE.md",
+      "note": "2026-07-18 DONE: brief_node spawn_brief_hitl_tickets + tests PASS; strategy ~65%; no auto-act"
+    },
+    {
       "id": "REV-R0-02C",
       "sprint": "Revenue War Room — Revenue Truth",
       "task": "INT-002 v2 consumer validation + durable SQLite evidence",
@@ -32,7 +42,7 @@
       "priority": "critical",
       "owner": "agent",
       "checklist": "zzpackage/docs/checklists/REV-R0-02C-controlled-e2e.md",
-      "note": "VERIFIED 2026-07-18: Gate C #3209 PASS; COD OFF; iDEAL-only; 504fdf6+bfe8485 LIVE; PR #3 merged. Gate D parked (no top-up). Min199 unchanged. See VERIFY-CLOSE + before-after handoffs. Resume GO-pack only after Dowódca GO."
+      "note": "TERMINAL PARK 2026-07-18: Gate C PASS; Gate D parked (no budget). Not on active critical path. Resume GO-pack only after explicit GO + budget."
     },
     {
       "id": "DEPLOY-01",
@@ -148,7 +158,9 @@
       "task": "Rotacja sekretów: nowe klucze API/SSH/Telegram, wyczyszczenie .env z historii gita (git filter-branch/BFG)",
       "status": "blocked",
       "priority": "critical",
-      "risk": "Wymaga człowieka do wygenerowania nowych kluczy i uruchomienia BFG"
+      "owner": "human",
+      "risk": "Wymaga człowieka do wygenerowania nowych kluczy i uruchomienia BFG",
+      "note": "A+ park: human-only; not agent-critical path"
     },
     {
       "id": "OPS-01",
@@ -269,8 +281,9 @@
       "id": "D1-03",
       "sprint": "S4 — Docs",
       "task": "Standaryzacja języka: komentarze i docstringi po EN",
-      "status": "pending",
-      "priority": "low"
+      "status": "deferred",
+      "priority": "low",
+      "note": "A+ deferred: low ROI mega-diff; not on critical path"
     },
     {
       "id": "D1-04",
@@ -362,9 +375,9 @@
       "id": "C1-01",
       "sprint": "COI Phase C - TikTok",
       "task": "TikTok for Business API audit + integration (deferred from B.3)",
-      "status": "pending",
+      "status": "parked",
       "priority": "medium",
-      "note": "Deferred - video-only, requires TikTok Developer Program approval"
+      "note": "A+ parked: requires TikTok Developer Program approval; not agent-critical path"
     },
     {
       "id": "S2-01",
@@ -617,10 +630,11 @@
       "id": "OPS-FB-HYGIENE-01",
       "sprint": "Ops — Hygiene",
       "task": "Usuń FB smoke/test posts (text/photo/video) + opcjonalnie rotacja App Secret",
-      "status": "pending",
+      "status": "ready_for_human",
       "priority": "medium",
       "owner": "human",
-      "note": "Next gate after SMTP CLOSE; agent prepares checklist"
+      "checklist": "docs/handoffs/2026-07-18-ops-fb-hygiene-READY-for-human.md",
+      "note": "A+: agent checklist ready; Dowódca deletes posts / optional secret rotate"
     },
     {
       "id": "COI-CMD-QUEUE-CLEAN",

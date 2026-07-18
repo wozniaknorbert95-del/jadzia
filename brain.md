@@ -3,7 +3,7 @@ status: "[ACTIVE]"
 title: "Jadzia-Core Brain (Canonical)"
 owner: "Norbert Wozniak"
 updated: "2026-07-18"
-readiness_overall: "~90% operational spine (Commander + Marketing text/photo/video LIVE + DA INSPIRE)"
+readiness_overall: "~93% operational spine (REV Gate C + strategy HITL drafts; Gate D parked)"
 ---
 
 ## 1) Misja modułu
@@ -31,7 +31,7 @@ Szczegóły charter: `flexgrafik-meta/docs/core/jadzia-operating-charter.md`
 | Session state | `agent/state/` + `agent/db.py` | LIVE (SQLite-only) |
 | Cost tracking | `api/routes/costs.py` | LIVE |
 | Content calendar | `agent/nodes/content_calendar_node.py` | LIVE |
-| Weekly COI brief | `agent/nodes/brief_node.py` | LIVE (worker hook) |
+| Weekly COI brief | `agent/nodes/brief_node.py` | LIVE (worker hook + HITL draft tickets) |
 | Portal qualification | `api/routes/portal_qualify.py` | LIVE (INT-012) |
 | **Management CLI** | `cli/main.py` → `jadzia` cmd | LIVE (5 cmds) |
 | Design Agent INSPIRE v2/enterprise | `api/routes/design_agent*.py` + `agent/inspire/` | LIVE (merge `46e4fc2` 2026-07-17) |
@@ -94,13 +94,15 @@ Pełne kontrakty: `flexgrafik-meta/docs/core/integration-contracts.md`
 |-----------|-------|-------|
 | WP SSH agent | 90% | 95% |
 | Customer chat | 85% | 90% |
-| Worker queue/HITL | 85% | 90% |
-| Operational OS (orders/leads) | 85% | 90% |
+| Worker queue/HITL | 90% (brief→Commander HITL tickets) | 90% |
+| Operational OS (orders/leads) | 90% (INT-002 v2 + Gate C; Gate D parked) | 90% |
 | Analytics integration | 80% | 80% |
-| Content calendar | 90% (intake + photo publish) | 95% |
-| COI Commander | 90% | 95% |
-| COI strategy synthesis | 40% (brief LIVE; no auto-spawn) | 85% |
-| **Overall** | **~87%** operational spine | **85%** full COI vision |
+| Content calendar | 90% (intake + photo/video publish) | 95% |
+| COI Commander | 92% (tickets from brief HITL) | 95% |
+| COI strategy synthesis | 65% (brief LIVE + HITL draft spawn; no auto-act) | 85% |
+| **Overall** | **~93%** operational spine | **85%** full COI vision |
+
+**Honest bar:** AS-IS meets agent-achievable TO-BE without money/secrets/TikTok. Remaining gaps: Gate D LIVE proof, strategy auto-spawn (INT-006), content 95%, Commander 95%, S1-01 BFG.
 
 ## 7) Source of Truth
 
@@ -111,7 +113,7 @@ Pełne kontrakty: `flexgrafik-meta/docs/core/integration-contracts.md`
 - **Workflow:** `.agents/workflows/README.md` (L0-L4)
 - **Backlog:** `todo.json`
 - **PRD:** `docs/PRD-core.md`
-- **Active plan:** `docs/handoffs/2026-07-18-rev-r0-VERIFY-CLOSE.md` — REV verified; Gate D parked; before/after `2026-07-18-jadzia-before-after-REV-R0.md`; resume `gate-d-GO-pack.md` only after Dowódca GO
+- **Active plan:** `docs/handoffs/2026-07-18-coi-readiness-Aplus-CLOSE.md` — strategy HITL shipped; Gate D/S1/TikTok/B3 parked; OPS-FB ready_for_human
 - **Parked DA track:** `feat/da-insire-enterprise` (+14 vs master) — merge w osobnej sesji
 - **QUEUE-CLEAN:** completed 2026-07-17 — Home bez E2E `deploy02-*` / `int004-e2e-*`
 - **Prior closure:** `docs/handoffs/2026-07-09-coi-marketing-session-HANDOFF.md`

@@ -1645,16 +1645,24 @@ def db_commander_last_audit_hash() -> Optional[str]:
     return row["row_hash"] if row else None
 
 
-def db_commander_create_ticket(title: str, description: str, source: str = "telegram") -> Optional[int]:
+def db_commander_create_ticket(
+    title: str,
+    description: str,
+    source: str = "telegram",
+    severity: str = "CRITICAL",
+) -> Optional[int]:
     now = datetime.now(timezone.utc).isoformat()
+    sev = (severity or "CRITICAL").upper()
+    if sev not in ("CRITICAL", "HIGH", "MEDIUM", "LOW"):
+        sev = "CRITICAL"
     conn = get_connection()
     try:
         cursor = conn.execute(
             """
             INSERT INTO commander_tickets (title, description, severity, status, source, created_at, updated_at)
-            VALUES (?, ?, 'CRITICAL', 'open', ?, ?, ?)
+            VALUES (?, ?, ?, 'open', ?, ?, ?)
             """,
-            (title, description, source, now, now),
+            (title, description, sev, source, now, now),
         )
         conn.commit()
         return cursor.lastrowid

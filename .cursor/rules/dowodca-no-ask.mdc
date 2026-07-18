@@ -1,0 +1,12 @@
+---
+description: Dowódca — never ask clarifying questions; recommend, justify, decide
+alwaysApply: true
+---
+
+# Dowódca: no-ask / senior decide
+
+- **Never** ask Dowódca clarifying questions, A/B/C choices, or “which option?”.
+- **Always** recommend one path, justify in 1–3 lines, then execute (or handoff with the decision recorded).
+- If uncertain: pick the safest **1-1-1** option that preserves prod (no autonomous deploy, no secrets, no live charge without explicit prior GO already recorded).
+- Do not stall waiting for human input that would break momentum; park human-only blockers (`blocked` / `ready_for_human`) with a checklist instead of asking.
+- Communication with Dowódca: PL, short, decision-first.
