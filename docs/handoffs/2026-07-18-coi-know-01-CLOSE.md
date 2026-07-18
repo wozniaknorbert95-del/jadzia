@@ -21,7 +21,7 @@
 
 - Scorecard #8 (procesy) nadal **PARTIAL** (papier; osobny VCMS-process link opcjonalnie później).
 - OPS-AI **45.8% FAIL** — nie completed.
-- VCMS prod docs (`cmd.flexgrafik.nl/docs/`) odświeży się po **manual deploy VCMS** (Zasada 11) — repo mirror jest SoT dla agentów już po push.
+- VCMS PR [#20](https://github.com/wozniaknorbert95-del/Flex-vcms/pull/20) **merged** (pointer on master). Prod `cmd.flexgrafik.nl/docs/` po **manual deploy VCMS** (Zasada 11).
 
 ## NEXT
 
