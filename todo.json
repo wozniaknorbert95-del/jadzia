@@ -1,13 +1,16 @@
 {
   "project": "Jadzia-Core",
-  "last_updated": "2026-07-18 (COI-OPS-AI-01 PASS 60.6% tip d97939a; Gate D/PM parked)",
+  "last_updated": "2026-07-18 (standing GO closeout; post-coding loop)",
   "status": "active",
-  "plan": "docs/handoffs/2026-07-18-coi-ops-ai-01-CLOSE.md",
+  "plan": ".agents/workflows/post-coding.md",
   "active_gate": "COI-PM-01",
-  "active_plan": "OPS-AI #9 LIVE 60.6%. NEXT recommended: COI-PM-01 OS ritual. Gate D parked.",
-  "next_human": "Gate D parked (budget). Optional: dogfood PM ritual w OS.",
-  "next_agent": "Nowa sesja: @blast COI-PM-01. Gate D nie ruszaj bez GO+budget.",
-  "agent_rule": "Nie pytaj Dowódcy o decyzje A/B. Deploy tylko ze zgodą. Nie commituj sekretów. Nie kasuj parków w todo.",
+  "active_plan": "AI OS closeout: drain closeout_queue via /post-coding. Gate D hard-park.",
+  "standing_go_closeout": true,
+  "closeout_queue": ["COI-PM-01", "COI-PROC-02", "AI-OS-CLOSEOUT"],
+  "closeout_expires": "2026-07-25",
+  "next_human": "Gate D parked (budget). Basic Auth OS only if PM park.",
+  "next_agent": "/post-coding on closeout_queue head. standing_go_closeout=true until AI-OS-CLOSEOUT.",
+  "agent_rule": "Nie pytaj A/B. VPS OK gdy standing_go_closeout lub GO in-session. Nie sekrety. Nie kasuj parków. Hard STOP: Gate D/Mollie/fake PASS.",
   "sprints": {
     "remediation": "completed",
     "coi_phase_a": "deploy_complete",
@@ -230,7 +233,27 @@
       "priority": "critical",
       "owner": "agent",
       "checklist": "docs/ops/PROCESS-CATALOG.md",
-      "note": "Docs cards 10/10 — scorecard #8 PARTIAL (papier, nie VCMS-linked)"
+      "note": "Docs cards 10/10 — scorecard #8 PARTIAL until PROC-02 VCMS mirror"
+    },
+    {
+      "id": "COI-PROC-02",
+      "sprint": "FlexGrafik AI OS",
+      "task": "PROCESS-CATALOG VCMS/meta pointer mirrors → scorecard #8 LIVE",
+      "status": "pending",
+      "priority": "critical",
+      "owner": "agent",
+      "checklist": "docs/ops/PROCESS-CATALOG.md",
+      "note": "Closeout wave B. Pattern COI-KNOW-01. Not full catalog copy."
+    },
+    {
+      "id": "AI-OS-CLOSEOUT",
+      "sprint": "FlexGrafik AI OS",
+      "task": "Program closeout: scorecard #1-9 LIVE; standing_go_closeout off",
+      "status": "pending",
+      "priority": "critical",
+      "owner": "agent",
+      "checklist": "docs/ops/SCORECARD-AI-OS-ZALICZENIE.md",
+      "note": "Closeout wave C after PM-01 + PROC-02"
     },
     {
       "id": "COI-OPS-AI-00",

@@ -1,50 +1,55 @@
-# ⚙️ Jadzia-Core Workflow Framework v2.0 (Elite Edition)
+# Jadzia-Core Workflow Framework v2.1
 
-This is the professional operating system for AI agents working on the Jadzia-Core project. It transforms the agent from a "chat assistant" into a "software engineer" by enforcing a strict, state-based pipeline.
+Professional operating system for agents on jadzia-core: state-based pipeline, 1-1-1, honest PASS.
 
-## 🗺️ The Golden Path (Execution Flow)
+## Golden Path
 
-Every task MUST follow this sequence. Skipping stages is only allowed for `HOTFIX` or `PANIC` classifications.
+```text
+L0 TRIAGE → L1 DESIGN → L2 EXECUTE → L3 VALIDATE → L3.5 POST-CODING → L4 HANDOFF
+```
 
-`L0: TRIAGE` $\xrightarrow{}$ `L1: DESIGN` $\xrightarrow{}$ `L2: EXECUTE` $\xrightarrow{}$ `L3: VALIDATE` $\xrightarrow{}$ `L4: RELEASE`
+Skipping stages only for `HOTFIX` / `PANIC`. During AI OS closeout, `/post-coding` may include deploy when `standing_go_closeout` is true.
 
-### 🛠️ Command Matrix
+### Command matrix
 
-| Layer | Command | Purpose | Key Artefact | Gate |
-| :--- | :--- | :--- | :--- | :--- |
-| **L0** | `/vibe-init` | Triage, Classification, Context Loading | `TASK_ID` / `PATH` | Path Selection |
-| **L0** | `/context-reset` | Memory purge for fresh start/pivot | `CLEAN_SLATE` | Ready for Init |
-| **L1** | `/blast` | Technical contract for NEW features | `BLAST_ANCHOR` | `/self-review` $\to$ Approval |
-| **L1** | `/blueprint` | Structural design for Refactors/Arch | `BLUEPRINT_MAP` | `/self-review` $\to$ Approval |
-| **L1** | `/migrate` | High-risk DB schema/data changes | `MIG_VERSION` | Backup $\to$ Validation |
-| **L1** | `/dep-audit` | Library/Dependency gatekeeper | `DEP_VERDICT` | Approval |
-| **L2** | `/implement` | Atomic code implementation | `DIFF_READY` | Self-Verification |
-| **L2** | `/debug` | Scientific Root-Cause Analysis (RCA) | `ROOT_CAUSE` | Fix Proposal |
-| **L2** | `/profile` | Performance tuning & bottleneck hunt | `PERF_GAIN` | Measure $\to$ Verify |
-| **L3** | `/jadzia-test` | Automated Pytest & Smoke tests | `TEST_PASS` | Green Pipeline |
-| **L3** | `/audit-red-team` | Adversarial check & Regression audit | `VERDICT: PASS` | Safety Clear |
-| **L4** | `/jadzia-deploy` | Bare-metal VPS deployment runbook | `DEPLOY_DONE` | Commander Confirmed |
-| **L4** | `/handoff` | State sync (todo.json, brain.md) | `SESSION_CLOSED` | Archive |
-| **L-CRIT**| `/panic` | Emergency restore (Production Down) | `SYSTEM_UP` | Post-Mortem $\to$ `/debug` |
+| Layer | Command | Purpose | Key artefact |
+| :--- | :--- | :--- | :--- |
+| **L0** | `/vibe-init` | Triage + context | `TASK_ID` |
+| **L0** | `/context-reset` | Clean slate | `CLEAN_SLATE` |
+| **L1** | `/blast` | Feature contract | `BLAST_ANCHOR` |
+| **L1** | `/blueprint` | Refactor design | `BLUEPRINT_MAP` |
+| **L1** | `/migrate` | DB risk | `MIG_VERSION` |
+| **L1** | `/dep-audit` | Dependency gate | `DEP_VERDICT` |
+| **L2** | `/implement` | Atomic code | `DIFF_READY` |
+| **L2** | `/debug` | RCA | `ROOT_CAUSE` |
+| **L2** | `/profile` | Perf | `PERF_GAIN` |
+| **L3** | `/jadzia-test` | Pytest + smoke | `TEST_PASS` |
+| **L3** | `/audit-red-team` | Adversarial | `VERDICT` |
+| **L3.5** | `/post-coding` | Validate→ship→release→evidence→handoff | `POST_CODING` |
+| **L4** | `/jadzia-deploy` | VPS release (or pack if no GO) | `DEPLOY_DONE` |
+| **L4** | `/handoff` | State sync | `SESSION_CLOSED` |
+| **L-CRIT** | `/panic` | Prod down | `SYSTEM_UP` |
 
-## 📜 Core Engineering Rules
+## Core rules
 
-1. **The 1-1-1 Rule**: One task, one change, one handoff. No "while I'm here" changes.
-2. **Zasada 11 (Commander-Only)**: The agent NEVER executes SSH commands. It provides the block; the Commander runs it.
-3. **Atomic Diffs**: Never overwrite large files blindly. Use search-and-replace blocks to preserve surrounding logic.
-4. **State Persistence**: Every session must start by reading `todo.json` and `brain.md` and end by updating them.
-5. **Invariant Protection**: Before any change, identify the "Invariants" (things that MUST NOT break).
-6. **Adversarial Thinking**: No `/blast` is complete without a `/self-review` pass.
+1. **1-1-1**: one gate, one change set, one handoff per drain step.
+2. **Zasada 11 (deploy authority):**
+   - Agent **executes** VPS when `todo.standing_go_closeout === true` **or** GO is recorded in-session.
+   - Otherwise agent emits COMMAND_BLOCK only; Commander runs it.
+   - Hard STOP without separate GO: Gate D, Mollie LIVE, secret rotation, OS↔jadzia merge, fake PASS.
+3. **Atomic diffs** — surgical edits; no blind whole-file rewrites.
+4. **State persistence** — start: `todo.json` + `brain.md`; end: handoff.
+5. **Invariants** — name what must not break before editing.
+6. **Honesty** — no PASS/completed without dogfood number or URL evidence.
+7. **No-ask (Dowódca)** — one path, execute; park human-only as `ready_for_human`.
 
-## 📜 Core Engineering Rules
+## Closeout loop
 
-1. **The 1-1-1 Rule**: One task, one change, one handoff. No "while I'm here" changes.
-2. **Zasada 11 (Commander-Only)**: The agent NEVER executes SSH commands. It provides the block; the Commander runs it.
-3. **Atomic Diffs**: Never overwrite large files blindly. Use search-and-replace blocks to preserve surrounding logic.
-4. **State Persistence**: Every session must start by reading `todo.json` and `brain.md` and end by updating them.
-5. **Invariant Protection**: Before any change, identify the "Invariants" (things that MUST NOT break).
+When `standing_go_closeout` is set, drain `closeout_queue` via `/post-coding` (agent or Cursor Automation **Jadzia AI-OS Post-Coding Closeout**). After `AI-OS-CLOSEOUT`, set `standing_go_closeout: false`.
 
-## 🚀 Quick Start
-1. Start every session with `/vibe-init`.
-2. Follow the `RECOMMENDED_NEXT` output.
-3. Close every session with `/handoff`.
+## Quick start
+
+1. `/vibe-init`
+2. Follow `RECOMMENDED_NEXT`
+3. After green tests: `/post-coding` (not a separate click for deploy during closeout)
+4. `/handoff` when parking or CLOSEOUT_DONE

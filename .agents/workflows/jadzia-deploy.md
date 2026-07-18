@@ -1,60 +1,78 @@
 ---
-description: L4 - Production Release Runbook.
+description: L4 - Production release (agent executes under GO; else Commander pack).
 ---
 
 # /jadzia-deploy
 
-## 🎯 Goal
-Safe, manual deployment to the bare-metal VPS. Following **Zasada 11**: Agent prepares, Commander executes.
+## Goal
 
-## 🛑 Pre-conditions (The "No-Go" List)
-The deploy is ABORTED if any of these are NO:
-- [ ] `/jadzia-test` $\to$ PASS
-- [ ] `/audit-red-team` $\to$ PASS
-- [ ] Git pushed to `origin`
-- [ ] DB Backup strategy confirmed
+Safe deploy to VPS `/opt/jadzia`. Prefer invoking from `/post-coding` during closeout.
 
-## 🛠️ Deployment Procedure
+## Authority (Zasada 11)
 
-### 1. Preparation
-Agent provides the Commander with the exact sequence of commands.
+| Condition | Who runs SSH |
+|-----------|----------------|
+| `todo.standing_go_closeout === true` | **Agent** |
+| Explicit GO in current session | **Agent** |
+| Neither | Agent prepares COMMAND_BLOCK; **Commander** executes |
 
-### 2. Execution Block (Copy-Paste for Commander)
+Hard STOP without separate GO: Gate D, Mollie LIVE, secrets, merge OS↔jadzia.
+
+## Pre-conditions
+
+- [ ] Tests relevant to change PASS (or docs-only tip sync)
+- [ ] Pushed to `origin/master`
+- [ ] SQLite backup when runtime/schema touches DB
+
+## Agent execution (when authorized)
+
+Canonical runtime deploy:
+
 ```bash
-# 1. Backup current DB
-sqlite3 /opt/jadzia/data/jadzia.db ".backup /opt/jadzia/backups/pre-deploy-$(date +%Y%m%d-%H%M%S).db"
-
-# 2. Pull latest code
-cd /opt/jadzia && git pull origin main
-
-# 3. Update dependencies
-source venv/bin/activate && pip install -r requirements.txt
-
-# 4. Database Migrations (if applicable)
-alembic upgrade head
-
-# 5. Restart Service
-sudo systemctl restart jadzia.service
-
-# 6. Health Check
-curl -f localhost:8000/health
+bash /tmp/rev-demand-01-deploy-vps.sh <expected_sha>
+# or after scp: deployment/rev-demand-01-deploy-vps.sh
 ```
 
-### 3. Post-Deploy Validation
-- **Logs**: `journalctl -u jadzia -n 100` $\to$ Check for startup errors.
-- **Worker**: Verify that `api/app.py` worker loop is picking up tasks.
+Docs-only tip sync (no restart):
 
-## 📤 Output Format
+```bash
+cd /opt/jadzia && git pull --ff-only origin master && git rev-parse --short HEAD
+```
+
+Post-checks:
+
+```bash
+systemctl is-active jadzia
+curl -sf http://127.0.0.1:8000/health
+```
+
+## Commander pack (no GO)
+
+```bash
+# 1. Backup
+sudo -u jadzia sqlite3 /opt/jadzia/data/jadzia.db \
+  ".backup '/opt/jadzia/data/jadzia-pre-deploy-$(date +%Y%m%d-%H%M%S).db'"
+
+# 2. Pull
+cd /opt/jadzia && git fetch origin master && git pull --ff-only origin master
+
+# 3. Deps + restart (runtime only)
+sudo -u jadzia bash -lc 'cd /opt/jadzia && source venv/bin/activate && pip install -r requirements.txt -q'
+systemctl restart jadzia
+sleep 4
+curl -sf http://127.0.0.1:8000/health
+```
+
+## Output
 
 ```text
-DEPLOY_STATUS: AWAIT_COMMANDER
-PRECONDITIONS: [ALL PASS | FAIL: X]
-COMMAND_BLOCK: [The bash block above]
-ROLLBACK_PLAN: [e.g., 'git checkout <prev_hash> && systemctl restart']
+DEPLOY_STATUS: DONE | AWAIT_COMMANDER | ABORT
+TIP: …
+HEALTH: OK | FAIL
+ROLLBACK: git checkout <prev> && systemctl restart jadzia
 
 ---
 CURRENT_STAGE: L4-Release
-RECOMMENDED_NEXT: /handoff
-WHY_NEXT: Deploy finished; need to synchronize state.
+RECOMMENDED_NEXT: /handoff | /post-coding evidence step
 ---
 ```
