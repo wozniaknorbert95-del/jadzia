@@ -1,15 +1,15 @@
 {
   "project": "Jadzia-Core",
-  "last_updated": "2026-07-18 (AI-OS-CLOSEOUT — scorecard #1-9 LIVE; standing GO off)",
+  "last_updated": "2026-07-18 (session CLOSE MBA W08+W09; next W10)",
   "status": "active",
-  "plan": "docs/handoffs/2026-07-18-ai-os-CLOSEOUT.md",
+  "plan": "docs/handoffs/2026-07-18-session-CLOSE-mba-w08-w09.md",
   "active_gate": null,
-  "active_plan": "AI OS zaliczenie LIVE. Maintain. Gate D parked. Post-coding workflow remains for future gates.",
+  "active_plan": "MBA W08+W09 done. Next: COI-MBA-03 W10 marketing HITL. Gate D parked. standing_go off.",
   "standing_go_closeout": false,
   "closeout_queue": [],
   "closeout_expires": "2026-07-25",
-  "next_human": "Gate D parked (budget). Optional: save Cursor Automation draft opened in session.",
-  "next_agent": "Maintain / MBA spine. Nie Gate D bez GO+budget. /post-coding when new gate set.",
+  "next_human": "Gate D parked. Optional: Dowódca PASS W08/W09.",
+  "next_agent": "Nowa sesja: /vibe-init → /blast COI-MBA-03 (W10 marketing HITL). Docs-only. Nie Gate D.",
   "agent_rule": "Nie pytaj A/B. Deploy tylko ze zgodą (standing_go_closeout off). Nie sekrety. Nie kasuj parków. Hard STOP: Gate D/Mollie/fake PASS.",
   "sprints": {
     "remediation": "completed",
@@ -157,6 +157,26 @@
       "owner": "agent",
       "checklist": "docs/learning/AI-MBA-FLEXGRAFIK-SPINE.md",
       "note": "Spine only; weeks after CEO PASS"
+    },
+    {
+      "id": "COI-MBA-01",
+      "sprint": "FlexGrafik AI OS",
+      "task": "Spine truth-repair + Week 08 micro-lekcja (KNOW hygiene)",
+      "status": "completed",
+      "priority": "high",
+      "owner": "agent",
+      "checklist": "docs/handoffs/2026-07-18-coi-mba-01-CLOSE.md",
+      "note": "DONE 2026-07-18: Agent column truth-repair + W08-knowledge-hygiene.md. Dowódca untouched."
+    },
+    {
+      "id": "COI-MBA-02",
+      "sprint": "FlexGrafik AI OS",
+      "task": "Week 09 sales path dogfood micro-lekcja (REV-DEMAND LIVE)",
+      "status": "completed",
+      "priority": "high",
+      "owner": "agent",
+      "checklist": "docs/handoffs/2026-07-18-coi-mba-02-CLOSE.md",
+      "note": "DONE 2026-07-18: W09-sales-path-dogfood.md + spine tydz.9 Agent [x]."
     },
     {
       "id": "COI-KNOW-00",
