@@ -36,13 +36,17 @@ function setAuthExpanded(expanded) {
 }
 
 function updateAuthStatus() {
-  const el = document.getElementById("auth-status");
-  if (!el) return;
   const loggedIn = !!getToken();
-  el.textContent = loggedIn
-    ? "Zalogowano (sesja JWT w przeglądarce)."
-    : "Telegram: /commander → jednorazowy link (15 min).";
+  const el = document.getElementById("auth-status");
+  if (el) {
+    el.textContent = loggedIn
+      ? "Zalogowano (sesja JWT w przeglądarce)."
+      : "Telegram: /commander → jednorazowy link (15 min).";
+  }
+  // Always sync chrome even if status node missing
   setAuthExpanded(!loggedIn);
+  const input = document.getElementById("jwt-input");
+  if (input && loggedIn) input.value = "";
 }
 
 async function exchangeLoginCode(code) {
@@ -894,4 +898,10 @@ async function bootstrapAuth() {
 }
 
 registerServiceWorker();
-bootstrapAuth();
+if (document.readyState === "loading") {
+  document.addEventListener("DOMContentLoaded", () => {
+    bootstrapAuth();
+  });
+} else {
+  bootstrapAuth();
+}
