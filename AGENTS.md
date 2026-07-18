@@ -4,9 +4,9 @@
 
 - **Canonical brain**: `brain.md` (this repo)
 - **Canonical backlog**: `todo.json` (this repo)
-- **Active program**: REV-DEMAND **F0–F7** CLOSED; ops close READY for next feature; phone hub LIVE (`87d7912`)
-- **Active plan / gate**: `todo.json` → `active_gate` = `NONE` (await Dowódca feature GO)
-- **Latest handoff**: `docs/handoffs/2026-07-18-pre-feature-VERIFY.md`
+- **Active program**: Plan3 **COI-CMD-MOBILE-02** next; Demand F0–F7 + MOBILE-01 LIVE (`87d7912`)
+- **Active plan / gate**: `todo.json` → `active_gate` = `COI-CMD-MOBILE-02`
+- **Latest handoff**: `docs/handoffs/2026-07-18-plan3-mobile-02-READY.md`
 - **Phone hub ADR**: `docs/design/coi-commander/adr/D0.6-phone-hub-not-merge.md`
 - **Prod tip SoT:** VPS `/opt/jadzia` `git rev-parse --short HEAD` (pre-feature verify **`447f8a6`**). Do not tip-chase every docs commit; FEATURE_SHA stays in task notes.
 - **Deploy runbook**: `docs/ops/INT-002-V2-DEPLOY.md` (+ `deployment/rev-demand-01-deploy-vps.sh`)

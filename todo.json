@@ -1,12 +1,12 @@
 {
   "project": "Jadzia-Core",
-  "last_updated": "2026-07-18 (pre-feature VERIFY PASS — tip 36417c0; smoke cleaned)",
+  "last_updated": "2026-07-18 (Plan3 gate set — COI-CMD-MOBILE-02 after Plan1+2+Demand04)",
   "status": "active",
-  "plan": "docs/handoffs/2026-07-18-pre-feature-VERIFY.md",
-  "active_gate": "NONE",
-  "active_plan": "Pre-feature verify PASS. Await Dowódca GO naming next feature.",
-  "next_human": "Name next feature GO. Optional Ack sales_cta #4/#5 (jan/bob). S1 / Gate D parked.",
-  "next_agent": "Idle until Dowódca GO names next feature. No Gate D/B3/TikTok/Agent OS merge.",
+  "plan": "docs/handoffs/2026-07-18-plan3-mobile-02-READY.md",
+  "active_gate": "COI-CMD-MOBILE-02",
+  "active_plan": "Plan3 Control Surface: JWT mobile dogfood + PWA foundation (deferred from Plan2). Gate D parked.",
+  "next_human": "GO @blast COI-CMD-MOBILE-02. Optional Ack sales_cta #4/#5. S1 / Gate D parked.",
+  "next_agent": "@blast COI-CMD-MOBILE-02 (1-1-1). No Gate D/B3/TikTok/Agent OS merge.",
   "agent_rule": "Nie pytaj Dowódcy o decyzje A/B. Deploy tylko ze zgodą. Nie commituj sekretów. Nie kasuj parków w todo.",
   "sprints": {
     "remediation": "completed",
@@ -26,7 +26,9 @@
     "rev_demand_02a": "completed_2026-07-18",
     "rev_demand_02": "completed_2026-07-18",
     "rev_demand_03": "completed_2026-07-18",
-    "rev_demand_04": "completed_2026-07-18"
+    "rev_demand_04": "completed_2026-07-18",
+    "coi_cmd_mobile_01": "completed_2026-07-18",
+    "coi_cmd_mobile_02": "ready_for_blast_2026-07-18"
   },
   "tasks": [
     {
@@ -111,7 +113,17 @@
       "status": "completed",
       "priority": "critical",
       "owner": "agent",
-      "note": "LIVE VPS tip 87d7912. ADR D0.6 + bottom nav + system map. Handoff: 2026-07-18-coi-cmd-mobile-01-CLOSE.md."
+      "note": "LIVE FEATURE 87d7912. ADR D0.6 + bottom nav + system map. Foundation only — PWA/JWT deferred to MOBILE-02."
+    },
+    {
+      "id": "COI-CMD-MOBILE-02",
+      "sprint": "COI Commander — Mobile hub",
+      "task": "Plan3 Control Surface: mobile JWT dogfood path + PWA install foundation (manifest/SW)",
+      "status": "pending",
+      "priority": "critical",
+      "owner": "agent",
+      "checklist": "docs/handoffs/2026-07-18-plan3-mobile-02-READY.md",
+      "note": "Canonical next after Plan1+2 + REV-DEMAND-04 + ops verify. Out of Plan2 on purpose. No Agent OS merge. Gate D parked."
     },
     {
       "id": "COI-STRATEGY-HITL-01",
