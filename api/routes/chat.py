@@ -49,6 +49,9 @@ async def widget_chat(request: CustomerChatRequest):
             intent=result.get("intent"),
             category=result.get("category"),
             reason=result.get("reason"),
+            wizard_deeplink=result.get("wizard_deeplink"),
+            cta_sku=result.get("cta_sku"),
+            lead_id=result.get("lead_id"),
         )
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))

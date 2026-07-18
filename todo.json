@@ -1,13 +1,13 @@
 {
   "project": "Jadzia-Core",
-  "last_updated": "2026-07-18 (COI A+ — STRATEGY-HITL-01 + backlog park)",
+  "last_updated": "2026-07-18 (REV-DEMAND-01 F0–F4 CLOSE — widget CTA + lead disposition)",
   "status": "active",
-  "plan": "docs/handoffs/2026-07-18-coi-readiness-Aplus-CLOSE.md",
-  "active_gate": "COI-STRATEGY-HITL-01",
-  "active_plan": "COMPLETED this session. Next agent: pick non-blocked work or stay parked. Human: OPS-FB / S1-01 / Gate D when ready.",
-  "next_human": "OPS-FB-HYGIENE-01 checklist. S1-01 secrets/BFG when ready. Gate D only with budget.",
-  "next_agent": "No open agent-critical gate. Do not unpark B3/TikTok/Gate D without recorded GO. Prefer ops hygiene support over new programs.",
-  "agent_rule": "Nie pytaj Dowódcy o decyzje A/B. Nie deployuj autonomicznie. Nie commituj sekretów.",
+  "plan": "docs/handoffs/2026-07-18-rev-demand-01-CLOSE.md",
+  "active_gate": "REV-DEMAND-02",
+  "active_plan": "Next: F5 widget session durability. Parent 01 completed. Parks untouched. Dogfood playbook after deploy.",
+  "next_human": "Manual deploy master + docs/ops/JADZIA-REVENUE-DOGFOOD.md. OPS-FB / S1 / Gate D still human/parked.",
+  "next_agent": "REV-DEMAND-02 (session durability). Do not start Gate D / B3 / TikTok.",
+  "agent_rule": "Nie pytaj Dowódcy o decyzje A/B. Nie deployuj autonomicznie. Nie commituj sekretów. Nie kasuj parków w todo.",
   "sprints": {
     "remediation": "completed",
     "coi_phase_a": "deploy_complete",
@@ -21,9 +21,75 @@
     "coi_commander_v3": "merged_master_deploy_2026-07-09",
     "content_intake_m1": "completed_2026-07-09",
     "content_intake_m2": "deploy_complete_e2e_pass_2026-07-17",
-    "marketing_publish_b": "completed_2026-07-09"
+    "marketing_publish_b": "completed_2026-07-09",
+    "rev_demand_01": "completed_2026-07-18"
   },
   "tasks": [
+    {
+      "id": "REV-DEMAND-01",
+      "sprint": "Revenue Demand Engine",
+      "task": "Parent: widget→lead→Commander→Wizard (no pay); F0–F4",
+      "status": "completed",
+      "priority": "critical",
+      "owner": "agent",
+      "checklist": "docs/handoffs/2026-07-18-rev-demand-01-CLOSE.md",
+      "note": "2026-07-18 DONE F0–F4. Parks preserved. Next active_gate REV-DEMAND-02."
+    },
+    {
+      "id": "REV-DEMAND-01a",
+      "sprint": "Revenue Demand Engine",
+      "task": "Dogfood baseline INSPIRE+widget+lead+Commander (no pay)",
+      "status": "completed",
+      "priority": "critical",
+      "owner": "agent",
+      "checklist": "docs/handoffs/2026-07-18-rev-demand-01a-DOGFOOD.md",
+      "note": "Local/code PASS; VPS click via playbook after deploy"
+    },
+    {
+      "id": "REV-DEMAND-01b",
+      "sprint": "Revenue Demand Engine",
+      "task": "Widget structured Wizard CTA + durable lead (email+consent)",
+      "status": "completed",
+      "priority": "critical",
+      "owner": "agent",
+      "note": "customer_agent + models + chat route; tests PASS"
+    },
+    {
+      "id": "REV-DEMAND-01c",
+      "sprint": "Revenue Demand Engine",
+      "task": "Commander hot_lead ack/close/snooze API + UI",
+      "status": "completed",
+      "priority": "critical",
+      "owner": "agent",
+      "note": "disposition column + POST disposition + commander-ui buttons"
+    },
+    {
+      "id": "REV-DEMAND-02",
+      "sprint": "Revenue Demand Engine",
+      "task": "F5: Widget session durability (SQLite/TTL hybrid)",
+      "status": "pending",
+      "priority": "high",
+      "owner": "agent",
+      "note": "NEXT active after 01 close"
+    },
+    {
+      "id": "REV-DEMAND-03",
+      "sprint": "Revenue Demand Engine",
+      "task": "F6: INSPIRE → lead bridge (consent)",
+      "status": "pending",
+      "priority": "high",
+      "owner": "agent",
+      "note": "Start after REV-DEMAND-02 or parallel only if 01 done"
+    },
+    {
+      "id": "REV-DEMAND-04",
+      "sprint": "Revenue Demand Engine",
+      "task": "F7: Brief HITL → sales actions (CTA tickets)",
+      "status": "pending",
+      "priority": "medium",
+      "owner": "agent",
+      "note": "After 02/03; then reconsider B3 unpark"
+    },
     {
       "id": "COI-STRATEGY-HITL-01",
       "sprint": "COI — Strategy synthesis",

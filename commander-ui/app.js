@@ -99,12 +99,39 @@ function renderPriorities(items) {
     : "<p>Brak priorytetów — spokój ✓</p>";
 }
 
+function leadDispositionActions(item) {
+  if (item.queue_type !== "hot_lead") return "";
+  const leadId = item.payload?.id;
+  if (!leadId) return "";
+  return `
+    <button type="button" data-lead-disp="${leadId}" data-disp="acked">Ack</button>
+    <button type="button" data-lead-disp="${leadId}" data-disp="snoozed">Snooze</button>
+    <button type="button" data-lead-disp="${leadId}" data-disp="closed">Close</button>
+  `;
+}
+
 function renderQueue(items) {
   const filtered = items.filter((i) => i.severity !== "INFO");
   const el = document.getElementById("queue-list");
   el.innerHTML = filtered.length
-    ? filtered.map((q) => approvalCard(q)).join("")
+    ? filtered.map((q) => approvalCard(q, leadDispositionActions(q))).join("")
     : "<p>Kolejka pusta</p>";
+  el.querySelectorAll("[data-lead-disp]").forEach((btn) => {
+    btn.onclick = async () => {
+      const id = btn.dataset.leadDisp;
+      const disp = btn.dataset.disp;
+      try {
+        await api(`/api/v1/commander/leads/${id}/disposition`, {
+          method: "POST",
+          body: JSON.stringify({ disposition: disp }),
+        });
+        toast(`Lead ${id} → ${disp}`);
+        loadHome().catch((e) => toast(e.message));
+      } catch (e) {
+        toast(e.message || "Disposition failed");
+      }
+    };
+  });
 }
 
 function showUndoBar(entryId) {
@@ -467,7 +494,23 @@ async function loadAnalytics() {
       `<div>#${o.order_id} · ${o.status} · €${o.total_gross}</div>`).join("") || "Brak";
   document.getElementById("leads-list").innerHTML =
     (leads.leads || []).slice(0, 10).map((l) =>
-      `<div>${l.email} · score ${l.game_score ?? "—"}</div>`).join("") || "Brak";
+      `<div>${l.email} · score ${l.game_score ?? "—"} · ${l.disposition || "open"}
+        <button type="button" data-lead-list-disp="${l.id}" data-disp="acked">Ack</button>
+        <button type="button" data-lead-list-disp="${l.id}" data-disp="closed">Close</button>
+      </div>`).join("") || "Brak";
+  document.querySelectorAll("[data-lead-list-disp]").forEach((btn) => {
+    btn.onclick = async () => {
+      try {
+        await api(`/api/v1/commander/leads/${btn.dataset.leadListDisp}/disposition`, {
+          method: "POST",
+          body: JSON.stringify({ disposition: btn.dataset.disp }),
+        });
+        loadAnalytics().catch((e) => toast(e.message));
+      } catch (e) {
+        toast(e.message || "Disposition failed");
+      }
+    };
+  });
 }
 
 async function loadAgents() {

@@ -139,6 +139,10 @@ async def get_orders(
     return {"orders": orders, "total": len(orders), "freshness": fresh}
 
 
+class LeadDispositionRequest(BaseModel):
+    disposition: Literal["open", "acked", "closed", "snoozed"]
+
+
 @router.get("/api/v1/leads")
 async def get_leads(
     limit: int = Query(default=50, ge=1, le=200),
@@ -147,6 +151,36 @@ async def get_leads(
     leads = db_list_leads(limit=limit)
     fresh = freshness_status("leads", leads[0]["updated_at"] if leads else None)
     return {"leads": leads, "total": len(leads), "freshness": fresh}
+
+
+@router.post("/api/v1/commander/leads/{lead_id}/disposition")
+async def post_lead_disposition(
+    lead_id: int,
+    body: LeadDispositionRequest,
+    auth=Depends(require_scope("queue:act")),
+) -> dict:
+    """Sales HITL: ack / close / snooze a lead (removes closed/snoozed from hot queue)."""
+    from agent.commander.audit import append_audit
+    from agent.commander.authz import actor_from_payload
+    from agent.db import db_get_lead_by_id, db_update_lead_disposition
+
+    if not db_get_lead_by_id(lead_id):
+        raise HTTPException(status_code=404, detail="Lead not found")
+    ok = db_update_lead_disposition(lead_id, body.disposition)
+    if not ok:
+        raise HTTPException(status_code=400, detail="Invalid disposition")
+    actor_id, actor_role = actor_from_payload(auth)
+    append_audit(
+        actor_id=actor_id,
+        actor_role=actor_role,
+        action="lead_disposition",
+        source="commander",
+        target_type="lead",
+        target_id=str(lead_id),
+        after={"disposition": body.disposition},
+        risk_tier="sensitive",
+    )
+    return {"lead_id": lead_id, "disposition": body.disposition, "ok": True}
 
 
 @router.get("/api/v1/agents")

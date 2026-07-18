@@ -391,8 +391,19 @@ def _init_schema(conn: sqlite3.Connection):
     _migrate_content_calendar_columns(conn)
     _migrate_commander_calendar_version(conn)
     _migrate_commander_feedback_confidence(conn)
+    _migrate_leads_disposition(conn)
 
     conn.commit()
+
+
+def _migrate_leads_disposition(conn: sqlite3.Connection) -> None:
+    """Add sales HITL disposition on leads (open|acked|closed|snoozed)."""
+    try:
+        conn.execute(
+            "ALTER TABLE leads ADD COLUMN disposition TEXT NOT NULL DEFAULT 'open'"
+        )
+    except sqlite3.OperationalError:
+        pass
 
 
 def _migrate_content_calendar_columns(conn: sqlite3.Connection) -> None:
@@ -1361,7 +1372,34 @@ def _row_to_lead_dict(row: sqlite3.Row) -> Dict:
     lead = dict(row)
     lead["lead_id"] = str(lead.pop("id"))
     lead["consent_status"] = bool(lead.get("consent_status"))
+    lead["disposition"] = lead.get("disposition") or "open"
     return lead
+
+
+_VALID_LEAD_DISPOSITIONS = frozenset({"open", "acked", "closed", "snoozed"})
+
+
+def db_update_lead_disposition(lead_id: int, disposition: str) -> bool:
+    """Set lead disposition for Commander sales HITL. Returns True if updated."""
+    disp = (disposition or "").strip().lower()
+    if disp not in _VALID_LEAD_DISPOSITIONS:
+        return False
+    now = datetime.now(timezone.utc).isoformat()
+    conn = get_connection()
+    try:
+        cur = conn.execute(
+            """
+            UPDATE leads
+            SET disposition = ?, updated_at = ?
+            WHERE id = ?
+            """,
+            (disp, now, lead_id),
+        )
+        conn.commit()
+        return cur.rowcount > 0
+    except Exception:
+        conn.rollback()
+        return False
 
 
 # ============================================================================
@@ -2024,6 +2062,7 @@ def db_list_leads(limit: int = 50) -> List[Dict]:
         """
         SELECT leads.id, leads.email, leads.name, leads.source,
                leads.game_score, leads.reward_tier,
+               leads.disposition,
                leads.created_at, leads.updated_at,
                classification.classification,
                classification.reason_code AS classification_reason
@@ -2044,6 +2083,7 @@ def db_list_leads(limit: int = 50) -> List[Dict]:
     for row in rows:
         item = dict(row)
         item["classification"] = item.get("classification") or "unknown"
+        item["disposition"] = item.get("disposition") or "open"
         item["is_test"] = (
             True
             if item["classification"] == "test"

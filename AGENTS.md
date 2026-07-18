@@ -4,9 +4,10 @@
 
 - **Canonical brain**: `brain.md` (this repo)
 - **Canonical backlog**: `todo.json` (this repo)
-- **Active program**: COI readiness A+ (strategy HITL); Revenue Gate D parked
-- **Active plan / gate**: `todo.json` → `active_gate` = `COI-STRATEGY-HITL-01` (completed this session)
-- **Latest handoff**: `docs/handoffs/2026-07-18-coi-readiness-Aplus-CLOSE.md`
+- **Active program**: REV-DEMAND Demand Engine (01 COMPLETE; next 02 session durability; Gate D parked)
+- **Active plan / gate**: `todo.json` → `active_gate` = `REV-DEMAND-02`
+- **Latest handoff**: `docs/handoffs/2026-07-18-rev-demand-01-CLOSE.md`
+- **Dogfood playbook**: `docs/ops/JADZIA-REVENUE-DOGFOOD.md`
 - **Deploy runbook**: `docs/ops/INT-002-V2-DEPLOY.md`
 - **Reconciliation runbook**: `docs/ops/REVENUE-RECONCILIATION.md`
 - **Approved contract**: `docs/contracts/REVENUE-EVENT-CONTRACT-v1.md`

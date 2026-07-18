@@ -36,6 +36,9 @@ class CustomerChatResponse(BaseModel):
     intent: Optional[str] = None
     category: Optional[str] = None
     reason: Optional[str] = None
+    wizard_deeplink: Optional[str] = None
+    cta_sku: Optional[str] = None
+    lead_id: Optional[str] = None
 
 
 class PortalQualifyUiSuggestion(BaseModel):
