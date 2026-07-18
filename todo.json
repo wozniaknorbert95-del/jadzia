@@ -1,12 +1,12 @@
 {
   "project": "Jadzia-Core",
-  "last_updated": "2026-07-18 (COI-CMD-MOBILE-02 ready_for_deploy — enterprise code login + PWA)",
+  "last_updated": "2026-07-18 (COI-CMD-MOBILE-02 LIVE tip 81347e8 — phone dogfood human)",
   "status": "active",
   "plan": "docs/handoffs/2026-07-18-coi-cmd-mobile-02-CLOSE.md",
-  "active_gate": "COI-CMD-MOBILE-02",
-  "active_plan": "MOBILE-02 code complete. Await GO deploy + phone dogfood. Gate D parked.",
-  "next_human": "GO deploy MOBILE-02. Phone: /commander → Ack sales_cta. S1 / Gate D parked.",
-  "next_agent": "Idle until GO deploy; then VPS pull+restart + dogfood assist. No Gate D/B3/TikTok.",
+  "active_gate": "NONE",
+  "active_plan": "MOBILE-02 LIVE. Human phone dogfood /commander. Gate D parked.",
+  "next_human": "Phone: TG /commander → Ack sales_cta #4/#5. Optional PWA install. S1 / Gate D parked.",
+  "next_agent": "Idle — await next named GO. No Gate D/B3/TikTok/Agent OS merge.",
   "agent_rule": "Nie pytaj Dowódcy o decyzje A/B. Deploy tylko ze zgodą. Nie commituj sekretów. Nie kasuj parków w todo.",
   "sprints": {
     "remediation": "completed",
@@ -28,7 +28,7 @@
     "rev_demand_03": "completed_2026-07-18",
     "rev_demand_04": "completed_2026-07-18",
     "coi_cmd_mobile_01": "completed_2026-07-18",
-    "coi_cmd_mobile_02": "ready_for_blast_2026-07-18"
+    "coi_cmd_mobile_02": "completed_2026-07-18"
   },
   "tasks": [
     {
@@ -119,11 +119,11 @@
       "id": "COI-CMD-MOBILE-02",
       "sprint": "COI Commander — Mobile hub",
       "task": "Plan3 Control Surface: mobile JWT dogfood path + PWA install foundation (manifest/SW)",
-      "status": "ready_for_deploy",
+      "status": "completed",
       "priority": "critical",
       "owner": "agent",
       "checklist": "docs/handoffs/2026-07-18-coi-cmd-mobile-02-CLOSE.md",
-      "note": "Enterprise: one-time ?code= exchange (not JWT in URL) + PWA shell. Tests 5 PASS. Await GO deploy."
+      "note": "LIVE 81347e8 FEATURE abba339. Code-exchange login + PWA. VPS SMOKE_OK. Human phone Ack optional."
     },
     {
       "id": "COI-STRATEGY-HITL-01",

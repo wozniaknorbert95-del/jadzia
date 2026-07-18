@@ -4,11 +4,11 @@
 
 - **Canonical brain**: `brain.md` (this repo)
 - **Canonical backlog**: `todo.json` (this repo)
-- **Active program**: Plan3 **COI-CMD-MOBILE-02** next; Demand F0–F7 + MOBILE-01 LIVE (`87d7912`)
-- **Active plan / gate**: `todo.json` → `active_gate` = `COI-CMD-MOBILE-02`
+- **Active program**: MOBILE-02 LIVE; Demand F0–F7 + MOBILE-01 LIVE (`87d7912`)
+- **Active plan / gate**: `todo.json` → `active_gate` = `NONE` (await next GO)
 - **Latest handoff**: `docs/handoffs/2026-07-18-coi-cmd-mobile-02-CLOSE.md`
 - **Phone hub ADR**: `docs/design/coi-commander/adr/D0.6-phone-hub-not-merge.md`
-- **Prod tip SoT:** VPS `/opt/jadzia` `git rev-parse --short HEAD` (pre-feature verify **`447f8a6`**). Do not tip-chase every docs commit; FEATURE_SHA stays in task notes.
+- **Prod tip SoT:** VPS `/opt/jadzia` `git rev-parse --short HEAD` (MOBILE-02 LIVE **`81347e8`**, FEATURE `abba339`). Do not tip-chase every docs commit; FEATURE_SHA stays in task notes.
 - **Deploy runbook**: `docs/ops/INT-002-V2-DEPLOY.md` (+ `deployment/rev-demand-01-deploy-vps.sh`)
 - **Reconciliation runbook**: `docs/ops/REVENUE-RECONCILIATION.md`
 - **Approved contract**: `docs/contracts/REVENUE-EVENT-CONTRACT-v1.md`
