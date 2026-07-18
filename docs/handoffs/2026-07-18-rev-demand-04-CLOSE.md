@@ -4,9 +4,10 @@
 **Repo:** jadzia-core  
 **Branch:** `master`  
 **FEATURE_SHA:** `51b3ef0`  
-**TIP_SHA:** `51b3ef0` (expected after deploy)  
-**VPS:** `/opt/jadzia`  
-**Status:** SUCCESS (implement + verify; deploy in-session with Dowódca GO)  
+**TIP_SHA:** `8c515e6` (docs tip; VPS SoT)  
+**VPS:** `/opt/jadzia` @ `8c515e6`, `jadzia.service` **active**  
+**Backup:** `/opt/jadzia/data/jadzia-pre-rev-demand-01-20260718-122719.db` (integrity ok)  
+**Status:** SUCCESS — LIVE  
 **Session verdict:** SUCCESS  
 **Owner:** Revenue / Demand
 
@@ -19,7 +20,8 @@
 | Queue | `sales_cta` ACTION / SLA 4h + lead disposition payload |
 | UI | Commander Ack/Snooze/Close for `sales_cta` |
 | Tests | `test_brief_node` + queue mapping PASS |
-| Dogfood | F7 step in `JADZIA-REVENUE-DOGFOOD.md` |
+| Deploy | FEATURE `51b3ef0`; tip `8c515e6`; widget CTA smoke OK |
+| VPS smoke | `SMOKE_OK True` — spawn + `queue_type=sales_cta` |
 | Parks | Untouched; `_recover_*.py` not shipped |
 
 ## LEFT
