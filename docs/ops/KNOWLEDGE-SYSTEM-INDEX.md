@@ -1,7 +1,7 @@
 # Knowledge System Index — FlexGrafik
 
-**Status:** PARTIAL (COI-KNOW-00) — index w jadzia only; **meta + VCMS jeszcze bez mirror linku**  
-**Date:** 2026-07-18 (truth repair)  
+**Status:** LIVE (COI-KNOW-01) — SoT w jadzia + mirror pointery w meta i VCMS  
+**Date:** 2026-07-18  
 **Cel:** Jedna hierarchy SoT — zero sprzecznych kanonów.
 
 ## Hierarchy (od najwyższego)
@@ -16,6 +16,14 @@
 | 6 | Learning (AI MBA) | `jadzia-core/docs/learning/` | spine 52 tyg., weeks/WXX |
 | 7 | Handoffy (ephemeral) | `jadzia-core/docs/handoffs/` | dowód sesji; **nie** nadpisują konstytucji |
 
+## Mirrors (COI-KNOW-01) — pointer only
+
+| Host | Pointer | Rola |
+|------|---------|------|
+| flexgrafik-meta | `docs/core/knowledge-system-index.md` | konstytucja → link do tego SoT |
+| Flex-vcms | `docs/ecosystem/ai-os-knowledge.md` | VCMS docs / cmd → link do tego SoT |
+| GitHub SoT | [KNOWLEDGE-SYSTEM-INDEX.md](https://github.com/wozniaknorbert95-del/jadzia/blob/master/docs/ops/KNOWLEDGE-SYSTEM-INDEX.md) | kanoniczny blob |
+
 ## Reguła anty-duplikacji
 
 | Treść | Gdzie kanon | Nie kopiuj do |
@@ -26,14 +34,17 @@
 | URL prod hub / OS / VCMS | ADR D0.6 | hardcoded sprzeczne localhost w UI |
 | Proces biznesowy L1 | `docs/ops/PROCESS-CATALOG.md` (po PROC-00) | rozproszone „jak robimy X” w 5 handoffach |
 | Lekcja MBA Week N | `docs/learning/weeks/` | Notion-only bez linku do wdrożenia |
+| Statusy AI OS zaliczenia | `SCORECARD-AI-OS-ZALICZENIE.md` | paste tabeli do meta/VCMS |
 
 ## Linki kluczowe
 
 - Scorecard zaliczenia: [SCORECARD-AI-OS-ZALICZENIE.md](./SCORECARD-AI-OS-ZALICZENIE.md)
-- Process catalog: [PROCESS-CATALOG.md](./PROCESS-CATALOG.md) (baseline → PROC-01)
+- Process catalog: [PROCESS-CATALOG.md](./PROCESS-CATALOG.md)
 - OPS AI: [OPS-AI-SCORECARD.md](./OPS-AI-SCORECARD.md)
 - AI MBA spine: [../learning/AI-MBA-FLEXGRAFIK-SPINE.md](../learning/AI-MBA-FLEXGRAFIK-SPINE.md)
 - Phone hub ADR: [../design/coi-commander/adr/D0.6-phone-hub-not-merge.md](../design/coi-commander/adr/D0.6-phone-hub-not-merge.md)
+- Meta mirror: `flexgrafik-meta/docs/core/knowledge-system-index.md`
+- VCMS mirror: `Flex-vcms/flex-vcms/docs/ecosystem/ai-os-knowledge.md`
 
 ## Konflikt resolution
 

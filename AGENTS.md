@@ -4,12 +4,12 @@
 
 - **Canonical brain**: `brain.md` (this repo)
 - **Canonical backlog**: `todo.json` (this repo)
-- **Active program**: FlexGrafik AI OS — Dashboard + CS LIVE; reszta scorecard surowa
-- **Active plan / gate**: `active_gate` = `COI-OPS-AI-01` (45.8% FAIL); next 1-1-1 meta KNOW mirror
-- **Latest handoff**: `docs/handoffs/2026-07-18-coi-cs-02-CLOSE.md`
-- **Scorecard (surowy)**: `docs/ops/SCORECARD-AI-OS-ZALICZENIE.md` — Dashboard+CS **LIVE**; Wiedza/PM PARTIAL; OPS-AI **45.8% FAIL**
+- **Active program**: FlexGrafik AI OS — Dashboard + CS + Knowledge LIVE; reszta surowa
+- **Active plan / gate**: `active_gate` = `COI-OPS-AI-01` (45.8% FAIL)
+- **Latest handoff**: `docs/handoffs/2026-07-18-coi-know-01-CLOSE.md`
+- **Scorecard (surowy)**: `docs/ops/SCORECARD-AI-OS-ZALICZENIE.md` — Dashboard+CS+Wiedza **LIVE**; PM/PROC PARTIAL; OPS-AI **45.8% FAIL**
 - **AI MBA spine**: `docs/learning/AI-MBA-FLEXGRAFIK-SPINE.md` (spine only)
-- **Knowledge index**: `docs/ops/KNOWLEDGE-SYSTEM-INDEX.md` (PARTIAL — brak meta/VCMS mirror)
+- **Knowledge index**: `docs/ops/KNOWLEDGE-SYSTEM-INDEX.md` (+ meta/VCMS mirrors COI-KNOW-01)
 - **Phone hub ADR**: `docs/design/coi-commander/adr/D0.6-phone-hub-not-merge.md` (+ D0.15)
 - **Prod tip SoT:** VPS `/opt/jadzia` `git rev-parse --short HEAD`
 - **Deploy runbook**: `docs/ops/INT-002-V2-DEPLOY.md` (+ `deployment/rev-demand-01-deploy-vps.sh`)
@@ -22,7 +22,7 @@
 - **Least privilege**: no secrets / large binaries.
 - **1-1-1**: one gate per session; handoff required.
 - **Honesty:** nie oznaczać PASS/completed bez dogfood lub liczby (OPS-AI).
-- **Current:** tip `0a54bc7`; CS-02 LIVE; OPS-AI-01 `in_progress` @ 45.8%; Gate D parked.
+- **Current:** KNOW-01 mirrors LIVE; OPS-AI-01 `in_progress` @ 45.8%; Gate D parked.
 
 ## Copy & languages
 

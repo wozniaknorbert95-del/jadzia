@@ -11,7 +11,7 @@
 | # | Warunek | Definicja operacyjna | SoT / powierzchnia | Status | Dowód | Następny gate |
 |---|---------|----------------------|--------------------|--------|-------|---------------|
 | 1 | Dashboard CEO | Cold open ≤10s; daily &lt;5 min; kolejka + mapa | `/commander/` | **LIVE** | Agent dogfood PASS @ tip `2ba7c85` (`UX-DOGFOOD-PHONE.md`) | maintain; residual TG live optional |
-| 2 | System wiedzy | Indeks SoT + procesy; zero sprzecznych kanonów | KNOW-00 + catalog | **PARTIAL** | Index w jadzia only; **meta/VCMS bez linku** | Mirror meta lub VCMS docs |
+| 2 | System wiedzy | Indeks SoT + procesy; zero sprzecznych kanonów | KNOW-01 mirrors | **LIVE** | SoT jadzia + meta/VCMS pointers (COI-KNOW-01) | maintain; #8 proces VCMS-link osobno |
 | 3 | AI Sprzedawca | Lead→CTA→Wizard | Demand + widget | LIVE | REV-DEMAND F0–F7 | maintain |
 | 4 | AI Marketing | Draft→HITL→publish | Commander Marketing | LIVE | PUBLISH-B + audit publish×8/14d | maintain |
 | 5 | AI Project Manager | Orkiestracja HITL | Agent OS | **PARTIAL** | Deep-link only (nie agent w jadzia) | rytuał OS / kontrakt |
