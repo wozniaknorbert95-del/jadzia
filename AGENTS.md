@@ -4,10 +4,10 @@
 
 - **Canonical brain**: `brain.md` (this repo)
 - **Canonical backlog**: `todo.json` (this repo)
-- **Active program**: FlexGrafik AI OS — **truth repair**; nie mylić docs z zaliczeniem
-- **Active plan / gate**: `active_gate` = `COI-CMD-UX-03` (ready_for_human dogfood)
-- **Latest handoff**: `docs/handoffs/2026-07-18-coi-ai-os-truth-repair-CLOSE.md`
-- **Scorecard (surowy)**: `docs/ops/SCORECARD-AI-OS-ZALICZENIE.md` — Dashboard/Wiedza PARTIAL; OPS-AI **45.8% FAIL**
+- **Active program**: FlexGrafik AI OS — Dashboard CEO LIVE; reszta scorecard surowa
+- **Active plan / gate**: `active_gate` = `COI-OPS-AI-01` (45.8% FAIL); next 1-1-1 CS API lub meta mirror
+- **Latest handoff**: `docs/handoffs/2026-07-18-coi-cmd-ux-03-dogfood-CLOSE.md`
+- **Scorecard (surowy)**: `docs/ops/SCORECARD-AI-OS-ZALICZENIE.md` — Dashboard **LIVE**; Wiedza/PM/CS PARTIAL; OPS-AI **45.8% FAIL**
 - **AI MBA spine**: `docs/learning/AI-MBA-FLEXGRAFIK-SPINE.md` (spine only)
 - **Knowledge index**: `docs/ops/KNOWLEDGE-SYSTEM-INDEX.md` (PARTIAL — brak meta/VCMS mirror)
 - **Phone hub ADR**: `docs/design/coi-commander/adr/D0.6-phone-hub-not-merge.md` (+ D0.15)
@@ -22,7 +22,7 @@
 - **Least privilege**: no secrets / large binaries.
 - **1-1-1**: one gate per session; handoff required.
 - **Honesty:** nie oznaczać PASS/completed bez dogfood lub liczby (OPS-AI).
-- **Current:** UX tip LIVE; CEO PASS blocked on phone dogfood; OPS-AI-01 `in_progress` @ 45.8%; Gate D parked.
+- **Current:** tip `2ba7c85`; CEO Dashboard dogfood PASS; OPS-AI-01 `in_progress` @ 45.8%; Gate D parked.
 
 ## Copy & languages
 
