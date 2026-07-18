@@ -8,8 +8,8 @@
   "standing_go_closeout": false,
   "closeout_queue": [],
   "closeout_expires": "2026-07-25",
-  "next_human": "VCMS-VIDEO or MBA Year PASS. Gate D parked.",
-  "next_agent": "/vibe-init — next non-MBA feature only.",
+  "next_human": "Wybór Dowódcy po KNOW-02 (VCMS-VIDEO = stale/obsolete as default). MBA Year PASS open. Gate D parked.",
+  "next_agent": "/vibe-init — next non-MBA feature only (not VIDEO).",
   "agent_rule": "Nie pytaj A/B. Deploy tylko ze zgodą (standing_go_closeout off). Nie sekrety. Nie kasuj parków. Hard STOP: Gate D/Mollie/fake PASS.",
   "sprints": {
     "remediation": "completed",

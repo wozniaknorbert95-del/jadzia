@@ -1,6 +1,6 @@
-# COI-KNOW-02 DONE
+# COI-KNOW-02 DONE (honest VERIFY)
 
-- Knowledge System segregated; cmd handbook discoverable
-- flex-vcms PROOF-FINAL + Deploy P1 LIVE
-- Next: VCMS-VIDEO / human MBA PASS
+- cmd handbook + surfaces LIVE; global-rules pointer
+- VCMS-VIDEO = obsolete as meta.next → IDLE-POST-KNOW-02
+- Next: wybór Dowódcy / MBA PASS
 - PARK: Gate D, Mollie, mint/recover, OS merge

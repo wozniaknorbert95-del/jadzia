@@ -5,7 +5,7 @@
 - **Canonical brain**: `brain.md` (this repo)
 - **Canonical backlog**: `todo.json` (this repo)
 - **Active program**: FlexGrafik AI OS LIVE; **MBA Agent YEAR 100%** (W00–W52)
-- **Active plan / gate**: none — COI-KNOW-02 DONE; next = VCMS-VIDEO / human MBA PASS
+- **Active plan / gate**: none — COI-KNOW-02 DONE; VCMS-VIDEO **not** default next (stale)
 - **Latest handoff**: `Flex-vcms/.../docs/handoffs/2026-07-18-coi-know-02-PROOF-FINAL.md` · KNOW index LIVE
 - **Scorecard**: `docs/ops/SCORECARD-AI-OS-ZALICZENIE.md` — **#1–9 LIVE**
 - **MBA spine**: `docs/learning/AI-MBA-FLEXGRAFIK-SPINE.md` + `docs/learning/weeks/INDEX.md`
