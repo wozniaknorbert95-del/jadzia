@@ -113,7 +113,7 @@ Pełne kontrakty: `flexgrafik-meta/docs/core/integration-contracts.md`
 - **Workflow:** `.agents/workflows/README.md` (L0-L4)
 - **Backlog:** `todo.json`
 - **PRD:** `docs/PRD-core.md`
-- **Active plan:** `docs/handoffs/2026-07-18-ssot-demand-CLOSE.md` — SSoT tip `66a4aad`; Demand-03 FEATURE `367549f`; next **COI-CMD-MOBILE-01**; parks preserved
+- **Active plan:** `docs/handoffs/2026-07-18-coi-cmd-mobile-01-CLOSE.md` — phone hub; SSoT tip prior `60fcfb3`; parks preserved
 
 - **Parked DA track:** `feat/da-insire-enterprise` (+14 vs master) — merge w osobnej sesji
 - **QUEUE-CLEAN:** completed 2026-07-17 — Home bez E2E `deploy02-*` / `int004-e2e-*`

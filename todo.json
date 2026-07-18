@@ -106,10 +106,10 @@
       "id": "COI-CMD-MOBILE-01",
       "sprint": "COI Commander — Mobile hub",
       "task": "Phone-first Commander hub: ADR D0.6 + Home shell + system map deep-links",
-      "status": "pending",
+      "status": "ready_for_deploy",
       "priority": "critical",
       "owner": "agent",
-      "note": "Plan2 Control Surface. No Agent OS merge. No API contract change. After Plan1 SSoT CLOSE."
+      "note": "ADR D0.6 + mobile shell done. Await GO redeploy. Handoff: 2026-07-18-coi-cmd-mobile-01-CLOSE.md."
     },
     {
       "id": "COI-STRATEGY-HITL-01",

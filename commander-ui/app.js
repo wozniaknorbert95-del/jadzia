@@ -63,17 +63,6 @@ function confirmAction(message, requireReason = false) {
   });
 }
 
-function showView(name) {
-  document.querySelectorAll(".view").forEach((v) => {
-    const active = v.id === `view-${name}`;
-    v.hidden = !active;
-    v.classList.toggle("active", active);
-  });
-  document.querySelectorAll(".nav-btn").forEach((b) => {
-    b.classList.toggle("active", b.dataset.view === name);
-  });
-}
-
 function approvalCard(item, actionsHtml = "") {
   return `
     <article class="card approval-card severity-${item.severity}" role="listitem">
@@ -593,19 +582,61 @@ async function openTicketFromDeeplink(ticketId, token) {
   }
 }
 
-document.querySelectorAll(".nav-btn").forEach((btn, idx, all) => {
-  btn.addEventListener("click", async () => {
-    showView(btn.dataset.view);
-    try { await refresh(); } catch (e) { toast(e.message); }
+function showView(name) {
+  document.querySelectorAll(".view").forEach((v) => {
+    const active = v.id === `view-${name}`;
+    v.hidden = !active;
+    v.classList.toggle("active", active);
   });
-  btn.addEventListener("keydown", (e) => {
-    if (e.key !== "ArrowRight" && e.key !== "ArrowLeft") return;
-    e.preventDefault();
-    const i = [...all].indexOf(btn);
-    const next = e.key === "ArrowRight" ? all[i + 1] || all[0] : all[i - 1] || all[all.length - 1];
-    next.focus();
+  document.querySelectorAll(".nav-btn").forEach((b) => {
+    if (b.dataset.view === "more") {
+      b.classList.toggle("active", name === "audit" || name === "settings");
+      return;
+    }
+    b.classList.toggle("active", b.dataset.view === name);
   });
-});
+  const sheet = document.getElementById("more-sheet");
+  if (sheet) sheet.hidden = true;
+}
+
+function bindNavButtons(selector) {
+  document.querySelectorAll(selector).forEach((btn, idx, all) => {
+    btn.addEventListener("click", async () => {
+      const view = btn.dataset.view;
+      if (view === "more") {
+        const sheet = document.getElementById("more-sheet");
+        if (sheet) sheet.hidden = !sheet.hidden;
+        return;
+      }
+      showView(view);
+      try {
+        await refresh();
+      } catch (e) {
+        toast(e.message);
+      }
+    });
+    btn.addEventListener("keydown", (e) => {
+      if (e.key !== "ArrowRight" && e.key !== "ArrowLeft") return;
+      e.preventDefault();
+      const i = [...all].indexOf(btn);
+      const next =
+        e.key === "ArrowRight" ? all[i + 1] || all[0] : all[i - 1] || all[all.length - 1];
+      next.focus();
+    });
+  });
+}
+
+bindNavButtons("#main-nav .nav-btn");
+bindNavButtons("#bottom-nav .nav-btn");
+bindNavButtons(".more-sheet-btn");
+
+const moreClose = document.getElementById("more-sheet-close");
+if (moreClose) {
+  moreClose.onclick = () => {
+    const sheet = document.getElementById("more-sheet");
+    if (sheet) sheet.hidden = true;
+  };
+}
 
 document.getElementById("auth-save").onclick = () => {
   setToken(document.getElementById("jwt-input").value.trim());

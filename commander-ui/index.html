@@ -13,7 +13,7 @@
   </div>
   <header class="topbar" role="banner">
     <h1>COI Commander</h1>
-    <nav aria-label="Główne menu" id="main-nav">
+    <nav aria-label="Główne menu" id="main-nav" class="nav-desktop">
       <button type="button" data-view="home" class="nav-btn active">Home</button>
       <button type="button" data-view="marketing" class="nav-btn">Marketing</button>
       <button type="button" data-view="analytics" class="nav-btn">Analytics</button>
@@ -48,6 +48,17 @@
       <h3>Kolejka (CRITICAL + ACTION)</h3>
       <div id="queue-list" class="queue" role="list" aria-live="polite"></div>
       <div id="health-strip" class="health-strip" aria-live="polite"></div>
+      <section class="system-map" aria-labelledby="system-map-title">
+        <h3 id="system-map-title">Mapa systemu</h3>
+        <p class="hint">Osobne systemy — otwieraj z hubu (ADR D0.6). Bez merge kodu.</p>
+        <div class="system-map-links">
+          <a class="map-link" href="https://api.zzpackage.flexgrafik.nl/commander/" target="_blank" rel="noopener noreferrer">Commander (ten hub)</a>
+          <a class="map-link" href="http://localhost:3000" target="_blank" rel="noopener noreferrer">Agent OS Mission Control</a>
+          <a class="map-link" href="https://zzpackage.flexgrafik.nl/wizard/" target="_blank" rel="noopener noreferrer">Wizard</a>
+          <a class="map-link" href="https://api.zzpackage.flexgrafik.nl/api/v1/design-agent/health" target="_blank" rel="noopener noreferrer">Design Agent health</a>
+        </div>
+        <p class="hint">VCMS = lokalny governance (`Flex-vcms/flex-vcms`), nie runtime WWW.</p>
+      </section>
     </section>
 
     <section id="view-marketing" class="view" aria-labelledby="marketing-title" hidden>
@@ -133,10 +144,32 @@
         <pre id="roles-list" class="audit-pre"></pre>
         <label for="ui-lang">Język UI</label>
         <select id="ui-lang"><option value="pl">Polski</option></select>
+        <h3>Mapa systemu (URL, read-only)</h3>
+        <ul class="system-map-settings hint">
+          <li>Commander: https://api.zzpackage.flexgrafik.nl/commander/</li>
+          <li>Agent OS: http://localhost:3000</li>
+          <li>Wizard: https://zzpackage.flexgrafik.nl/wizard/</li>
+          <li>DA health: https://api.zzpackage.flexgrafik.nl/api/v1/design-agent/health</li>
+          <li>VCMS: lokalny Flex-vcms (governance)</li>
+        </ul>
         <button type="submit">Zapisz</button>
       </form>
     </section>
   </main>
+
+  <nav id="bottom-nav" class="bottom-nav" aria-label="Menu mobilne">
+    <button type="button" data-view="home" class="nav-btn active">Home</button>
+    <button type="button" data-view="marketing" class="nav-btn">Marketing</button>
+    <button type="button" data-view="analytics" class="nav-btn">Analytics</button>
+    <button type="button" data-view="agents" class="nav-btn">Agenci</button>
+    <button type="button" data-view="more" class="nav-btn" id="nav-more-btn">Więcej</button>
+  </nav>
+
+  <div id="more-sheet" class="more-sheet" hidden>
+    <button type="button" data-view="audit" class="nav-btn more-sheet-btn">Audyt</button>
+    <button type="button" data-view="settings" class="nav-btn more-sheet-btn">Ustawienia</button>
+    <button type="button" id="more-sheet-close" class="nav-btn">Zamknij</button>
+  </div>
 
   <dialog id="confirm-dialog" aria-labelledby="confirm-title">
     <h2 id="confirm-title">Potwierdź akcję</h2>

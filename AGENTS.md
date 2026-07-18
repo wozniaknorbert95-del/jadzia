@@ -7,7 +7,7 @@
 - **Active program**: REV-DEMAND (01–03 LIVE; FEATURE_SHA 03=`367549f`; tip=`66a4aad`); next **COI-CMD-MOBILE-01** phone hub
 - **Active plan / gate**: `todo.json` → `active_gate` = `COI-CMD-MOBILE-01`
 - **Latest handoff**: `docs/handoffs/2026-07-18-ssot-demand-CLOSE.md` (Plan1) / Demand-03 CLOSE for feature evidence
-- **Dogfood playbook**: `docs/ops/JADZIA-REVENUE-DOGFOOD.md`
+- **Phone hub ADR**: `docs/design/coi-commander/adr/D0.6-phone-hub-not-merge.md`
 - **Deploy runbook**: `docs/ops/INT-002-V2-DEPLOY.md` (+ `deployment/rev-demand-01-deploy-vps.sh`)
 - **Reconciliation runbook**: `docs/ops/REVENUE-RECONCILIATION.md`
 - **Approved contract**: `docs/contracts/REVENUE-EVENT-CONTRACT-v1.md`
