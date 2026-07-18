@@ -5,7 +5,7 @@
 - **Canonical brain**: `brain.md` (this repo)
 - **Canonical backlog**: `todo.json` (this repo)
 - **Active program**: FlexGrafik AI OS LIVE; **MBA Agent YEAR 100%** (W00–W52)
-- **Active plan / gate**: `COI-CMD-OPS-GUIDE-01` — VCMS study handbook (after [UX-POLISH-01 CLOSE](docs/handoffs/2026-07-18-coi-cmd-ux-polish-01-CLOSE.md); prod tip po GO)
+- **Active plan / gate**: `COI-CMD-OPS-GUIDE-01` — VCMS study handbook (UX-POLISH-01 LIVE tip `1bc6fa5` / UI `2ddc942`)
 - **Latest handoff**: `docs/handoffs/2026-07-18-coi-cmd-ux-polish-01-CLOSE.md`
 - **Scorecard**: `docs/ops/SCORECARD-AI-OS-ZALICZENIE.md` — **#1–9 LIVE**
 - **MBA spine**: `docs/learning/AI-MBA-FLEXGRAFIK-SPINE.md` + `docs/learning/weeks/INDEX.md`
