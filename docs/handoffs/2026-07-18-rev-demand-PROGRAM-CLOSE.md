@@ -4,8 +4,9 @@
 **Repo:** jadzia-core  
 **Branch:** `master`  
 **FEATURE_SHA (04):** `51b3ef0`  
-**TIP_SHA (docs):** `d23be93` at program close start (VPS SoT = `git rev-parse` on `/opt/jadzia`)  
-**Status:** SUCCESS — Demand Engine slice complete  
+**TIP_SHA (origin):** `c23c3b7`  
+**VPS tip:** *SSH timeout at close — pull pending when host:22 returns* (SoT = `git rev-parse` on `/opt/jadzia`)  
+**Status:** SUCCESS — Demand Engine slice complete (docs on origin; VPS sync deferred)  
 **Session verdict:** SUCCESS  
 **Owner:** Revenue / Demand
 
