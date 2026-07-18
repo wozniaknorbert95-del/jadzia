@@ -1,6 +1,6 @@
 {
   "project": "Jadzia-Core",
-  "last_updated": "2026-07-18 (COI-CMD-MOBILE-01 LIVE tip 01b1903; feature 87d7912)",
+  "last_updated": "2026-07-18 (COI-CMD-MOBILE-01 LIVE tip debed13; feature 87d7912)",
   "status": "active",
   "plan": "docs/handoffs/2026-07-18-coi-cmd-mobile-01-CLOSE.md",
   "active_gate": "REV-DEMAND-04",
