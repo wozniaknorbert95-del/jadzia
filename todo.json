@@ -1,12 +1,12 @@
 {
   "project": "Jadzia-Core",
-  "last_updated": "2026-07-18 (deep verify PASS; tip SoT VPS=7aa32d8; FEATURE UI 87d7912)",
+  "last_updated": "2026-07-18 (REV-DEMAND-04 CLOSE — brief→sales_cta LIVE)",
   "status": "active",
-  "plan": "docs/handoffs/2026-07-18-coi-cmd-mobile-01-CLOSE.md",
-  "active_gate": "REV-DEMAND-04",
-  "active_plan": "Mobile hub LIVE. Next: REV-DEMAND-04 brief HITL sales CTA. Parks untouched.",
-  "next_human": "Optional Commander disposition dogfood + mobile Home check. OPS-FB / S1 / Gate D parked.",
-  "next_agent": "REV-DEMAND-04 brief HITL → sales CTA tickets (1-1-1). No Gate D/B3/TikTok.",
+  "plan": "docs/handoffs/2026-07-18-rev-demand-04-CLOSE.md",
+  "active_gate": "NONE",
+  "active_plan": "REV-DEMAND-04 completed. Parks untouched. Optional JWT disposition dogfood.",
+  "next_human": "Optional Commander sales_cta disposition JWT dogfood. OPS-FB / S1 / Gate D parked.",
+  "next_agent": "Idle — await Dowódca GO for next gate. No Gate D/B3/TikTok/Agent OS merge.",
   "agent_rule": "Nie pytaj Dowódcy o decyzje A/B. Deploy tylko ze zgodą. Nie commituj sekretów. Nie kasuj parków w todo.",
   "sprints": {
     "remediation": "completed",
@@ -25,7 +25,8 @@
     "rev_demand_01": "completed_2026-07-18",
     "rev_demand_02a": "completed_2026-07-18",
     "rev_demand_02": "completed_2026-07-18",
-    "rev_demand_03": "completed_2026-07-18"
+    "rev_demand_03": "completed_2026-07-18",
+    "rev_demand_04": "completed_2026-07-18"
   },
   "tasks": [
     {
@@ -97,10 +98,11 @@
       "id": "REV-DEMAND-04",
       "sprint": "Revenue Demand Engine",
       "task": "F7: Brief HITL → sales actions (CTA tickets)",
-      "status": "pending",
+      "status": "completed",
       "priority": "medium",
       "owner": "agent",
-      "note": "Unblocked: COI-CMD-MOBILE-01 LIVE. Next agent session. Parks untouched."
+      "checklist": "docs/handoffs/2026-07-18-rev-demand-04-CLOSE.md",
+      "note": "LIVE 2026-07-18: brief_sales_cta + queue sales_cta + disposition UI. Parks untouched."
     },
     {
       "id": "COI-CMD-MOBILE-01",

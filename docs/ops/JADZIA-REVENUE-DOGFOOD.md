@@ -92,6 +92,13 @@ curl -sS -X POST http://127.0.0.1:8000/api/v1/commander/leads/LEAD_ID/dispositio
 
 ---
 
+## 7) Brief → sales CTA tickets — REV-DEMAND-04 (2 min)
+
+1. Ensure an open lead with `game_score >= 40` and disposition `open`/`acked`.
+2. Trigger weekly brief spawn (worker interval or call `spawn_brief_sales_cta_tickets()` in a maintenance shell).
+3. Commander Home queue: card `queue_type=sales_cta`, title `[Sales CTA] Follow up lead #…`.
+4. Ack / Snooze / Close via disposition buttons (JWT `queue:act`).
+
 ## Pass criteria
 
 - [ ] 1 Health: worker + sqlite OK (`ssh_connection=error` allowed)
@@ -100,7 +107,8 @@ curl -sS -X POST http://127.0.0.1:8000/api/v1/commander/leads/LEAD_ID/dispositio
 - [ ] 4 Widget lead with consent gets `lead_id`
 - [ ] 5 INSPIRE lead `source=inspire`
 - [ ] 6 Commander disposition (HUMAN JWT UI) — `ready_for_human` if skipped
-- [ ] 7 Zero Mollie charges
+- [ ] 7 Brief sales CTA ticket in Commander queue (`sales_cta`)
+- [ ] 8 Zero Mollie charges
 
 ## Parks (unchanged)
 

@@ -8,16 +8,20 @@ import pytest
 
 from agent.db import (
     db_commander_list_tickets,
+    db_create_lead,
     db_record_revenue_classification,
     db_save_analytics_snapshot,
+    db_update_lead_disposition,
     db_upsert_order,
 )
 from agent.nodes.brief_node import (
     build_weekly_brief,
     collect_weekly_metrics,
     propose_brief_recommendations,
+    propose_sales_cta_recommendations,
     send_weekly_brief,
     spawn_brief_hitl_tickets,
+    spawn_brief_sales_cta_tickets,
 )
 
 
@@ -143,3 +147,103 @@ def test_send_weekly_brief_calls_telegram_and_spawns_hitl(temp_db):
         if t.get("source") == "brief_hitl"
     ]
     assert brief
+
+
+def test_propose_sales_cta_empty_without_qualifying_leads(temp_db):
+    metrics = collect_weekly_metrics()
+    assert metrics.get("cta_leads") == []
+    assert propose_sales_cta_recommendations(metrics) == []
+    assert spawn_brief_sales_cta_tickets(metrics=metrics) == []
+
+
+def test_spawn_brief_sales_cta_tickets_for_cta_band_lead(temp_db):
+    lead_id, status = db_create_lead(
+        {
+            "email": "cta-band@test.nl",
+            "name": "CTA",
+            "source": "widget",
+            "consent_status": True,
+            "game_score": 55,
+        }
+    )
+    assert status == "success"
+    assert lead_id
+
+    metrics = collect_weekly_metrics()
+    assert any(int(l["id"]) == int(lead_id) for l in metrics["cta_leads"])
+
+    ids = spawn_brief_sales_cta_tickets(metrics=metrics)
+    assert len(ids) == 1
+    sales = [
+        t
+        for t in db_commander_list_tickets(status="open", limit=50)
+        if t.get("source") == "brief_sales_cta"
+    ]
+    assert len(sales) == 1
+    assert f"lead #{lead_id}" in sales[0]["title"]
+    assert f"lead_id={lead_id}" in sales[0]["description"]
+    assert "wizard_deeplink=" in sales[0]["description"]
+
+    # closed lead skipped; open ticket still deduped
+    db_update_lead_disposition(int(lead_id), "closed")
+    ids2 = spawn_brief_sales_cta_tickets()
+    assert ids2 == []
+    lead_id2, status2 = db_create_lead(
+        {
+            "email": "warm-closed@test.nl",
+            "name": "Closed",
+            "source": "inspire",
+            "consent_status": True,
+            "game_score": 60,
+        }
+    )
+    assert status2 == "success"
+    db_update_lead_disposition(int(lead_id2), "snoozed")
+    metrics2 = collect_weekly_metrics()
+    assert not any(int(l["id"]) == int(lead_id2) for l in metrics2["cta_leads"])
+
+
+def test_send_weekly_brief_spawns_sales_cta_when_lead_present(temp_db):
+    lead_id, status = db_create_lead(
+        {
+            "email": "brief-sales@test.nl",
+            "name": "Sales",
+            "source": "widget",
+            "consent_status": True,
+            "game_score": 90,
+        }
+    )
+    assert status == "success"
+    with patch("agent.customer_agent._send_telegram_alert_sync") as mock_send:
+        ok = send_weekly_brief()
+    assert ok is True
+    mock_send.assert_called_once()
+    sales = [
+        t
+        for t in db_commander_list_tickets(status="open", limit=50)
+        if t.get("source") == "brief_sales_cta"
+    ]
+    assert len(sales) == 1
+    assert f"#{lead_id}" in sales[0]["title"]
+
+
+def test_queue_maps_brief_sales_cta_to_sales_cta(temp_db):
+    from agent.commander.queue import build_queue
+
+    lead_id, status = db_create_lead(
+        {
+            "email": "queue-cta@test.nl",
+            "name": "Q",
+            "source": "widget",
+            "consent_status": True,
+            "game_score": 45,
+        }
+    )
+    assert status == "success"
+    spawn_brief_sales_cta_tickets()
+    items = build_queue()
+    sales = [i for i in items if i["queue_type"] == "sales_cta"]
+    assert len(sales) == 1
+    assert sales[0]["severity"] == "ACTION"
+    assert sales[0]["payload"]["lead_id"] == int(lead_id)
+    assert sales[0]["payload"].get("wizard_deeplink")

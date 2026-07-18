@@ -64,6 +64,39 @@ def build_queue(severity_filter: Optional[str] = None) -> List[Dict]:
     items: List[Dict] = []
 
     for ticket in db_commander_list_tickets(status="open", limit=20):
+        ticket_source = ticket.get("source") or "telegram"
+        if ticket_source == "brief_sales_cta":
+            from agent.nodes.brief_node import parse_sales_cta_ticket_fields
+
+            qtype = "sales_cta"
+            fields = parse_sales_cta_ticket_fields(str(ticket.get("description") or ""))
+            lead_id_raw = fields.get("lead_id")
+            try:
+                lead_id = int(lead_id_raw) if lead_id_raw else None
+            except (TypeError, ValueError):
+                lead_id = None
+            payload = {
+                "ticket_id": ticket["id"],
+                "description": ticket["description"],
+                "lead_id": lead_id,
+                "id": lead_id,
+                "cta_sku": fields.get("cta_sku"),
+                "wizard_deeplink": fields.get("wizard_deeplink"),
+            }
+            item = _queue_item(
+                item_id=f"ticket-{ticket['id']}",
+                queue_type=qtype,
+                title=ticket["title"],
+                severity=QUEUE_SEVERITY[qtype],
+                created_at=ticket["created_at"],
+                payload=payload,
+                source=ticket_source,
+                escalation_reason="Sales CTA follow-up from weekly brief",
+            )
+            item["available_actions"] = ["acked", "snoozed", "closed", "defer"]
+            items.append(item)
+            continue
+
         qtype = "wp_ticket"
         items.append(
             _queue_item(
@@ -73,7 +106,7 @@ def build_queue(severity_filter: Optional[str] = None) -> List[Dict]:
                 severity=QUEUE_SEVERITY[qtype],
                 created_at=ticket["created_at"],
                 payload={"ticket_id": ticket["id"], "description": ticket["description"]},
-                source=ticket.get("source", "telegram"),
+                source=ticket_source,
             )
         )
 

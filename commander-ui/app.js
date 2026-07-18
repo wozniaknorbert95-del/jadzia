@@ -89,8 +89,8 @@ function renderPriorities(items) {
 }
 
 function leadDispositionActions(item) {
-  if (item.queue_type !== "hot_lead") return "";
-  const leadId = item.payload?.id;
+  if (item.queue_type !== "hot_lead" && item.queue_type !== "sales_cta") return "";
+  const leadId = item.payload?.lead_id || item.payload?.id;
   if (!leadId) return "";
   return `
     <button type="button" data-lead-disp="${leadId}" data-disp="acked">Ack</button>
