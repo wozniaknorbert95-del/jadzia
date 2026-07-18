@@ -4,8 +4,8 @@
 
 - **Canonical brain**: `brain.md` (this repo)
 - **Canonical backlog**: `todo.json` (this repo)
-- **Active program**: REV-DEMAND (**02** LIVE @ `644b34e`; **03** INSPIRE lead ready_for_deploy)
-- **Active plan / gate**: `todo.json` → `active_gate` = `REV-DEMAND-03`
+- **Active program**: REV-DEMAND (**03** LIVE @ `367549f`; next **04** brief HITL)
+- **Active plan / gate**: `todo.json` → `active_gate` = `REV-DEMAND-04`
 - **Latest handoff**: `docs/handoffs/2026-07-18-rev-demand-03-CLOSE.md`
 - **Dogfood playbook**: `docs/ops/JADZIA-REVENUE-DOGFOOD.md`
 - **Deploy runbook**: `docs/ops/INT-002-V2-DEPLOY.md` (+ `deployment/rev-demand-01-deploy-vps.sh`)
@@ -24,7 +24,7 @@
 - **Least privilege**: do not read or process secrets (`.env*`, keys) or large binaries.
 - **1-1-1 rule**: implement one change at a time; finish with a handoff note in `docs/handoffs/`.
 - **REV deploy order**: integrate REV-R0-02A → deploy Jadzia INT-002 v2 consumer → deploy zzpackage producer → controlled E2E.
-- **Current prod state**: Jadzia VPS **`master` @ `60635e8`** (Demand-02 session durability LIVE); producer theme `@ bfe8485`; Gate C PASS (#3209); COD OFF; iDEAL-only; Mollie TEST; **Gate D parked**; min 199 unchanged.
+- **Current prod state**: Jadzia VPS **`master` @ `367549f`** (Demand-03 INSPIRE→lead LIVE); producer theme `@ bfe8485`; Gate C PASS (#3209); COD OFF; iDEAL-only; Mollie TEST; **Gate D parked**; min 199 unchanged.
 
 ## Copy & languages
 

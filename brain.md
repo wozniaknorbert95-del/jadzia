@@ -113,7 +113,7 @@ Pełne kontrakty: `flexgrafik-meta/docs/core/integration-contracts.md`
 - **Workflow:** `.agents/workflows/README.md` (L0-L4)
 - **Backlog:** `todo.json`
 - **PRD:** `docs/PRD-core.md`
-- **Active plan:** `docs/handoffs/2026-07-18-rev-demand-03-CLOSE.md` — **03** ready_for_deploy; VPS **02** LIVE `644b34e`; parks preserved
+- **Active plan:** `docs/handoffs/2026-07-18-rev-demand-03-CLOSE.md` — **03** LIVE VPS `367549f`; next **04** brief HITL; parks preserved
 
 - **Parked DA track:** `feat/da-insire-enterprise` (+14 vs master) — merge w osobnej sesji
 - **QUEUE-CLEAN:** completed 2026-07-17 — Home bez E2E `deploy02-*` / `int004-e2e-*`
