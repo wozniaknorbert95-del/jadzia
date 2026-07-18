@@ -17,10 +17,63 @@ client = None
 if ANTHROPIC_API_KEY:
     client = AsyncAnthropic(api_key=ANTHROPIC_API_KEY)
 
-# Używamy TTLCache do automatycznego usuwania starych sesji (np. po 24 godzinach)
-# Przechowujemy historię rozmów dla każdej sesji
-_customer_sessions_cache = TTLCache(maxsize=1000, ttl=24 * 3600)
+# L1 hot cache + L2 SQLite (REV-DEMAND-02) — TTL aligned with agent.db
+from agent.db import WIDGET_CHAT_SESSION_TTL_SEC as _WIDGET_SESSION_TTL_SEC
+
+_WIDGET_SESSION_ID_MAX = 128
+_customer_sessions_cache = TTLCache(maxsize=1000, ttl=_WIDGET_SESSION_TTL_SEC)
 _cache_lock = asyncio.Lock()
+
+
+def _normalize_widget_session_id(session_id: str) -> str:
+    """Same key for L1 and L2 (DB column limit 128)."""
+    return (session_id or "").strip()[:_WIDGET_SESSION_ID_MAX]
+
+
+def _load_widget_history(session_id: str) -> List[Dict]:
+    """TTLCache first; on miss load from SQLite if within TTL."""
+    sid = _normalize_widget_session_id(session_id)
+    if not sid:
+        return []
+    if sid in _customer_sessions_cache:
+        return list(_customer_sessions_cache[sid])
+    try:
+        from agent.db import db_get_widget_chat_history
+
+        history = db_get_widget_chat_history(sid, ttl_sec=_WIDGET_SESSION_TTL_SEC)
+    except Exception as e:
+        logger.error(
+            "[CustomerAgent] widget session load failed session=%s: %s - %s",
+            sid,
+            type(e).__name__,
+            e,
+            exc_info=True,
+        )
+        return []
+    if not history:
+        return []
+    _customer_sessions_cache[sid] = history
+    return list(history)
+
+
+def _persist_widget_history(session_id: str, history: List[Dict]) -> None:
+    """Write L1 + L2; SQLite failure is logged, cache still kept."""
+    sid = _normalize_widget_session_id(session_id)
+    if not sid:
+        return
+    _customer_sessions_cache[sid] = history
+    try:
+        from agent.db import db_save_widget_chat_history
+
+        db_save_widget_chat_history(sid, history)
+    except Exception as e:
+        logger.error(
+            "[CustomerAgent] widget session save failed session=%s: %s - %s",
+            sid,
+            type(e).__name__,
+            e,
+            exc_info=True,
+        )
 
 _WIZARD_BASE = "https://zzpackage.flexgrafik.nl/wizard/"
 _DEFAULT_CTA_SKU = "CS-SET-PRO-ZZP"
@@ -214,8 +267,9 @@ async def process_customer_message(session_id: str, user_input: str) -> Dict[str
         )
         return fallback
 
+    session_id = _normalize_widget_session_id(session_id)
     async with _cache_lock:
-        history = _customer_sessions_cache.get(session_id, [])
+        history = _load_widget_history(session_id)
 
     if len(history) > 20:
         history = history[-20:]
@@ -276,7 +330,7 @@ async def process_customer_message(session_id: str, user_input: str) -> Dict[str
             ).start()
 
         async with _cache_lock:
-            _customer_sessions_cache[session_id] = history
+            _persist_widget_history(session_id, history)
 
         try:
             scorer = LeadScorer()

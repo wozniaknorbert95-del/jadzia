@@ -388,6 +388,19 @@ def _init_schema(conn: sqlite3.Connection):
         )
     """)
 
+    # Widget customer-chat history (REV-DEMAND-02) — survives process restart
+    conn.execute("""
+        CREATE TABLE IF NOT EXISTS widget_chat_sessions (
+            session_id TEXT PRIMARY KEY,
+            history_json TEXT NOT NULL,
+            updated_at TEXT NOT NULL
+        )
+    """)
+    conn.execute("""
+        CREATE INDEX IF NOT EXISTS idx_widget_chat_updated
+        ON widget_chat_sessions(updated_at)
+    """)
+
     _migrate_content_calendar_columns(conn)
     _migrate_commander_calendar_version(conn)
     _migrate_commander_feedback_confidence(conn)
@@ -1288,6 +1301,83 @@ def _row_to_order_dict(row: sqlite3.Row) -> Dict:
         "name": order.pop("customer_name", None),
     }
     return order
+
+
+# ============================================================================
+# WIDGET CHAT SESSIONS (REV-DEMAND-02)
+# ============================================================================
+
+WIDGET_CHAT_SESSION_TTL_SEC = 24 * 3600
+
+
+def _widget_session_expired(updated_at: str, ttl_sec: int) -> bool:
+    try:
+        ts = datetime.fromisoformat(updated_at.replace("Z", "+00:00"))
+        if ts.tzinfo is None:
+            ts = ts.replace(tzinfo=timezone.utc)
+        age = (datetime.now(timezone.utc) - ts).total_seconds()
+        return age > ttl_sec
+    except (TypeError, ValueError):
+        return True
+
+
+def db_save_widget_chat_history(session_id: str, history: List[Dict]) -> None:
+    """Upsert widget chat message history (JSON list of {role, content})."""
+    sid = (session_id or "").strip()
+    if not sid:
+        return
+    now = datetime.now(timezone.utc).isoformat()
+    payload = json.dumps(history if isinstance(history, list) else [], ensure_ascii=False)
+    with db_transaction() as conn:
+        conn.execute(
+            """
+            INSERT INTO widget_chat_sessions (session_id, history_json, updated_at)
+            VALUES (?, ?, ?)
+            ON CONFLICT(session_id) DO UPDATE SET
+                history_json = excluded.history_json,
+                updated_at = excluded.updated_at
+            """,
+            (sid[:128], payload, now),
+        )
+
+
+def db_get_widget_chat_history(
+    session_id: str,
+    ttl_sec: int = WIDGET_CHAT_SESSION_TTL_SEC,
+) -> Optional[List[Dict]]:
+    """Load history if present and not past TTL; deletes expired rows."""
+    sid = (session_id or "").strip()
+    if not sid:
+        return None
+    conn = get_connection()
+    row = conn.execute(
+        "SELECT history_json, updated_at FROM widget_chat_sessions WHERE session_id = ?",
+        (sid[:128],),
+    ).fetchone()
+    if not row:
+        return None
+    if _widget_session_expired(row["updated_at"], ttl_sec):
+        db_delete_widget_chat_history(sid)
+        return None
+    try:
+        data = json.loads(row["history_json"])
+    except json.JSONDecodeError:
+        return None
+    if not isinstance(data, list):
+        return None
+    return data
+
+
+def db_delete_widget_chat_history(session_id: str) -> None:
+    sid = (session_id or "").strip()
+    if not sid:
+        return
+    conn = get_connection()
+    conn.execute(
+        "DELETE FROM widget_chat_sessions WHERE session_id = ?",
+        (sid[:128],),
+    )
+    conn.commit()
 
 
 # ============================================================================

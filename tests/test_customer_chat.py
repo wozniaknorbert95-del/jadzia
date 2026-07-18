@@ -2,6 +2,9 @@
 Tests for Customer Chat Widget API.
 """
 
+import os
+import tempfile
+
 import pytest
 from unittest.mock import patch, AsyncMock
 from fastapi.testclient import TestClient
@@ -9,11 +12,26 @@ from api.app import create_app; app = create_app()
 from agent.customer_agent import _customer_sessions_cache, SYSTEM_PROMPT
 
 @pytest.fixture(autouse=True)
-async def clear_cache():
-    """Fixture to clear the customer session cache before each test."""
+async def clear_cache(monkeypatch):
+    """Clear L1 cache and isolate SQLite so durability writes do not touch prod DB."""
+    import agent.db as db_mod
+
+    fd, path = tempfile.mkstemp(suffix=".db")
+    os.close(fd)
+    monkeypatch.setattr(db_mod, "DB_PATH", path)
+    if hasattr(db_mod._local, "conn") and db_mod._local.conn:
+        db_mod._local.conn.close()
+        db_mod._local.conn = None
     _customer_sessions_cache.clear()
     yield
     _customer_sessions_cache.clear()
+    if hasattr(db_mod._local, "conn") and db_mod._local.conn:
+        db_mod._local.conn.close()
+        db_mod._local.conn = None
+    try:
+        os.unlink(path)
+    except OSError:
+        pass
 
 def test_customer_chat_endpoint_success():
     """

@@ -1,12 +1,12 @@
 {
   "project": "Jadzia-Core",
-  "last_updated": "2026-07-18 (REV-DEMAND-02a LIVE on VPS 68e09bb)",
+  "last_updated": "2026-07-18 (REV-DEMAND-02 durability code+tests — await GO)",
   "status": "active",
-  "plan": "docs/handoffs/2026-07-18-rev-demand-02a-CLOSE.md",
+  "plan": "docs/handoffs/2026-07-18-rev-demand-02-CLOSE.md",
   "active_gate": "REV-DEMAND-02",
-  "active_plan": "02a LIVE. Next: REV-DEMAND-02 session durability (1-1-1). Parks untouched.",
-  "next_human": "Optional dogfood. OPS-FB / S1 / Gate D parked.",
-  "next_agent": "REV-DEMAND-02 widget session durability (SQLite/TTL). No Gate D/B3/TikTok.",
+  "active_plan": "02 durability ready_for_deploy. Parks untouched. Next after LIVE: REV-DEMAND-03.",
+  "next_human": "GO commit+redeploy 02 durability. OPS-FB / S1 / Gate D parked.",
+  "next_agent": "After GO+redeploy 02: REV-DEMAND-03 INSPIRE→lead. No Gate D/B3/TikTok.",
   "agent_rule": "Nie pytaj Dowódcy o decyzje A/B. Deploy tylko ze zgodą. Nie commituj sekretów. Nie kasuj parków w todo.",
   "sprints": {
     "remediation": "completed",
@@ -76,10 +76,10 @@
       "id": "REV-DEMAND-02",
       "sprint": "Revenue Demand Engine",
       "task": "F5: Widget session durability (SQLite/TTL hybrid)",
-      "status": "pending",
+      "status": "ready_for_deploy",
       "priority": "high",
       "owner": "agent",
-      "note": "After 02a CTA hotfix. Do not merge with 02a in same PR."
+      "note": "Code+tests DONE (TTLCache L1 + widget_chat_sessions L2, TTL 24h). Await GO. Handoff: 2026-07-18-rev-demand-02-CLOSE.md. No _recover_*."
     },
     {
       "id": "REV-DEMAND-03",

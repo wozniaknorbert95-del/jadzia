@@ -68,7 +68,7 @@ Plan Phase B (completed): `docs/archive/plans/PLAN-COI-PHASE-B.md`
 
 - **Operational SSoT:** `data/jadzia.db` (SQLite-only — brak JSON session files)
 - **Agent tasks/sessions:** `agent/db.py`, `agent/state/`
-- **Customer chat:** TTLCache w `agent/customer_agent.py`
+- **Customer chat:** TTLCache (L1) + `widget_chat_sessions` SQLite (L2, TTL 24h) — REV-DEMAND-02
 - **Orders/leads:** LIVE w `jadzia.db` (Phase A kod)
 - **Analytics:** GA4 read-through cache + **SQLite persist** (`analytics_snapshots`, S3-01)
 - **Content calendar:** LIVE w `jadzia.db` (Phase B bootstrap)
@@ -113,7 +113,7 @@ Pełne kontrakty: `flexgrafik-meta/docs/core/integration-contracts.md`
 - **Workflow:** `.agents/workflows/README.md` (L0-L4)
 - **Backlog:** `todo.json`
 - **PRD:** `docs/PRD-core.md`
-- **Active plan:** `docs/handoffs/2026-07-18-rev-demand-02a-CLOSE.md` — **02a** LIVE VPS `68e09bb`; next **02** durability; parks preserved
+- **Active plan:** `docs/handoffs/2026-07-18-rev-demand-02-CLOSE.md` — **02** durability code+tests (await GO); VPS tip `092f814` (02a); parks preserved
 
 - **Parked DA track:** `feat/da-insire-enterprise` (+14 vs master) — merge w osobnej sesji
 - **QUEUE-CLEAN:** completed 2026-07-17 — Home bez E2E `deploy02-*` / `int004-e2e-*`
