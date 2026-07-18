@@ -4,10 +4,11 @@
 
 - **Canonical brain**: `brain.md` (this repo)
 - **Canonical backlog**: `todo.json` (this repo)
-- **Active program**: REV-DEMAND next **04**; phone hub **COI-CMD-MOBILE-01** LIVE tip `735c2b4` (feature `87d7912`)
+- **Active program**: REV-DEMAND next **04**; phone hub **COI-CMD-MOBILE-01** LIVE (FEATURE UI `87d7912`)
 - **Active plan / gate**: `todo.json` → `active_gate` = `REV-DEMAND-04`
 - **Latest handoff**: `docs/handoffs/2026-07-18-coi-cmd-mobile-01-CLOSE.md`
 - **Phone hub ADR**: `docs/design/coi-commander/adr/D0.6-phone-hub-not-merge.md`
+- **Prod tip SoT:** VPS `/opt/jadzia` `git rev-parse --short HEAD` (verified deep-check **`7aa32d8`**). Do not tip-chase every docs commit; FEATURE_SHA stays in task notes.
 - **Deploy runbook**: `docs/ops/INT-002-V2-DEPLOY.md` (+ `deployment/rev-demand-01-deploy-vps.sh`)
 - **Reconciliation runbook**: `docs/ops/REVENUE-RECONCILIATION.md`
 - **Approved contract**: `docs/contracts/REVENUE-EVENT-CONTRACT-v1.md`
@@ -24,7 +25,7 @@
 - **Least privilege**: do not read or process secrets (`.env*`, keys) or large binaries.
 - **1-1-1 rule**: implement one change at a time; finish with a handoff note in `docs/handoffs/`.
 - **REV deploy order**: integrate REV-R0-02A → deploy Jadzia INT-002 v2 consumer → deploy zzpackage producer → controlled E2E.
-- **Current prod state**: Jadzia VPS **`master` tip `735c2b4`** (mobile hub FEATURE `87d7912` + Demand-03 FEATURE `367549f`); producer theme `@ bfe8485`; Gate C PASS (#3209); COD OFF; iDEAL-only; Mollie TEST; **Gate D parked**; min 199 unchanged.
+- **Current prod state**: Jadzia VPS **`master`** (verified tip **`7aa32d8`**, FEATURE UI `87d7912`, Demand-03 FEATURE `367549f`); producer theme `@ bfe8485`; Gate C PASS (#3209); COD OFF; iDEAL-only; Mollie TEST; **Gate D parked**; min 199 unchanged.
 
 ## Copy & languages
 
