@@ -113,7 +113,8 @@ Pełne kontrakty: `flexgrafik-meta/docs/core/integration-contracts.md`
 - **Workflow:** `.agents/workflows/README.md` (L0-L4)
 - **Backlog:** `todo.json`
 - **PRD:** `docs/PRD-core.md`
-- **Active plan:** `docs/handoffs/2026-07-18-rev-demand-01-CLOSE.md` — Demand F0–F4 done; next REV-DEMAND-02; parks preserved; dogfood `docs/ops/JADZIA-REVENUE-DOGFOOD.md`
+- **Active plan:** `docs/handoffs/2026-07-18-rev-demand-01-session-CLOSE.md` — Demand-01 LIVE VPS `3746f9e`; next **02a** CTA hotfix → **02** durability; parks preserved
+
 - **Parked DA track:** `feat/da-insire-enterprise` (+14 vs master) — merge w osobnej sesji
 - **QUEUE-CLEAN:** completed 2026-07-17 — Home bez E2E `deploy02-*` / `int004-e2e-*`
 - **Prior closure:** `docs/handoffs/2026-07-09-coi-marketing-session-HANDOFF.md`

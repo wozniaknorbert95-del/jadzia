@@ -1,13 +1,13 @@
 {
   "project": "Jadzia-Core",
-  "last_updated": "2026-07-18 (REV-DEMAND-01 F0–F4 CLOSE — widget CTA + lead disposition)",
+  "last_updated": "2026-07-18 (REV-DEMAND-01 LIVE on VPS 3746f9e — session CLOSE)",
   "status": "active",
-  "plan": "docs/handoffs/2026-07-18-rev-demand-01-CLOSE.md",
-  "active_gate": "REV-DEMAND-02",
-  "active_plan": "Next: F5 widget session durability. Parent 01 completed. Parks untouched. Dogfood playbook after deploy.",
-  "next_human": "Manual deploy master + docs/ops/JADZIA-REVENUE-DOGFOOD.md. OPS-FB / S1 / Gate D still human/parked.",
-  "next_agent": "REV-DEMAND-02 (session durability). Do not start Gate D / B3 / TikTok.",
-  "agent_rule": "Nie pytaj Dowódcy o decyzje A/B. Nie deployuj autonomicznie. Nie commituj sekretów. Nie kasuj parków w todo.",
+  "plan": "docs/handoffs/2026-07-18-rev-demand-01-session-CLOSE.md",
+  "active_gate": "REV-DEMAND-02a",
+  "active_plan": "P0 CTA score hotfix then REV-DEMAND-02 durability. VPS LIVE 3746f9e. Parks untouched.",
+  "next_human": "Authorize redeploy after 02a. Optional dogfood playbook. OPS-FB / S1 / Gate D parked.",
+  "next_agent": "REV-DEMAND-02a CTA hotfix (1-1-1). Then 02 durability. No Gate D/B3/TikTok.",
+  "agent_rule": "Nie pytaj Dowódcy o decyzje A/B. Deploy tylko ze zgodą. Nie commituj sekretów. Nie kasuj parków w todo.",
   "sprints": {
     "remediation": "completed",
     "coi_phase_a": "deploy_complete",
@@ -64,13 +64,22 @@
       "note": "disposition column + POST disposition + commander-ui buttons"
     },
     {
+      "id": "REV-DEMAND-02a",
+      "sprint": "Revenue Demand Engine",
+      "task": "Widget CTA: use max(AI lead.score, LeadScorer) or intent=high for deeplink",
+      "status": "pending",
+      "priority": "critical",
+      "owner": "agent",
+      "note": "P0 after VPS smoke: AI score 65/high but scorer 30 → deeplink null. Fix before durability. Handoff: 2026-07-18-rev-demand-01-session-CLOSE.md"
+    },
+    {
       "id": "REV-DEMAND-02",
       "sprint": "Revenue Demand Engine",
       "task": "F5: Widget session durability (SQLite/TTL hybrid)",
       "status": "pending",
       "priority": "high",
       "owner": "agent",
-      "note": "NEXT active after 01 close"
+      "note": "After 02a CTA hotfix. Do not merge with 02a in same PR."
     },
     {
       "id": "REV-DEMAND-03",

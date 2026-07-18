@@ -4,11 +4,11 @@
 
 - **Canonical brain**: `brain.md` (this repo)
 - **Canonical backlog**: `todo.json` (this repo)
-- **Active program**: REV-DEMAND Demand Engine (01 COMPLETE; next 02 session durability; Gate D parked)
-- **Active plan / gate**: `todo.json` → `active_gate` = `REV-DEMAND-02`
-- **Latest handoff**: `docs/handoffs/2026-07-18-rev-demand-01-CLOSE.md`
+- **Active program**: REV-DEMAND (01 LIVE @ `3746f9e`; next **02a** CTA hotfix → **02** session durability)
+- **Active plan / gate**: `todo.json` → `active_gate` = `REV-DEMAND-02a`
+- **Latest handoff**: `docs/handoffs/2026-07-18-rev-demand-01-session-CLOSE.md`
 - **Dogfood playbook**: `docs/ops/JADZIA-REVENUE-DOGFOOD.md`
-- **Deploy runbook**: `docs/ops/INT-002-V2-DEPLOY.md`
+- **Deploy runbook**: `docs/ops/INT-002-V2-DEPLOY.md` (+ `deployment/rev-demand-01-deploy-vps.sh`)
 - **Reconciliation runbook**: `docs/ops/REVENUE-RECONCILIATION.md`
 - **Approved contract**: `docs/contracts/REVENUE-EVENT-CONTRACT-v1.md`
 - **Module spec (COI)**: `flexgrafik-meta/docs/core/modules/module-jadzia-core.md`
@@ -20,11 +20,11 @@
 ## Guardrails
 
 - **No-ask (Dowódca):** Never ask clarifying A/B/C questions. Recommend one path, justify briefly, decide and execute (or park human-only blockers with a checklist). See `.cursor/rules/dowodca-no-ask.mdc`.
-- **Manual deploy only** (Zasada 11). Agents may prepare commands and checklists, but do not deploy autonomously.
+- **Manual deploy only** (Zasada 11) unless Dowódca explicitly authorizes in-session.
 - **Least privilege**: do not read or process secrets (`.env*`, keys) or large binaries.
 - **1-1-1 rule**: implement one change at a time; finish with a handoff note in `docs/handoffs/`.
 - **REV deploy order**: integrate REV-R0-02A → deploy Jadzia INT-002 v2 consumer → deploy zzpackage producer → controlled E2E.
-- **Current prod state**: consumer @ `504fdf6` and producer @ `bfe8485` deployed; Gate C PASS (WC#3209 test); COD OFF; checkout iDEAL-only; Mollie still TEST; **Gate D parked** (no top-up); min checkout 199 unchanged.
+- **Current prod state**: Jadzia VPS **`master` @ `3746f9e`** (Demand-01 LIVE); producer theme `@ bfe8485`; Gate C PASS (#3209); COD OFF; iDEAL-only; Mollie TEST; **Gate D parked**; min 199 unchanged.
 
 ## Copy & languages
 
