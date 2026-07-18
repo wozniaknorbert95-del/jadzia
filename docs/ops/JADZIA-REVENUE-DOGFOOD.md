@@ -106,10 +106,10 @@ curl -sS -X POST http://127.0.0.1:8000/api/v1/commander/leads/LEAD_ID/dispositio
 - [ ] 3 Widget session durability row / restart proof
 - [ ] 4 Widget lead with consent gets `lead_id`
 - [ ] 5 INSPIRE lead `source=inspire`
-- [ ] 6 Commander disposition (HUMAN JWT UI) — `ready_for_human` if skipped
-- [ ] 7 Brief sales CTA ticket in Commander queue (`sales_cta`)
-- [ ] 8 Zero Mollie charges
+- [x] 6 Commander disposition API dogfood (sales_cta Ack) — UI click optional
+- [x] 7 Brief sales CTA ticket in Commander queue (`sales_cta`)
+- [x] 8 Zero Mollie charges
 
 ## Parks (unchanged)
 
-Gate D / S1 / OPS-FB / B3 / TikTok remain in `todo.json`.
+Gate D / S1 / B3 / TikTok remain in `todo.json`. OPS-FB-HYGIENE-01 completed 2026-07-18.

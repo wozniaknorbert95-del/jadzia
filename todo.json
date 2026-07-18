@@ -1,12 +1,12 @@
 {
   "project": "Jadzia-Core",
-  "last_updated": "2026-07-18 (REV-DEMAND PROGRAM CLOSE — F0–F7 LIVE; tip d23be93)",
+  "last_updated": "2026-07-18 (ops close READY — sales_cta dogfood PASS; next feature GO)",
   "status": "active",
-  "plan": "docs/handoffs/2026-07-18-rev-demand-PROGRAM-CLOSE.md",
+  "plan": "docs/handoffs/2026-07-18-ops-close-READY-next-feature.md",
   "active_gate": "NONE",
-  "active_plan": "Demand Engine F0–F7 complete. Parks untouched. No invented F8.",
-  "next_human": "Optional sales_cta JWT UI dogfood. OPS-FB / S1 / Gate D parked until explicit GO.",
-  "next_agent": "Idle — no agent gate. Await Dowódca GO for new work. No Gate D/B3/TikTok/Agent OS merge.",
+  "active_plan": "Ops barrier cleared. Demand F0–F7 LIVE. Await Dowódca GO for next feature.",
+  "next_human": "Name next feature GO. Optional Commander UI click. S1 / Gate D parked.",
+  "next_agent": "Idle until Dowódca GO names next feature. No Gate D/B3/TikTok/Agent OS merge.",
   "agent_rule": "Nie pytaj Dowódcy o decyzje A/B. Deploy tylko ze zgodą. Nie commituj sekretów. Nie kasuj parków w todo.",
   "sprints": {
     "remediation": "completed",
@@ -719,11 +719,11 @@
       "id": "OPS-FB-HYGIENE-01",
       "sprint": "Ops — Hygiene",
       "task": "Usuń FB smoke/test posts (text/photo/video) + opcjonalnie rotacja App Secret",
-      "status": "ready_for_human",
+      "status": "completed",
       "priority": "medium",
       "owner": "human",
       "checklist": "docs/handoffs/2026-07-18-ops-fb-hygiene-READY-for-human.md",
-      "note": "A+: agent checklist ready; Dowódca deletes posts / optional secret rotate"
+      "note": "2026-07-18 COMPLETED — Dowódca confirmed done; no agent FB work this slice."
     },
     {
       "id": "COI-CMD-QUEUE-CLEAN",
