@@ -60,14 +60,15 @@
       <div id="health-strip" class="health-strip" aria-live="polite"></div>
       <section class="system-map" aria-labelledby="system-map-title">
         <h3 id="system-map-title">Mapa systemu</h3>
-        <p class="hint">Osobne systemy — otwieraj z hubu (ADR D0.6). Bez merge kodu.</p>
+        <p class="hint">Osobne systemy — otwieraj z hubu (ADR D0.6). Bez merge kodu. Basic Auth u właściciela hosta.</p>
         <div class="system-map-links">
           <a class="map-link" href="https://api.zzpackage.flexgrafik.nl/commander/" target="_blank" rel="noopener noreferrer">Commander (ten hub)</a>
-          <a class="map-link" href="http://localhost:3000" target="_blank" rel="noopener noreferrer">Agent OS Mission Control</a>
+          <a class="map-link" href="https://os.flexgrafik.nl" target="_blank" rel="noopener noreferrer">Agent OS Mission Control</a>
+          <a class="map-link" href="https://cmd.flexgrafik.nl" target="_blank" rel="noopener noreferrer">VCMS Command Center</a>
+          <a class="map-link" href="https://cmd.flexgrafik.nl/docs/" target="_blank" rel="noopener noreferrer">VCMS docs</a>
           <a class="map-link" href="https://zzpackage.flexgrafik.nl/wizard/" target="_blank" rel="noopener noreferrer">Wizard</a>
           <a class="map-link" href="https://api.zzpackage.flexgrafik.nl/api/v1/design-agent/health" target="_blank" rel="noopener noreferrer">Design Agent health</a>
         </div>
-        <p class="hint">VCMS = lokalny governance (`Flex-vcms/flex-vcms`), nie runtime WWW.</p>
       </section>
     </section>
 
@@ -157,10 +158,11 @@
         <h3>Mapa systemu (URL, read-only)</h3>
         <ul class="system-map-settings hint">
           <li>Commander: https://api.zzpackage.flexgrafik.nl/commander/</li>
-          <li>Agent OS: http://localhost:3000</li>
+          <li>Agent OS: https://os.flexgrafik.nl</li>
+          <li>VCMS: https://cmd.flexgrafik.nl</li>
+          <li>VCMS docs: https://cmd.flexgrafik.nl/docs/</li>
           <li>Wizard: https://zzpackage.flexgrafik.nl/wizard/</li>
           <li>DA health: https://api.zzpackage.flexgrafik.nl/api/v1/design-agent/health</li>
-          <li>VCMS: lokalny Flex-vcms (governance)</li>
         </ul>
         <button type="submit">Zapisz</button>
       </form>

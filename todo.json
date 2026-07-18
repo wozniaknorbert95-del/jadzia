@@ -1,12 +1,12 @@
 {
   "project": "Jadzia-Core",
-  "last_updated": "2026-07-18 (COI-CMD-MOBILE-02 LIVE tip 81347e8 — phone dogfood human)",
+  "last_updated": "2026-07-18 (COI-CMD-MAP-01 — system map prod deep-links)",
   "status": "active",
-  "plan": "docs/handoffs/2026-07-18-coi-cmd-mobile-02-CLOSE.md",
-  "active_gate": "NONE",
-  "active_plan": "MOBILE-02 LIVE. Human phone dogfood /commander. Gate D parked.",
-  "next_human": "Phone: TG /commander → Ack sales_cta #4/#5. Optional PWA install. S1 / Gate D parked.",
-  "next_agent": "Idle — await next named GO. No Gate D/B3/TikTok/Agent OS merge.",
+  "plan": "docs/handoffs/2026-07-18-coi-cmd-map-01-CLOSE.md",
+  "active_gate": "COI-CMD-MAP-01",
+  "active_plan": "MAP-01: ADR D0.6 + Commander system map → os/cmd.flexgrafik.nl. Deploy tip after commit.",
+  "next_human": "Phone: Home map → Agent OS + VCMS taps (Basic Auth OK). Optional Ack sales_cta. Gate D parked.",
+  "next_agent": "Commit + push + VPS tip deploy MAP-01; then idle. No Gate D / Agent OS merge.",
   "agent_rule": "Nie pytaj Dowódcy o decyzje A/B. Deploy tylko ze zgodą. Nie commituj sekretów. Nie kasuj parków w todo.",
   "sprints": {
     "remediation": "completed",
@@ -124,6 +124,16 @@
       "owner": "agent",
       "checklist": "docs/handoffs/2026-07-18-coi-cmd-mobile-02-CLOSE.md",
       "note": "LIVE 81347e8 FEATURE abba339. Code-exchange login + PWA. VPS SMOKE_OK. Human phone Ack optional."
+    },
+    {
+      "id": "COI-CMD-MAP-01",
+      "sprint": "COI Commander — Mobile hub",
+      "task": "System map prod deep-links: Agent OS os.flexgrafik.nl + VCMS cmd.flexgrafik.nl (ADR D0.6 amend)",
+      "status": "in_progress",
+      "priority": "critical",
+      "owner": "agent",
+      "checklist": "docs/handoffs/2026-07-18-coi-cmd-map-01-CLOSE.md",
+      "note": "Docs+UI only. No merge Agent OS/VCMS. No Basic Auth/Nginx changes."
     },
     {
       "id": "COI-STRATEGY-HITL-01",

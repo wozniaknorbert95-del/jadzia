@@ -558,7 +558,7 @@ async function loadAgents() {
       <p>Held: ${a.held_count || 0}</p>
       <p class="links">
         ${a.agent_id === "design" ? '<a href="/api/v1/design-agent/health" target="_blank" rel="noopener">INSPIRE</a>' : ""}
-        ${a.agent_id === "engineering" ? '<a href="https://os.flexgrafik.nl" target="_blank" rel="noopener">Agent OS</a>' : ""}
+        ${a.agent_id === "engineering" ? '<a href="https://os.flexgrafik.nl" target="_blank" rel="noopener noreferrer">Agent OS</a>' : ""}
       </p>
       ${a.status === "LIVE"
         ? `<button type="button" data-pause="${a.agent_id}">Pauza</button>`
