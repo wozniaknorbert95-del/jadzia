@@ -21,6 +21,7 @@
 | Gate C | WC `#3209` Mollie TEST | PASS | `gate-c-PASS.md`, Documents `02..05` |
 | COD OFF + iDEAL-only | yes | PASS | `20-cod-off-CONFIRMED.txt` |
 | jadzia PR #3 | MERGED | PASS | merge `@8d248fa` |
+| zzpackage PR #74 | MERGED (docs) | PASS | merge `@3d112c0` |
 | Revenue code on master | classification + reconcile + contract | PASS | `agent/revenue/*`, `scripts/revenue_reconcile.py` |
 | Gate D paid order | not placed | PASS (honored) | no `06..09` evidence |
 | Min checkout changed | no | PASS | no theme price edits this session |
@@ -34,7 +35,7 @@ No live order, no Mollie LIVE, no GA4 replay, no `--apply-classifications`, no R
 
 - `todo.json` / `AGENTS.md` / `brain.md` → parked, no “top up today”
 - Before/after capability report (companion handoff)
-- zzpackage PR #74 merge (docs closeout) when checks allow
+- zzpackage PR #74 **MERGED** `@3d112c0` (docs closeout; no deploy)
 
 ## NEXT (only when budget returns)
 
