@@ -15,7 +15,7 @@
 | 3 | AI Sprzedawca | Lead→CTA→Wizard | Demand + widget | LIVE | REV-DEMAND F0–F7 | maintain |
 | 4 | AI Marketing | Draft→HITL→publish | Commander Marketing | LIVE | PUBLISH-B + audit publish×8/14d | maintain |
 | 5 | AI Project Manager | Orkiestracja HITL | Agent OS | **PARTIAL** | Deep-link only (nie agent w jadzia) | rytuał OS / kontrakt |
-| 6 | AI Customer Success | Post-sale follow-up | `cs_followup` | **PARTIAL** | Spawn+queue; **brak API/UI** | CS API+UI (osobna sesja) |
+| 6 | AI Customer Success | Post-sale follow-up | `cs_followup` | **LIVE** | API+UI HITL tip `0a54bc7`; dogfood spawn→Ack | maintain; auto-trigger later |
 | 7 | AI Asystent Zarządu | Brief→HITL→Home | brief_node | LIVE | STRATEGY-HITL + tickets | maintain |
 | 8 | ≥80% procesów opisanych | karty L1 critical | PROCESS-CATALOG | **PARTIAL** | 10 kart MD (**papier**; nie VCMS-linked) | PROC hygiene / VCMS mirror |
 | 9 | ≥60% ops AI | 14d ratio | OPS-AI-SCORECARD | **FAIL / in_progress** | **Measured 45.8%** (v1) | podnieś AI ops lub re-window |
@@ -27,7 +27,7 @@
 | AI Sprzedawca | widget + sales_cta | LIVE |
 | AI Marketing | marketing agent + publish | LIVE |
 | AI Project Manager | hop `os.flexgrafik.nl` | PARTIAL (link) |
-| AI Customer Success | `cs_followup` stub | PARTIAL |
+| AI Customer Success | Home form + queue HITL | LIVE |
 | AI Asystent Zarządu | brief HITL | LIVE |
 
 ## Baseline (zmierzony)

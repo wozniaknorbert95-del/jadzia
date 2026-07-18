@@ -112,17 +112,17 @@
 | SoT | UX-BRIEF; MOBILE-02; UX-01..03 |
 | Status | LIVE (UX hardening 2026-07-18) |
 
-### P-CS-01 — Customer Success post-sale (critical=Y) — GAP
+### P-CS-01 — Customer Success post-sale (critical=Y) — COVERED
 
 | Field | Value |
 |-------|-------|
-| Owner | AI CS (TBD) |
-| Trigger | paid order / N days after |
-| AI | TBD follow-up ticket |
-| Human | TBD |
+| Owner | Dowódca / AI CS |
+| Trigger | manual spawn (Home) — auto paid-order later |
+| AI | `POST /api/v1/commander/cs/followup` → ticket `cs_followup` |
+| Human | Potwierdź / Odłóż / Zamknij (&lt;48h SLA) |
 | HITL | yes |
-| SoT | COI-CS-01 BLAST |
-| Status | **GAP** → COI-CS-01 |
+| SoT | COI-CS-02 CLOSE |
+| Status | **LIVE** (manual); auto-trigger out of scope |
 
 ### P-EMERGENCY-01 — No-laptop ticket (critical=Y) — COVERED
 

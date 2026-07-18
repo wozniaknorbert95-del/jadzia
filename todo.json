@@ -1,12 +1,12 @@
 {
   "project": "Jadzia-Core",
-  "last_updated": "2026-07-18 (CEO Dashboard dogfood PASS @ 2ba7c85; OPS-AI still 45.8%)",
+  "last_updated": "2026-07-18 (COI-CS-02 LIVE @ 0a54bc7; OPS-AI still 45.8%)",
   "status": "active",
-  "plan": "docs/handoffs/2026-07-18-coi-cmd-ux-03-dogfood-CLOSE.md",
+  "plan": "docs/handoffs/2026-07-18-coi-cs-02-CLOSE.md",
   "active_gate": "COI-OPS-AI-01",
-  "active_plan": "CEO Dashboard LIVE. Next 1-1-1: OPS-AI raise OR CS API+UI OR meta knowledge mirror. Gate D parked.",
-  "next_human": "GO na następny 1-1-1: CS API+UI LUB meta scorecard mirror LUB OPS-AI push. Gate D parked.",
-  "next_agent": "1-1-1: CS API+UI (prefer) LUB meta KNOW mirror. OPS-AI-01 in_progress @ 45.8% — nie completed.",
+  "active_plan": "CS LIVE + Dashboard LIVE. Next 1-1-1: meta KNOW mirror LUB OPS-AI raise (evidence ≥60%). Gate D parked.",
+  "next_human": "GO: meta scorecard mirror LUB OPS-AI instrumentation/push. Gate D parked.",
+  "next_agent": "1-1-1: meta/VCMS KNOW mirror (prefer) LUB OPS-AI-01. Nie completed OPS bez pomiaru ≥60%.",
   "agent_rule": "Nie pytaj Dowódcy o decyzje A/B. Deploy tylko ze zgodą. Nie commituj sekretów. Nie kasuj parków w todo.",
   "sprints": {
     "remediation": "completed",
@@ -260,7 +260,17 @@
       "priority": "critical",
       "owner": "agent",
       "checklist": "docs/handoffs/2026-07-18-coi-cs-01-BLAST.md",
-      "note": "PARTIAL LIVE spawn+queue; auto-trigger later. pytest PASS"
+      "note": "Spawn+queue; superseded surface by COI-CS-02"
+    },
+    {
+      "id": "COI-CS-02",
+      "sprint": "FlexGrafik AI OS",
+      "task": "CS API + Home UI HITL (spawn + disposition)",
+      "status": "completed",
+      "priority": "critical",
+      "owner": "agent",
+      "checklist": "docs/handoffs/2026-07-18-coi-cs-02-BLAST.md",
+      "note": "LIVE tip 0a54bc7. Dogfood ORD-CS02 spawn→Ack #13. Scorecard #6 LIVE. Auto-trigger later."
     },
     {
       "id": "COI-STRATEGY-HITL-01",
