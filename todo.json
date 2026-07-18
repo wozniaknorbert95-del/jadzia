@@ -1,12 +1,12 @@
 {
   "project": "Jadzia-Core",
-  "last_updated": "2026-07-18 (AI OS program: G0+UX+PROC+OPS+ROLE+CS tip pending)",
+  "last_updated": "2026-07-18 (TRUTH REPAIR: scorecard honest; OPS-AI measured 45.8%)",
   "status": "active",
-  "plan": "docs/handoffs/2026-07-18-coi-ai-os-program-CLOSE.md",
-  "active_gate": "NONE",
-  "active_plan": "AI OS constitution LIVE in docs; Commander UX CEO hardening shipped; OPS-AI interim to 2026-08-01. Gate D parked.",
-  "next_human": "Phone dogfood UX-DOGFOOD-PHONE.md. OPS-AI fill numbers by 2026-08-01. Optional CS auto-trigger later.",
-  "next_agent": "Idle — await named GO. No Gate D / OS-VCMS merge.",
+  "plan": "docs/handoffs/2026-07-18-coi-ai-os-truth-repair-CLOSE.md",
+  "active_gate": "COI-CMD-UX-03",
+  "active_plan": "CEO Dashboard PARTIAL — await phone dogfood. OPS-AI-01 in_progress @ 45.8%. Knowledge PARTIAL. Gate D parked.",
+  "next_human": "CRITICAL: phone dogfood docs/design/coi-commander/UX-DOGFOOD-PHONE.md → CEO PASS. Potem GO na CS API lub meta mirror.",
+  "next_agent": "Po dogfood GO: 1-1-1 CS API+UI LUB meta scorecard mirror. Nie oznaczać PASS bez liczb/dogfood.",
   "agent_rule": "Nie pytaj Dowódcy o decyzje A/B. Deploy tylko ze zgodą. Nie commituj sekretów. Nie kasuj parków w todo.",
   "sprints": {
     "remediation": "completed",
@@ -163,7 +163,7 @@
       "priority": "critical",
       "owner": "agent",
       "checklist": "docs/ops/KNOWLEDGE-SYSTEM-INDEX.md",
-      "note": "2026-07-18 G0"
+      "note": "Index exists; scorecard #2 PARTIAL until meta/VCMS mirror"
     },
     {
       "id": "COI-CMD-UX-00",
@@ -196,11 +196,11 @@
       "id": "COI-CMD-UX-03",
       "sprint": "FlexGrafik AI OS",
       "task": "Home load budget + cross-product hops; CEO Dashboard PASS",
-      "status": "completed",
+      "status": "ready_for_human",
       "priority": "critical",
-      "owner": "agent",
+      "owner": "human",
       "checklist": "docs/design/coi-commander/UX-DOGFOOD-PHONE.md",
-      "note": "Progressive Home load; human dogfood pending"
+      "note": "Kod LIVE tip 2cdccf4. CEO PASS tylko po phone dogfood Dowódcy. Scorecard Dashboard=PARTIAL."
     },
     {
       "id": "COI-PROC-00",
@@ -220,7 +220,7 @@
       "priority": "critical",
       "owner": "agent",
       "checklist": "docs/ops/PROCESS-CATALOG.md",
-      "note": "10/10 cards = 100% described PASS"
+      "note": "Docs cards 10/10 — scorecard #8 PARTIAL (papier, nie VCMS-linked)"
     },
     {
       "id": "COI-OPS-AI-00",
@@ -230,17 +230,17 @@
       "priority": "critical",
       "owner": "agent",
       "checklist": "docs/ops/OPS-AI-SCORECARD.md",
-      "note": "window start 2026-07-18"
+      "note": "Baseline measured 2026-07-18: 45.8% (v1 contract)"
     },
     {
       "id": "COI-OPS-AI-01",
       "sprint": "FlexGrafik AI OS",
       "task": "Ops AI ≥60% (14d evidence)",
-      "status": "completed",
+      "status": "in_progress",
       "priority": "critical",
       "owner": "agent",
       "checklist": "docs/ops/OPS-AI-SCORECARD.md",
-      "note": "INTERIM — numerical PASS deferred 2026-08-01; CRITICAL HITL kept"
+      "note": "FAIL vs target: 45.8% < 60%. Nie completed. Script deployment/_ops_ai_count_14d.py"
     },
     {
       "id": "COI-ROLE-01",

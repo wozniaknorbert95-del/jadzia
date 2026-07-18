@@ -1,51 +1,50 @@
 # Scorecard — FlexGrafik AI Operating System (zaliczenie)
 
-**Status:** ACTIVE (baseline 2026-07-18)  
+**Status:** ACTIVE — TRUTH REPAIR 2026-07-18  
 **Program:** AI OS + AI MBA (plan v2)  
-**Owner:** Dowódca (GO) / Agent (pomiar + artefakty)  
-**SoT tip:** aktualizuj przy każdym gate CLOSE
+**Owner:** Dowódca (GO / dogfood) / Agent (pomiar + artefakty)  
+**SoT tip:** VPS `/opt/jadzia` `git rev-parse --short HEAD`  
+**Uwaga:** statusy poniżej są **surowe** — nie mylić „docs shipped” z „zaliczeniem programu”.
 
 ## Warunki zaliczenia (9)
 
 | # | Warunek | Definicja operacyjna | SoT / powierzchnia | Status | Dowód | Następny gate |
 |---|---------|----------------------|--------------------|--------|-------|---------------|
-| 1 | Dashboard CEO | Cold open ≤10s „wiem co dziś”; daily &lt;5 min; 3 priorytety + kolejka + mapa | `/commander/` | LIVE | UX-00..03 + MOBILE/MAP | dogfood phone |
-| 2 | System wiedzy | Indeks SoT + procesy z kartami; zero sprzecznych kanonów | KNOW-00 + PROCESS-CATALOG | LIVE | KNOW-00 + PROC-01 | maintain |
-| 3 | AI Sprzedawca | Lead→CTA→disposition→Wizard (min 199, wizard-only) | Demand + widget | LIVE | REV-DEMAND F0–F7; `sales_cta` | dogfood / maintain |
-| 4 | AI Marketing | Draft→HITL approve→publish/undo | Commander Marketing | LIVE | COI-MARKETING-PUBLISH-B | polish park |
-| 5 | AI Project Manager | Hop Agent OS + HITL diffs (bez merge) | `https://os.flexgrafik.nl` | LIVE | MAP-01 deep-link + Agents tab | rytuał Dowódca |
-| 6 | AI Customer Success | Post-sale / retention / support tor | `cs_followup` queue | PARTIAL | CS-01 spawn+queue; auto-trigger later | Week 18–19 MBA |
-| 7 | AI Asystent Zarządu | Brief→HITL tickets→Home | `brief_node` + Home | LIVE | COI-STRATEGY-HITL-01 + sales CTA | UX czytelność |
-| 8 | ≥80% procesów opisanych | `covered_critical / critical_L1 ≥ 0.80` | `PROCESS-CATALOG.md` | LIVE | 10/10 cards | maintain |
-| 9 | ≥60% ops AI | 14d ratio; CRITICAL HITL excluded | `OPS-AI-SCORECARD.md` | INTERIM | window → 2026-08-01 | fill numbers |
+| 1 | Dashboard CEO | Cold open ≤10s; daily &lt;5 min; kolejka + mapa | `/commander/` | **PARTIAL** | UX kod LIVE tip; **phone dogfood brak** | Human: `UX-DOGFOOD-PHONE.md` |
+| 2 | System wiedzy | Indeks SoT + procesy; zero sprzecznych kanonów | KNOW-00 + catalog | **PARTIAL** | Index w jadzia only; **meta/VCMS bez linku** | Mirror meta lub VCMS docs |
+| 3 | AI Sprzedawca | Lead→CTA→Wizard | Demand + widget | LIVE | REV-DEMAND F0–F7 | maintain |
+| 4 | AI Marketing | Draft→HITL→publish | Commander Marketing | LIVE | PUBLISH-B + audit publish×8/14d | maintain |
+| 5 | AI Project Manager | Orkiestracja HITL | Agent OS | **PARTIAL** | Deep-link only (nie agent w jadzia) | rytuał OS / kontrakt |
+| 6 | AI Customer Success | Post-sale follow-up | `cs_followup` | **PARTIAL** | Spawn+queue; **brak API/UI** | CS API+UI (osobna sesja) |
+| 7 | AI Asystent Zarządu | Brief→HITL→Home | brief_node | LIVE | STRATEGY-HITL + tickets | maintain |
+| 8 | ≥80% procesów opisanych | karty L1 critical | PROCESS-CATALOG | **PARTIAL** | 10 kart MD (**papier**; nie VCMS-linked) | PROC hygiene / VCMS mirror |
+| 9 | ≥60% ops AI | 14d ratio | OPS-AI-SCORECARD | **FAIL / in_progress** | **Measured 45.8%** (v1) | podnieś AI ops lub re-window |
 
 ## Mapa 5 ról AI → powierzchnie
 
-| Rola | Powierzchnia | `agent_id` / hop | Status |
-|------|--------------|------------------|--------|
-| AI Sprzedawca | Widget chat + leads + `sales_cta` queue | customer path / leads (nie zawsze w `/agents`) | LIVE |
-| AI Marketing | Marketing tab + publish HITL | `marketing` | LIVE |
-| AI Project Manager | Agent OS Mission Control | `engineering` → `https://os.flexgrafik.nl` | LIVE |
-| AI Customer Success | (cs_followup queue) | PARTIAL → auto later | PARTIAL |
-| AI Asystent Zarządu | Brief + Home priorities / ops HITL | brief_hitl + Home | LIVE |
+| Rola | Powierzchnia | Status |
+|------|--------------|--------|
+| AI Sprzedawca | widget + sales_cta | LIVE |
+| AI Marketing | marketing agent + publish | LIVE |
+| AI Project Manager | hop `os.flexgrafik.nl` | PARTIAL (link) |
+| AI Customer Success | `cs_followup` stub | PARTIAL |
+| AI Asystent Zarządu | brief HITL | LIVE |
 
-**Uwaga:** Design/INSPIRE (`design`) i inne Phase C placeholdery nie zastępują 5 ról zaliczeniowych — mapowanie w `COI-ROLE-01`.
+## Baseline (zmierzony)
 
-## Baseline TBD
-
-| Miernik | Baseline | Data |
-|---------|----------|------|
-| % procesów krytycznych z kartą | TBD (`COI-PROC-00`) | — |
-| % ops AI (14d) | TBD (`COI-OPS-AI-00`) | — |
+| Miernik | Wartość | Data |
+|---------|---------|------|
+| % procesów critical z kartą MD | 10/10 opisane (docs-only) | 2026-07-18 |
+| % ops AI (14d, v1 contract) | **45.8%** (11 AI / 13 human) | 2026-07-18 VPS |
 
 ## RACI
 
 | Rola | Odpowiedzialność |
 |------|------------------|
-| Dowódca | GO deploy, phone dogfood, akceptacja MBA Week N |
-| Agent | Artefakty, kod, pomiar, handoff |
+| Dowódca | GO deploy, **phone dogfood**, akceptacja MBA Week N |
+| Agent | Artefakty, kod, pomiar, handoff — **bez fałszywego PASS** |
 | Delegat | Eskalacje SLA (D0.9) |
 
-## STOP (skrót)
+## STOP
 
-Gate D / Mollie LIVE / min199 / merge OS-VCMS / sekrety w lekcjach / deploy bez GO.
+Gate D / Mollie LIVE / min199 / merge OS-VCMS / sekrety / deploy bez GO / oznaczanie INTERIM jako completed.

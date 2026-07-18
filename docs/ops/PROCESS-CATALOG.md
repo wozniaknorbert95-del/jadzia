@@ -1,8 +1,8 @@
 # Process Catalog L1 — FlexGrafik (COI-PROC-00/01)
 
-**Status:** ACTIVE — PROC-01 target met (docs)  
-**Date:** 2026-07-18  
-**Formula:** `covered_critical / critical_L1`  
+**Status:** PARTIAL — karty MD kompletne; **nie** zalicza systemu wiedzy ekosystemu (brak VCMS/meta mirror)  
+**Date:** 2026-07-18 (truth repair)  
+**Formula:** `covered_critical / critical_L1` (opisane w MD ≠ operacyjne w VCMS)  
 **Mianownik critical_L1:** 10 (poniżej, `critical=Y`)
 
 ## Baseline (PROC-00)

@@ -1,7 +1,7 @@
 # Knowledge System Index — FlexGrafik
 
-**Status:** ACTIVE (COI-KNOW-00)  
-**Date:** 2026-07-18  
+**Status:** PARTIAL (COI-KNOW-00) — index w jadzia only; **meta + VCMS jeszcze bez mirror linku**  
+**Date:** 2026-07-18 (truth repair)  
 **Cel:** Jedna hierarchy SoT — zero sprzecznych kanonów.
 
 ## Hierarchy (od najwyższego)
