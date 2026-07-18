@@ -3,8 +3,8 @@
 **Date:** 2026-07-18  
 **Repo:** jadzia-core  
 **Branch:** `master`  
-**FEATURE_SHA:** *(set at commit)*  
-**TIP_SHA:** *(set after deploy)*  
+**FEATURE_SHA:** `51b3ef0`  
+**TIP_SHA:** `51b3ef0` (expected after deploy)  
 **VPS:** `/opt/jadzia`  
 **Status:** SUCCESS (implement + verify; deploy in-session with Dowódca GO)  
 **Session verdict:** SUCCESS  
