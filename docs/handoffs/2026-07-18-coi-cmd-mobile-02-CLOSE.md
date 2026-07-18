@@ -2,7 +2,7 @@
 
 **Date:** 2026-07-18  
 **Repo:** jadzia-core  
-**FEATURE_SHA:** *(set at commit)*  
+**FEATURE_SHA:** `abba339`  
 **Status:** SUCCESS — code ready_for_deploy (enterprise login)  
 **Session verdict:** SUCCESS  
 **Owner:** Control plane / Commander
