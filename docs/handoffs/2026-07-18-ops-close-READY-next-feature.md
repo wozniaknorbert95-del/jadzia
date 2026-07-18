@@ -2,7 +2,7 @@
 
 **Date:** 2026-07-18  
 **Repo:** jadzia-core  
-**TIP_SHA (VPS=origin after sync):** *(set at commit)*  
+**TIP_SHA:** `dbf7458` (VPS SoT after pull)  
 **FEATURE Demand-04:** `51b3ef0`  
 **Status:** SUCCESS — ops barrier cleared  
 **Session verdict:** SUCCESS  
@@ -12,7 +12,7 @@
 
 | Item | Result |
 |------|--------|
-| VPS SSH | Restored; pull `d23be93` → program CLOSE tip |
+| VPS SSH | Restored; pull `d23be93` → `f54a7a5` → tip `dbf7458` |
 | Health | `worker_loop_alive=true`, `sqlite_connection=true`, `ssh_connection=error` (known) |
 | sales_cta dogfood | API disposition **PASS** (`SMOKE_OK`, HTTP 200 Ack → close cleanup) |
 | Queue hygiene | Closed 2 smoke `brief_sales_cta` tickets (`@flexgrafik.test`) |
