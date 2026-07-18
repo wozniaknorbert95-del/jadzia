@@ -68,7 +68,7 @@ Plan Phase B (completed): `docs/archive/plans/PLAN-COI-PHASE-B.md`
 
 - **Operational SSoT:** `data/jadzia.db` (SQLite-only — brak JSON session files)
 - **Agent tasks/sessions:** `agent/db.py`, `agent/state/`
-- **Customer chat:** TTLCache (L1) + `widget_chat_sessions` SQLite (L2, TTL 24h) — REV-DEMAND-02
+- **Customer chat:** TTLCache (L1) + `widget_chat_sessions` SQLite (L2, TTL 24h) — REV-DEMAND-02; `created_at` set-once (OPS-AI-01 v1.1 AI-ops clock)
 - **Orders/leads:** LIVE w `jadzia.db` (Phase A kod)
 - **Analytics:** GA4 read-through cache + **SQLite persist** (`analytics_snapshots`, S3-01)
 - **Content calendar:** LIVE w `jadzia.db` (Phase B bootstrap)

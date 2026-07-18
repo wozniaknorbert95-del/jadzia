@@ -399,10 +399,12 @@ def _init_schema(conn: sqlite3.Connection):
     """)
 
     # Widget customer-chat history (REV-DEMAND-02) — survives process restart
+    # created_at: OPS-AI-01 durable AI-ops clock (set once on insert)
     conn.execute("""
         CREATE TABLE IF NOT EXISTS widget_chat_sessions (
             session_id TEXT PRIMARY KEY,
             history_json TEXT NOT NULL,
+            created_at TEXT NOT NULL,
             updated_at TEXT NOT NULL
         )
     """)
@@ -415,8 +417,29 @@ def _init_schema(conn: sqlite3.Connection):
     _migrate_commander_calendar_version(conn)
     _migrate_commander_feedback_confidence(conn)
     _migrate_leads_disposition(conn)
+    _migrate_widget_chat_created_at(conn)
 
     conn.commit()
+
+
+def _migrate_widget_chat_created_at(conn: sqlite3.Connection) -> None:
+    """OPS-AI-01: durable created_at for widget AI-ops counting (v1.1)."""
+    try:
+        conn.execute("ALTER TABLE widget_chat_sessions ADD COLUMN created_at TEXT")
+    except sqlite3.OperationalError:
+        pass
+    # Backfill legacy rows: first durable clock we have is updated_at
+    conn.execute(
+        """
+        UPDATE widget_chat_sessions
+        SET created_at = updated_at
+        WHERE created_at IS NULL OR created_at = ''
+        """
+    )
+    conn.execute("""
+        CREATE INDEX IF NOT EXISTS idx_widget_chat_created
+        ON widget_chat_sessions(created_at)
+    """)
 
 
 def _migrate_leads_disposition(conn: sqlite3.Connection) -> None:
@@ -1332,7 +1355,10 @@ def _widget_session_expired(updated_at: str, ttl_sec: int) -> bool:
 
 
 def db_save_widget_chat_history(session_id: str, history: List[Dict]) -> None:
-    """Upsert widget chat message history (JSON list of {role, content})."""
+    """Upsert widget chat message history (JSON list of {role, content}).
+
+    created_at is set only on first insert (OPS-AI-01 AI-ops clock).
+    """
     sid = (session_id or "").strip()
     if not sid:
         return
@@ -1341,13 +1367,13 @@ def db_save_widget_chat_history(session_id: str, history: List[Dict]) -> None:
     with db_transaction() as conn:
         conn.execute(
             """
-            INSERT INTO widget_chat_sessions (session_id, history_json, updated_at)
-            VALUES (?, ?, ?)
+            INSERT INTO widget_chat_sessions (session_id, history_json, created_at, updated_at)
+            VALUES (?, ?, ?, ?)
             ON CONFLICT(session_id) DO UPDATE SET
                 history_json = excluded.history_json,
                 updated_at = excluded.updated_at
             """,
-            (sid[:128], payload, now),
+            (sid[:128], payload, now, now),
         )
 
 

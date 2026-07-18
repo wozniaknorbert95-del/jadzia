@@ -77,6 +77,67 @@ def test_widget_history_roundtrip(monkeypatch):
     _cleanup_db(path)
 
 
+def test_widget_created_at_set_once_on_insert(monkeypatch):
+    """OPS-AI-01: created_at is durable AI-ops clock; updates must not rewrite it."""
+    path = _isolate_db(monkeypatch)
+    from agent.db import db_save_widget_chat_history, get_connection
+
+    db_save_widget_chat_history("sess-ca", [{"role": "user", "content": "a"}])
+    conn = get_connection()
+    row1 = conn.execute(
+        "SELECT created_at, updated_at FROM widget_chat_sessions WHERE session_id = ?",
+        ("sess-ca",),
+    ).fetchone()
+    assert row1["created_at"]
+    assert row1["updated_at"]
+    created = row1["created_at"]
+
+    older = (datetime.now(timezone.utc) - timedelta(hours=1)).isoformat()
+    conn.execute(
+        "UPDATE widget_chat_sessions SET created_at = ?, updated_at = ? WHERE session_id = ?",
+        (older, older, "sess-ca"),
+    )
+    conn.commit()
+
+    db_save_widget_chat_history(
+        "sess-ca",
+        [
+            {"role": "user", "content": "a"},
+            {"role": "assistant", "content": "b"},
+        ],
+    )
+    row2 = conn.execute(
+        "SELECT created_at, updated_at FROM widget_chat_sessions WHERE session_id = ?",
+        ("sess-ca",),
+    ).fetchone()
+    assert row2["created_at"] == older
+    assert row2["updated_at"] > older
+    _cleanup_db(path)
+
+
+def test_widget_created_at_backfill_on_legacy_schema(monkeypatch):
+    """Legacy rows without created_at get backfilled from updated_at at migrate."""
+    path = _isolate_db(monkeypatch)
+    from agent.db import get_connection, _migrate_widget_chat_created_at
+
+    conn = get_connection()
+    # Simulate pre-migration row shape if column somehow empty
+    conn.execute(
+        "INSERT INTO widget_chat_sessions (session_id, history_json, created_at, updated_at) "
+        "VALUES (?, ?, ?, ?)",
+        ("sess-bf", "[]", "", "2026-07-10T12:00:00+00:00"),
+    )
+    conn.commit()
+    _migrate_widget_chat_created_at(conn)
+    conn.commit()
+    row = conn.execute(
+        "SELECT created_at FROM widget_chat_sessions WHERE session_id = ?",
+        ("sess-bf",),
+    ).fetchone()
+    assert row["created_at"] == "2026-07-10T12:00:00+00:00"
+    _cleanup_db(path)
+
+
 def test_widget_history_expires(monkeypatch):
     path = _isolate_db(monkeypatch)
     from agent.db import db_get_widget_chat_history, db_save_widget_chat_history, get_connection

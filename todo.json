@@ -1,12 +1,12 @@
 {
   "project": "Jadzia-Core",
-  "last_updated": "2026-07-18 (SESSION CLOSE — tip 66d7203; VCMS online; ready OPS-AI-01)",
+  "last_updated": "2026-07-18 (OPS-AI-01 instrumentacja v1.1; re-measure 45.8%; PASS blocked GO deploy)",
   "status": "active",
-  "plan": "docs/handoffs/2026-07-18-session-CLOSE-ops-ai-ready.md",
+  "plan": "docs/handoffs/2026-07-18-coi-ops-ai-01-instrument-handoff.md",
   "active_gate": "COI-OPS-AI-01",
-  "active_plan": "Dashboard+CS+Knowledge LIVE; VCMS online. NEXT: implement BLAST OPS-AI-01 (≥60%). PM parked. Gate D parked.",
-  "next_human": "GO OPS-AI-01 w nowej sesji (prefer). Gate D parked.",
-  "next_agent": "Nowa sesja: @implement COI-OPS-AI-01 per docs/handoffs/2026-07-18-coi-ops-ai-01-BLAST.md. Re-measure VPS → instrument → ≥60% lub blocker. Nie completed bez liczby.",
+  "active_plan": "OPS-AI v1=45.8% FAIL. Code: widget created_at + count v1.1. Projected 60.6% po GO deploy. PM/Gate D parked.",
+  "next_human": "GO deploy tip z instrumentacją OPS-AI (Zasada 11). Potem agent re-measure SQL. Gate D parked.",
+  "next_agent": "Po GO deploy: scp/run deployment/_ops_ai_count_14d.py na VPS → jeśli PCT≥60 commit scorecard PASS + COI-OPS-AI-01 completed. Bez GO: nie deploy.",
   "agent_rule": "Nie pytaj Dowódcy o decyzje A/B. Deploy tylko ze zgodą. Nie commituj sekretów. Nie kasuj parków w todo.",
   "sprints": {
     "remediation": "completed",
@@ -250,7 +250,7 @@
       "priority": "critical",
       "owner": "agent",
       "checklist": "docs/ops/OPS-AI-SCORECARD.md",
-      "note": "FAIL vs target: 45.8% < 60%. Nie completed. Script deployment/_ops_ai_count_14d.py"
+      "note": "2026-07-18 re-measure v1=45.8% (11/24) tip 8de8806. Instrumentacja v1.1 w kodzie (widget created_at + cs_followup). Projected 60.6% po GO deploy+migrate. Nie completed bez SQL≥60%."
     },
     {
       "id": "COI-ROLE-01",
