@@ -5,9 +5,9 @@
 - **Canonical brain**: `brain.md` (this repo)
 - **Canonical backlog**: `todo.json` (this repo)
 - **Active program**: FlexGrafik AI OS — Dashboard + CS + Knowledge LIVE; reszta surowa
-- **Active plan / gate**: `active_gate` = `COI-OPS-AI-01` (45.8% FAIL; v1.1 code ready, GO deploy blocker)
-- **Latest handoff**: `docs/handoffs/2026-07-18-coi-ops-ai-01-instrument-handoff.md`
-- **Scorecard (surowy)**: `docs/ops/SCORECARD-AI-OS-ZALICZENIE.md` — Dashboard+CS+Wiedza **LIVE**; PM/PROC PARTIAL; OPS-AI **45.8% FAIL** (projected 60.6% po deploy)
+- **Active plan / gate**: `active_gate` = `COI-PM-01` (OPS-AI PASS; next PM ritual)
+- **Latest handoff**: `docs/handoffs/2026-07-18-coi-ops-ai-01-CLOSE.md`
+- **Scorecard (surowy)**: `docs/ops/SCORECARD-AI-OS-ZALICZENIE.md` — Dashboard+CS+Wiedza+OPS-AI **LIVE**; PM/PROC PARTIAL
 - **AI MBA spine**: `docs/learning/AI-MBA-FLEXGRAFIK-SPINE.md` (spine only)
 - **Knowledge index**: `docs/ops/KNOWLEDGE-SYSTEM-INDEX.md` (+ meta/VCMS mirrors COI-KNOW-01)
 - **Phone hub ADR**: `docs/design/coi-commander/adr/D0.6-phone-hub-not-merge.md` (+ D0.15)
@@ -22,7 +22,7 @@
 - **Least privilege**: no secrets / large binaries.
 - **1-1-1**: one gate per session; handoff required.
 - **Honesty:** nie oznaczać PASS/completed bez dogfood lub liczby (OPS-AI).
-- **Current:** tip `8de8806`; OPS-AI re-measure 45.8%; instrumentacja v1.1 lokalna (nie deployed); next GO deploy → SQL ≥60%; Gate D parked.
+- **Current:** tip `d97939a` PASS OPS-AI **60.6%**; next `COI-PM-01`; Gate D parked.
 
 ## Copy & languages
 

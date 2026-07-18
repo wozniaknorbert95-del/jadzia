@@ -18,7 +18,7 @@
 | 6 | AI Customer Success | Post-sale follow-up | `cs_followup` | **LIVE** | API+UI HITL tip `0a54bc7`; dogfood spawn→Ack | maintain; auto-trigger later |
 | 7 | AI Asystent Zarządu | Brief→HITL→Home | brief_node | LIVE | STRATEGY-HITL + tickets | maintain |
 | 8 | ≥80% procesów opisanych | karty L1 critical | PROCESS-CATALOG | **PARTIAL** | 10 kart MD (**papier**; nie VCMS-linked) | PROC hygiene / VCMS mirror |
-| 9 | ≥60% ops AI | 14d ratio | OPS-AI-SCORECARD | **FAIL / in_progress** | Re-measure **45.8%** v1; v1.1 code ready; projected **60.6%** po GO deploy+migrate | GO deploy instrumentacji → SQL re-measure |
+| 9 | ≥60% ops AI | 14d ratio | OPS-AI-SCORECARD | **LIVE / PASS** | **60.6%** v1.1 (20/33) tip `d97939a` | maintain; re-window if human publish spikes |
 
 ## Mapa 5 ról AI → powierzchnie
 
@@ -35,8 +35,8 @@
 | Miernik | Wartość | Data |
 |---------|---------|------|
 | % procesów critical z kartą MD | 10/10 opisane (docs-only) | 2026-07-18 |
-| % ops AI (14d, v1 contract) | **45.8%** (11 AI / 13 human) tip `8de8806` | 2026-07-18 VPS re-measure |
-| % ops AI (14d, v1.1 projected) | **60.6%** (20/33) — **nie PASS** do SQL po deploy | 2026-07-18 (instrumentacja lokalna) |
+| % ops AI (14d, v1 contract) | **45.8%** (11/24) — historical baseline | 2026-07-18 |
+| % ops AI (14d, v1.1) | **60.6%** (20/33) tip `d97939a` — **PASS** | 2026-07-18 post-deploy SQL |
 
 ## RACI
 

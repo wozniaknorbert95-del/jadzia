@@ -1,12 +1,12 @@
 {
   "project": "Jadzia-Core",
-  "last_updated": "2026-07-18 (OPS-AI-01 instrumentacja v1.1; re-measure 45.8%; PASS blocked GO deploy)",
+  "last_updated": "2026-07-18 (COI-OPS-AI-01 PASS 60.6% tip d97939a; Gate D/PM parked)",
   "status": "active",
-  "plan": "docs/handoffs/2026-07-18-coi-ops-ai-01-instrument-handoff.md",
-  "active_gate": "COI-OPS-AI-01",
-  "active_plan": "OPS-AI v1=45.8% FAIL. Code: widget created_at + count v1.1. Projected 60.6% po GO deploy. PM/Gate D parked.",
-  "next_human": "GO deploy tip z instrumentacją OPS-AI (Zasada 11). Potem agent re-measure SQL. Gate D parked.",
-  "next_agent": "Po GO deploy: scp/run deployment/_ops_ai_count_14d.py na VPS → jeśli PCT≥60 commit scorecard PASS + COI-OPS-AI-01 completed. Bez GO: nie deploy.",
+  "plan": "docs/handoffs/2026-07-18-coi-ops-ai-01-CLOSE.md",
+  "active_gate": "COI-PM-01",
+  "active_plan": "OPS-AI #9 LIVE 60.6%. NEXT recommended: COI-PM-01 OS ritual. Gate D parked.",
+  "next_human": "Gate D parked (budget). Optional: dogfood PM ritual w OS.",
+  "next_agent": "Nowa sesja: @blast COI-PM-01. Gate D nie ruszaj bez GO+budget.",
   "agent_rule": "Nie pytaj Dowódcy o decyzje A/B. Deploy tylko ze zgodą. Nie commituj sekretów. Nie kasuj parków w todo.",
   "sprints": {
     "remediation": "completed",
@@ -246,11 +246,20 @@
       "id": "COI-OPS-AI-01",
       "sprint": "FlexGrafik AI OS",
       "task": "Ops AI ≥60% (14d evidence)",
-      "status": "in_progress",
+      "status": "completed",
       "priority": "critical",
       "owner": "agent",
       "checklist": "docs/ops/OPS-AI-SCORECARD.md",
-      "note": "2026-07-18 re-measure v1=45.8% (11/24) tip 8de8806. Instrumentacja v1.1 w kodzie (widget created_at + cs_followup). Projected 60.6% po GO deploy+migrate. Nie completed bez SQL≥60%."
+      "note": "PASS 2026-07-18: v1.1 20/33=60.6% tip d97939a. Deploy GO + created_at migrate. Handoff: 2026-07-18-coi-ops-ai-01-CLOSE.md"
+    },
+    {
+      "id": "COI-PM-01",
+      "sprint": "FlexGrafik AI OS",
+      "task": "AI PM ritual: Agent OS Mission Control HITL (1 task dogfood)",
+      "status": "pending",
+      "priority": "high",
+      "owner": "agent",
+      "note": "Next after OPS-AI PASS. Scorecard #5 PARTIAL-link. Blast in new session. Gate D parked."
     },
     {
       "id": "COI-ROLE-01",
