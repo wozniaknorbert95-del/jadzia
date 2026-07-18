@@ -1,7 +1,7 @@
 # Jadzia Operator Playbook
 
 **Audience:** Dowódca (Norbert)  
-**Updated:** 2026-07-08  
+**Updated:** 2026-07-18  
 **VPS:** 185.243.54.115 — `/opt/jadzia`, port 8000 (localhost or SSH tunnel)
 
 ---
@@ -10,12 +10,13 @@
 
 | System | Rola | Jak się z nim kontaktujesz |
 |--------|------|----------------------------|
-| **Jadzia COI** | Operacje biznesu: zamówienia, leady, GA4, kalendarz, WP SSH | **Telegram** (primary), Worker API, skrypty VPS |
+| **Jadzia COI** | Operacje biznesu: zamówienia, leady, GA4, kalendarz, WP SSH | **Telegram** (primary), Worker API, **Commander WWW** |
 | **Design Agent INSPIRE** | Mockupy voertuigreclame na zzpackage | Wizard UI → `/api/v1/design-agent/*` (osobny produkt) |
 | **Agent OS Mission Control** | Orkiestracja kodu multi-repo | `agent-os-ui` :3000 — **nie** panel Jadzii COI |
 | **VCMS** | Governance, skan 8 repo | flex-vcms — dokumentacja, nie runtime Jadzii |
 
-**Panel WWW Jadzii dziś:** brak. Metryki: `GET /worker/dashboard` (JSON + JWT).
+**Panel WWW Jadzii (COI Commander):** LIVE — `https://api.zzpackage.flexgrafik.nl/commander/` (JWT). Metryki worker: `GET /worker/dashboard` (JSON + JWT).  
+**Nie mylić z Agent OS** (:3000) — to orkiestracja kodu, nie biznes ops.
 
 ---
 

@@ -1,12 +1,12 @@
 {
   "project": "Jadzia-Core",
-  "last_updated": "2026-07-18 (REV-DEMAND-03 LIVE on VPS 367549f)",
+  "last_updated": "2026-07-18 (SSoT Control Truth — tip 66a4aad; Demand-03 FEATURE 367549f)",
   "status": "active",
-  "plan": "docs/handoffs/2026-07-18-rev-demand-03-CLOSE.md",
-  "active_gate": "REV-DEMAND-04",
-  "active_plan": "03 LIVE. Next: REV-DEMAND-04 brief HITL → sales. Parks untouched.",
-  "next_human": "Optional dogfood. OPS-FB / S1 / Gate D parked.",
-  "next_agent": "REV-DEMAND-04 brief HITL → sales actions (1-1-1). No Gate D/B3/TikTok.",
+  "plan": "docs/handoffs/2026-07-18-ssot-demand-CLOSE.md",
+  "active_gate": "COI-CMD-MOBILE-01",
+  "active_plan": "Plan1 SSoT clean. Next: COI-CMD-MOBILE-01 phone hub. REV-DEMAND-04 blocked until mobile LIVE. Parks untouched.",
+  "next_human": "Commander disposition dogfood checkbox (JWT UI). OPS-FB / S1 / Gate D parked.",
+  "next_agent": "COI-CMD-MOBILE-01 ADR D0.6 + mobile Home shell (1-1-1). No Gate D/B3/04 code.",
   "agent_rule": "Nie pytaj Dowódcy o decyzje A/B. Deploy tylko ze zgodą. Nie commituj sekretów. Nie kasuj parków w todo.",
   "sprints": {
     "remediation": "completed",
@@ -22,7 +22,10 @@
     "content_intake_m1": "completed_2026-07-09",
     "content_intake_m2": "deploy_complete_e2e_pass_2026-07-17",
     "marketing_publish_b": "completed_2026-07-09",
-    "rev_demand_01": "completed_2026-07-18"
+    "rev_demand_01": "completed_2026-07-18",
+    "rev_demand_02a": "completed_2026-07-18",
+    "rev_demand_02": "completed_2026-07-18",
+    "rev_demand_03": "completed_2026-07-18"
   },
   "tasks": [
     {
@@ -33,7 +36,7 @@
       "priority": "critical",
       "owner": "agent",
       "checklist": "docs/handoffs/2026-07-18-rev-demand-01-CLOSE.md",
-      "note": "2026-07-18 DONE F0–F4. Parks preserved. Next active_gate REV-DEMAND-02."
+      "note": "2026-07-18 DONE F0–F4. Chain 02a/02/03 LIVE. Parks preserved."
     },
     {
       "id": "REV-DEMAND-01a",
@@ -97,7 +100,16 @@
       "status": "pending",
       "priority": "medium",
       "owner": "agent",
-      "note": "After 02/03; then reconsider B3 unpark"
+      "note": "Blocked_by: COI-CMD-MOBILE-01 LIVE. Do not start in same PR. Parks untouched."
+    },
+    {
+      "id": "COI-CMD-MOBILE-01",
+      "sprint": "COI Commander — Mobile hub",
+      "task": "Phone-first Commander hub: ADR D0.6 + Home shell + system map deep-links",
+      "status": "pending",
+      "priority": "critical",
+      "owner": "agent",
+      "note": "Plan2 Control Surface. No Agent OS merge. No API contract change. After Plan1 SSoT CLOSE."
     },
     {
       "id": "COI-STRATEGY-HITL-01",
