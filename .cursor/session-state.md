@@ -1,9 +1,7 @@
-# COI-CMD-OPS-GUIDE-01 LIVE CLOSEOUT
+# VCMS-DEPLOY-FIX-01 DONE
 
-- jadzia tip: b4d4208
-- flex-vcms master: 565997b (PR #23 handbook + #24 sync)
-- VCMS handbook LIVE: /docs/study/coi-commander-ops-handbook HTTP 200
-- deploy-context atomic swap OK
-- standing_go_closeout: false
+- flex-vcms tip: 65f0e89 (+ PROOF closeout commit)
+- Deploy-VPS.ps1: Invoke-Remote + tar — GO PASS
+- Handbook + study-index 200 LIVE
+- Next: idle / non-MBA feature; optional UX-AUDIT later
 - PARK: Gate D, Mollie, mint/recover, OS merge
-- NEXT: idle / non-MBA feature
