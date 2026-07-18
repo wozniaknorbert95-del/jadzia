@@ -48,7 +48,7 @@ Szczegóły charter: `flexgrafik-meta/docs/core/jadzia-operating-charter.md`
 
 | Element | Kontrakt | Status |
 |---------|----------|--------|
-| Order ingestion | INT-002 `POST /webhooks/woocommerce/order` | v1+v2 LIVE @ `504fdf6`; producer @ `bfe8485`; Gate C PASS (#3209 test); COD OFF; Gate D DEFERRED (no live charge) |
+| Order ingestion | INT-002 `POST /webhooks/woocommerce/order` | v1+v2 LIVE @ `504fdf6`; producer @ `bfe8485`; Gate C PASS (#3209 test); COD OFF; Gate D parked (no top-up); min199 unchanged |
 | `order_node` | `agent/nodes/order_node.py` | LIVE |
 | `orders` table | `jadzia.db` — `agent/db.py` | LIVE v1; additive v2 evidence migration tested |
 | Lead ingestion | INT-004 `POST /api/v1/leads` | LIVE (DEPLOY-02 E2E PASS) |
@@ -111,7 +111,7 @@ Pełne kontrakty: `flexgrafik-meta/docs/core/integration-contracts.md`
 - **Workflow:** `.agents/workflows/README.md` (L0-L4)
 - **Backlog:** `todo.json`
 - **PRD:** `docs/PRD-core.md`
-- **Active plan:** `docs/handoffs/2026-07-18-rev-r0-02c-CLOSE-deferred.md` — Gate C PASS; Gate D DEFERRED (no budget); resume `gate-d-GO-pack.md` after Dowódca GO
+- **Active plan:** `docs/handoffs/2026-07-18-rev-r0-VERIFY-CLOSE.md` — REV verified; Gate D parked; before/after `2026-07-18-jadzia-before-after-REV-R0.md`; resume `gate-d-GO-pack.md` only after Dowódca GO
 - **Parked DA track:** `feat/da-insire-enterprise` (+14 vs master) — merge w osobnej sesji
 - **QUEUE-CLEAN:** completed 2026-07-17 — Home bez E2E `deploy02-*` / `int004-e2e-*`
 - **Prior closure:** `docs/handoffs/2026-07-09-coi-marketing-session-HANDOFF.md`

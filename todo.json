@@ -1,12 +1,12 @@
 {
   "project": "Jadzia-Core",
-  "last_updated": "2026-07-18 (REV-R0-02C CLOSE — Gate D DEFERRED, no live charge)",
+  "last_updated": "2026-07-18 (REV-R0 VERIFIED CLOSE — Gate D parked, no top-up)",
   "status": "active",
-  "plan": "docs/handoffs/2026-07-18-rev-r0-02c-CLOSE-deferred.md",
+  "plan": "docs/handoffs/2026-07-18-rev-r0-VERIFY-CLOSE.md",
   "active_gate": "REV-R0-02C",
-  "active_plan": "Parked: Gate D LIVE paid order deferred (budget). Resume from gate-d-GO-pack.md after Dowódca GO.",
-  "next_human": "When budget: Mollie → LIVE; post-LIVE iDEAL-only smoke; GO Gate D (1 real paid).",
-  "next_agent": "PARKED until Dowódca GO — then Gate D from gate-d-GO-pack.md. Do not place paid order without authorize.",
+  "active_plan": "Parked: Gate D deferred indefinitely until real budget. Min checkout 199 unchanged. Before/after: 2026-07-18-jadzia-before-after-REV-R0.md",
+  "next_human": "Optional later: budget ≥199 + Mollie LIVE + GO Gate D. Otherwise pick next non-revenue gate (e.g. OPS-FB-HYGIENE-01).",
+  "next_agent": "PARKED on Gate D. Do not place paid order. Do not change min checkout. Resume only from gate-d-GO-pack.md after explicit GO.",
   "agent_rule": "Nie deployuj autonomicznie bez approve. Nie commituj sekretów.",
   "sprints": {
     "remediation": "completed",
@@ -32,7 +32,7 @@
       "priority": "critical",
       "owner": "agent",
       "checklist": "zzpackage/docs/checklists/REV-R0-02C-controlled-e2e.md",
-      "note": "Gate C PASS #3209; COD OFF; iDEAL-only; consumer 504fdf6 + producer bfe8485 LIVE. Gate D DEFERRED (no budget for live charge). CLOSE: 2026-07-18-rev-r0-02c-CLOSE-deferred.md; resume GO-pack when Dowódca authorizes."
+      "note": "VERIFIED 2026-07-18: Gate C #3209 PASS; COD OFF; iDEAL-only; 504fdf6+bfe8485 LIVE; PR #3 merged. Gate D parked (no top-up). Min199 unchanged. See VERIFY-CLOSE + before-after handoffs. Resume GO-pack only after Dowódca GO."
     },
     {
       "id": "DEPLOY-01",
