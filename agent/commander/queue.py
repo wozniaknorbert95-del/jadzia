@@ -150,6 +150,8 @@ def build_queue(severity_filter: Optional[str] = None) -> List[Dict]:
             )
 
     for lead in db_list_leads(limit=10):
+        if lead.get("is_test") is True:
+            continue
         score = lead.get("game_score") or 0
         if score >= 80:
             qtype = "hot_lead"

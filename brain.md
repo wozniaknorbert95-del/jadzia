@@ -2,7 +2,7 @@
 status: "[ACTIVE]"
 title: "Jadzia-Core Brain (Canonical)"
 owner: "Norbert Wozniak"
-updated: "2026-07-17"
+updated: "2026-07-18"
 readiness_overall: "~90% operational spine (Commander + Marketing text/photo/video LIVE + DA INSPIRE)"
 ---
 
@@ -48,9 +48,9 @@ Szczegóły charter: `flexgrafik-meta/docs/core/jadzia-operating-charter.md`
 
 | Element | Kontrakt | Status |
 |---------|----------|--------|
-| Order ingestion | INT-002 `POST /webhooks/woocommerce/order` | LIVE (WC order 3149 on prod) |
+| Order ingestion | INT-002 `POST /webhooks/woocommerce/order` | v1+v2 LIVE @ `504fdf6`; producer @ `bfe8485`; Gate C PASS (#3209 test); COD OFF; Gate D DEFERRED (no live charge) |
 | `order_node` | `agent/nodes/order_node.py` | LIVE |
-| `orders` table | `jadzia.db` — `agent/db.py` | LIVE |
+| `orders` table | `jadzia.db` — `agent/db.py` | LIVE v1; additive v2 evidence migration tested |
 | Lead ingestion | INT-004 `POST /api/v1/leads` | LIVE (DEPLOY-02 E2E PASS) |
 | `lead_node` | `agent/nodes/lead_node.py` | LIVE |
 | `leads` table | `jadzia.db` | LIVE |
@@ -78,7 +78,7 @@ Plan Phase B (completed): `docs/archive/plans/PLAN-COI-PHASE-B.md`
 | ID | Kierunek | Status |
 |----|----------|--------|
 | INT-001 | Wizard → widget chat | LIVE |
-| INT-002 | WC → order webhook | LIVE |
+| INT-002 | WC → order webhook | v1+v2 LIVE @ `504fdf6`; Gate C PASS; Gate D deferred |
 | INT-003 | Game → Wizard coupon | LIVE (app side) |
 | INT-004 | app → `POST /api/v1/leads` | LIVE (DEPLOY-02 E2E PASS) |
 | INT-009 | GA4 → analytics snapshot | LIVE |
@@ -111,7 +111,7 @@ Pełne kontrakty: `flexgrafik-meta/docs/core/integration-contracts.md`
 - **Workflow:** `.agents/workflows/README.md` (L0-L4)
 - **Backlog:** `todo.json`
 - **PRD:** `docs/PRD-core.md`
-- **Active plan:** `docs/handoffs/2026-07-17-coi-cmd-smtp-01-CLOSE.md` — SMTP CLOSED; next `OPS-FB-HYGIENE-01`
+- **Active plan:** `docs/handoffs/2026-07-18-rev-r0-02c-CLOSE-deferred.md` — Gate C PASS; Gate D DEFERRED (no budget); resume `gate-d-GO-pack.md` after Dowódca GO
 - **Parked DA track:** `feat/da-insire-enterprise` (+14 vs master) — merge w osobnej sesji
 - **QUEUE-CLEAN:** completed 2026-07-17 — Home bez E2E `deploy02-*` / `int004-e2e-*`
 - **Prior closure:** `docs/handoffs/2026-07-09-coi-marketing-session-HANDOFF.md`

@@ -1,4 +1,4 @@
-"""Tests for E2E hot-lead cleanup (COI-CMD-QUEUE-CLEAN)."""
+"""Regression tests: legacy cleanup must not delete revenue history."""
 
 import importlib.util
 import os
@@ -7,8 +7,12 @@ from pathlib import Path
 
 import pytest
 
-from agent.db import db_create_lead, db_list_leads
 from agent.commander.queue import build_queue
+from agent.db import db_create_lead, db_list_leads
+from agent.revenue.reconciliation import (
+    apply_unpersisted_classifications,
+    build_reconciliation_report,
+)
 
 
 @pytest.fixture
@@ -39,45 +43,52 @@ def _load_cleanup_mod():
     return mod
 
 
-def test_cleanup_removes_e2e_keeps_real(temp_db):
+def test_cleanup_finds_e2e_but_deletion_is_blocked(temp_db):
     mod = _load_cleanup_mod()
 
-    db_create_lead({
-        "email": "deploy02-int004-test@flexgrafik.nl",
-        "name": "Deploy02 Smoke",
-        "source": "game",
-        "game_score": 420,
-        "consent_status": True,
-    })
-    db_create_lead({
-        "email": "int004-e2e-20260626@flexgrafik.nl",
-        "name": "E2E Deploy02",
-        "source": "game",
-        "game_score": 250,
-        "consent_status": True,
-    })
-    db_create_lead({
-        "email": "jan@bouw.com",
-        "name": "JanBouw",
-        "source": "game",
-        "game_score": 3563,
-        "consent_status": True,
-    })
+    db_create_lead(
+        {
+            "email": "deploy02-int004-test@flexgrafik.nl",
+            "name": "Deploy02 Smoke",
+            "source": "game",
+            "game_score": 420,
+            "consent_status": True,
+        }
+    )
+    db_create_lead(
+        {
+            "email": "int004-e2e-20260626@flexgrafik.nl",
+            "name": "E2E Deploy02",
+            "source": "game",
+            "game_score": 250,
+            "consent_status": True,
+        }
+    )
+    db_create_lead(
+        {
+            "email": "jan@bouw.com",
+            "name": "JanBouw",
+            "source": "game",
+            "game_score": 3563,
+            "consent_status": True,
+        }
+    )
 
     conn = sqlite3.connect(temp_db)
     conn.row_factory = sqlite3.Row
     matches = mod.find_e2e_leads(conn)
     assert len(matches) == 2
-    deleted = mod.delete_leads(conn, [int(m["id"]) for m in matches])
-    assert deleted == 2
+    with pytest.raises(RuntimeError, match="Revenue history deletion is disabled"):
+        mod.delete_leads(conn, [int(m["id"]) for m in matches])
     conn.close()
 
     remaining = db_list_leads(limit=20)
     emails = {r["email"] for r in remaining}
     assert "jan@bouw.com" in emails
-    assert not any(e.startswith("deploy02-") for e in emails)
-    assert not any(e.startswith("int004-e2e-") for e in emails)
+    assert any(e.startswith("deploy02-") for e in emails)
+    assert any(e.startswith("int004-e2e-") for e in emails)
 
+    apply_unpersisted_classifications(build_reconciliation_report())
     items = build_queue()
     hot = [i for i in items if i["queue_type"] == "hot_lead"]
     assert all("deploy02" not in (i.get("title") or "").lower() for i in hot)

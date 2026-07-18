@@ -154,10 +154,61 @@ def _init_schema(conn: sqlite3.Connection):
             customer_name TEXT,
             total_gross REAL NOT NULL,
             payment_id TEXT,
+            schema_version TEXT NOT NULL DEFAULT 'int-002.v1',
+            currency TEXT,
+            total_net REAL,
+            tax_total REAL,
+            payment_status TEXT,
+            payment_method TEXT,
+            payment_provider TEXT,
+            payment_mode TEXT,
+            paid_at TEXT,
+            classification TEXT NOT NULL DEFAULT 'unknown',
+            classification_reason TEXT,
+            is_test INTEGER,
+            test_reason TEXT,
+            checkout_id TEXT,
+            checkout_started_at TEXT,
+            checkout_environment TEXT,
+            attribution_json TEXT NOT NULL DEFAULT '{}',
             created_at TEXT NOT NULL,
             updated_at TEXT NOT NULL
         )
     """)
+    order_v2_columns = {
+        "schema_version": "TEXT NOT NULL DEFAULT 'int-002.v1'",
+        "currency": "TEXT",
+        "total_net": "REAL",
+        "tax_total": "REAL",
+        "payment_status": "TEXT",
+        "payment_method": "TEXT",
+        "payment_provider": "TEXT",
+        "payment_mode": "TEXT",
+        "paid_at": "TEXT",
+        "classification": "TEXT NOT NULL DEFAULT 'unknown'",
+        "classification_reason": "TEXT",
+        "is_test": "INTEGER",
+        "test_reason": "TEXT",
+        "checkout_id": "TEXT",
+        "checkout_started_at": "TEXT",
+        "checkout_environment": "TEXT",
+        "attribution_json": "TEXT NOT NULL DEFAULT '{}'",
+    }
+    try:
+        existing_order_columns = {
+            row[1] for row in conn.execute("PRAGMA table_info(orders)").fetchall()
+        }
+        for column_name, column_type in order_v2_columns.items():
+            if column_name not in existing_order_columns:
+                conn.execute(
+                    f"ALTER TABLE orders ADD COLUMN {column_name} {column_type}"
+                )
+    except Exception as e:
+        import logging
+        logging.getLogger(__name__).error(
+            "[DB] INT-002 v2 migration failed: %s", e
+        )
+        raise
     conn.execute("""
         CREATE INDEX IF NOT EXISTS idx_orders_status
         ON orders(status)
@@ -165,6 +216,11 @@ def _init_schema(conn: sqlite3.Connection):
     conn.execute("""
         CREATE INDEX IF NOT EXISTS idx_orders_created_at
         ON orders(created_at)
+    """)
+    conn.execute("""
+        CREATE UNIQUE INDEX IF NOT EXISTS idx_orders_checkout_id
+        ON orders(checkout_id)
+        WHERE checkout_id IS NOT NULL AND checkout_id != ''
     """)
 
     # Game / web leads (INT-004)
@@ -229,6 +285,26 @@ def _init_schema(conn: sqlite3.Connection):
     conn.execute("""
         CREATE INDEX IF NOT EXISTS idx_analytics_snapshots_period
         ON analytics_snapshots(period, created_at DESC)
+    """)
+
+    # Append-only legacy revenue classification audit (REV-R0-02).
+    conn.execute("""
+        CREATE TABLE IF NOT EXISTS revenue_classification_events (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            entity_type TEXT NOT NULL
+                CHECK (entity_type IN ('order', 'lead', 'portal_qual_lead')),
+            entity_key TEXT NOT NULL,
+            classification TEXT NOT NULL
+                CHECK (classification IN ('real', 'test', 'unknown')),
+            reason_code TEXT NOT NULL,
+            evidence_json TEXT NOT NULL DEFAULT '{}',
+            classified_at TEXT NOT NULL,
+            classified_by TEXT NOT NULL
+        )
+    """)
+    conn.execute("""
+        CREATE INDEX IF NOT EXISTS idx_revenue_classification_entity
+        ON revenue_classification_events(entity_type, entity_key, id DESC)
     """)
 
     # COI Commander control plane
@@ -1001,29 +1077,88 @@ def db_upsert_order(order_data: Dict) -> Optional[str]:
             ).fetchone()
 
             if existing:
-                conn.execute(
-                    """
-                    UPDATE orders SET
-                        status = ?,
-                        items_json = ?,
-                        customer_email = ?,
-                        customer_name = ?,
-                        total_gross = ?,
-                        payment_id = ?,
-                        updated_at = ?
-                    WHERE order_id = ?
-                    """,
-                    (
-                        order_data["status"],
-                        json.dumps(items),
-                        customer.get("email"),
-                        customer.get("name"),
-                        order_data["total_gross"],
-                        order_data.get("payment_id"),
-                        now,
-                        order_id,
-                    ),
-                )
+                if order_data.get("schema_version") == "int-002.v2":
+                    conn.execute(
+                        """
+                        UPDATE orders SET
+                            status = ?,
+                            items_json = ?,
+                            customer_email = ?,
+                            customer_name = ?,
+                            total_gross = ?,
+                            payment_id = ?,
+                            schema_version = ?,
+                            currency = ?,
+                            total_net = ?,
+                            tax_total = ?,
+                            payment_status = ?,
+                            payment_method = ?,
+                            payment_provider = ?,
+                            payment_mode = ?,
+                            paid_at = ?,
+                            classification = ?,
+                            classification_reason = ?,
+                            is_test = ?,
+                            test_reason = ?,
+                            checkout_id = ?,
+                            checkout_started_at = ?,
+                            checkout_environment = ?,
+                            attribution_json = ?,
+                            updated_at = ?
+                        WHERE order_id = ?
+                        """,
+                        (
+                            order_data["status"],
+                            json.dumps(items),
+                            customer.get("email"),
+                            customer.get("name"),
+                            order_data["total_gross"],
+                            order_data.get("payment_id"),
+                            order_data["schema_version"],
+                            order_data.get("currency"),
+                            order_data.get("total_net"),
+                            order_data.get("tax_total"),
+                            order_data.get("payment_status"),
+                            order_data.get("payment_method"),
+                            order_data.get("payment_provider"),
+                            order_data.get("payment_mode"),
+                            order_data.get("paid_at"),
+                            order_data.get("classification", "unknown"),
+                            order_data.get("classification_reason"),
+                            _optional_bool_to_int(order_data.get("is_test")),
+                            order_data.get("test_reason"),
+                            order_data.get("checkout_id"),
+                            order_data.get("checkout_started_at"),
+                            order_data.get("checkout_environment"),
+                            json.dumps(order_data.get("attribution") or {}),
+                            now,
+                            order_id,
+                        ),
+                    )
+                else:
+                    conn.execute(
+                        """
+                        UPDATE orders SET
+                            status = ?,
+                            items_json = ?,
+                            customer_email = ?,
+                            customer_name = ?,
+                            total_gross = ?,
+                            payment_id = ?,
+                            updated_at = ?
+                        WHERE order_id = ?
+                        """,
+                        (
+                            order_data["status"],
+                            json.dumps(items),
+                            customer.get("email"),
+                            customer.get("name"),
+                            order_data["total_gross"],
+                            order_data.get("payment_id"),
+                            now,
+                            order_id,
+                        ),
+                    )
                 internal_id = str(existing["id"])
             else:
                 cursor = conn.execute(
@@ -1031,9 +1166,20 @@ def db_upsert_order(order_data: Dict) -> Optional[str]:
                     INSERT INTO orders (
                         order_id, status, items_json,
                         customer_email, customer_name,
-                        total_gross, payment_id,
+                        total_gross, payment_id, schema_version,
+                        currency, total_net, tax_total,
+                        payment_status, payment_method, payment_provider,
+                        payment_mode, paid_at,
+                        classification, classification_reason,
+                        is_test, test_reason,
+                        checkout_id, checkout_started_at, checkout_environment,
+                        attribution_json,
                         created_at, updated_at
-                    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+                    ) VALUES (
+                        ?, ?, ?, ?, ?, ?, ?, ?,
+                        ?, ?, ?, ?, ?, ?, ?, ?, ?,
+                        ?, ?, ?, ?, ?, ?, ?, ?, ?
+                    )
                     """,
                     (
                         order_id,
@@ -1043,6 +1189,23 @@ def db_upsert_order(order_data: Dict) -> Optional[str]:
                         customer.get("name"),
                         order_data["total_gross"],
                         order_data.get("payment_id"),
+                        order_data.get("schema_version", "int-002.v1"),
+                        order_data.get("currency"),
+                        order_data.get("total_net"),
+                        order_data.get("tax_total"),
+                        order_data.get("payment_status"),
+                        order_data.get("payment_method"),
+                        order_data.get("payment_provider"),
+                        order_data.get("payment_mode"),
+                        order_data.get("paid_at"),
+                        order_data.get("classification", "unknown"),
+                        order_data.get("classification_reason"),
+                        _optional_bool_to_int(order_data.get("is_test")),
+                        order_data.get("test_reason"),
+                        order_data.get("checkout_id"),
+                        order_data.get("checkout_started_at"),
+                        order_data.get("checkout_environment"),
+                        json.dumps(order_data.get("attribution") or {}),
                         now,
                         now,
                     ),
@@ -1056,6 +1219,13 @@ def db_upsert_order(order_data: Dict) -> Optional[str]:
             "[DB] db_upsert_order failed order_id=%s: %s", order_id, e
         )
         return None
+
+
+def _optional_bool_to_int(value: Any) -> Optional[int]:
+    """Convert nullable producer classification to SQLite representation."""
+    if value is None:
+        return None
+    return int(bool(value))
 
 
 def db_get_order_by_wc_id(order_id: str) -> Optional[Dict]:
@@ -1092,6 +1262,16 @@ def _row_to_order_dict(row: sqlite3.Row) -> Dict:
     else:
         order["items"] = []
     order.pop("items_json", None)
+    if order.get("attribution_json"):
+        try:
+            order["attribution"] = json.loads(order["attribution_json"])
+        except Exception:
+            order["attribution"] = {}
+    else:
+        order["attribution"] = {}
+    order.pop("attribution_json", None)
+    if order.get("is_test") is not None:
+        order["is_test"] = bool(order["is_test"])
     order["customer"] = {
         "email": order.pop("customer_email", None),
         "name": order.pop("customer_name", None),
@@ -1683,28 +1863,186 @@ def db_commander_get_agent_state(agent_id: str) -> Optional[Dict]:
     return dict(row) if row else None
 
 
+# ============================================================================
+# Revenue classification audit (REV-R0-02)
+# ============================================================================
+
+def db_record_revenue_classification(
+    entity_type: str,
+    entity_key: str,
+    classification: str,
+    reason_code: str,
+    evidence: Optional[Dict[str, Any]] = None,
+    classified_by: str = "rule:revenue_event.v1",
+) -> Optional[int]:
+    """Append a classification unless the latest value is identical."""
+    if entity_type not in {"order", "lead", "portal_qual_lead"}:
+        raise ValueError("invalid revenue classification entity_type")
+    if classification not in {"real", "test", "unknown"}:
+        raise ValueError("invalid revenue classification")
+    if not entity_key or not reason_code:
+        raise ValueError("entity_key and reason_code are required")
+
+    evidence_json = json.dumps(evidence or {}, sort_keys=True)
+    now = datetime.now(timezone.utc).replace(microsecond=0).isoformat()
+    conn = get_connection()
+    latest = conn.execute(
+        """
+        SELECT id, classification, reason_code, evidence_json, classified_by
+        FROM revenue_classification_events
+        WHERE entity_type = ? AND entity_key = ?
+        ORDER BY id DESC
+        LIMIT 1
+        """,
+        (entity_type, entity_key),
+    ).fetchone()
+    if latest and (
+        latest["classification"] == classification
+        and latest["reason_code"] == reason_code
+        and latest["evidence_json"] == evidence_json
+        and latest["classified_by"] == classified_by
+    ):
+        return int(latest["id"])
+
+    try:
+        cursor = conn.execute(
+            """
+            INSERT INTO revenue_classification_events (
+                entity_type, entity_key, classification, reason_code,
+                evidence_json, classified_at, classified_by
+            ) VALUES (?, ?, ?, ?, ?, ?, ?)
+            """,
+            (
+                entity_type,
+                entity_key,
+                classification,
+                reason_code,
+                evidence_json,
+                now,
+                classified_by,
+            ),
+        )
+        conn.commit()
+        return int(cursor.lastrowid)
+    except Exception:
+        conn.rollback()
+        raise
+
+
+def db_get_revenue_classification(entity_type: str, entity_key: str) -> Optional[Dict]:
+    """Return the latest append-only classification for one legacy entity."""
+    conn = get_connection()
+    row = conn.execute(
+        """
+        SELECT id, entity_type, entity_key, classification, reason_code,
+               evidence_json, classified_at, classified_by
+        FROM revenue_classification_events
+        WHERE entity_type = ? AND entity_key = ?
+        ORDER BY id DESC
+        LIMIT 1
+        """,
+        (entity_type, entity_key),
+    ).fetchone()
+    if not row:
+        return None
+    result = dict(row)
+    result["evidence"] = json.loads(result.pop("evidence_json") or "{}")
+    return result
+
+
+def db_list_revenue_classifications() -> List[Dict]:
+    """Return only the latest classification per entity."""
+    conn = get_connection()
+    rows = conn.execute(
+        """
+        SELECT event.id, event.entity_type, event.entity_key, event.classification,
+               event.reason_code, event.evidence_json, event.classified_at,
+               event.classified_by
+        FROM revenue_classification_events AS event
+        JOIN (
+            SELECT entity_type, entity_key, MAX(id) AS latest_id
+            FROM revenue_classification_events
+            GROUP BY entity_type, entity_key
+        ) AS latest ON latest.latest_id = event.id
+        ORDER BY event.entity_type, event.entity_key
+        """
+    ).fetchall()
+    result = []
+    for row in rows:
+        item = dict(row)
+        item["evidence"] = json.loads(item.pop("evidence_json") or "{}")
+        result.append(item)
+    return result
+
+
 def db_list_orders(limit: int = 50) -> List[Dict]:
     conn = get_connection()
     rows = conn.execute(
         """
-        SELECT order_id, status, total_gross, customer_name, customer_email, created_at, updated_at
-        FROM orders ORDER BY created_at DESC LIMIT ?
+        SELECT orders.order_id, orders.status, orders.total_gross,
+               orders.customer_name, orders.customer_email,
+               orders.created_at, orders.updated_at,
+               classification.classification,
+               classification.reason_code AS classification_reason
+        FROM orders
+        LEFT JOIN revenue_classification_events AS classification
+          ON classification.id = (
+              SELECT MAX(latest.id)
+              FROM revenue_classification_events AS latest
+              WHERE latest.entity_type = 'order'
+                AND latest.entity_key = orders.order_id
+          )
+        ORDER BY orders.created_at DESC
+        LIMIT ?
         """,
         (limit,),
     ).fetchall()
-    return [dict(r) for r in rows]
+    result = []
+    for row in rows:
+        item = dict(row)
+        item["classification"] = item.get("classification") or "unknown"
+        item["is_test"] = (
+            True
+            if item["classification"] == "test"
+            else False if item["classification"] == "real" else None
+        )
+        result.append(item)
+    return result
 
 
 def db_list_leads(limit: int = 50) -> List[Dict]:
     conn = get_connection()
     rows = conn.execute(
         """
-        SELECT id, email, name, source, game_score, reward_tier, created_at, updated_at
-        FROM leads ORDER BY created_at DESC LIMIT ?
+        SELECT leads.id, leads.email, leads.name, leads.source,
+               leads.game_score, leads.reward_tier,
+               leads.created_at, leads.updated_at,
+               classification.classification,
+               classification.reason_code AS classification_reason
+        FROM leads
+        LEFT JOIN revenue_classification_events AS classification
+          ON classification.id = (
+              SELECT MAX(latest.id)
+              FROM revenue_classification_events AS latest
+              WHERE latest.entity_type = 'lead'
+                AND latest.entity_key = CAST(leads.id AS TEXT)
+          )
+        ORDER BY leads.created_at DESC
+        LIMIT ?
         """,
         (limit,),
     ).fetchall()
-    return [dict(r) for r in rows]
+    result = []
+    for row in rows:
+        item = dict(row)
+        item["classification"] = item.get("classification") or "unknown"
+        item["is_test"] = (
+            True
+            if item["classification"] == "test"
+            else False if item["classification"] == "real" else None
+        )
+        result.append(item)
+    return result
 
 
 def db_update_calendar_entry_versioned(
