@@ -1,12 +1,12 @@
 {
   "project": "Jadzia-Core",
-  "last_updated": "2026-07-18 (Gate D GO-pack locked; waiting Mollie LIVE)",
+  "last_updated": "2026-07-18 (REV-R0-02C CLOSE — Gate D DEFERRED, no live charge)",
   "status": "active",
-  "plan": "docs/handoffs/2026-07-18-rev-r0-02c-gate-d-GO-pack.md",
+  "plan": "docs/handoffs/2026-07-18-rev-r0-02c-CLOSE-deferred.md",
   "active_gate": "REV-R0-02C",
-  "active_plan": "Dowódca Mollie LIVE → Gate D (GO-pack + checklist Pre–Gate D)",
-  "next_human": "Mollie → LIVE; post-LIVE iDEAL-only smoke; GO Gate D (1 real paid).",
-  "next_agent": "NEXT SESSION: after Dowódca GO — execute Gate D from gate-d-GO-pack.md.",
+  "active_plan": "Parked: Gate D LIVE paid order deferred (budget). Resume from gate-d-GO-pack.md after Dowódca GO.",
+  "next_human": "When budget: Mollie → LIVE; post-LIVE iDEAL-only smoke; GO Gate D (1 real paid).",
+  "next_agent": "PARKED until Dowódca GO — then Gate D from gate-d-GO-pack.md. Do not place paid order without authorize.",
   "agent_rule": "Nie deployuj autonomicznie bez approve. Nie commituj sekretów.",
   "sprints": {
     "remediation": "completed",
@@ -28,11 +28,11 @@
       "id": "REV-R0-02C",
       "sprint": "Revenue War Room — Revenue Truth",
       "task": "INT-002 v2 consumer validation + durable SQLite evidence",
-      "status": "ready_for_gate_d_pending_mollie_live",
+      "status": "gate_c_pass_gate_d_deferred",
       "priority": "critical",
       "owner": "agent",
       "checklist": "zzpackage/docs/checklists/REV-R0-02C-controlled-e2e.md",
-      "note": "Gate C PASS #3209; COD OFF; iDEAL-only; GO-pack preflight locked. Blocker: Mollie TEST. See 2026-07-18-rev-r0-02c-gate-d-GO-pack.md"
+      "note": "Gate C PASS #3209; COD OFF; iDEAL-only; consumer 504fdf6 + producer bfe8485 LIVE. Gate D DEFERRED (no budget for live charge). CLOSE: 2026-07-18-rev-r0-02c-CLOSE-deferred.md; resume GO-pack when Dowódca authorizes."
     },
     {
       "id": "DEPLOY-01",
