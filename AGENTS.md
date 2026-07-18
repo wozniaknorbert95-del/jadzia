@@ -6,7 +6,7 @@
 - **Canonical backlog**: `todo.json` (this repo)
 - **Active program**: Revenue War Room — revenue truth before demand work
 - **Active plan / gate**: `todo.json` → `active_gate` = `REV-R0-02C`
-- **Latest handoff**: `docs/handoffs/2026-07-18-rev-r0-02-session-CLOSE.md`
+- **Latest handoff**: `docs/handoffs/2026-07-18-rev-r0-02c-gate-d-GO-pack.md`
 - **Deploy runbook**: `docs/ops/INT-002-V2-DEPLOY.md`
 - **Reconciliation runbook**: `docs/ops/REVENUE-RECONCILIATION.md`
 - **Approved contract**: `docs/contracts/REVENUE-EVENT-CONTRACT-v1.md`
@@ -22,7 +22,7 @@
 - **Least privilege**: do not read or process secrets (`.env*`, keys) or large binaries.
 - **1-1-1 rule**: implement one change at a time; finish with a handoff note in `docs/handoffs/`.
 - **REV deploy order**: integrate REV-R0-02A → deploy Jadzia INT-002 v2 consumer → deploy zzpackage producer → controlled E2E.
-- **Current prod state**: consumer @ `504fdf6` and producer @ `bfe8485` deployed; E2E gate open.
+- **Current prod state**: consumer @ `504fdf6` and producer @ `bfe8485` deployed; Gate C PASS (WC#3209 test); COD OFF; checkout iDEAL-only; Mollie still TEST — Dowódca → LIVE before Gate D.
 
 ## Copy & languages
 
