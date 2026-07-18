@@ -1,9 +1,10 @@
 # Process Catalog L1 — FlexGrafik (COI-PROC-00/01)
 
-**Status:** PARTIAL — karty MD kompletne; **nie** zalicza systemu wiedzy ekosystemu (brak VCMS/meta mirror)  
-**Date:** 2026-07-18 (truth repair)  
-**Formula:** `covered_critical / critical_L1` (opisane w MD ≠ operacyjne w VCMS)  
-**Mianownik critical_L1:** 10 (poniżej, `critical=Y`)
+**Status:** LIVE — karty MD + VCMS/meta pointer mirrors (COI-PROC-02)  
+**Date:** 2026-07-18  
+**Formula:** `covered_critical / critical_L1`  
+**Mianownik critical_L1:** 10 (poniżej, `critical=Y`)  
+**Mirrors:** VCMS `docs/ecosystem/ai-os-processes.md` · meta `docs/core/process-catalog-index.md`
 
 ## Baseline (PROC-00)
 

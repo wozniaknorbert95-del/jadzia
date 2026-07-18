@@ -1,6 +1,7 @@
 # Scorecard — FlexGrafik AI Operating System (zaliczenie)
 
-**Status:** ACTIVE — TRUTH REPAIR 2026-07-18  
+**Status:** **PASS / LIVE** — AI OS CLOSEOUT 2026-07-18 (#1–9)  
+
 **Program:** AI OS + AI MBA (plan v2)  
 **Owner:** Dowódca (GO / dogfood) / Agent (pomiar + artefakty)  
 **SoT tip:** VPS `/opt/jadzia` `git rev-parse --short HEAD`  
@@ -14,10 +15,10 @@
 | 2 | System wiedzy | Indeks SoT + procesy; zero sprzecznych kanonów | KNOW-01 mirrors | **LIVE** | SoT jadzia + meta/VCMS pointers (COI-KNOW-01) | maintain; #8 proces VCMS-link osobno |
 | 3 | AI Sprzedawca | Lead→CTA→Wizard | Demand + widget | LIVE | REV-DEMAND F0–F7 | maintain |
 | 4 | AI Marketing | Draft→HITL→publish | Commander Marketing | LIVE | PUBLISH-B + audit publish×8/14d | maintain |
-| 5 | AI Project Manager | Orkiestracja HITL | Agent OS | **PARTIAL** | Deep-link only (nie agent w jadzia) | rytuał OS / kontrakt |
+| 5 | AI Project Manager | Orkiestracja HITL | Agent OS | **LIVE** | HITL approve `task-4f6a23d8` → DONE @ os-api 2026-07-18 | maintain; UI Basic Auth Dowódca |
 | 6 | AI Customer Success | Post-sale follow-up | `cs_followup` | **LIVE** | API+UI HITL tip `0a54bc7`; dogfood spawn→Ack | maintain; auto-trigger later |
 | 7 | AI Asystent Zarządu | Brief→HITL→Home | brief_node | LIVE | STRATEGY-HITL + tickets | maintain |
-| 8 | ≥80% procesów opisanych | karty L1 critical | PROCESS-CATALOG | **PARTIAL** | 10 kart MD (**papier**; nie VCMS-linked) | PROC hygiene / VCMS mirror |
+| 8 | ≥80% procesów opisanych | karty L1 critical | PROCESS-CATALOG | **LIVE** | 10/10 cards + VCMS/meta pointers COI-PROC-02 | maintain |
 | 9 | ≥60% ops AI | 14d ratio | OPS-AI-SCORECARD | **LIVE / PASS** | **60.6%** v1.1 (20/33) tip `d97939a` | maintain; re-window if human publish spikes |
 
 ## Mapa 5 ról AI → powierzchnie
@@ -26,7 +27,7 @@
 |------|--------------|--------|
 | AI Sprzedawca | widget + sales_cta | LIVE |
 | AI Marketing | marketing agent + publish | LIVE |
-| AI Project Manager | hop `os.flexgrafik.nl` | PARTIAL (link) |
+| AI Project Manager | os-api HITL + hop `os.flexgrafik.nl` | LIVE |
 | AI Customer Success | Home form + queue HITL | LIVE |
 | AI Asystent Zarządu | brief HITL | LIVE |
 

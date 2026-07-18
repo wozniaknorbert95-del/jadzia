@@ -22,6 +22,8 @@
 |------|---------|------|
 | flexgrafik-meta | `docs/core/knowledge-system-index.md` | konstytucja → link do tego SoT |
 | Flex-vcms | `docs/ecosystem/ai-os-knowledge.md` | VCMS docs / cmd → link do tego SoT |
+| Flex-vcms | `docs/ecosystem/ai-os-processes.md` | VCMS docs → PROCESS-CATALOG (COI-PROC-02) |
+| flexgrafik-meta | `docs/core/process-catalog-index.md` | konstytucja → PROCESS-CATALOG |
 | GitHub SoT | [KNOWLEDGE-SYSTEM-INDEX.md](https://github.com/wozniaknorbert95-del/jadzia/blob/master/docs/ops/KNOWLEDGE-SYSTEM-INDEX.md) | kanoniczny blob |
 
 ## Reguła anty-duplikacji
@@ -44,7 +46,9 @@
 - AI MBA spine: [../learning/AI-MBA-FLEXGRAFIK-SPINE.md](../learning/AI-MBA-FLEXGRAFIK-SPINE.md)
 - Phone hub ADR: [../design/coi-commander/adr/D0.6-phone-hub-not-merge.md](../design/coi-commander/adr/D0.6-phone-hub-not-merge.md)
 - Meta mirror: `flexgrafik-meta/docs/core/knowledge-system-index.md`
-- VCMS mirror: `Flex-vcms/flex-vcms/docs/ecosystem/ai-os-knowledge.md`
+- VCMS knowledge mirror: `Flex-vcms/flex-vcms/docs/ecosystem/ai-os-knowledge.md`
+- VCMS processes mirror: `Flex-vcms/flex-vcms/docs/ecosystem/ai-os-processes.md`
+- Meta process pointer: `flexgrafik-meta/docs/core/process-catalog-index.md`
 
 ## Konflikt resolution
 

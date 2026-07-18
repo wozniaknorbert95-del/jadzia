@@ -1,16 +1,16 @@
 {
   "project": "Jadzia-Core",
-  "last_updated": "2026-07-18 (standing GO closeout; post-coding loop)",
+  "last_updated": "2026-07-18 (AI-OS-CLOSEOUT — scorecard #1-9 LIVE; standing GO off)",
   "status": "active",
-  "plan": ".agents/workflows/post-coding.md",
-  "active_gate": "COI-PM-01",
-  "active_plan": "AI OS closeout: drain closeout_queue via /post-coding. Gate D hard-park.",
-  "standing_go_closeout": true,
-  "closeout_queue": ["COI-PM-01", "COI-PROC-02", "AI-OS-CLOSEOUT"],
+  "plan": "docs/handoffs/2026-07-18-ai-os-CLOSEOUT.md",
+  "active_gate": null,
+  "active_plan": "AI OS zaliczenie LIVE. Maintain. Gate D parked. Post-coding workflow remains for future gates.",
+  "standing_go_closeout": false,
+  "closeout_queue": [],
   "closeout_expires": "2026-07-25",
-  "next_human": "Gate D parked (budget). Basic Auth OS only if PM park.",
-  "next_agent": "/post-coding on closeout_queue head. standing_go_closeout=true until AI-OS-CLOSEOUT.",
-  "agent_rule": "Nie pytaj A/B. VPS OK gdy standing_go_closeout lub GO in-session. Nie sekrety. Nie kasuj parków. Hard STOP: Gate D/Mollie/fake PASS.",
+  "next_human": "Gate D parked (budget). Optional: save Cursor Automation draft opened in session.",
+  "next_agent": "Maintain / MBA spine. Nie Gate D bez GO+budget. /post-coding when new gate set.",
+  "agent_rule": "Nie pytaj A/B. Deploy tylko ze zgodą (standing_go_closeout off). Nie sekrety. Nie kasuj parków. Hard STOP: Gate D/Mollie/fake PASS.",
   "sprints": {
     "remediation": "completed",
     "coi_phase_a": "deploy_complete",
@@ -239,21 +239,21 @@
       "id": "COI-PROC-02",
       "sprint": "FlexGrafik AI OS",
       "task": "PROCESS-CATALOG VCMS/meta pointer mirrors → scorecard #8 LIVE",
-      "status": "pending",
+      "status": "completed",
       "priority": "critical",
       "owner": "agent",
-      "checklist": "docs/ops/PROCESS-CATALOG.md",
-      "note": "Closeout wave B. Pattern COI-KNOW-01. Not full catalog copy."
+      "checklist": "docs/handoffs/2026-07-18-coi-proc-02-CLOSE.md",
+      "note": "PASS 2026-07-18: VCMS ai-os-processes + meta process-catalog-index. Scorecard #8 LIVE."
     },
     {
       "id": "AI-OS-CLOSEOUT",
       "sprint": "FlexGrafik AI OS",
       "task": "Program closeout: scorecard #1-9 LIVE; standing_go_closeout off",
-      "status": "pending",
+      "status": "completed",
       "priority": "critical",
       "owner": "agent",
-      "checklist": "docs/ops/SCORECARD-AI-OS-ZALICZENIE.md",
-      "note": "Closeout wave C after PM-01 + PROC-02"
+      "checklist": "docs/handoffs/2026-07-18-ai-os-CLOSEOUT.md",
+      "note": "PASS 2026-07-18: all 9 LIVE; standing_go_closeout false"
     },
     {
       "id": "COI-OPS-AI-00",
@@ -279,10 +279,11 @@
       "id": "COI-PM-01",
       "sprint": "FlexGrafik AI OS",
       "task": "AI PM ritual: Agent OS Mission Control HITL (1 task dogfood)",
-      "status": "pending",
+      "status": "completed",
       "priority": "high",
       "owner": "agent",
-      "note": "Next after OPS-AI PASS. Scorecard #5 PARTIAL-link. Blast in new session. Gate D parked."
+      "checklist": "docs/handoffs/2026-07-18-coi-pm-01-CLOSE.md",
+      "note": "PASS 2026-07-18: os-api approve task-4f6a23d8→DONE. UI Basic Auth agent 401."
     },
     {
       "id": "COI-ROLE-01",
