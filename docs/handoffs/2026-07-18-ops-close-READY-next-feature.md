@@ -2,7 +2,7 @@
 
 **Date:** 2026-07-18  
 **Repo:** jadzia-core  
-**TIP_SHA:** `dbf7458` (VPS SoT after pull)  
+**TIP_SHA:** `36417c0` (VPS SoT; see also `2026-07-18-pre-feature-VERIFY.md`)  
 **FEATURE Demand-04:** `51b3ef0`  
 **Status:** SUCCESS — ops barrier cleared  
 **Session verdict:** SUCCESS  

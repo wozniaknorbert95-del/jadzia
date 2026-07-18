@@ -1,11 +1,11 @@
 {
   "project": "Jadzia-Core",
-  "last_updated": "2026-07-18 (ops close READY — sales_cta dogfood PASS; next feature GO)",
+  "last_updated": "2026-07-18 (pre-feature VERIFY PASS — tip 36417c0; smoke cleaned)",
   "status": "active",
-  "plan": "docs/handoffs/2026-07-18-ops-close-READY-next-feature.md",
+  "plan": "docs/handoffs/2026-07-18-pre-feature-VERIFY.md",
   "active_gate": "NONE",
-  "active_plan": "Ops barrier cleared. Demand F0–F7 LIVE. Await Dowódca GO for next feature.",
-  "next_human": "Name next feature GO. Optional Commander UI click. S1 / Gate D parked.",
+  "active_plan": "Pre-feature verify PASS. Await Dowódca GO naming next feature.",
+  "next_human": "Name next feature GO. Optional Ack sales_cta #4/#5 (jan/bob). S1 / Gate D parked.",
   "next_agent": "Idle until Dowódca GO names next feature. No Gate D/B3/TikTok/Agent OS merge.",
   "agent_rule": "Nie pytaj Dowódcy o decyzje A/B. Deploy tylko ze zgodą. Nie commituj sekretów. Nie kasuj parków w todo.",
   "sprints": {

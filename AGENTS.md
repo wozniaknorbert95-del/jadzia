@@ -6,9 +6,9 @@
 - **Canonical backlog**: `todo.json` (this repo)
 - **Active program**: REV-DEMAND **F0–F7** CLOSED; ops close READY for next feature; phone hub LIVE (`87d7912`)
 - **Active plan / gate**: `todo.json` → `active_gate` = `NONE` (await Dowódca feature GO)
-- **Latest handoff**: `docs/handoffs/2026-07-18-ops-close-READY-next-feature.md`
+- **Latest handoff**: `docs/handoffs/2026-07-18-pre-feature-VERIFY.md`
 - **Phone hub ADR**: `docs/design/coi-commander/adr/D0.6-phone-hub-not-merge.md`
-- **Prod tip SoT:** VPS `/opt/jadzia` `git rev-parse --short HEAD` (verified deep-check **`7aa32d8`**). Do not tip-chase every docs commit; FEATURE_SHA stays in task notes.
+- **Prod tip SoT:** VPS `/opt/jadzia` `git rev-parse --short HEAD` (pre-feature verify **`36417c0`**). Do not tip-chase every docs commit; FEATURE_SHA stays in task notes.
 - **Deploy runbook**: `docs/ops/INT-002-V2-DEPLOY.md` (+ `deployment/rev-demand-01-deploy-vps.sh`)
 - **Reconciliation runbook**: `docs/ops/REVENUE-RECONCILIATION.md`
 - **Approved contract**: `docs/contracts/REVENUE-EVENT-CONTRACT-v1.md`
