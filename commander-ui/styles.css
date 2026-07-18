@@ -178,6 +178,19 @@ nav { display: flex; flex-wrap: wrap; gap: 0.5rem; }
 
 .hint { color: var(--muted); font-size: 0.85rem; }
 
+.auth-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-top: 0.5rem;
+}
+
+button.secondary {
+  background: transparent;
+  color: var(--text);
+  border: 1px solid #3a4a5e;
+}
+
 .toast {
   position: fixed;
   bottom: 1rem;

@@ -1,7 +1,7 @@
 """Telegram webhook router (Transfer Protocol V4).
 
 Uses Worker API (POST/GET /worker/task, POST /worker/task/{id}/input) with JWT.
-Commands: /zadanie, /status, /cofnij, /pomoc. Inline keyboard for approval (diff_ready).
+Commands: /ticket, /commander, /status, /cofnij, /pomoc. Inline keyboard for approval (diff_ready).
 When TELEGRAM_BOT_TOKEN is set, replies are sent to Telegram via sendMessage (direct webhook).
 """
 
@@ -89,6 +89,8 @@ def parse_telegram_command(message: str, callback_data: Optional[str] = None) ->
     if cmd_only.startswith("/ticket") or cmd_only.startswith("/zadanie"):
         payload = msg[len(cmd_token):].strip()
         return "ticket", payload
+    if cmd_lower in ("/commander", "commander", "/jwt", "jwt"):
+        return "commander", ""
     if lower in ("tak", "nie", "t", "n", "yes", "no"):
         return "approval", "true" if lower in ("tak", "t", "yes") else "false"
     return "message", msg
@@ -349,6 +351,30 @@ async def _handle_webhook_request(
             messages = format_response_for_telegram(response_text, awaiting_input=awaiting)
             reply_markup = build_inline_keyboard_approval(task_id) if (result.get("status") == "diff_ready" and awaiting) else None
             return TelegramWebhookResponse(success=True, messages=messages, awaiting_input=awaiting, reply_markup=reply_markup)
+
+        if command == "commander":
+            from agent.commander.session_login import mint_login_link
+
+            try:
+                login = mint_login_link(
+                    base_url=get_public_base_url(),
+                    sub=str(request.user_id),
+                    role="dowodca",
+                )
+            except Exception as exc:
+                logger.error("[Telegram] /commander mint failed: %s", exc)
+                messages = format_response_for_telegram(
+                    "Nie udało się wygenerować logowania Commander. Sprawdź JWT_SECRET.",
+                    awaiting_input=False,
+                )
+                return TelegramWebhookResponse(success=True, messages=messages)
+            messages = format_response_for_telegram(
+                "COI Commander — logowanie mobilne (jednorazowy link, 15 min):\n"
+                f"{login['url']}\n"
+                "Po otwarciu: Home → Ack leadów. Nie udostępniaj linku.",
+                awaiting_input=False,
+            )
+            return TelegramWebhookResponse(success=True, messages=messages)
 
         if command == "ticket":
             description = payload if payload else request.message.strip()

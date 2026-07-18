@@ -10,7 +10,54 @@ function getToken() {
 }
 
 function setToken(t) {
-  localStorage.setItem(TOKEN_KEY, t);
+  localStorage.setItem(TOKEN_KEY, t || "");
+  if (!t) localStorage.removeItem(TOKEN_KEY);
+  updateAuthStatus();
+}
+
+function clearToken() {
+  localStorage.removeItem(TOKEN_KEY);
+  const input = document.getElementById("jwt-input");
+  if (input) input.value = "";
+  updateAuthStatus();
+}
+
+function updateAuthStatus() {
+  const el = document.getElementById("auth-status");
+  if (!el) return;
+  el.textContent = getToken()
+    ? "Zalogowano (sesja JWT w przeglądarce)."
+    : "Telegram: /commander → jednorazowy link (15 min).";
+}
+
+async function exchangeLoginCode(code) {
+  const res = await fetch(`${API_BASE}/api/v1/commander/auth/exchange`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ code }),
+  });
+  if (!res.ok) {
+    const err = await res.json().catch(() => ({}));
+    throw new Error(err.detail || "Kod logowania nieważny lub wygasł");
+  }
+  return res.json();
+}
+
+function stripAuthParamsFromUrl() {
+  const url = new URL(window.location.href);
+  if (!url.searchParams.has("code") && !url.searchParams.has("jwt")) return;
+  url.searchParams.delete("code");
+  url.searchParams.delete("jwt");
+  const qs = url.searchParams.toString();
+  const next = `${url.pathname}${qs ? `?${qs}` : ""}${url.hash}`;
+  window.history.replaceState({}, "", next);
+}
+
+function registerServiceWorker() {
+  if (!("serviceWorker" in navigator)) return;
+  navigator.serviceWorker.register("./sw.js", { scope: "./" }).catch(() => {
+    /* non-fatal on http/dev */
+  });
 }
 
 async function api(path, options = {}) {
@@ -699,17 +746,52 @@ document.getElementById("ticket-close").onclick = () => {
   document.getElementById("ticket-panel").hidden = true;
 };
 
-const params = new URLSearchParams(window.location.search);
-const ticketParam = params.get("ticket");
-const tokenParam = params.get("token");
-if (ticketParam && tokenParam) {
-  openTicketFromDeeplink(ticketParam, tokenParam);
-} else if (ticketParam) {
-  showView("home");
-  toast(`Ticket #${ticketParam} — zaloguj JWT lub użyj linku z tokenem`);
+document.getElementById("auth-logout").onclick = () => {
+  clearToken();
+  toast("Wylogowano");
+};
+
+async function bootstrapAuth() {
+  const params = new URLSearchParams(window.location.search);
+  const loginCode = params.get("code");
+  const legacyJwt = params.get("jwt");
+  const ticketParam = params.get("ticket");
+  const tokenParam = params.get("token");
+
+  if (loginCode) {
+    try {
+      const data = await exchangeLoginCode(loginCode);
+      setToken(data.token);
+      stripAuthParamsFromUrl();
+      toast("Zalogowano (Telegram)");
+      await refresh();
+      return;
+    } catch (e) {
+      stripAuthParamsFromUrl();
+      toast(e.message || "Logowanie nieudane");
+    }
+  } else if (legacyJwt) {
+    // Compatibility only — prefer ?code= one-time exchange
+    setToken(legacyJwt);
+    stripAuthParamsFromUrl();
+    toast("Zalogowano (legacy jwt param)");
+  }
+
+  if (ticketParam && tokenParam) {
+    openTicketFromDeeplink(ticketParam, tokenParam);
+  } else if (ticketParam) {
+    showView("home");
+    toast(`Ticket #${ticketParam} — /commander lub wklej JWT`);
+  }
+
+  if (getToken()) {
+    document.getElementById("jwt-input").value = getToken();
+    updateAuthStatus();
+    refresh().catch((e) => toast(e.message));
+  } else {
+    updateAuthStatus();
+  }
 }
 
-if (getToken()) {
-  document.getElementById("jwt-input").value = getToken();
-  refresh().catch((e) => toast(e.message));
-}
+registerServiceWorker();
+bootstrapAuth();

@@ -354,21 +354,20 @@ def get_help_message() -> str:
 **JADZIA Bot - Pomoc**
 
 🤖 **Dostępne komendy:**
-• `/zadanie` - nowe zadanie (np. /zadanie zmień kolor przycisku)
-• `/status` - sprawdź bieżącą operację
-• `/cofnij` - cofnij ostatnie zmiany
-• `/pomoc` - wyświetl tę pomoc
+• `/commander` — logowanie do COI Commander (telefon, link 15 min)
+• `/ticket` — ticket w Commander (np. /ticket naprawa nagłówka)
+• `/status` — sprawdź bieżącą operację
+• `/cofnij` — cofnij ostatnie zmiany
+• `/pomoc` — wyświetl tę pomoc
 
-💬 **Jak używać:**
-Użyj /zadanie i treść polecenia, np:
-• "Dodaj komentarz w style.css"
-• "Zmień kolor tła na niebieski"
-• "Napraw błąd w functions.php"
+💬 **Commander:**
+1. `/commander` → otwórz link na telefonie
+2. Home → Ack/Snooze/Close leadów
+3. Ticket awaryjny: `/ticket opis`
 
-✅ **Zatwierdzanie zmian:**
-Po wygenerowaniu diffu użyj przycisków Tak/Nie lub napisz:
-• `T` / `tak` / `yes` - zatwierdź
-• `N` / `nie` / `no` - odrzuć
+✅ **Zatwierdzanie SSH (jeśli aktywne):**
+• `T` / `tak` / `yes` — zatwierdź
+• `N` / `nie` / `no` — odrzuć
 """
     return help_text.strip()
 

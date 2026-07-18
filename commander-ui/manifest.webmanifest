@@ -1,0 +1,26 @@
+{
+  "name": "FlexGrafik COI Commander",
+  "short_name": "Commander",
+  "description": "Phone-first control surface for Dowódca (hub-not-merge).",
+  "start_url": "/commander/",
+  "scope": "/commander/",
+  "display": "standalone",
+  "orientation": "portrait-primary",
+  "background_color": "#0f172a",
+  "theme_color": "#0f172a",
+  "lang": "pl",
+  "icons": [
+    {
+      "src": "icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}

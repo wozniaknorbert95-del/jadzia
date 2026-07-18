@@ -48,6 +48,10 @@ class DeeplinkMintRequest(BaseModel):
     base_url: str = "http://localhost:8000"
 
 
+class LoginExchangeRequest(BaseModel):
+    code: str = Field(min_length=8, max_length=256)
+
+
 class PublishRequest(BaseModel):
     version: Optional[int] = None
     reason: Optional[str] = None
@@ -60,6 +64,22 @@ class UnpublishRequest(BaseModel):
 class BulkApproveRequest(BaseModel):
     entry_ids: List[str] = Field(min_length=1)
     reason: Optional[str] = None
+
+
+@router.post("/api/v1/commander/auth/exchange")
+async def exchange_commander_login_code(body: LoginExchangeRequest) -> dict:
+    """One-time login code → session JWT (MOBILE-02). No Bearer required."""
+    from agent.commander.session_login import exchange_login_code
+
+    result = exchange_login_code(body.code)
+    if not result:
+        raise HTTPException(status_code=401, detail="Invalid or expired login code")
+    return {
+        "token": result["token"],
+        "role": result["role"],
+        "sub": result["sub"],
+        "expires_at": result["expires_at"],
+    }
 
 
 @router.get("/api/v1/commander/queue")

@@ -2,8 +2,14 @@
 <html lang="pl">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <meta name="theme-color" content="#0f172a" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
   <title>COI Commander</title>
+  <link rel="manifest" href="manifest.webmanifest" />
+  <link rel="icon" href="icon-192.png" type="image/png" />
+  <link rel="apple-touch-icon" href="icon-192.png" />
   <link rel="stylesheet" href="styles.css" />
 </head>
 <body>
@@ -23,10 +29,14 @@
     </nav>
   </header>
 
-  <section id="auth-panel" class="panel auth-panel" aria-label="Logowanie JWT">
-    <label for="jwt-input">Token JWT</label>
+  <section id="auth-panel" class="panel auth-panel" aria-label="Logowanie">
+    <p id="auth-status" class="hint" aria-live="polite">Telegram: /commander → jednorazowy link (15 min).</p>
+    <label for="jwt-input">Token JWT (fallback)</label>
     <input id="jwt-input" type="password" autocomplete="off" placeholder="Bearer token" />
-    <button type="button" id="auth-save">Zapisz token</button>
+    <div class="auth-actions">
+      <button type="button" id="auth-save">Zapisz token</button>
+      <button type="button" id="auth-logout" class="secondary">Wyloguj</button>
+    </div>
     <p class="hint">UI po polsku · treści biznesowe NL</p>
   </section>
 

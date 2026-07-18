@@ -381,6 +381,16 @@ def _init_schema(conn: sqlite3.Connection):
         )
     """)
     conn.execute("""
+        CREATE TABLE IF NOT EXISTS commander_login_codes (
+            code_hash TEXT PRIMARY KEY,
+            sub TEXT NOT NULL,
+            role TEXT NOT NULL,
+            expires_at TEXT NOT NULL,
+            used_at TEXT,
+            created_at TEXT NOT NULL
+        )
+    """)
+    conn.execute("""
         CREATE TABLE IF NOT EXISTS commander_daily_actions (
             action_date TEXT NOT NULL,
             action_count INTEGER NOT NULL DEFAULT 0,
@@ -1853,6 +1863,49 @@ def db_commander_mark_deeplink_used(token_hash: str) -> None:
     conn.execute(
         "UPDATE commander_deeplinks SET used_at = ? WHERE token_hash = ?",
         (now, token_hash),
+    )
+    conn.commit()
+
+
+def db_commander_save_login_code(
+    code_hash: str,
+    sub: str,
+    role: str,
+    expires_at: str,
+) -> bool:
+    now = datetime.now(timezone.utc).isoformat()
+    conn = get_connection()
+    try:
+        conn.execute(
+            """
+            INSERT INTO commander_login_codes
+                (code_hash, sub, role, expires_at, created_at)
+            VALUES (?, ?, ?, ?, ?)
+            """,
+            (code_hash, sub, role, expires_at, now),
+        )
+        conn.commit()
+        return True
+    except Exception:
+        conn.rollback()
+        return False
+
+
+def db_commander_get_login_code(code_hash: str) -> Optional[Dict]:
+    conn = get_connection()
+    row = conn.execute(
+        "SELECT * FROM commander_login_codes WHERE code_hash = ?",
+        (code_hash,),
+    ).fetchone()
+    return dict(row) if row else None
+
+
+def db_commander_mark_login_code_used(code_hash: str) -> None:
+    now = datetime.now(timezone.utc).isoformat()
+    conn = get_connection()
+    conn.execute(
+        "UPDATE commander_login_codes SET used_at = ? WHERE code_hash = ?",
+        (now, code_hash),
     )
     conn.commit()
 

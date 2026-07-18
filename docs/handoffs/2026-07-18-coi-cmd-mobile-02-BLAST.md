@@ -5,7 +5,7 @@
 **Branch:** `master` @ `89fd9d0`  
 **Backlog:** `COI-CMD-MOBILE-02`  
 **Fundacja:** Plan1+2 LIVE; Demand-04 LIVE; `docs/handoffs/2026-07-18-pre-feature-VERIFY.md`  
-**Status:** BLAST anchored — ready `/implement`
+**Status:** BLAST anchored — **/implement** (enterprise harden: **no JWT in URL**)
 
 ## B — Background
 
@@ -15,16 +15,19 @@ Brak PWA (manifest/SW) → słaba ścieżka „ikona na telefonie”.
 
 **User value:** Telegram → link → `/commander/` standalone → Home → Ack `sales_cta` (jan/bob) **bez laptopa**.
 
+**Enterprise decision (vs rushed JWT-in-query):** one-time opaque `code` (15 min, single-use) → `POST /auth/exchange` → session JWT in `localStorage` only. JWT never in URL/history/referrer.
+
 **Flow:**
 ```text
-TG /commander (Dowódca only)
-  → mint short-lived JWT (role=dowodca, TTL ≤ 24h)
-  → send https://api…/commander/?jwt=<token>
+TG /commander (whitelist)
+  → mint one-time code (hash in SQLite)
+  → send https://api…/commander/?code=<opaque>
 commander-ui
-  → bootstrap: ?jwt= → localStorage coi_commander_jwt → history.replaceState strip
+  → POST /api/v1/commander/auth/exchange {code}
+  → localStorage coi_commander_jwt; history.replaceState strip code
   → loadHome() + disposition (queue:act)
 PWA
-  → manifest.webmanifest + sw.js (shell cache only)
+  → manifest.webmanifest + sw.js (shell cache only; never /api/)
   → installable / standalone
 ```
 
@@ -34,37 +37,33 @@ PWA
 - **No** Agent OS merge; no rewrite Marketing/Analytics
 - **No** park deletes; no ship `_recover_*.py`
 - **No** full SSO / OAuth product; no ROLE_SCOPES redesign
-- TG `/commander` **only** for allowlisted Dowódca chat (existing admin gate)
-- JWT TTL short (default **24h**, max 7d); never log full token
-- SW caches only shell assets (html/css/js/icons) — **never** API responses
+- TG `/commander` for existing Telegram whitelist users
+- Login **code** TTL **15 min**, single-use; session JWT default **24h** (max 7d)
+- Never log full JWT or raw code; SW never caches `/api/`
 - Deploy only after Dowódca GO
 - ADR D0.6 hub-not-merge stays law
 
-**Security:** reuse HS256 + `JWT_SECRET`; scope `queue:act` via role dowodca; strip `jwt` from URL after save; one-time display in TG only.  
-**Perf:** static assets only; SW network-first or cache-first for shell — no offline API fantasy.
+**Security:** opaque code → exchange; HS256 session JWT; strip `code` from URL; paste JWT remains fallback.  
+**Perf:** static shell cache only — no offline API fantasy.
 
 ## A — Actions (implement checklist)
 
-- [ ] `agent/commander/session_jwt.py` (or thin helper) — `mint_commander_session_jwt(sub, role, hours=24)`
-- [ ] `api/telegram.py` — command `/commander` (alias `/jwt`): allowlist → mint → send public URL with `?jwt=`
-- [ ] `commander-ui/app.js` — parse `?jwt=` / `#jwt=` → `setToken` → strip query; register SW; optional logout clears storage
-- [ ] `commander-ui/index.html` — `<link rel="manifest">`, theme-color, apple-touch-icon
-- [ ] `commander-ui/manifest.webmanifest` — name FlexGrafik Commander, `start_url=/commander/`, `display=standalone`, icons
-- [ ] `commander-ui/sw.js` — precache shell; skip `/api/`
-- [ ] Icons — minimal `icon-192.png` / `icon-512.png` (or SVG→PNG one-shot; no brand redesign)
-- [ ] Tests: JWT mint helper unit; telegram handler unit (allowlist / reject); UI bootstrap covered lightly if feasible
-- [ ] Dogfood checklist in CLOSE: phone → TG link → Ack sales_cta
-- [ ] Handoff CLOSE + `todo.json` / brain / AGENTS; await deploy GO
+- [x] `agent/commander/session_login.py` — mint code + exchange → JWT
+- [x] `agent/db.py` — `commander_login_codes` table
+- [x] `api/routes/commander.py` — `POST /api/v1/commander/auth/exchange`
+- [x] `api/telegram.py` — `/commander` (+ `/jwt`)
+- [x] `commander-ui` — bootstrap `?code=`, logout, manifest, SW, icons
+- [x] Tests: `tests/unit/test_commander_session_login.py`
+- [ ] Dogfood LIVE (post-GO): phone → TG → Ack sales_cta
+- [ ] CLOSE + deploy GO
 
 ## S — Success (DoD)
 
-- [ ] From phone TG: `/commander` → opens Commander authenticated (Home loads queue)
-- [ ] Ack/Snooze/Close `sales_cta` works with scoped JWT (HTTP 200 disposition)
-- [ ] Paste panel still works as fallback
-- [ ] `manifest` + SW registered; Lighthouse/install prompt path possible (Android Chrome)
-- [ ] Ticket deeplink path unchanged
-- [ ] No API contract break; parks / Gate D untouched
-- [ ] pytest green for new units
+- [x] One-time code exchange (unit + HTTP)
+- [x] TG parse `/commander`
+- [x] PWA shell assets present
+- [ ] LIVE phone dogfood (post deploy)
+- [ ] Parks / Gate D untouched
 
 ## T — Test plan
 
