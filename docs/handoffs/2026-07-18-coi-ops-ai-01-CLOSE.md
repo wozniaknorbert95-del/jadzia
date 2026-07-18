@@ -3,7 +3,7 @@
 **Date:** 2026-07-18  
 **Gate:** `COI-OPS-AI-01` — **completed**  
 **PASS tip (measure):** `d97939a`  
-**VPS tip after CLOSE docs:** (ff after this commit)  
+**VPS tip after CLOSE:** `3f2dc24` (docs ff; ratio unchanged)  
 **Ratio:** **20 / 33 = 60.6%** (v1.1)  
 **GO deploy:** explicit in-session
 
