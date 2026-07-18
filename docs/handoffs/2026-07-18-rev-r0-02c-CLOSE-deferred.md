@@ -31,8 +31,8 @@ Prior GO-pack (still valid when budget returns):
 ## DONE this close
 
 1. Paper trail status → `gate_c_pass_gate_d_deferred` (`todo.json` / `AGENTS.md` / `brain.md`)
-2. Branch push + PR #3 sync (docs commits)
-3. PR #3 merge prepared / merged when Checks allow (Tests PASS; CI lint pre-existing on master)
+2. Branch push + PR #3 sync (docs commits → tip `5ab9329`)
+3. PR #3 **MERGED** → `master` @ `8d248fa` (Tests PASS; CI lint design-agent pre-existing on master — HITL)
 
 ## Explicit non-goals (honored)
 
