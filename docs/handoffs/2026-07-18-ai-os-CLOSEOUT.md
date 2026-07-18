@@ -24,6 +24,8 @@
 - `.agents/workflows/post-coding.md` (L3.5)
 - README Golden Path + `jadzia-deploy` standing GO rules
 - Cursor Automation draft opened: **Jadzia AI-OS Post-Coding Closeout** (save in editor if not yet)
+- Jadzia tip: `db3d6b4` (VPS ff)
+- VCMS processes LIVE @ tip `e5fa883` + dist 200
 
 ## Parks (untouched)
 
