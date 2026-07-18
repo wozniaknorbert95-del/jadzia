@@ -1,7 +1,6 @@
-# VCMS-DEPLOY-FIX-01 DONE
+# COI-KNOW-02 DONE
 
-- flex-vcms tip: 65f0e89 (+ PROOF closeout commit)
-- Deploy-VPS.ps1: Invoke-Remote + tar — GO PASS
-- Handbook + study-index 200 LIVE
-- Next: idle / non-MBA feature; optional UX-AUDIT later
+- Knowledge System segregated; cmd handbook discoverable
+- flex-vcms PROOF-FINAL + Deploy P1 LIVE
+- Next: VCMS-VIDEO / human MBA PASS
 - PARK: Gate D, Mollie, mint/recover, OS merge

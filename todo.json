@@ -1,14 +1,14 @@
 {
   "project": "Jadzia-Core",
-  "last_updated": "2026-07-18 (COI-CMD-OPS-GUIDE-01 CLOSE)",
+  "last_updated": "2026-07-18 (COI-KNOW-02 CLOSE)",
   "status": "active",
-  "plan": "docs/handoffs/2026-07-18-coi-cmd-ops-guide-01-CLOSE.md",
+  "plan": "docs/ops/KNOWLEDGE-SYSTEM-INDEX.md",
   "active_gate": null,
-  "active_plan": "OPS-GUIDE + UX-POLISH DONE. MBA human PASS open. Gate D parked. standing_go off.",
+  "active_plan": "COI-KNOW-02 DONE. MBA human PASS open. Gate D parked. standing_go off.",
   "standing_go_closeout": false,
   "closeout_queue": [],
   "closeout_expires": "2026-07-25",
-  "next_human": "MBA Year PASS. Optional: VCMS Deploy-VPS for study handbook. Gate D parked.",
+  "next_human": "VCMS-VIDEO or MBA Year PASS. Gate D parked.",
   "next_agent": "/vibe-init — next non-MBA feature only.",
   "agent_rule": "Nie pytaj A/B. Deploy tylko ze zgodą (standing_go_closeout off). Nie sekrety. Nie kasuj parków. Hard STOP: Gate D/Mollie/fake PASS.",
   "sprints": {
