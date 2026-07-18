@@ -113,7 +113,7 @@ Pełne kontrakty: `flexgrafik-meta/docs/core/integration-contracts.md`
 - **Workflow:** `.agents/workflows/README.md` (L0-L4)
 - **Backlog:** `todo.json`
 - **PRD:** `docs/PRD-core.md`
-- **Active plan:** `docs/handoffs/2026-07-18-plan3-mobile-02-READY.md` — next **COI-CMD-MOBILE-02** (PWA + JWT mobile); Gate D parked
+- **Active plan:** `docs/handoffs/2026-07-18-coi-cmd-mobile-02-BLAST.md` — BLAST PASS; next **/implement** MOBILE-02; Gate D parked
 
 - **Parked DA track:** `feat/da-insire-enterprise` (+14 vs master) — merge w osobnej sesji
 - **QUEUE-CLEAN:** completed 2026-07-17 — Home bez E2E `deploy02-*` / `int004-e2e-*`

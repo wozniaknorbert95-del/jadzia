@@ -1,12 +1,12 @@
 {
   "project": "Jadzia-Core",
-  "last_updated": "2026-07-18 (Plan3 gate set — COI-CMD-MOBILE-02 after Plan1+2+Demand04)",
+  "last_updated": "2026-07-18 (COI-CMD-MOBILE-02 BLAST anchored; tip 89fd9d0)",
   "status": "active",
-  "plan": "docs/handoffs/2026-07-18-plan3-mobile-02-READY.md",
+  "plan": "docs/handoffs/2026-07-18-coi-cmd-mobile-02-BLAST.md",
   "active_gate": "COI-CMD-MOBILE-02",
-  "active_plan": "Plan3 Control Surface: JWT mobile dogfood + PWA foundation (deferred from Plan2). Gate D parked.",
-  "next_human": "GO @blast COI-CMD-MOBILE-02. Optional Ack sales_cta #4/#5. S1 / Gate D parked.",
-  "next_agent": "@blast COI-CMD-MOBILE-02 (1-1-1). No Gate D/B3/TikTok/Agent OS merge.",
+  "active_plan": "MOBILE-02 BLAST PASS — implement TG /commander JWT + PWA shell. Gate D parked.",
+  "next_human": "After implement: GO deploy. Dogfood Ack sales_cta on phone. S1 / Gate D parked.",
+  "next_agent": "/implement COI-CMD-MOBILE-02 per BLAST (1-1-1). No Gate D/B3/TikTok/Agent OS merge.",
   "agent_rule": "Nie pytaj Dowódcy o decyzje A/B. Deploy tylko ze zgodą. Nie commituj sekretów. Nie kasuj parków w todo.",
   "sprints": {
     "remediation": "completed",
@@ -119,11 +119,11 @@
       "id": "COI-CMD-MOBILE-02",
       "sprint": "COI Commander — Mobile hub",
       "task": "Plan3 Control Surface: mobile JWT dogfood path + PWA install foundation (manifest/SW)",
-      "status": "pending",
+      "status": "in_progress",
       "priority": "critical",
       "owner": "agent",
-      "checklist": "docs/handoffs/2026-07-18-plan3-mobile-02-READY.md",
-      "note": "Canonical next after Plan1+2 + REV-DEMAND-04 + ops verify. Out of Plan2 on purpose. No Agent OS merge. Gate D parked."
+      "checklist": "docs/handoffs/2026-07-18-coi-cmd-mobile-02-BLAST.md",
+      "note": "BLAST 2026-07-18: TG /commander JWT URL + ?jwt= bootstrap + PWA stubs. Next /implement."
     },
     {
       "id": "COI-STRATEGY-HITL-01",
