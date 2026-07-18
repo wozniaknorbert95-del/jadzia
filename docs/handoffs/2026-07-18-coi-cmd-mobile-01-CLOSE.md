@@ -2,7 +2,11 @@
 
 **Date:** 2026-07-18  
 **Repo:** jadzia-core  
-**Status:** ready_for_deploy → LIVE after GO redeploy  
+**TIP_SHA:** `87d7912` (local = origin = VPS)  
+**VPS:** `/opt/jadzia` @ `87d7912`, `jadzia.service` **active**  
+**Backup:** `/opt/jadzia/data/jadzia-pre-rev-demand-01-20260718-121016.db`  
+**Status:** SUCCESS — LIVE  
+**Session verdict:** SUCCESS  
 **Owner:** COI Commander mobile hub  
 **Fundacja:** `docs/handoffs/2026-07-18-ssot-demand-CLOSE.md`
 
@@ -11,27 +15,27 @@
 | Item | Result |
 |------|--------|
 | ADR | `docs/design/coi-commander/adr/D0.6-phone-hub-not-merge.md` |
-| Mobile shell | sticky bottom nav ≤600px; touch ≥44px; Więcej → Audyt/Ustawienia |
-| System map | Home links + Settings read-only URLs |
-| API | unchanged |
-| Parks | untouched |
-| REV-DEMAND-04 | still blocked until this LIVE (then gate returns) |
+| Mobile shell | sticky bottom nav ≤600px; Więcej → Audyt/Ustawienia |
+| System map | Home + Settings read-only URLs |
+| Smoke | `/commander/` 200; map + bottom-nav in HTML; css/js 200 |
+| Widget CTA | still deeplink True post-redeploy |
+| Backlog | `COI-CMD-MOBILE-01` completed; `active_gate` → `REV-DEMAND-04` |
 
-## DEPLOY
+## CRITICAL WARNINGS
 
-Redeploy `/opt/jadzia` master (static `commander-ui/` + docs). Restart `jadzia` for static refresh.
-
-## Smoke
-
-- [ ] `GET /commander/` 200
-- [ ] Home shows system map
-- [ ] ≤420px: bottom nav visible
+- No Gate D / Mollie / park deletes / Agent OS merge
+- Parks untouched
 
 ## NEXT SESSION START
 
 ```text
-STATE: SSoT clean; COI-CMD-MOBILE-01 LIVE; Demand 01-03 evidence PASS
+STATE: SSoT clean; COI-CMD-MOBILE-01 LIVE tip 87d7912; Demand 01-03 evidence PASS
 NEXT: @blast REV-DEMAND-04 brief HITL → sales CTA tickets
 ALT_ONLY_IF_HUB_BROKEN: fix mobile hub (1-1-1) before 04
 STOP: Gate D; Mollie; park deletes; Agent OS merge
+```
+
+```text
+SESSION_VERDICT: SUCCESS
+DEPLOY_STATE: Jadzia master 87d7912 active
 ```
