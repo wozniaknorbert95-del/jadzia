@@ -2,7 +2,8 @@
 
 **Date:** 2026-07-18  
 **Repo:** jadzia-core  
-**Status:** SUCCESS — implement complete; deploy after push  
+**FEATURE_SHA / TIP:** `2cdccf4` (VPS SoT)  
+**Status:** SUCCESS — LIVE tip `2cdccf4`  
 **Session verdict:** SUCCESS  
 
 ## DONE
