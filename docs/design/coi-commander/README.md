@@ -10,6 +10,8 @@
 | 2 | [`AUDYT-V2-GAP.md`](AUDYT-V2-GAP.md) |
 | 3 | [`COI-COMMANDER-PLAN-v3.md`](COI-COMMANDER-PLAN-v3.md) |
 | 4 | [`UX-BRIEF-COMMANDER.md`](UX-BRIEF-COMMANDER.md) |
+| 5 | [`UX-DOGFOOD-PHONE.md`](UX-DOGFOOD-PHONE.md) |
+| 6 | [`adr/D0.15-hub-ia-nav.md`](adr/D0.15-hub-ia-nav.md) + specs D0.16–D0.19 |
 
 ## Implementacja
 

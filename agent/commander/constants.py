@@ -14,6 +14,7 @@ QUEUE_SEVERITY: Dict[str, Severity] = {
     "fb_post_pending": "ACTION",
     "scheduled_publish_due": "ACTION",
     "sales_cta": "ACTION",
+    "cs_followup": "ACTION",
     "weekly_brief_ready": "INFO",
     "analytics_stale": "ACTION",
 }
@@ -26,6 +27,7 @@ QUEUE_SLA_HOURS: Dict[str, float] = {
     "fb_post_pending": 24,
     "scheduled_publish_due": 1,
     "sales_cta": 4,
+    "cs_followup": 48,
     "weekly_brief_ready": 48,
 }
 

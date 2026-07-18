@@ -97,6 +97,24 @@ def build_queue(severity_filter: Optional[str] = None) -> List[Dict]:
             items.append(item)
             continue
 
+        if ticket_source == "cs_followup":
+            item = _queue_item(
+                item_id=f"ticket-{ticket['id']}",
+                queue_type="cs_followup",
+                title=ticket["title"],
+                severity=QUEUE_SEVERITY["cs_followup"],
+                created_at=ticket["created_at"],
+                payload={
+                    "ticket_id": ticket["id"],
+                    "description": ticket["description"],
+                },
+                source=ticket_source,
+                escalation_reason="Customer Success follow-up (post-sale)",
+            )
+            item["available_actions"] = ["approve", "reject", "defer"]
+            items.append(item)
+            continue
+
         qtype = "wp_ticket"
         items.append(
             _queue_item(

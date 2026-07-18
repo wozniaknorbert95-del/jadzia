@@ -22,12 +22,27 @@ function clearToken() {
   updateAuthStatus();
 }
 
+function setAuthExpanded(expanded) {
+  const panel = document.getElementById("auth-panel");
+  const body = document.getElementById("auth-body");
+  const toggle = document.getElementById("auth-toggle");
+  if (!panel || !body) return;
+  panel.classList.toggle("auth-collapsed", !expanded);
+  body.hidden = !expanded;
+  if (toggle) {
+    toggle.hidden = expanded || !getToken();
+    toggle.setAttribute("aria-expanded", expanded ? "true" : "false");
+  }
+}
+
 function updateAuthStatus() {
   const el = document.getElementById("auth-status");
   if (!el) return;
-  el.textContent = getToken()
+  const loggedIn = !!getToken();
+  el.textContent = loggedIn
     ? "Zalogowano (sesja JWT w przeglądarce)."
     : "Telegram: /commander → jednorazowy link (15 min).";
+  setAuthExpanded(!loggedIn);
 }
 
 async function exchangeLoginCode(code) {
@@ -69,7 +84,10 @@ async function api(path, options = {}) {
     options.body = JSON.stringify(options.body);
   }
   const res = await fetch(`${API_BASE}${path}`, { ...options, headers });
-  if (res.status === 401) throw new Error("Brak autoryzacji — ustaw JWT");
+  if (res.status === 401) {
+    setAuthExpanded(true);
+    throw new Error("Sesja wygasła — Telegram /commander lub wklej token");
+  }
   if (!res.ok) {
     const err = await res.json().catch(() => ({}));
     const detail = err.detail;
@@ -140,9 +158,9 @@ function leadDispositionActions(item) {
   const leadId = item.payload?.lead_id || item.payload?.id;
   if (!leadId) return "";
   return `
-    <button type="button" data-lead-disp="${leadId}" data-disp="acked">Ack</button>
-    <button type="button" data-lead-disp="${leadId}" data-disp="snoozed">Snooze</button>
-    <button type="button" data-lead-disp="${leadId}" data-disp="closed">Close</button>
+    <button type="button" data-lead-disp="${leadId}" data-disp="acked">Potwierdź</button>
+    <button type="button" data-lead-disp="${leadId}" data-disp="snoozed">Odłóż</button>
+    <button type="button" data-lead-disp="${leadId}" data-disp="closed">Zamknij</button>
   `;
 }
 
@@ -164,7 +182,7 @@ function renderQueue(items) {
         toast(`Lead ${id} → ${disp}`);
         loadHome().catch((e) => toast(e.message));
       } catch (e) {
-        toast(e.message || "Disposition failed");
+        toast(e.message || "Nie udało się zmienić statusu leada");
       }
     };
   });
@@ -189,19 +207,40 @@ function showUndoBar(entryId) {
 }
 
 async function loadHome() {
-  const [prio, queue, agents, snap, settings] = await Promise.all([
-    api("/api/v1/commander/priorities/today"),
-    api("/api/v1/commander/queue"),
-    api("/api/v1/agents"),
+  const prioEl = document.getElementById("priorities");
+  const queueEl = document.getElementById("queue-list");
+  const healthEl = document.getElementById("health-strip");
+  prioEl.innerHTML = "<p class=\"hint\">Ładowanie priorytetów…</p>";
+  queueEl.innerHTML = "<p class=\"hint\">Ładowanie kolejki…</p>";
+
+  let prio;
+  let queue;
+  try {
+    [prio, queue] = await Promise.all([
+      api("/api/v1/commander/priorities/today"),
+      api("/api/v1/commander/queue"),
+    ]);
+    renderPriorities(prio.priorities || []);
+    renderQueue(queue.items || []);
+  } catch (e) {
+    prioEl.innerHTML = `<p class="state-error">Nie udało się pobrać priorytetów. <button type="button" id="home-retry">Spróbuj ponownie</button></p>`;
+    queueEl.innerHTML = `<p class="state-error">Nie udało się pobrać kolejki.</p>`;
+    const retry = document.getElementById("home-retry");
+    if (retry) retry.onclick = () => loadHome().catch((err) => toast(err.message));
+    throw e;
+  }
+
+  const [agents, snap, settings] = await Promise.all([
+    api("/api/v1/agents").catch(() => ({ agents: [] })),
     api("/api/v1/commander/analytics/snapshot").catch(() => null),
     api("/api/v1/commander/settings").catch(() => ({})),
   ]);
-  renderPriorities(prio.priorities || []);
-  renderQueue(queue.items || []);
   const slaBad = (agents.agents || []).filter((a) => !a.sla_ok).length;
   const fresh = snap?.freshness?.ga4?.status || "—";
-  document.getElementById("health-strip").textContent =
-    `Agenci SLA breach: ${slaBad} · GA4: ${fresh} · Worker: ${snap?.freshness?.worker?.status || "—"}`;
+  const worker = snap?.freshness?.worker?.status || "—";
+  const staleNote = fresh === "stale" || worker === "stale" ? " · Dane nieaktualne" : "";
+  healthEl.textContent =
+    `Agenci SLA breach: ${slaBad} · GA4: ${fresh} · Worker: ${worker}${staleNote}`;
   document.getElementById("delegat-banner").hidden = !!settings.delegat_configured;
 }
 
@@ -334,12 +373,24 @@ function matchesMarketingFilter(entry) {
 }
 
 async function loadMarketing() {
-  const [cal, agents, settings, fbHealth] = await Promise.all([
-    api("/api/v1/content-calendar"),
-    api("/api/v1/agents"),
-    api("/api/v1/commander/settings").catch(() => ({})),
-    api("/api/v1/commander/marketing/fb-health").catch(() => null),
-  ]);
+  let cal;
+  let agents;
+  let settings;
+  let fbHealth;
+  try {
+    [cal, agents, settings, fbHealth] = await Promise.all([
+      api("/api/v1/content-calendar"),
+      api("/api/v1/agents"),
+      api("/api/v1/commander/settings").catch(() => ({})),
+      api("/api/v1/commander/marketing/fb-health").catch(() => null),
+    ]);
+  } catch (e) {
+    document.getElementById("calendar-entries").innerHTML =
+      `<p class="state-error">Nie udało się pobrać kolejki marketingu. <button type="button" id="mkt-retry">Spróbuj ponownie</button></p>`;
+    const retry = document.getElementById("mkt-retry");
+    if (retry) retry.onclick = () => loadMarketing().catch((err) => toast(err.message));
+    throw e;
+  }
 
   const folderUrl = settings.marketing_gdrive_folder_url;
   const folderHint = document.getElementById("gdrive-folder-hint");
@@ -511,29 +562,49 @@ document.querySelectorAll("#queue-filters .chip").forEach((chip) => {
 toggleMediaField();
 
 async function loadAnalytics() {
-  const [snap, orders, leads] = await Promise.all([
-    api("/api/v1/commander/analytics/snapshot"),
-    api("/api/v1/orders"),
-    api("/api/v1/leads"),
-  ]);
   const tiles = document.getElementById("analytics-tiles");
+  const ordersEl = document.getElementById("orders-list");
+  const leadsEl = document.getElementById("leads-list");
+  tiles.innerHTML = "<p class=\"hint\">Ładowanie analityki…</p>";
+  let snap;
+  let orders;
+  let leads;
+  try {
+    [snap, orders, leads] = await Promise.all([
+      api("/api/v1/commander/analytics/snapshot"),
+      api("/api/v1/orders"),
+      api("/api/v1/leads"),
+    ]);
+  } catch (e) {
+    tiles.innerHTML = `<p class="state-error">Nie udało się pobrać analityki. <button type="button" id="analytics-retry">Spróbuj ponownie</button></p>`;
+    ordersEl.innerHTML = "";
+    leadsEl.innerHTML = "";
+    const retry = document.getElementById("analytics-retry");
+    if (retry) retry.onclick = () => loadAnalytics().catch((err) => toast(err.message));
+    throw e;
+  }
   const f = snap.freshness || {};
-  tiles.innerHTML = Object.entries(f).map(([k, v]) => `
+  const entries = Object.entries(f);
+  tiles.innerHTML = entries.length
+    ? entries.map(([k, v]) => `
     <article class="card">
       <strong>${k.toUpperCase()}</strong>
       <p>Ostatnia sync: ${v.last_sync_at || "—"}</p>
-      <span class="badge stale-${v.status} ${v.status}">${v.status}</span>
+      <span class="badge stale-${v.status} ${v.status}">${v.status === "stale" ? "nieaktualne" : v.status}</span>
       ${v.staleness_seconds != null ? `<small>${v.staleness_seconds}s temu</small>` : ""}
-    </article>`).join("");
-  document.getElementById("orders-list").innerHTML =
+    </article>`).join("")
+    : "<p class=\"state-empty\">Brak kafelków świeżości — spokój.</p>";
+  ordersEl.innerHTML =
     (orders.orders || []).slice(0, 10).map((o) =>
-      `<div>#${o.order_id} · ${o.status} · €${o.total_gross}</div>`).join("") || "Brak";
-  document.getElementById("leads-list").innerHTML =
+      `<div>#${o.order_id} · ${o.status} · €${o.total_gross}</div>`).join("")
+    || "<p class=\"state-empty\">Brak zamówień.</p>";
+  leadsEl.innerHTML =
     (leads.leads || []).slice(0, 10).map((l) =>
       `<div>${l.email} · score ${l.game_score ?? "—"} · ${l.disposition || "open"}
-        <button type="button" data-lead-list-disp="${l.id}" data-disp="acked">Ack</button>
-        <button type="button" data-lead-list-disp="${l.id}" data-disp="closed">Close</button>
-      </div>`).join("") || "Brak";
+        <button type="button" data-lead-list-disp="${l.id}" data-disp="acked">Potwierdź</button>
+        <button type="button" data-lead-list-disp="${l.id}" data-disp="closed">Zamknij</button>
+      </div>`).join("")
+    || "<p class=\"state-empty\">Brak leadów.</p>";
   document.querySelectorAll("[data-lead-list-disp]").forEach((btn) => {
     btn.onclick = async () => {
       try {
@@ -543,33 +614,48 @@ async function loadAnalytics() {
         });
         loadAnalytics().catch((e) => toast(e.message));
       } catch (e) {
-        toast(e.message || "Disposition failed");
+        toast(e.message || "Nie udało się zmienić statusu leada");
       }
     };
   });
 }
 
 async function loadAgents() {
-  const data = await api("/api/v1/agents");
-  document.getElementById("agents-list").innerHTML = (data.agents || []).map((a) => `
-    <article class="card">
+  let data;
+  try {
+    data = await api("/api/v1/agents");
+  } catch (e) {
+    document.getElementById("agents-list").innerHTML =
+      `<p class="state-error">Nie udało się pobrać agentów. <button type="button" id="agents-retry">Spróbuj ponownie</button></p>`;
+    document.getElementById("phase-c-cards").innerHTML = "";
+    const retry = document.getElementById("agents-retry");
+    if (retry) retry.onclick = () => loadAgents().catch((err) => toast(err.message));
+    throw e;
+  }
+  const agents = data.agents || [];
+  document.getElementById("agents-list").innerHTML = agents.length
+    ? agents.map((a) => `
+    <article class="card" role="listitem">
       <strong>${a.label}</strong>
       <p>Status: ${a.status} · SLA: <span class="badge ${a.sla_ok ? "ok" : "red"}">${a.sla_ok ? "ok" : "breach"}</span></p>
       <p>Held: ${a.held_count || 0}</p>
       <p class="links">
-        ${a.agent_id === "design" ? '<a href="/api/v1/design-agent/health" target="_blank" rel="noopener">INSPIRE</a>' : ""}
-        ${a.agent_id === "engineering" ? '<a href="https://os.flexgrafik.nl" target="_blank" rel="noopener noreferrer">Agent OS</a>' : ""}
+        ${a.agent_id === "design" ? '<a href="/api/v1/design-agent/health" target="_blank" rel="noopener noreferrer">INSPIRE</a>' : ""}
+        ${a.agent_id === "engineering" ? '<a href="https://os.flexgrafik.nl" target="_blank" rel="noopener noreferrer">Agent OS (AI PM)</a>' : ""}
+        ${a.agent_id === "marketing" ? "<span class=\"hint\">AI Marketing</span>" : ""}
       </p>
       ${a.status === "LIVE"
         ? `<button type="button" data-pause="${a.agent_id}">Pauza</button>`
         : `<button type="button" data-resume="${a.agent_id}">Wznów</button>`}
-    </article>`).join("");
+    </article>`).join("")
+    : "<p class=\"state-empty\">Brak agentów w rejestrze.</p>";
 
   document.getElementById("phase-c-cards").innerHTML = `
-    <article class="card placeholder"><strong>Procurement</strong><p>Phase C</p></article>
-    <article class="card placeholder"><strong>Finance</strong><p>Phase C</p></article>
-    <article class="card placeholder"><strong>Support</strong><p>Phase C</p></article>
-    <article class="card placeholder"><strong>Negotiation</strong><p>Phase C</p></article>`;
+    <article class="card"><strong>AI Sprzedawca</strong><p>LIVE — widget + sales_cta</p></article>
+    <article class="card"><strong>AI Marketing</strong><p>LIVE — kolejka publikacji</p></article>
+    <article class="card"><strong>AI Project Manager</strong><p>LIVE — hop Agent OS</p></article>
+    <article class="card"><strong>AI Customer Success</strong><p>PARTIAL — cs_followup queue (COI-CS-01)</p></article>
+    <article class="card"><strong>AI Asystent Zarządu</strong><p>LIVE — brief HITL</p></article>`;
 
   document.querySelectorAll("[data-pause]").forEach((btn) => {
     btn.onclick = async () => {
@@ -587,9 +673,19 @@ async function loadAgents() {
 }
 
 async function loadAudit() {
-  const data = await api("/api/v1/commander/audit-log?limit=30");
-  document.getElementById("audit-list").innerHTML = (data.entries || []).map((e) =>
-    `<div><code>${e.ts}</code> · ${e.action} · ${e.actor_id} (${e.actor_role})</div>`).join("") || "Brak";
+  try {
+    const data = await api("/api/v1/commander/audit-log?limit=30");
+    document.getElementById("audit-list").innerHTML = (data.entries || []).length
+      ? (data.entries || []).map((e) =>
+        `<div><code>${e.ts}</code> · ${e.action} · ${e.actor_id} (${e.actor_role})</div>`).join("")
+      : "<p class=\"state-empty\">Brak wpisów audytu.</p>";
+  } catch (e) {
+    document.getElementById("audit-list").innerHTML =
+      `<p class="state-error">Nie udało się pobrać audytu. <button type="button" id="audit-retry">Spróbuj ponownie</button></p>`;
+    const retry = document.getElementById("audit-retry");
+    if (retry) retry.onclick = () => loadAudit().catch((err) => toast(err.message));
+    throw e;
+  }
 }
 
 async function loadSettings() {
@@ -636,25 +732,17 @@ function showView(name) {
     v.classList.toggle("active", active);
   });
   document.querySelectorAll(".nav-btn").forEach((b) => {
-    if (b.dataset.view === "more") {
-      b.classList.toggle("active", name === "audit" || name === "settings");
-      return;
-    }
-    b.classList.toggle("active", b.dataset.view === name);
+    const on = b.dataset.view === name;
+    b.classList.toggle("active", on);
+    if (on) b.setAttribute("aria-current", "page");
+    else b.removeAttribute("aria-current");
   });
-  const sheet = document.getElementById("more-sheet");
-  if (sheet) sheet.hidden = true;
 }
 
 function bindNavButtons(selector) {
   document.querySelectorAll(selector).forEach((btn, idx, all) => {
     btn.addEventListener("click", async () => {
       const view = btn.dataset.view;
-      if (view === "more") {
-        const sheet = document.getElementById("more-sheet");
-        if (sheet) sheet.hidden = !sheet.hidden;
-        return;
-      }
       showView(view);
       try {
         await refresh();
@@ -675,13 +763,16 @@ function bindNavButtons(selector) {
 
 bindNavButtons("#main-nav .nav-btn");
 bindNavButtons("#bottom-nav .nav-btn");
-bindNavButtons(".more-sheet-btn");
 
-const moreClose = document.getElementById("more-sheet-close");
-if (moreClose) {
-  moreClose.onclick = () => {
-    const sheet = document.getElementById("more-sheet");
-    if (sheet) sheet.hidden = true;
+const settingsToAudit = document.getElementById("settings-to-audit");
+if (settingsToAudit) {
+  settingsToAudit.onclick = async () => {
+    showView("audit");
+    try {
+      await refresh();
+    } catch (e) {
+      toast(e.message);
+    }
   };
 }
 
@@ -690,6 +781,14 @@ document.getElementById("auth-save").onclick = () => {
   toast("Token zapisany");
   refresh().catch((e) => toast(e.message));
 };
+
+const authToggle = document.getElementById("auth-toggle");
+if (authToggle) {
+  authToggle.onclick = () => {
+    const body = document.getElementById("auth-body");
+    setAuthExpanded(!!body?.hidden);
+  };
+}
 
 document.getElementById("settings-form").onsubmit = async (e) => {
   e.preventDefault();
@@ -748,6 +847,7 @@ document.getElementById("ticket-close").onclick = () => {
 
 document.getElementById("auth-logout").onclick = () => {
   clearToken();
+  setAuthExpanded(true);
   toast("Wylogowano");
 };
 
@@ -785,7 +885,7 @@ async function bootstrapAuth() {
   }
 
   if (getToken()) {
-    document.getElementById("jwt-input").value = getToken();
+    document.getElementById("jwt-input").value = "";
     updateAuthStatus();
     refresh().catch((e) => toast(e.message));
   } else {

@@ -43,9 +43,11 @@ Czy Dowódca po otwarciu dashboardu **panuje**, czy jest **panikowany**?
 | Ciągłość | Delegat + 24h escalate |
 | Rozliczalność | Audit hash-chain 24mo |
 
-## IA (D0.1)
+## IA (D0.1 → D0.15)
 
-Top nav (max 5): **Home | Marketing | Analytics | Agents | Settings**
+Top nav (max 5, desktop≡mobile): **Start | Marketing | Analityka | Agenci | Ustawienia**  
+Audyt = secondary (D0.15). Session chrome = D0.16. Empty/error/stale = D0.17. Home load = D0.18. Hops = D0.19.  
+Dogfood: [UX-DOGFOOD-PHONE.md](UX-DOGFOOD-PHONE.md).
 
 ## Daily Loop (D0.2)
 

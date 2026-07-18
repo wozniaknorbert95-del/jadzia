@@ -4,11 +4,14 @@
 
 - **Canonical brain**: `brain.md` (this repo)
 - **Canonical backlog**: `todo.json` (this repo)
-- **Active program**: MOBILE-02 LIVE; Demand F0–F7 + MOBILE-01 LIVE (`87d7912`)
-- **Active plan / gate**: `todo.json` → `active_gate` = `NONE` (await next GO)
-- **Latest handoff**: `docs/handoffs/2026-07-18-coi-cmd-mobile-02-CLOSE.md`
-- **Phone hub ADR**: `docs/design/coi-commander/adr/D0.6-phone-hub-not-merge.md`
-- **Prod tip SoT:** VPS `/opt/jadzia` `git rev-parse --short HEAD` (MOBILE-02 LIVE **`81347e8`**, FEATURE `abba339`). Do not tip-chase every docs commit; FEATURE_SHA stays in task notes.
+- **Active program**: FlexGrafik **AI OS + AI MBA** (G0 constitution + CEO Dashboard UX + PROC/OPS/ROLE/CS thin)
+- **Active plan / gate**: `todo.json` → `active_gate` = `NONE` (human dogfood + OPS-AI window)
+- **Latest handoff**: `docs/handoffs/2026-07-18-coi-ai-os-program-CLOSE.md`
+- **Scorecard**: `docs/ops/SCORECARD-AI-OS-ZALICZENIE.md`
+- **AI MBA spine**: `docs/learning/AI-MBA-FLEXGRAFIK-SPINE.md`
+- **Knowledge index**: `docs/ops/KNOWLEDGE-SYSTEM-INDEX.md`
+- **Phone hub ADR**: `docs/design/coi-commander/adr/D0.6-phone-hub-not-merge.md` (+ D0.15 IA)
+- **Prod tip SoT:** VPS `/opt/jadzia` `git rev-parse --short HEAD` (verify after deploy). FEATURE notes in handoffs.
 - **Deploy runbook**: `docs/ops/INT-002-V2-DEPLOY.md` (+ `deployment/rev-demand-01-deploy-vps.sh`)
 - **Reconciliation runbook**: `docs/ops/REVENUE-RECONCILIATION.md`
 - **Approved contract**: `docs/contracts/REVENUE-EVENT-CONTRACT-v1.md`
@@ -25,7 +28,7 @@
 - **Least privilege**: do not read or process secrets (`.env*`, keys) or large binaries.
 - **1-1-1 rule**: implement one change at a time; finish with a handoff note in `docs/handoffs/`.
 - **REV deploy order**: integrate REV-R0-02A → deploy Jadzia INT-002 v2 consumer → deploy zzpackage producer → controlled E2E.
-- **Current prod state**: Jadzia VPS **`master`** (verified tip **`7aa32d8`**, FEATURE UI `87d7912`, Demand-03 FEATURE `367549f`); producer theme `@ bfe8485`; Gate C PASS (#3209); COD OFF; iDEAL-only; Mollie TEST; **Gate D parked**; min 199 unchanged.
+- **Current prod state**: Demand F0–F7 LIVE; MOBILE/MAP LIVE; AI OS docs+UX push 2026-07-18; Gate D parked; min 199 unchanged.
 
 ## Copy & languages
 

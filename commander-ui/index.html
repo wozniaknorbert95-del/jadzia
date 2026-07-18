@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-  <meta name="theme-color" content="#0f172a" />
+  <meta name="theme-color" content="#0f1419" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
   <title>COI Commander</title>
@@ -20,24 +20,28 @@
   <header class="topbar" role="banner">
     <h1>COI Commander</h1>
     <nav aria-label="Główne menu" id="main-nav" class="nav-desktop">
-      <button type="button" data-view="home" class="nav-btn active">Home</button>
+      <button type="button" data-view="home" class="nav-btn active" aria-current="page">Start</button>
       <button type="button" data-view="marketing" class="nav-btn">Marketing</button>
-      <button type="button" data-view="analytics" class="nav-btn">Analytics</button>
+      <button type="button" data-view="analytics" class="nav-btn">Analityka</button>
       <button type="button" data-view="agents" class="nav-btn">Agenci</button>
-      <button type="button" data-view="audit" class="nav-btn">Audyt</button>
       <button type="button" data-view="settings" class="nav-btn">Ustawienia</button>
     </nav>
   </header>
 
   <section id="auth-panel" class="panel auth-panel" aria-label="Logowanie">
-    <p id="auth-status" class="hint" aria-live="polite">Telegram: /commander → jednorazowy link (15 min).</p>
-    <label for="jwt-input">Token JWT (fallback)</label>
-    <input id="jwt-input" type="password" autocomplete="off" placeholder="Bearer token" />
-    <div class="auth-actions">
-      <button type="button" id="auth-save">Zapisz token</button>
-      <button type="button" id="auth-logout" class="secondary">Wyloguj</button>
+    <div class="auth-summary">
+      <p id="auth-status" class="hint" aria-live="polite">Telegram: /commander → jednorazowy link (15 min).</p>
+      <button type="button" id="auth-toggle" class="secondary" hidden>Sesja</button>
     </div>
-    <p class="hint">UI po polsku · treści biznesowe NL</p>
+    <div id="auth-body" class="auth-body">
+      <label for="jwt-input">Token JWT (fallback)</label>
+      <input id="jwt-input" type="password" autocomplete="off" placeholder="Bearer token" />
+      <div class="auth-actions">
+        <button type="button" id="auth-save">Zapisz token</button>
+        <button type="button" id="auth-logout" class="secondary">Wyloguj</button>
+      </div>
+      <p class="hint">UI po polsku · treści biznesowe NL</p>
+    </div>
   </section>
 
   <section id="ticket-panel" class="panel" hidden aria-labelledby="ticket-title">
@@ -60,7 +64,7 @@
       <div id="health-strip" class="health-strip" aria-live="polite"></div>
       <section class="system-map" aria-labelledby="system-map-title">
         <h3 id="system-map-title">Mapa systemu</h3>
-        <p class="hint">Osobne systemy — otwieraj z hubu (ADR D0.6). Bez merge kodu. Basic Auth u właściciela hosta.</p>
+        <p class="hint">Osobne systemy — otwieraj z hubu (ADR D0.6 / D0.19). Bez merge kodu. Basic Auth u właściciela hosta (OS/VCMS).</p>
         <div class="system-map-links">
           <a class="map-link" href="https://api.zzpackage.flexgrafik.nl/commander/" target="_blank" rel="noopener noreferrer">Commander (ten hub)</a>
           <a class="map-link" href="https://os.flexgrafik.nl" target="_blank" rel="noopener noreferrer">Agent OS Mission Control</a>
@@ -113,7 +117,7 @@
     </section>
 
     <section id="view-analytics" class="view" aria-labelledby="analytics-title" hidden>
-      <h2 id="analytics-title">Analytics & Revenue</h2>
+      <h2 id="analytics-title">Analityka i przychody</h2>
       <div id="analytics-tiles" class="card-grid"></div>
       <h3>Zamówienia</h3>
       <div id="orders-list" class="list"></div>
@@ -122,9 +126,9 @@
     </section>
 
     <section id="view-agents" class="view" aria-labelledby="agents-title" hidden>
-      <h2 id="agents-title">Rejestr agentów</h2>
+      <h2 id="agents-title">Rejestr agentów (5 ról AI OS)</h2>
       <div id="agents-list" class="card-grid"></div>
-      <h3>Moduły Phase C</h3>
+      <h3>Role zaliczeniowe / luki</h3>
       <div id="phase-c-cards" class="card-grid"></div>
     </section>
 
@@ -137,6 +141,7 @@
 
     <section id="view-settings" class="view" aria-labelledby="settings-title" hidden>
       <h2 id="settings-title">Ustawienia</h2>
+      <p class="hint"><button type="button" class="linkish" data-view="audit" id="settings-to-audit">Otwórz Audyt (secondary)</button></p>
       <form id="settings-form" class="form">
         <label for="delegat-email">Email Delegata (eskalacja 24h)</label>
         <input id="delegat-email" type="email" />
@@ -158,8 +163,8 @@
         <h3>Mapa systemu (URL, read-only)</h3>
         <ul class="system-map-settings hint">
           <li>Commander: https://api.zzpackage.flexgrafik.nl/commander/</li>
-          <li>Agent OS: https://os.flexgrafik.nl</li>
-          <li>VCMS: https://cmd.flexgrafik.nl</li>
+          <li>Agent OS: https://os.flexgrafik.nl (Basic Auth)</li>
+          <li>VCMS: https://cmd.flexgrafik.nl (Basic Auth)</li>
           <li>VCMS docs: https://cmd.flexgrafik.nl/docs/</li>
           <li>Wizard: https://zzpackage.flexgrafik.nl/wizard/</li>
           <li>DA health: https://api.zzpackage.flexgrafik.nl/api/v1/design-agent/health</li>
@@ -170,18 +175,12 @@
   </main>
 
   <nav id="bottom-nav" class="bottom-nav" aria-label="Menu mobilne">
-    <button type="button" data-view="home" class="nav-btn active">Home</button>
+    <button type="button" data-view="home" class="nav-btn active" aria-current="page">Start</button>
     <button type="button" data-view="marketing" class="nav-btn">Marketing</button>
-    <button type="button" data-view="analytics" class="nav-btn">Analytics</button>
+    <button type="button" data-view="analytics" class="nav-btn">Analityka</button>
     <button type="button" data-view="agents" class="nav-btn">Agenci</button>
-    <button type="button" data-view="more" class="nav-btn" id="nav-more-btn">Więcej</button>
+    <button type="button" data-view="settings" class="nav-btn">Ustawienia</button>
   </nav>
-
-  <div id="more-sheet" class="more-sheet" hidden>
-    <button type="button" data-view="audit" class="nav-btn more-sheet-btn">Audyt</button>
-    <button type="button" data-view="settings" class="nav-btn more-sheet-btn">Ustawienia</button>
-    <button type="button" id="more-sheet-close" class="nav-btn">Zamknij</button>
-  </div>
 
   <dialog id="confirm-dialog" aria-labelledby="confirm-title">
     <h2 id="confirm-title">Potwierdź akcję</h2>

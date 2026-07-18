@@ -26,9 +26,40 @@ body {
   line-height: 1.5;
 }
 
-.skip-link {
-  position: absolute;
-  left: -9999px;
+.auth-panel .auth-summary {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+}
+
+.auth-panel.auth-collapsed .auth-body {
+  display: none;
+}
+
+.auth-panel.auth-collapsed {
+  padding-top: 0.5rem;
+  padding-bottom: 0.5rem;
+}
+
+.state-empty, .state-error {
+  color: var(--muted);
+  margin: 0.75rem 0;
+}
+
+.state-error {
+  color: var(--critical);
+}
+
+button.linkish, .linkish {
+  background: none;
+  border: none;
+  color: var(--accent);
+  text-decoration: underline;
+  cursor: pointer;
+  padding: 0;
+  min-height: 44px;
+  font: inherit;
 }
 .skip-link:focus {
   left: 1rem;
