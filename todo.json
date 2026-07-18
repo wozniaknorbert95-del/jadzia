@@ -1,15 +1,15 @@
 {
   "project": "Jadzia-Core",
-  "last_updated": "2026-07-18 (session CLOSE MBA W08+W09; next W10)",
+  "last_updated": "2026-07-18 (Q2 Agent CLOSE W26; CHECKPOINT — commit W10–W26 before Q3)",
   "status": "active",
-  "plan": "docs/handoffs/2026-07-18-session-CLOSE-mba-w08-w09.md",
+  "plan": "docs/handoffs/2026-07-18-session-CLOSE-mba-q2-checkpoint.md",
   "active_gate": null,
-  "active_plan": "MBA W08+W09 done. Next: COI-MBA-03 W10 marketing HITL. Gate D parked. standing_go off.",
+  "active_plan": "MBA Q2 Agent CLOSE. PAUSE: commit W10–W26 before Q3. Next after hygiene: COI-MBA-20 W27. Gate D parked. standing_go off.",
   "standing_go_closeout": false,
   "closeout_queue": [],
   "closeout_expires": "2026-07-25",
-  "next_human": "Gate D parked. Optional: Dowódca PASS W08/W09.",
-  "next_agent": "Nowa sesja: /vibe-init → /blast COI-MBA-03 (W10 marketing HITL). Docs-only. Nie Gate D.",
+  "next_human": "CHECKPOINT: commit/push MBA W10–W26. Optional Dowódca PASS Q1/Q2. Gate D parked.",
+  "next_agent": "PO COMMIT: /vibe-init → /blast COI-MBA-20 (W27). Nie startuj Q3 na brudnym tree. Nie Gate D.",
   "agent_rule": "Nie pytaj A/B. Deploy tylko ze zgodą (standing_go_closeout off). Nie sekrety. Nie kasuj parków. Hard STOP: Gate D/Mollie/fake PASS.",
   "sprints": {
     "remediation": "completed",
@@ -177,6 +177,176 @@
       "owner": "agent",
       "checklist": "docs/handoffs/2026-07-18-coi-mba-02-CLOSE.md",
       "note": "DONE 2026-07-18: W09-sales-path-dogfood.md + spine tydz.9 Agent [x]."
+    },
+    {
+      "id": "COI-MBA-03",
+      "sprint": "FlexGrafik AI OS",
+      "task": "Week 10 marketing HITL micro-lekcja (PUBLISH-B + intake LIVE)",
+      "status": "completed",
+      "priority": "high",
+      "owner": "agent",
+      "checklist": "docs/handoffs/2026-07-18-coi-mba-03-CLOSE.md",
+      "note": "DONE 2026-07-18: W10-marketing-hitl.md + spine tydz.10 Agent [x]. Dowódca untouched."
+    },
+    {
+      "id": "COI-MBA-04",
+      "sprint": "FlexGrafik AI OS",
+      "task": "Week 11 board brief HITL micro-lekcja (STRATEGY-HITL LIVE)",
+      "status": "completed",
+      "priority": "high",
+      "owner": "agent",
+      "checklist": "docs/handoffs/2026-07-18-coi-mba-04-CLOSE.md",
+      "note": "DONE 2026-07-18: W11-board-brief-hitl.md + spine tydz.11 Agent [x]. Dowódca untouched."
+    },
+    {
+      "id": "COI-MBA-05",
+      "sprint": "FlexGrafik AI OS",
+      "task": "Week 12 Ops AI interim micro-lekcja (OPS-AI-01 PASS maintain)",
+      "status": "completed",
+      "priority": "high",
+      "owner": "agent",
+      "checklist": "docs/handoffs/2026-07-18-coi-mba-05-CLOSE.md",
+      "note": "DONE 2026-07-18: W12-ops-ai-interim.md + spine tydz.12 Agent [x]. Dowódca untouched. No VPS re-measure."
+    },
+    {
+      "id": "COI-MBA-06",
+      "sprint": "FlexGrafik AI OS",
+      "task": "Week 13 Q1 gate review (scorecard + week log)",
+      "status": "completed",
+      "priority": "high",
+      "owner": "agent",
+      "checklist": "docs/handoffs/2026-07-18-coi-mba-06-CLOSE.md",
+      "note": "DONE 2026-07-18: W13-q1-gate-review.md + spine tydz.13 Agent [x]. Q1 Agent CLOSE; Dowódca untouched."
+    },
+    {
+      "id": "COI-MBA-07",
+      "sprint": "FlexGrafik AI OS",
+      "task": "Week 14 HITL vs HOTL policy micro-lekcja (D0.11 apply)",
+      "status": "completed",
+      "priority": "high",
+      "owner": "agent",
+      "checklist": "docs/handoffs/2026-07-18-coi-mba-07-CLOSE.md",
+      "note": "DONE 2026-07-18: W14-hitl-vs-hotl.md + spine tydz.14 Agent [x]. Q2 start; Dowódca untouched; no live graduate."
+    },
+    {
+      "id": "COI-MBA-08",
+      "sprint": "FlexGrafik AI OS",
+      "task": "Week 15 sales agent deep micro-lekcja (CTA SLA + disposition QA)",
+      "status": "completed",
+      "priority": "high",
+      "owner": "agent",
+      "checklist": "docs/handoffs/2026-07-18-coi-mba-08-CLOSE.md",
+      "note": "DONE 2026-07-18: W15-sales-agent-deep.md + spine tydz.15 Agent [x]. Dowódca untouched."
+    },
+    {
+      "id": "COI-MBA-09",
+      "sprint": "FlexGrafik AI OS",
+      "task": "Week 16 marketing agent depth micro-lekcja (undo60 + risk matrix)",
+      "status": "completed",
+      "priority": "high",
+      "owner": "agent",
+      "checklist": "docs/handoffs/2026-07-18-coi-mba-09-CLOSE.md",
+      "note": "DONE 2026-07-18: W16-marketing-agent-depth.md + spine tydz.16 Agent [x]. Dowódca untouched; no live FB."
+    },
+    {
+      "id": "COI-MBA-10",
+      "sprint": "FlexGrafik AI OS",
+      "task": "Week 17 PM Agent OS ritual micro-lekcja (COI-PM-01 maintain)",
+      "status": "completed",
+      "priority": "high",
+      "owner": "agent",
+      "checklist": "docs/handoffs/2026-07-18-coi-mba-10-CLOSE.md",
+      "note": "DONE 2026-07-18: W17-pm-agent-os-ritual.md. Dowódca untouched; no OS merge."
+    },
+    {
+      "id": "COI-MBA-11",
+      "sprint": "FlexGrafik AI OS",
+      "task": "Week 18 CS BLAST scope micro-lekcja (COI-CS-01)",
+      "status": "completed",
+      "priority": "high",
+      "owner": "agent",
+      "checklist": "docs/handoffs/2026-07-18-coi-mba-11-CLOSE.md",
+      "note": "DONE 2026-07-18: W18-cs-blast.md. Dowódca untouched; no CS re-implement."
+    },
+    {
+      "id": "COI-MBA-12",
+      "sprint": "FlexGrafik AI OS",
+      "task": "Week 19 CS implement micro-lekcja (COI-CS-02 LIVE)",
+      "status": "completed",
+      "priority": "high",
+      "owner": "agent",
+      "checklist": "docs/handoffs/2026-07-18-coi-mba-12-CLOSE.md",
+      "note": "DONE 2026-07-18: W19-cs-implement.md. Dowódca untouched; no auto-trigger."
+    },
+    {
+      "id": "COI-MBA-13",
+      "sprint": "FlexGrafik AI OS",
+      "task": "Week 20 board assistant depth micro-lekcja (brief quality + hygiene)",
+      "status": "completed",
+      "priority": "high",
+      "owner": "agent",
+      "checklist": "docs/handoffs/2026-07-18-coi-mba-13-CLOSE.md",
+      "note": "DONE 2026-07-18: W20-board-assistant-depth.md + spine tydz.20 Agent [x]. Dowódca untouched."
+    },
+    {
+      "id": "COI-MBA-14",
+      "sprint": "FlexGrafik AI OS",
+      "task": "Week 21 Delegat escalation micro-lekcja (D0.9 + SMTP-01)",
+      "status": "completed",
+      "priority": "high",
+      "owner": "agent",
+      "checklist": "docs/handoffs/2026-07-18-coi-mba-14-CLOSE.md",
+      "note": "DONE 2026-07-18: W21-delegat-escalation.md + spine tydz.21 Agent [x]. Dowódca untouched; no secrets/smoke."
+    },
+    {
+      "id": "COI-MBA-15",
+      "sprint": "FlexGrafik AI OS",
+      "task": "Week 22 Authz scopes micro-lekcja (D0.13)",
+      "status": "completed",
+      "priority": "high",
+      "owner": "agent",
+      "checklist": "docs/handoffs/2026-07-18-coi-mba-15-CLOSE.md",
+      "note": "DONE 2026-07-18: W22-authz-scopes.md + spine tydz.22 Agent [x]. Dowódca untouched."
+    },
+    {
+      "id": "COI-MBA-16",
+      "sprint": "FlexGrafik AI OS",
+      "task": "Week 23 audit chain micro-lekcja (D0.10)",
+      "status": "completed",
+      "priority": "high",
+      "owner": "agent",
+      "checklist": "docs/handoffs/2026-07-18-coi-mba-16-CLOSE.md",
+      "note": "DONE 2026-07-18: W23-audit-chain.md + spine tydz.23 Agent [x]."
+    },
+    {
+      "id": "COI-MBA-17",
+      "sprint": "FlexGrafik AI OS",
+      "task": "Week 24 cross-role handoff map micro-lekcja",
+      "status": "completed",
+      "priority": "high",
+      "owner": "agent",
+      "checklist": "docs/handoffs/2026-07-18-coi-mba-17-CLOSE.md",
+      "note": "DONE 2026-07-18: W24-cross-role-handoff.md + spine tydz.24 Agent [x]."
+    },
+    {
+      "id": "COI-MBA-18",
+      "sprint": "FlexGrafik AI OS",
+      "task": "Week 25 Q2 ops AI push micro-lekcja",
+      "status": "completed",
+      "priority": "high",
+      "owner": "agent",
+      "checklist": "docs/handoffs/2026-07-18-coi-mba-18-CLOSE.md",
+      "note": "DONE 2026-07-18: W25-q2-ops-ai-push.md + spine tydz.25 Agent [x]."
+    },
+    {
+      "id": "COI-MBA-19",
+      "sprint": "FlexGrafik AI OS",
+      "task": "Week 26 Q2 gate review micro-lekcja",
+      "status": "completed",
+      "priority": "high",
+      "owner": "agent",
+      "checklist": "docs/handoffs/2026-07-18-coi-mba-19-CLOSE.md",
+      "note": "DONE 2026-07-18: W26-q2-gate-review.md + Q2 Agent CLOSE. Checkpoint before Q3."
     },
     {
       "id": "COI-KNOW-00",

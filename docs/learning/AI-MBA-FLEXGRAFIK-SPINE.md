@@ -1,6 +1,6 @@
 # AI MBA FlexGrafik — Spine 52 tygodnie
 
-**Status:** ACTIVE (COI-MBA-02) — spine + weeks/ (W08–W09)  
+**Status:** ACTIVE (COI-MBA-19) — **Q2 Agent CLOSE**; weeks/ W08–W26; **pauza przed Q3** (checkpoint commit)  
 **Date:** 2026-07-18  
 **Zasada:** lekcja bez wdrożenia w firmie = **niezaliczona**.  
 **Zakaz G0:** nie generować 400+ lekcji naraz; mikro-lekcje tygodniowo w `docs/learning/weeks/`.  
@@ -42,23 +42,23 @@ Cel „400+ lekcji” ≈ ~8 mikro-lekcji/tydzień × 52 — powstają przy wdro
 | 7 | Role contracts x5 | ROLE-01 + Agents map | COI-ROLE-01 | [x] | [ ] |
 | 8 | Knowledge hygiene | KNOW mirrors + W08 lekcja | COI-KNOW-00/01 | [x] | [ ] |
 | 9 | Sales path dogfood | Demand+sales_cta + W09 lekcja | REV-DEMAND F0–F7 | [x] | [ ] |
-| 10 | Marketing HITL ritual | One publish cycle | MKT maintain | [ ] | [ ] |
-| 11 | Board brief ritual | Weekly brief HITL | STRATEGY maintain | [ ] | [ ] |
-| 12 | Ops AI interim read | Mid-window % check | OPS-AI interim | [ ] | [ ] |
-| 13 | Q1 gate review | Scorecard update + Week log | MBA Q1 CLOSE | [ ] | [ ] |
-| 14 | HITL vs HOTL policy | Document graduation thresholds use | D0.11 apply | [ ] | [ ] |
-| 15 | Sales agent contract deep | CTA SLA + disposition QA | ROLE sales | [ ] | [ ] |
-| 16 | Marketing agent depth | Undo60 + risk matrix drill | ROLE mkt | [ ] | [ ] |
+| 10 | Marketing HITL ritual | One publish cycle | MKT maintain | [x] | [ ] |
+| 11 | Board brief ritual | Weekly brief HITL | STRATEGY maintain | [x] | [ ] |
+| 12 | Ops AI interim read | Mid-window % check | OPS-AI interim | [x] | [ ] |
+| 13 | Q1 gate review | Scorecard update + Week log | MBA Q1 CLOSE | [x] | [ ] |
+| 14 | HITL vs HOTL policy | Document graduation thresholds use | D0.11 apply | [x] | [ ] |
+| 15 | Sales agent contract deep | CTA SLA + disposition QA | ROLE sales | [x] | [ ] |
+| 16 | Marketing agent depth | Undo60 + risk matrix drill | ROLE mkt | [x] | [ ] |
 | 17 | PM Agent OS ritual | One HITL approve end-to-end | COI-PM-01 | [x] | [ ] |
 | 18 | CS BLAST | COI-CS-01 scope locked | COI-CS-01 | [x] | [ ] |
 | 19 | CS implement slice | CS API+UI HITL | COI-CS-02 | [x] | [ ] |
-| 20 | Board assistant depth | Brief quality + ticket hygiene | ROLE board | [ ] | [ ] |
-| 21 | Delegat escalation drill | SMTP/TG escalate test | D0.9 | [ ] | [ ] |
-| 22 | Authz scopes review | JWT roles dogfood | D0.13 | [ ] | [ ] |
-| 23 | Audit chain ritual | Verify hash-chain weekly | D0.10 | [ ] | [ ] |
-| 24 | Cross-role handoff map | Process links between 5 roles | PROC link | [ ] | [ ] |
-| 25 | Q2 ops AI push | Automations toward 60% | OPS-AI push | [ ] | [ ] |
-| 26 | Q2 gate review | Scorecard 5 roles LIVE/GAP clear | MBA Q2 CLOSE | [ ] | [ ] |
+| 20 | Board assistant depth | Brief quality + ticket hygiene | ROLE board | [x] | [ ] |
+| 21 | Delegat escalation drill | SMTP/TG escalate test | D0.9 | [x] | [ ] |
+| 22 | Authz scopes review | JWT roles dogfood | D0.13 | [x] | [ ] |
+| 23 | Audit chain ritual | Verify hash-chain weekly | D0.10 | [x] | [ ] |
+| 24 | Cross-role handoff map | Process links between 5 roles | PROC link | [x] | [ ] |
+| 25 | Q2 ops AI push | Automations toward 60% | OPS-AI push | [x] | [ ] |
+| 26 | Q2 gate review | Scorecard 5 roles LIVE/GAP clear | MBA Q2 CLOSE | [x] | [ ] |
 | 27 | Ops AI 60% window | OPS-AI-01 evidence 60.6% | COI-OPS-AI-01 | [x] | [ ] |
 | 28 | PWA install ritual | PWA foundation LIVE | COI-CMD-MOBILE-02 | [x] | [ ] |
 | 29 | Home performance tune | Skeleton/latency notes | UX-03 follow | [ ] | [ ] |
@@ -88,13 +88,13 @@ Cel „400+ lekcji” ≈ ~8 mikro-lekcji/tydzień × 52 — powstają przy wdro
 
 ### Truth-repair note (COI-MBA-01)
 
-Agent `[x]` tylko z mapy BLAST / completed todo + evidence. Nie oznacza Dowódca PASS. Następna otwarta lekcja: **W10** (marketing HITL) — osobny gate.
+Agent `[x]` tylko z mapy BLAST / completed todo + evidence. Nie oznacza Dowódca PASS. **Q1+Q2 Agent CLOSE** (W13, W26). Pauza przed Q3 — commit W10–W26. Następna lekcja po checkpoincie: **W27**. Autonomia ON, ale nie batchuj Q3 bez hygiene.
 
 ## Folder lekcji
 
 ```text
-docs/learning/weeks/W08-knowledge-hygiene.md  # COI-MBA-01
-docs/learning/weeks/W09-sales-path-dogfood.md # COI-MBA-02
+docs/learning/weeks/W08 … W26-q2-gate-review.md  # COI-MBA-01 … COI-MBA-19
+# Q3+ dopiero po commit checkpoint
 ```
 
 Szablon Week N: cel | treść (mikro) | wdrożenie (link handoff/PR) | Dowódca PASS/FAIL.
