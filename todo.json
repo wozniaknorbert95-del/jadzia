@@ -1,15 +1,15 @@
 {
   "project": "Jadzia-Core",
-  "last_updated": "2026-07-18 (MBA Agent YEAR CLOSE W08–W52; Dowódca PASS open)",
+  "last_updated": "2026-07-18 (MBA Agent YEAR 100% W00–W52 FINAL)",
   "status": "active",
-  "plan": "docs/handoffs/2026-07-18-session-CLOSE-mba-YEAR-agent.md",
+  "plan": "docs/handoffs/2026-07-18-session-CLOSE-mba-FINAL.md",
   "active_gate": null,
-  "active_plan": "MBA Agent YEAR CLOSE. Next: human Dowódca PASS / Year zaliczenie OR new non-MBA feature. Gate D parked. standing_go off.",
+  "active_plan": "MBA Agent YEAR 100% COMPLETE. Human: Dowódca PASS / Year zaliczenie. Agent: non-MBA feature only. Gate D parked. standing_go off.",
   "standing_go_closeout": false,
   "closeout_queue": [],
   "closeout_expires": "2026-07-25",
-  "next_human": "Optional push. Dowódca PASS W0–W52 + Year zaliczenie. Gate D parked. Nie commit _mint_*.",
-  "next_agent": "/vibe-init — nowy feature poza MBA. Nie regeneruj weeks W08–W52. Nie Gate D. Nie fake Dowódca PASS.",
+  "next_human": "Dowódca PASS W0–W52 + Year zaliczenie. Gate D parked. Optional: delete local _mint_* (gitignored).",
+  "next_agent": "/vibe-init — TYLKO nowy feature poza MBA. ZERO regeneracji weeks. ZERO Dowódca PASS. ZERO Gate D.",
   "agent_rule": "Nie pytaj A/B. Deploy tylko ze zgodą (standing_go_closeout off). Nie sekrety. Nie kasuj parków. Hard STOP: Gate D/Mollie/fake PASS.",
   "sprints": {
     "remediation": "completed",
@@ -357,6 +357,16 @@
       "owner": "agent",
       "checklist": "docs/handoffs/2026-07-18-coi-mba-YEAR-Agent-CLOSE.md",
       "note": "DONE 2026-07-18: W27–W52 week files; spine Agent YEAR; Dowódca untouched; Gate D parked. GO kompleksowo."
+    },
+    {
+      "id": "COI-MBA-FINAL",
+      "sprint": "FlexGrafik AI OS",
+      "task": "MBA Agent FINAL — W00–W07 + INDEX + gitignore mint + 100% close",
+      "status": "completed",
+      "priority": "critical",
+      "owner": "agent",
+      "checklist": "docs/handoffs/2026-07-18-session-CLOSE-mba-FINAL.md",
+      "note": "DONE 2026-07-18: W00–W52 complete; INDEX; mint gitignored; Dowódca untouched."
     },
     {
       "id": "COI-KNOW-00",

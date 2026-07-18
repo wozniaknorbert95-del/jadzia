@@ -4,11 +4,11 @@
 
 - **Canonical brain**: `brain.md` (this repo)
 - **Canonical backlog**: `todo.json` (this repo)
-- **Active program**: FlexGrafik AI OS LIVE; **MBA Agent YEAR CLOSE** (weeks W08–W52)
-- **Active plan / gate**: none — Dowódca PASS / Year zaliczenie = human; next feature poza MBA
-- **Latest handoff**: `docs/handoffs/2026-07-18-session-CLOSE-mba-YEAR-agent.md`
+- **Active program**: FlexGrafik AI OS LIVE; **MBA Agent YEAR 100%** (W00–W52)
+- **Active plan / gate**: none — only human Dowódca PASS / Year zaliczenie; next = non-MBA feature
+- **Latest handoff**: `docs/handoffs/2026-07-18-session-CLOSE-mba-FINAL.md`
 - **Scorecard**: `docs/ops/SCORECARD-AI-OS-ZALICZENIE.md` — **#1–9 LIVE**
-- **MBA spine**: `docs/learning/AI-MBA-FLEXGRAFIK-SPINE.md` (+ `weeks/W08`–`W52`)
+- **MBA spine**: `docs/learning/AI-MBA-FLEXGRAFIK-SPINE.md` + `docs/learning/weeks/INDEX.md`
 - **Post-coding**: `.agents/workflows/post-coding.md` (fresh GO for VPS)
 - **Knowledge / processes**: `docs/ops/KNOWLEDGE-SYSTEM-INDEX.md`, `PROCESS-CATALOG.md`
 - **Prod tip SoT:** VPS `/opt/jadzia` `git rev-parse --short HEAD`
@@ -19,8 +19,8 @@
 - **No-ask:** one path, execute; park human-only as `ready_for_human`.
 - **Zasada 11:** VPS only with GO (`standing_go_closeout` **false**).
 - **Hard STOP:** Gate D, Mollie LIVE, secrets, merge OS↔jadzia, fake PASS.
-- **MBA:** nie regeneruj W08–W52; nie zaznaczaj kolumny Dowódca.
-- **Least privilege:** no `_mint_*` / `_recover_*` in commits.
+- **MBA:** COMPLETE — nie regeneruj W00–W52; nie zaznaczaj kolumny Dowódca.
+- **Least privilege:** no `_mint_*` / `_recover_*` in commits (gitignored).
 
 ## Copy & languages
 

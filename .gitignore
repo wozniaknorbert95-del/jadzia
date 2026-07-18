@@ -27,3 +27,6 @@ scratch/
 *.egg-info/
 .pytest_cache/
 Portfolio*/
+# Local dogfood/recovery helpers — never ship
+deployment/_mint_*.py
+deployment/_recover_*.py

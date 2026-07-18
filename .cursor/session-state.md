@@ -1,8 +1,7 @@
-# Session state — MBA Agent YEAR CLOSE
+# MBA Agent YEAR 100% FINAL
 
-- Tips: `f69374e` (Q2) + YEAR commit
-- weeks/W08–W52 present
+- Complete: W00–W52 + INDEX
 - Spine Agent [x] 0–52; Dowódca all [ ]
-- Parks: Gate D, Mollie, secrets, no mint in commits
-- Handoff: `docs/handoffs/2026-07-18-session-CLOSE-mba-YEAR-agent.md`
-- Next: human PASS / push / non-MBA feature
+- Handoff: docs/handoffs/2026-07-18-session-CLOSE-mba-FINAL.md
+- mint/recover: gitignored
+- Next human only: Dowódca PASS / Year zaliczenie

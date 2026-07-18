@@ -1,34 +1,39 @@
 # Week 52 — Year CLOSE
 
-**Status:** Agent wdrozenie DONE · Dowodca PASS pending  
+**Status:** Agent wdrożenie DONE · Dowódca PASS pending (Year zaliczenie)  
 **Date:** 2026-07-18  
 **Gate:** MBA YEAR CLOSE  
 **Spine:** tydz. 52
 
 ## Cel
 
-Agent YEAR CLOSE docs: AI OS LIVE + MBA weeks shipped. Zaliczenie = Dowodca.
+**Agent YEAR CLOSE:** AI OS LIVE + pełny komplet mikro-lekcji W00–W52.  
+Zaliczenie programu FlexGrafik AI OS = **Dowódca** (nie auto-PASS).
 
-## Tresc (mikro)
+## Treść (mikro)
 
-1. Scorecard #1-9 LIVE.
-2. Q1-Q4 Agent week files present.
-3. Dowodca PASS kolumna nadal otwarta.
-4. Nie Year zaliczenie auto-PASS.
+1. Scorecard #1–9 LIVE — nie regresować.  
+2. Folder `weeks/W00`–`W52` + [INDEX](./INDEX.md) kompletny.  
+3. Spine kolumna Agent `[x]` 0–52; kolumna Dowódca nadal human.  
+4. Parks: Gate D, Mollie LIVE, secrets, merge OS — **parked** (W51).  
+5. Następny ruch po Year: nowy feature poza MBA lub human PASS ritual.
 
-## Wdrozenie (dowod)
+## Wdrożenie (dowód)
 
 | Artefakt | Link |
 |----------|------|
-| SCORECARD | [SCORECARD](../../ops/SCORECARD-AI-OS-ZALICZENIE.md) |
-| CLOSEOUT | [CLOSEOUT](../../handoffs/2026-07-18-ai-os-CLOSEOUT.md) |
-| Spine | [Spine](../AI-MBA-FLEXGRAFIK-SPINE.md) |
+| SCORECARD | [SCORECARD-AI-OS-ZALICZENIE](../../ops/SCORECARD-AI-OS-ZALICZENIE.md) |
+| CLOSEOUT | [ai-os-CLOSEOUT](../../handoffs/2026-07-18-ai-os-CLOSEOUT.md) |
+| Spine | [AI-MBA-FLEXGRAFIK-SPINE](../AI-MBA-FLEXGRAFIK-SPINE.md) |
+| Week INDEX | [INDEX.md](./INDEX.md) |
+| YEAR Agent CLOSE | [coi-mba-YEAR-Agent-CLOSE](../../handoffs/2026-07-18-coi-mba-YEAR-Agent-CLOSE.md) |
+| FINAL CLOSE | [session-CLOSE-mba-FINAL](../../handoffs/2026-07-18-session-CLOSE-mba-FINAL.md) |
 
-## Dowodca
+## Dowódca
 
-- [ ] PASS — przeczytane W52 + rytual/apply wg tresci  
-- [ ] FAIL — (powod)
+- [ ] PASS — Year zaliczenie: przeczytane W52 + scorecard + akceptacja Agent YEAR  
+- [ ] FAIL — (powód)
 
-## Nastepny tydzien
+## Następny tydzień
 
-Program Agent CLOSE; Dowodca Year PASS (human).
+— koniec spine 52. Program maintain / nowy gate poza MBA.

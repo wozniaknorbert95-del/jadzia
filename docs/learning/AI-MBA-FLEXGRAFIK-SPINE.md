@@ -1,10 +1,11 @@
 # AI MBA FlexGrafik — Spine 52 tygodnie
 
-**Status:** ACTIVE (COI-MBA-YEAR) — **Agent YEAR CLOSE** weeks/W08–W52; Dowódca PASS open  
-**Tip baseline:** `f69374e` (Q2) + YEAR commit  
+**Status:** **COMPLETE Agent YEAR** — weeks/W00–W52 + INDEX; Dowódca PASS open  
+**Tip:** `origin/master` po FINAL push  
 **Date:** 2026-07-18  
-**Zasada:** lekcja bez wdrożenia w firmie = **niezaliczona**.  
-**Zakaz G0:** domyślnie mikro tygodniowo; batch W27–W52 tylko pod GO „kompleksowo” 2026-07-18.  
+**Zasada:** lekcja bez wdrożenia w firmie = **niezaliczona** (kolumna Dowódca).  
+**Zakaz G0:** batch W00–W52 domknięty pod GO 2026-07-18; **nie regeneruj**.  
+
 
 **Post-CLOSEOUT:** AI OS scorecard #1–9 LIVE — kolumna **Agent** = dowód wdrożenia w todo/handoff; kolumna **Dowódca** = rytuał human (nie auto-PASS).
 
@@ -88,16 +89,17 @@ Cel „400+ lekcji” ≈ ~8 mikro-lekcji/tydzień × 52 — powstają przy wdro
 | 51 | Stop-list audit | Parks Gate D still parked | STOP | [x] | [ ] |
 | 52 | Year CLOSE | AI OS zaliczenie review | MBA YEAR CLOSE | [x] | [ ] |
 
-### Truth-repair note (COI-MBA-01 + YEAR Agent)
+### Truth-repair note (FINAL)
 
-Agent `[x]` = week file + LIVE maintain evidence (nie Dowódca PASS).
-**Q1–Q4 Agent CLOSE** 2026-07-18 (docs). Gate D / Mollie nadal parked.
-Kolumna Dowódca = rytuał human na Year zaliczenie.
+Agent `[x]` = week file + LIVE maintain evidence (nie Dowódca PASS).  
+**Agent YEAR 100%** 2026-07-18: W00–W52 + INDEX. Gate D / Mollie parked.  
+Kolumna Dowódca = human Year zaliczenie. Handoff: `docs/handoffs/2026-07-18-session-CLOSE-mba-FINAL.md`.
 
 ## Folder lekcji
 
 ```text
-docs/learning/weeks/W08-…W52-*.md  # COI-MBA-01 … YEAR
+docs/learning/weeks/INDEX.md       # pełna mapa W00–W52
+docs/learning/weeks/W00-…W52-*.md
 ```
 
-Szablon Week N: cel | treść (mikro) | wdrożenie (link handoff/PR) | Dowódca PASS/FAIL.
+Szablon Week N: cel | treść (mikro) | wdrożenie (link) | Dowódca PASS/FAIL.

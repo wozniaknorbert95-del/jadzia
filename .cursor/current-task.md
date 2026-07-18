@@ -1,4 +1,5 @@
-# MBA Agent YEAR CLOSE — DONE
+# MBA Agent YEAR 100% — COMPLETE
 
-Do not regenerate W08–W52.
-Next: human Dowódca PASS or new feature vibe-init.
+Do not continue MBA drip.
+Do not mark Dowódca PASS.
+Next: human OR non-MBA vibe-init.
