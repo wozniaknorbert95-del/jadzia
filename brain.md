@@ -2,7 +2,7 @@
 status: "[ACTIVE]"
 title: "Jadzia-Core Brain (Canonical)"
 owner: "Norbert Wozniak"
-updated: "2026-07-17"
+updated: "2026-07-18"
 readiness_overall: "~90% operational spine (Commander + Marketing text/photo/video LIVE + DA INSPIRE)"
 ---
 
@@ -48,7 +48,7 @@ Szczegóły charter: `flexgrafik-meta/docs/core/jadzia-operating-charter.md`
 
 | Element | Kontrakt | Status |
 |---------|----------|--------|
-| Order ingestion | INT-002 `POST /webhooks/woocommerce/order` | v1 LIVE; v2 consumer CODE PASS, deploy blocked on 02A/02B integration |
+| Order ingestion | INT-002 `POST /webhooks/woocommerce/order` | v1+v2 LIVE @ `504fdf6`; producer zzpackage @ `bfe8485`; E2E Gate C/D pending |
 | `order_node` | `agent/nodes/order_node.py` | LIVE |
 | `orders` table | `jadzia.db` — `agent/db.py` | LIVE v1; additive v2 evidence migration tested |
 | Lead ingestion | INT-004 `POST /api/v1/leads` | LIVE (DEPLOY-02 E2E PASS) |

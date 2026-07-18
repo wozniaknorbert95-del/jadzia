@@ -1,12 +1,12 @@
 {
   "project": "Jadzia-Core",
-  "last_updated": "2026-07-18 (REV-R0-02A recovered; deploy live; E2E pending)",
+  "last_updated": "2026-07-18 (REV-R0-02A+02C live @ 504fdf6; Gate C/D E2E next)",
   "status": "active",
-  "plan": "docs/handoffs/2026-07-17-rev-r0-02c-deploy-EXECUTION.md",
+  "plan": "docs/handoffs/2026-07-18-rev-r0-02-session-CLOSE.md",
   "active_gate": "REV-R0-02C",
-  "active_plan": "docs/checklists/REV-R0-02C-controlled-e2e.md",
-  "next_human": "Kontrolowany E2E Mollie (Gate C) + autoryzowany real order (Gate D).",
-  "next_agent": "Po E2E: PR merge obu branchy, handoff CLOSE, bez deployu autonomicznego.",
+  "active_plan": "zzpackage/docs/checklists/REV-R0-02C-controlled-e2e.md",
+  "next_human": "Gate C: kontrolowany Mollie TEST; Gate D: jeden autoryzowany real paid order.",
+  "next_agent": "Prowadź Gate C/D wg checklisty; po PASS merge PR #3 (jadzia) + #74 (zzpackage).",
   "agent_rule": "Nie deployuj autonomicznie bez approve. Nie commituj sekretów.",
   "sprints": {
     "remediation": "completed",
@@ -28,11 +28,11 @@
       "id": "REV-R0-02C",
       "sprint": "Revenue War Room — Revenue Truth",
       "task": "INT-002 v2 consumer validation + durable SQLite evidence",
-      "status": "deploy_live_e2e_pending",
+      "status": "prod_live_e2e_pending",
       "priority": "critical",
       "owner": "agent",
-      "checklist": "docs/ops/INT-002-V2-DEPLOY.md",
-      "note": "Consumer+producer deployed 2026-07-17; REV-R0-02A recovered 2026-07-18; controlled E2E remains."
+      "checklist": "zzpackage/docs/checklists/REV-R0-02C-controlled-e2e.md",
+      "note": "VPS @ 504fdf6 (02A+02C); zzpackage producer @ bfe8485; FG_REVENUE_ENVIRONMENT=production; reconcile dry-run PASS; PRs: jadzia#3 zzpackage#74; Gate C/D remaining."
     },
     {
       "id": "DEPLOY-01",
