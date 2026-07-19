@@ -1,30 +1,39 @@
 ---
 status: "[ACTIVE]"
 title: "Marketing OS — START TUTAJ (operator)"
-updated: "2026-07-19 (propose LIVE 4ad1e99)"
+updated: "2026-07-19 (PROGRAM CLOSE tip 3c2fc6e ~86%)"
 ---
 
 # START TUTAJ — jedna ścieżka (ADHD)
 
-**Roadmapa:** [MKT-BRAIN-PRO.md](./MKT-BRAIN-PRO.md) — **~82%** overall · runtime **100%** · **MB_MODE=propose**  
-**Plan 14 dni:** [PLAN-14D.md](./PLAN-14D.md)  
-**Meta:** [META-CLICK-PATH.md](./META-CLICK-PATH.md) · [META-PACK-LEAN.md](./META-PACK-LEAN.md)  
-**Propose:** [PROPOSE-CUTOVER.md](./PROPOSE-CUTOVER.md)
+**Roadmapa:** [MKT-BRAIN-PRO.md](./MKT-BRAIN-PRO.md) — **~86%** overall · runtime **100%** · **MB_MODE=propose**  
+**Handoff:** [PROGRAM-CLOSE](../../handoffs/2026-07-19-MKT-BRAIN-PRO-PROGRAM-CLOSE.md)  
+**Meta:** [META-CLICK-PATH.md](./META-CLICK-PATH.md) · Scorecard: [WEEKLY-SCORECARD.md](./WEEKLY-SCORECARD.md)  
+**Draft scorecard:** `GET …/marketing/weekly-draft` · `python scripts/mb_weekly_scorecard_draft.py`
 
 | Co | Status |
 |----|--------|
-| **#1 Meta lean** | **HOLD** — published €5; 7d bez edycji |
-| **#2 Propose** | **LIVE** tip `4ad1e99` |
-| **#4 F4/F4b** | **LIVE** ticket_only + paste_ready v1 (Ads create PARK) |
+| **#1 Meta lean** | **HOLD** — €5; 7d bez edycji |
+| Runtime F0→F4b | **100%** LIVE tip `3c2fc6e` |
+| Weekly scorecard draft | **LIVE** (spend/CPL = wklej Ads Manager) |
+| Insights agent-half | **READY** — Graph `read_insights` = HITL |
 | L0 InitiateCheckout | PASS |
-| L0 Purchase | PARK (Mollie) |
-| Twoje zadanie | Telegram APPROVE → ticket · Lead → WA &lt;15 min |
+| L0 Purchase | ready_for_human (Mollie) |
+| Agent | **observe-only** |
+
+## Twoje 4+1 parks (HITL)
+
+1. **H-Meta** — hold 7d → optimize ([META-CLICK-PATH](./META-CLICK-PATH.md))
+2. **H-Purchase** — Mollie GO → Test Events Purchase
+3. **H-Insights** — Graph `read_insights` → nowy token → `set-fb-access-token`
+4. **H-WA** — Lead → WA &lt;15 min ([SPEED-TO-LEAD](./SPEED-TO-LEAD.md))
+5. **H-F4x** — distribution / blog / lead webhook — dopiero po triggerach
 
 ## Operator (Telegram)
 
 1. Karty MB w propose — scoruj / APPROVE gdy sensowne.
 2. APPROVE = ticket paste-ready (nie Ads API create).
-3. Lead z Meta → WA &lt;15 min — [SPEED-TO-LEAD.md](./SPEED-TO-LEAD.md).
+3. Co tydzień: draft scorecard w TG (bez decyzji HOLD/KILL — Ty decydujesz).
 
 ### Meta (#1 HOLD)
 

@@ -4,8 +4,8 @@ Session continuity for `/vibe-init`: read the **last 2** handoffs from this fold
 
 ## Start here (vibe-init) — 2026-07-19 MKT-BRAIN-PRO
 
-1. [`2026-07-19-MKT-BRAIN-PRO-PLAN-HANDOFF.md`](2026-07-19-MKT-BRAIN-PRO-PLAN-HANDOFF.md) — **START: F0 implementacja**
-2. [`2026-07-19-META-PACK-01-READY.md`](2026-07-19-META-PACK-01-READY.md) — Dowódca: lean Meta L0 (parallel)
+1. [`2026-07-19-MKT-BRAIN-PRO-PROGRAM-CLOSE.md`](2026-07-19-MKT-BRAIN-PRO-PROGRAM-CLOSE.md) — **PROGRAM CLOSE ~86%** tip `3c2fc6e`
+2. [`docs/ops/marketing/OPERATOR-TODAY.md`](../ops/marketing/OPERATOR-TODAY.md) — operator start + human parks
 
 ## Ops rolling (hot ≤15)
 

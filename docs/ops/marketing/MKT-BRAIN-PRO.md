@@ -2,10 +2,10 @@
 status: "[ACTIVE]"
 title: "MKT-BRAIN-PRO — World-Class Marketing Ops Architecture"
 gate: "MKT-BRAIN-PRO"
-updated: "2026-07-19 (DH-AMBER + progress % )"
+updated: "2026-07-19 (PROGRAM CLOSE ~86%)"
 supersedes: "MKT-BRAIN-01 (sandbox-first draft — withdrawn)"
 owner: "Norbert Wozniak (Dowódca)"
-runtime_tip: "5299b22 (DH-AMBER + progress ~82%)"
+runtime_tip: "3c2fc6e (PROGRAM CLOSE ~86%)"
 mb_mode: "propose"
 ---
 
@@ -21,20 +21,23 @@ mb_mode: "propose"
 
 ## STATUS BOARD — 2026-07-19 (SoT)
 
-**Runtime tip:** **`5299b22`** · **MB_MODE:** `propose` · Data Health **ok** · F4b LIVE · VCMS Brain Bus: **LIVE**
+**Runtime tip:** **`3c2fc6e`** · **MB_MODE:** `propose` · Data Health **ok** · F4b LIVE · Weekly draft LIVE · VCMS Brain Bus: **LIVE**  
+**Handoff:** [PROGRAM-CLOSE](../../handoffs/2026-07-19-MKT-BRAIN-PRO-PROGRAM-CLOSE.md)
 
 ### Progress (SoT %)
 
 | Warstwa | Done | Left | % |
 |---------|------|------|---|
 | **Runtime MB (F0→F4b + Eval + Preflight + Organic + CEO)** | 13/13 deliverables | — | **100%** |
-| **Data Health honesty** | drivers + IC ack + Purchase park-info | observe 7d | **95%** |
-| **Paid Meta ops (#1 lean)** | published €5 HOLD | optimize later / pack €10 parity | **70%** |
+| **Data Health honesty** | drivers + IC ack + insights park-info | observe | **~98%** |
+| **Insights agent-half (#5)** | scopes + reason codes + DH park | Graph `read_insights` (HITL) | **READY** |
+| **Weekly scorecard draft** | DTL → JSON/PL + CLI/API/TG | Ads spend paste HITL | **LIVE** |
+| **Paid Meta ops (#1 lean)** | published €5 HOLD | optimize after 7d | **70%** |
 | **L0 pixel events** | IC PASS | Purchase PARK (Mollie) | **50%** |
-| **Faza 4 extras** (distribution / blog / lead webhook) | — | PARK / later | **0%** |
-| **Program overall** (runtime + ops + parks) | — | Meta hold · Purchase · insights · F4 extras | **~82%** |
+| **Faza 4 extras** (distribution / blog / lead webhook) | — | **ready_for_human** | **0%** |
+| **Program overall** (runtime + ops + parks) | agent debt CLOSED | Meta · Purchase · Graph · F4x | **~86%** |
 
-**Szacunek overall ~82%** = runtime zamknięty; reszta to świadome PARK/HITL (nie dług techniczny F0–F4b).
+**Szacunek overall ~86%** = agent-only CLOSED; cap = HITL parks (nie „later”).
 
 ### DONE (LIVE / PASS)
 
@@ -51,20 +54,24 @@ mb_mode: "propose"
 | **F4b** | paste_ready v1 templates + persist + idempotent Commander + TG no-token | tip **`0ae8244`**; smoke commander#15 cached |
 | **DH-AMBER** | Data Health drivers + L0 IC ack / Purchase park-info (info ≠ amber) | `L0_IC_VERIFIED=1` |
 | **Organic DTL** | FB post organic metrics → `organic_er_lift_pct` (+ link clicks lift) | `dtl/facebook_organic.py` in pipeline |
+| **INSIGHTS-READY** | Token scopes + organic reason codes + DH park `fb_read_insights` | tip **`3c2fc6e`**; LIVE po Graph |
+| **WEEKLY-DRAFT** | Scorecard draft z DTL (spend/CPL null) + CLI/API/TG | tip **`3c2fc6e`** |
 | **CEO↔brief** | Weekly brief → `ceo.priority` Brain Bus (`BRIEF_CEO_PRIORITY_ENABLED`) | `brief_node._maybe_publish_ceo_priority` |
 | **L0 IC** | Meta Test Events `InitiateCheckout` | pixel `1084197063740065` · PASS |
 
-### TODO — następne (kolejność)
+### ready_for_human (freeze — checklist, nie OPEN vague)
 
-**SoT tygodnia:** [PLAN-14D.md](./PLAN-14D.md) · klik Meta: [META-CLICK-PATH.md](./META-CLICK-PATH.md)
+**SoT tygodnia:** [PLAN-14D.md](./PLAN-14D.md) · klik Meta: [META-CLICK-PATH.md](./META-CLICK-PATH.md) · start: [OPERATOR-TODAY.md](./OPERATOR-TODAY.md)
 
-| Priorytet | Co | Owner | Blokada |
-|-----------|-----|-------|---------|
-| **1** | **META lean A1→A2→A3** Instant Form | Dowódca | published €5 — hold 7d / later optimize |
+| Priorytet | Co | Owner | Checklist |
+|-----------|-----|-------|-----------|
+| **1** | **META lean** Instant Form HOLD | Dowódca | Hold 7d €5 → optimize ([META-CLICK-PATH](./META-CLICK-PATH.md)) |
 | **2** | Shadow → GO `propose` | — | **DONE** LIVE tip `4ad1e99` |
-| **3** | L0 **Purchase** w Test Events | Dowódca | Mollie GO (PARK) |
+| **3** | L0 **Purchase** w Test Events | Dowódca | Mollie GO → Test Events Purchase |
 | **4** | **F4/F4b Act** ticket_only + paste_ready v1 | — | **DONE** tip `0ae8244` (Ads create PARK) |
-| **5** | FB `read_insights` token scope | Dowódca | Graph permissions |
+| **5** | FB `read_insights` LIVE | Dowódca | Graph scope → nowy token → `set-fb-access-token` |
+| **H-WA** | Speed-to-lead | Dowódca | Lead → WA &lt;15 min ([SPEED-TO-LEAD](./SPEED-TO-LEAD.md)) |
+| **H-F4x** | Distribution / blog / lead webhook | Dowódca | dopiero po triggerach (leady / GO) |
 
 ### Shadow evaluation rubric (gate → propose)
 
@@ -95,14 +102,16 @@ Runbook: [PROPOSE-CUTOVER.md](./PROPOSE-CUTOVER.md) · CLI `python scripts/mb_pr
 
 Gate D · Mollie LIVE charge · Ads API **create** · TikTok API C1-01 · full auto-publish · MMM · Redis queue · fake PASS
 
-### Human-only checklist (równolegle do shadow)
+### Human-only checklist (ready_for_human)
 
 | # | Item | Status |
 |---|------|--------|
-| H1 | Meta A1→A2→A3 publish €10 | **HOLD** published €5 ([META-CLICK-PATH](./META-CLICK-PATH.md)) |
-| H2 | Purchase Test Events | **PARK** |
+| H-Meta | Meta HOLD 7d €5 → optimize | **ready_for_human** ([META-CLICK-PATH](./META-CLICK-PATH.md)) |
+| H-Purchase | Purchase Test Events | **ready_for_human** (Mollie GO) |
+| H-Insights | Graph `read_insights` → token | **ready_for_human** (agent-half READY @ `3c2fc6e`) |
+| H-WA | WA &lt;15 min na lead | **ready_for_human** ([SPEED-TO-LEAD](./SPEED-TO-LEAD.md)) |
+| H-F4x | Distribution / blog / lead webhook | **ready_for_human** (po triggerach) |
 | H3 | Shadow n≥20 (staff-eval + /mb_eval) | **PASS** n=20/20 @ `ab1ed04` |
-| H4 | WA &lt;15 min na lead po publish | OPEN ([SPEED-TO-LEAD](./SPEED-TO-LEAD.md)) |
 
 ---
 

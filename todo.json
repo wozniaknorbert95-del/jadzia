@@ -1,15 +1,15 @@
 {
   "project": "Jadzia-Core",
-  "last_updated": "2026-07-19 (DH-AMBER LIVE tip 5299b22 ~82%)",
+  "last_updated": "2026-07-19 (PROGRAM CLOSE tip 3c2fc6e ~86%)",
   "status": "active",
   "plan": "docs/ops/marketing/MKT-BRAIN-PRO.md",
-  "active_gate": "MKT-BRAIN-PRO ~82% tip 5299b22; runtime 100%; DH overall=ok; MB_MODE=propose; Meta HOLD 70%; Purchase PARK; Ads create PARK",
-  "active_plan": "docs/ops/marketing/PLAN-14D.md — propose+F4b+DH LIVE; Meta #1 HOLD",
+  "active_gate": "MKT-BRAIN-PRO ~86% tip 3c2fc6e; runtime 100%; weekly draft LIVE; insights agent-half READY; Meta HOLD; Purchase/Graph/F4x ready_for_human",
+  "active_plan": "docs/ops/marketing/OPERATOR-TODAY.md — observe + 5 human parks",
   "standing_go_closeout": false,
   "closeout_queue": [],
   "closeout_expires": "2026-07-25",
-  "next_human": "Meta hold 7d; WA <15min; Telegram APPROVE opcjonalnie; Purchase tylko z Mollie GO",
-  "next_agent": "Observe propose cycles; no Ads create; FB read_insights when scope; F4 extras PARK",
+  "next_human": "1) Meta hold 7d→optimize 2) Mollie GO→Purchase Test Events 3) Graph read_insights→set-fb-access-token 4) WA <15min 5) F4 extras po triggerach",
+  "next_agent": "Observe-only propose cycles; no Ads create; no Mollie; no fake PASS parks",
   "agent_rule": "Nie pytaj A/B. Deploy tylko ze zgodą (standing_go_closeout off). Nie sekrety. Nie kasuj parków. Hard STOP: Gate D/Mollie/fake PASS.",
   "sprints": {
     "remediation": "completed",
@@ -1335,6 +1335,37 @@
       "owner": "agent",
       "checklist": "docs/handoffs/2026-07-19-MKT-BRAIN-PRO-DH-AMBER-CLOSE.md",
       "note": "Root cause was legacy l0_pixel_events amber lumping IC+Purchase. Split flags; L0_IC_VERIFIED=1; report.drivers + conscious_parks. Progress SoT ~82% overall."
+    },
+    {
+      "id": "MKT-BRAIN-PRO-INSIGHTS-READY",
+      "sprint": "MKT-BRAIN-PRO",
+      "task": "FB token scopes + organic reason codes + DH park fb_read_insights",
+      "status": "completed",
+      "priority": "high",
+      "owner": "agent",
+      "checklist": "docs/handoffs/2026-07-19-MKT-BRAIN-PRO-PROGRAM-CLOSE.md",
+      "note": "PASS LIVE 2026-07-19 tip 3c2fc6e; has_read_insights=false until Graph HITL; agent-half READY."
+    },
+    {
+      "id": "MKT-BRAIN-PRO-WEEKLY-DRAFT",
+      "sprint": "MKT-BRAIN-PRO",
+      "task": "Weekly scorecard draft from DTL + CLI/API/TG (no HOLD/KILL)",
+      "status": "completed",
+      "priority": "high",
+      "owner": "agent",
+      "checklist": "docs/handoffs/2026-07-19-MKT-BRAIN-PRO-PROGRAM-CLOSE.md",
+      "note": "PASS LIVE tip 3c2fc6e; spend/cpl null; GET weekly-draft week 2026-W29 leads=7."
+    },
+    {
+      "id": "MKT-BRAIN-PRO-PROGRAM-CLOSE",
+      "sprint": "MKT-BRAIN-PRO",
+      "task": "Program Close: freeze ready_for_human parks; overall ~86%",
+      "status": "completed",
+      "priority": "high",
+      "owner": "agent",
+      "checklist": "docs/handoffs/2026-07-19-MKT-BRAIN-PRO-PROGRAM-CLOSE.md",
+      "note": "Agent debt CLOSED. Cap: Meta HOLD, Purchase, Graph read_insights, WA, F4 extras. next_agent=observe-only."
     }
   ]
 }
+
