@@ -1,15 +1,15 @@
 {
   "project": "Jadzia-Core",
-  "last_updated": "2026-07-19 (MKT-BRAIN-PRO F3 LIVE @ 723a702 + VCMS wire)",
+  "last_updated": "2026-07-19 (MKT-BRAIN-PRO F2b memory + eval-pack)",
   "status": "active",
   "plan": "docs/ops/marketing/MKT-BRAIN-PRO.md",
-  "active_gate": "MKT-BRAIN-PRO F0–F3 LIVE @ 723a702; L0 IC PASS; VCMS→Brain Bus wired; human: 14d shadow ≥70%; Purchase PARK",
-  "active_plan": "MKT-BRAIN-PRO STATUS BOARD in MKT-BRAIN-PRO.md: F0–F3 LIVE; TODO=14d shadow→propose, Purchase PARK, Meta pack HITL, F2b Chroma optional, F4 blocked.",
+  "active_gate": "MKT-BRAIN-PRO F0–F3+F2b; L0 IC PASS; human: 14d shadow eval-pack ≥70%; Purchase PARK; F4 BLOCKED",
+  "active_plan": "F2b Campaign Memory LIVE path + shadow eval-pack. MB_MODE=shadow. F4/propose only after Dowódca GO.",
   "standing_go_closeout": false,
   "closeout_queue": [],
   "closeout_expires": "2026-07-25",
-  "next_human": "14d shadow accuracy ≥70% then GO propose. Purchase only with Mollie GO. Optional Meta Leads €10.",
-  "next_agent": "Optional F2b Chroma. No MB_MODE=propose without human GO. Observe Brain Bus + shadow cycles.",
+  "next_human": "Score shadow via eval-pack (agree/partial/disagree) ≥70%/14d → GO propose. Meta pack €10. Purchase PARK.",
+  "next_agent": "Observe memory+shadow. No MB_MODE=propose without GO. Optional organic ingest / brief_node CEO bridge.",
   "agent_rule": "Nie pytaj A/B. Deploy tylko ze zgodą (standing_go_closeout off). Nie sekrety. Nie kasuj parków. Hard STOP: Gate D/Mollie/fake PASS.",
   "sprints": {
     "remediation": "completed",
@@ -1265,6 +1265,16 @@
       "owner": "agent",
       "checklist": "docs/handoffs/2026-07-19-MKT-BRAIN-PRO-F3-CLOSE.md",
       "note": "PASS LIVE 2026-07-19 tip 723a702; smoke degraded+recover; VCMS scan→Brain Bus HTTP 200; BRAIN_BUS_SECRET on VPS."
+    },
+    {
+      "id": "MKT-BRAIN-PRO-F2b",
+      "sprint": "MKT-BRAIN-PRO",
+      "task": "F2b Campaign Vector Memory (Chroma+SQL degrade) + shadow eval-pack for 14d gate",
+      "status": "completed",
+      "priority": "high",
+      "owner": "agent",
+      "checklist": "docs/handoffs/2026-07-19-MKT-BRAIN-PRO-F2b-CLOSE.md",
+      "note": "PASS 2026-07-19; pytest F2b; memory status/sync + eval-pack API; F4 blocked."
     }
   ]
 }

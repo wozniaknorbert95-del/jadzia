@@ -78,6 +78,8 @@ def _new_action_id() -> str:
 
 def persist_decision(decision: Decision, facts_bundle: Dict[str, Any]) -> Dict[str, Any]:
     """Write shadow log + hypothesis + brain_event. Returns action record."""
+    from agent.marketing.campaign_memory import enrich_decision_with_memory, upsert_decision
+
     mode = get_mb_mode()
     action_id = _new_action_id()
     # Shadow mode: never allow external side-effects even if would_execute
@@ -86,20 +88,32 @@ def persist_decision(decision: Decision, facts_bundle: Dict[str, Any]) -> Dict[s
     if mode == "shadow":
         gov = "deny" if decision.proposed_action in ("block_scale",) else "review"
 
+    mem = enrich_decision_with_memory(decision)
+    rationale = decision.rationale_nl + (mem.get("memory_warning") or "")
+    dims = dict(decision.dims or {})
+    dims["memory_source"] = mem.get("memory_source")
+    dims["memory_hits"] = mem.get("memory_hits")
+    dims["memory_negative_hits"] = mem.get("memory_negative_hits")
+
     db_insert_marketing_shadow(
         {
             "action_id": action_id,
             "observed_facts_ref": facts_bundle.get("as_of"),
             "proposed_action": decision.proposed_action,
             "heuristic_rule_id": decision.heuristic_rule_id,
-            "llm_rationale_nl": decision.rationale_nl,
+            "llm_rationale_nl": rationale,
             "would_execute": would,
             "governance_result": gov,
             "mb_mode": mode,
             "hitl_status": "pending",
             "payload": {
                 "severity": decision.severity,
-                "dims": decision.dims,
+                "dims": dims,
+                "memory": {
+                    "source": mem.get("memory_source"),
+                    "hits": mem.get("hits") or [],
+                    "negative_hits": mem.get("memory_negative_hits"),
+                },
                 "facts_summary": {
                     "margin_avg_pct": facts_bundle.get("margin_avg_pct"),
                     "attribution_coverage_pct": facts_bundle.get("attribution_coverage_pct"),
@@ -112,6 +126,18 @@ def persist_decision(decision: Decision, facts_bundle: Dict[str, Any]) -> Dict[s
                     ),
                 },
             },
+        }
+    )
+
+    upsert_decision(
+        {
+            "action_id": action_id,
+            "heuristic_rule_id": decision.heuristic_rule_id,
+            "proposed_action": decision.proposed_action,
+            "llm_rationale_nl": rationale,
+            "governance_result": gov,
+            "hitl_status": "pending",
+            "payload": {"severity": decision.severity},
         }
     )
 
@@ -154,6 +180,9 @@ def persist_decision(decision: Decision, facts_bundle: Dict[str, Any]) -> Dict[s
         "decision": decision,
         "mb_mode": mode,
         "would_execute": would,
+        "memory_source": mem.get("memory_source"),
+        "memory_hits": mem.get("memory_hits"),
+        "memory_negative_hits": mem.get("memory_negative_hits"),
     }
 
 
@@ -174,15 +203,18 @@ def run_decision_cycle() -> Dict[str, Any]:
             continue
         records.append(persist_decision(d, bundle))
 
+    mem_sources = {r.get("memory_source") for r in records if r.get("memory_source")}
     logger.info(
-        "[mb.decision] mode=%s persisted=%s flags=%s",
+        "[mb.decision] mode=%s persisted=%s flags=%s memory_sources=%s",
         get_mb_mode(),
         len(records),
         len(bundle.get("quality_flags") or []),
+        sorted(mem_sources),
     )
     return {
         "mb_mode": get_mb_mode(),
         "facts_as_of": bundle.get("as_of"),
         "decisions_evaluated": len(decisions),
         "records": records,
+        "memory_sources": sorted(mem_sources),
     }

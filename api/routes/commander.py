@@ -345,6 +345,38 @@ async def get_marketing_shadow(
     }
 
 
+@router.get("/api/v1/commander/marketing/shadow/eval-pack")
+async def get_marketing_shadow_eval_pack(
+    limit: int = Query(default=50, ge=1, le=200),
+    _auth=Depends(require_scope("commander:read")),
+) -> dict:
+    """Shadow Evaluation Pack — Dowódca 14d accuracy review (≥70% gate)."""
+    from agent.marketing.shadow_eval import build_eval_pack
+
+    return build_eval_pack(limit=limit)
+
+
+@router.get("/api/v1/commander/marketing/memory/status")
+async def get_marketing_memory_status(
+    _auth=Depends(require_scope("commander:read")),
+) -> dict:
+    """F2b campaign memory status (Chroma or SQL degrade)."""
+    from agent.marketing.campaign_memory import memory_status
+
+    return memory_status()
+
+
+@router.post("/api/v1/commander/marketing/memory/sync")
+async def post_marketing_memory_sync(
+    limit: int = Query(default=100, ge=1, le=500),
+    _auth=Depends(require_scope("commander:read")),
+) -> dict:
+    """Re-index recent shadow rows into campaign memory."""
+    from agent.marketing.campaign_memory import sync_from_shadow
+
+    return sync_from_shadow(limit=limit)
+
+
 @router.post("/api/v1/commander/marketing/brain/cycle")
 async def post_marketing_brain_cycle(
     _auth=Depends(require_scope("commander:read")),

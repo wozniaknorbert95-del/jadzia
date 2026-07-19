@@ -36,6 +36,9 @@ def run_marketing_brain_cycle(*, send_telegram: bool = True) -> Dict[str, Any]:
     from agent.marketing.telegram_proposals import send_mb_proposal_telegram
 
     try:
+        from agent.marketing.campaign_memory import sync_from_shadow
+
+        mem_sync = sync_from_shadow(limit=50)
         cycle = run_decision_cycle()
         sent = 0
         if send_telegram:
@@ -56,12 +59,15 @@ def run_marketing_brain_cycle(*, send_telegram: bool = True) -> Dict[str, Any]:
             "records": len(cycle.get("records") or []),
             "telegram_sent": sent,
             "brain_events": events,
+            "memory_sync": mem_sync,
+            "memory_sources": cycle.get("memory_sources"),
         }
         logger.info(
-            "[mb.runtime] ok records=%s tg=%s events_done=%s",
+            "[mb.runtime] ok records=%s tg=%s events_done=%s memory=%s",
             summary["records"],
             sent,
             events.get("done"),
+            mem_sync.get("memory_source"),
         )
         return summary
     except Exception as exc:

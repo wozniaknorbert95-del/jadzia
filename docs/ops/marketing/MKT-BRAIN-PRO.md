@@ -2,10 +2,10 @@
 status: "[ACTIVE]"
 title: "MKT-BRAIN-PRO — World-Class Marketing Ops Architecture"
 gate: "MKT-BRAIN-PRO"
-updated: "2026-07-19 (status board F0–F3 LIVE)"
+updated: "2026-07-19 (F2b memory + shadow eval-pack)"
 supersedes: "MKT-BRAIN-01 (sandbox-first draft — withdrawn)"
 owner: "Norbert Wozniak (Dowódca)"
-runtime_tip: "723a702 (F3 code); docs tip-sync 9c6424a"
+runtime_tip: "pending F2b tip"
 mb_mode: "shadow"
 ---
 
@@ -21,7 +21,7 @@ mb_mode: "shadow"
 
 ## STATUS BOARD — 2026-07-19 (SoT)
 
-**Runtime tip (kod F3):** `723a702` · **MB_MODE:** `shadow` · VCMS Brain Bus: **LIVE** (PR [#40](https://github.com/wozniaknorbert95-del/Flex-vcms/pull/40))
+**Runtime tip:** F0–F3 `723a702` + **F2b** (campaign memory) · **MB_MODE:** `shadow` · VCMS Brain Bus: **LIVE**
 
 ### DONE (LIVE / PASS)
 
@@ -30,6 +30,7 @@ mb_mode: "shadow"
 | **F0** | Data Truth Layer (schema, ingest, margin facts, Data Health) | tip `f28a938`+; DTL interval 3600s |
 | **F1** | Decision engine + shadow log + Telegram HITL (no side-effects) + Organic-to-Paid + Profit Watchdog + hypotheses | tip `9314ddc`; shadow LIVE |
 | **F2** | Governance execute API + circuit breakers (`CB_SHADOW`, margin, pixel, stale…) | tip `269248b`; Act zablokowany w shadow |
+| **F2b** | Campaign Vector Memory (Chroma + SQL degrade) + shadow eval-pack | `campaign_memory.py`; pytest F2b; `GET …/memory/status` · `…/shadow/eval-pack` |
 | **F3** | Brain Bus webhook + `CB_ECOSYSTEM` + CEO stub + VCMS→jadzia notify | tip **`723a702`**; smoke degraded→recover; scan→HTTP 200 |
 | **L0 IC** | Meta Test Events `InitiateCheckout` (PL: Zainicjowanie przejścia do kasy) | pixel `1084197063740065` · 15:24:32 · [L0-INSTRUMENTATION.md](./L0-INSTRUMENTATION.md) |
 
@@ -37,13 +38,33 @@ mb_mode: "shadow"
 
 | Priorytet | Co | Owner | Blokada |
 |-----------|-----|-------|---------|
-| **1** | **14d shadow review** accuracy ≥70% → GO `MB_MODE=propose` | Dowódca | czas + ocena |
+| **1** | **14d shadow review** accuracy ≥70% → GO `MB_MODE=propose` | Dowódca | eval-pack + rubryka poniżej |
 | **2** | L0 **Purchase** w Test Events | Dowódca / agent | brak GO Mollie LIVE / test path |
 | **3** | META-PACK lean: Audience wykluczeń + Reel + Instant Form €10 | Dowódca | Ads Manager (HITL) |
-| **4** | **F2b** ChromaDB campaign RAG (opcjonalnie) | Agent | nie blokuje propose |
-| **5** | **F4 Act** — propose→governed actions, distribution pack, Meta Lead webhook | Agent | dopiero po #1 GO |
-| **6** | CEO stub ↔ `brief_node` auto-priority (głębsze) | Agent | nice-to-have |
-| **7** | Organic FB insights ingest (minimal ER) | Agent | B3-1 deferred |
+| **4** | **F4 Act** — propose→governed actions, distribution pack, Meta Lead webhook | Agent | dopiero po #1 GO |
+| **5** | CEO stub ↔ `brief_node` auto-priority (głębsze) | Agent | nice-to-have |
+| **6** | Organic FB insights ingest (minimal ER) | Agent | B3-1 deferred |
+
+### Shadow evaluation rubric (gate → propose)
+
+| Score | Znaczenie |
+|-------|-----------|
+| **agree** | Decyzja MB = co zrobiłby Dowódca |
+| **partial** | Kierunek OK, zły severity/timing/kanał |
+| **disagree** | Zła / szkodliwa vs ocena Dowódcy |
+
+**Formula:** `accuracy = (agree + 0.5×partial) / scored × 100` · **gate ≥ 70%** na oknie 14d.
+
+**Export:** `GET /api/v1/commander/marketing/shadow/eval-pack?limit=50` · CLI `python scripts/mb_shadow_eval_export.py --format csv -o eval.csv`
+
+### F4 propose cutover checklist (NO ACT until GO)
+
+- [ ] Shadow accuracy ≥70% (rubryka)
+- [ ] Breakers: tylko oczekiwany `CB_SHADOW` (przed cutover); po GO — brak RED ecosystem/margin/pixel
+- [ ] Data Health: bez critical RED
+- [ ] L0 InitiateCheckout PASS (done); Purchase status jawny (PARK OK świadomie)
+- [ ] Jawny GO Dowódcy: `MB_MODE=propose` na VPS
+- [ ] Ticket template: „GO propose YYYY-MM-DD — accuracy=X% — tip=…”
 
 ### PARK (twarde — nie ruszamy)
 
@@ -53,7 +74,7 @@ Gate D · Mollie LIVE charge · Ads API **create** · TikTok API C1-01 · full a
 
 | # | Item | Status |
 |---|------|--------|
-| H1 | Shadow log review ≥70% (14d) | **OPEN** |
+| H1 | Shadow log review ≥70% (14d) — użyj eval-pack | **OPEN** |
 | H2 | Purchase Test Events | **PARK** |
 | H3 | Custom Audience klientów → wykluczenie | OPEN ([OPERATOR-TODAY](./OPERATOR-TODAY.md)) |
 | H4 | Kampania Leads Instant Form €10 | OPEN ([META-PACK-LEAN](./META-PACK-LEAN.md)) |
@@ -390,14 +411,15 @@ Tabela `brain_events` + schemat:
 | EDC `brain_events` processor | **DONE** (rozszerzone w F3) |
 | DoD: Dowódca shadow review ≥70% | **TODO** (14d clock) |
 
-### Faza 2 — Governance + Breakers — **DONE LIVE (core)** · Chroma = **F2b TODO**
+### Faza 2 — Governance + Breakers — **DONE LIVE (core)** · F2b memory **DONE**
 
 | Deliverable | Status |
 |-------------|--------|
 | Governance `approval_token` + execute API | **DONE** (shadow blocks execute) |
 | Circuit breakers (+ F3 `CB_ECOSYSTEM`) | **DONE** |
 | Commander analytics (shadow / breakers) | **DONE** |
-| ChromaDB RAG | **TODO F2b** (SQL shadow = degraded path) |
+| ChromaDB RAG (hash embed + SQL degrade) | **DONE F2b** |
+| Shadow eval-pack + rubric | **DONE** |
 | DoD: Telegram APPROVE → real Act | **BLOCKED** do F4 + propose GO |
 
 ### Faza 3 — Brain Bus + KB bridge — **DONE LIVE** tip `723a702`
