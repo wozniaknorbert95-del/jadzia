@@ -1,15 +1,15 @@
 {
   "project": "Jadzia-Core",
-  "last_updated": "2026-07-19 (PLAN-14D LIVE 3912f8b)",
+  "last_updated": "2026-07-19 (MKT-BRAIN-PRO-PREFLIGHT)",
   "status": "active",
   "plan": "docs/ops/marketing/MKT-BRAIN-PRO.md",
-  "active_gate": "PLAN-14D LIVE @ 3912f8b; human Meta A1-A3; staff-eval n=14/20; F4 BLOCKED; Purchase PARK",
-  "active_plan": "docs/ops/marketing/PLAN-14D.md LIVE — Dowodca clicks META-CLICK-PATH",
+  "active_gate": "MKT-BRAIN-PRO #1 Meta HOLD €5; #2 eval PASS n=20 @ ab1ed04; preflight→GO propose BLOCKED; F4 BLOCKED; Purchase PARK",
+  "active_plan": "docs/ops/marketing/PLAN-14D.md — #1 Meta HOLD + #2 preflight (kolejność PRO)",
   "standing_go_closeout": false,
   "closeout_queue": [],
   "closeout_expires": "2026-07-25",
-  "next_human": "Open META-CLICK-PATH.md: A1 Audience, A2 Form EUR10, A3 Reel/static Publish, WA<15min",
-  "next_agent": "Staff-eval continue to n>=20; park propose until GO",
+  "next_human": "WA <15min gdy lead; GO propose tylko z ticketem z PROPOSE-CUTOVER; Meta #1 hold",
+  "next_agent": "Await HITL GO propose; keep shadow; no F4 without GO; Meta #1 hold",
   "agent_rule": "Nie pytaj A/B. Deploy tylko ze zgodą (standing_go_closeout off). Nie sekrety. Nie kasuj parków. Hard STOP: Gate D/Mollie/fake PASS.",
   "sprints": {
     "remediation": "completed",
@@ -1285,6 +1285,36 @@
       "owner": "agent",
       "checklist": "docs/handoffs/2026-07-19-MKT-BRAIN-PRO-ORG-CEO-CLOSE.md",
       "note": "PASS LIVE 2026-07-19 tip b9060ba; dtl facebook_organic degraded OK; CEO brief bus on; F4 blocked."
+    },
+    {
+      "id": "MKT-BRAIN-PRO-EVAL",
+      "sprint": "MKT-BRAIN-PRO",
+      "task": "Eval v2 + staff-eval gate n>=20 accuracy>=70%/14d",
+      "status": "completed",
+      "priority": "critical",
+      "owner": "agent",
+      "checklist": "docs/ops/marketing/MKT-BRAIN-PRO.md",
+      "note": "PASS 2026-07-19 tip ab1ed04; n=20/20 acc=100% gate_ready=true. Roadmap #2 evidence."
+    },
+    {
+      "id": "MKT-BRAIN-PRO-PREFLIGHT",
+      "sprint": "MKT-BRAIN-PRO",
+      "task": "Propose cutover preflight (evidence + GO ticket; NO MB_MODE flip)",
+      "status": "completed",
+      "priority": "critical",
+      "owner": "agent",
+      "checklist": "docs/handoffs/2026-07-19-MKT-BRAIN-PRO-PREFLIGHT-CLOSE.md",
+      "note": "PASS 2026-07-19 pytest 5/5; VPS READY_FOR_GO tip ab1ed04; API propose-preflight. MB_MODE shadow. #1 Meta untouched."
+    },
+    {
+      "id": "MKT-BRAIN-PRO-F4",
+      "sprint": "MKT-BRAIN-PRO",
+      "task": "F4 Act after Dowodca GO MB_MODE=propose",
+      "status": "blocked",
+      "priority": "high",
+      "owner": "agent",
+      "checklist": "docs/ops/marketing/PROPOSE-CUTOVER.md",
+      "note": "ready_for_human: ticket GO propose accuracy=100% n=20 tip=ab1ed04. Then deploy + CONFIRM=GO_PROPOSE cutover script. Act still token-gated."
     }
   ]
 }

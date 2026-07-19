@@ -371,6 +371,20 @@ async def get_marketing_shadow_accuracy(
     return compute_accuracy(window_days=window_days)
 
 
+@router.get("/api/v1/commander/marketing/propose-preflight")
+async def get_marketing_propose_preflight(
+    window_days: int = Query(default=14, ge=1, le=90),
+    _auth=Depends(require_scope("commander:read")),
+) -> dict:
+    """
+    Propose cutover evidence pack — DOES NOT flip MB_MODE.
+    Verdict READY_FOR_GO | BLOCKED + go_ticket for Dowódca HITL.
+    """
+    from agent.marketing.propose_preflight import run_propose_preflight
+
+    return run_propose_preflight(window_days=window_days)
+
+
 @router.post("/api/v1/commander/marketing/shadow/eval-score")
 async def post_marketing_shadow_eval_score(
     action_id: str = Query(...),

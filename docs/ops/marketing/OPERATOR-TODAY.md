@@ -6,35 +6,35 @@ updated: "2026-07-19 (PLAN-14D)"
 
 # START TUTAJ — jedna ścieżka (ADHD)
 
+**Roadmapa:** [MKT-BRAIN-PRO.md](./MKT-BRAIN-PRO.md) (#1 Meta · #2 shadow→propose · #4 F4)  
 **Plan 14 dni:** [PLAN-14D.md](./PLAN-14D.md)  
-**Klikaj Meta tutaj:** [META-CLICK-PATH.md](./META-CLICK-PATH.md) — **A1 → A2 → A3**  
-**Teksty NL do wklejenia:** [META-PACK-LEAN.md](./META-PACK-LEAN.md)
+**Klikaj Meta:** [META-CLICK-PATH.md](./META-CLICK-PATH.md) — A1 → A2 → A3  
+**Teksty NL:** [META-PACK-LEAN.md](./META-PACK-LEAN.md)  
+**GO propose (HITL):** [PROPOSE-CUTOVER.md](./PROPOSE-CUTOVER.md)
 
 | Co | Status |
 |----|--------|
-| Eval / shadow | Agent (staff-eval) — Ty **nie musisz** klikać score w TG |
+| **#1 Meta lean** | **HOLD** — published €5; 7d bez edycji; optimize later |
+| **#2 Eval / propose** | gate PASS n=20; preflight → flip **BLOCKED** do GO |
 | L0 InitiateCheckout | PASS |
-| L0 Purchase | PARK (nie blokuje Instant Form) |
-| Twoje zadanie | **A1 → A2 → A3 → Publish → WA** |
+| L0 Purchase | PARK (Mollie) |
+| Twoje zadanie | Lead → WA &lt;15 min (gdy przyjdzie) |
 
-## Dziś — status Meta (agent w Ads Manager 2026-07-19)
+## Agent teraz (Tor B / #2 — nie zmienia kolejności PRO)
 
-| # | Zrób | Status |
+| # | Agent | Status |
 |---|------|--------|
-| A1 | Audience `flexgrafik` (Gotowa) | **DONE** — użyć jako wykluczenie w ad secie |
-| A2 | Draft kampanii Kontakty | **DONE** draft: `zzp_branding_check_v1` · €10/dzień · Instant Form · regulamin leadów zaakceptowany |
-| A2b | Formularz | **IN PROGRESS** — `zzp_branding_check_v1_form` + nagłówek/intro NL wklejone |
-| A3 | Kreacja + Publish | **BLOCKED** — brak uploadu Reel/static + **Konto nierozliczone** |
+| B1 | Staff-eval → n≥20 | **PASS** n=20/20 @ ab1ed04 |
+| B2 | Gate accuracy ≥70% | **PASS** acc=100% |
+| B3 | Propose preflight + ticket | **PASS** READY_FOR_GO @ ab1ed04 |
+| B4 | `MB_MODE=propose` / F4 | **BLOCKED** do GO |
 
-### TY MUSISZ TERAZ (bez mnie nie pójdzie)
+### Meta (#1 HOLD)
 
-1. **Zapłać zaległość Ads** — banner „Konto nierozliczone” → **Zapłać teraz** (ja nie wkładam karty).
-2. Dokończ formularz (Pytania: Naam/WA/E-mail/Vak · Privacy · Thank-you z Wizard UTM).
-3. Wrzuć **1 Reel lub zdjęcie bus** → **Opublikuj**.
+Published: `zzp_branding_check_v1` · €5/dzień · act `758460034566524` / camp `120254517992840360`.  
+7 dni bez edycji ad setu.
 
-Draft IDs (act `758460034566524`): campaign `120254517992840360`.
-
-**Zakaz:** edycja ad setu 7 dni · cel Sales · wiele claimów „PASS” bez publish.
+**Zakaz:** Ads API create · `propose` bez GO · Mollie LIVE · fake PASS · reorder STATUS BOARD bez GO.
 
 ## Po publish
 
@@ -42,7 +42,3 @@ Draft IDs (act `758460034566524`): campaign `120254517992840360`.
 |-------|--------|
 | Lead | WA &lt;15 min — [SPEED-TO-LEAD.md](./SPEED-TO-LEAD.md) |
 | PON / D7 | [WEEKLY-SCORECARD.md](./WEEKLY-SCORECARD.md) |
-
-## MB / architektura (opcjonalnie)
-
-[MKT-BRAIN-PRO.md](./MKT-BRAIN-PRO.md) · tip LIVE w STATUS BOARD.

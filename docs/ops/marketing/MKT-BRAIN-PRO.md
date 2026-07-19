@@ -2,10 +2,10 @@
 status: "[ACTIVE]"
 title: "MKT-BRAIN-PRO — World-Class Marketing Ops Architecture"
 gate: "MKT-BRAIN-PRO"
-updated: "2026-07-19 (eval-pack v2 LIVE bec2b90)"
+updated: "2026-07-19 (staff-eval gate PASS ab1ed04)"
 supersedes: "MKT-BRAIN-01 (sandbox-first draft — withdrawn)"
 owner: "Norbert Wozniak (Dowódca)"
-runtime_tip: "3912f8b (PLAN-14D + staff-eval)"
+runtime_tip: "ab1ed04 (staff-eval gate PASS)"
 mb_mode: "shadow"
 ---
 
@@ -21,7 +21,7 @@ mb_mode: "shadow"
 
 ## STATUS BOARD — 2026-07-19 (SoT)
 
-**Runtime tip:** **`3912f8b`** (PLAN-14D + staff-eval) · **MB_MODE:** `shadow` · VCMS Brain Bus: **LIVE**
+**Runtime tip:** **`ab1ed04`** · **MB_MODE:** `shadow` · staff-eval gate **PASS** · VCMS Brain Bus: **LIVE**
 
 ### DONE (LIVE / PASS)
 
@@ -31,7 +31,7 @@ mb_mode: "shadow"
 | **F1** | Decision engine + shadow log + Telegram HITL (no side-effects) + Organic-to-Paid + Profit Watchdog + hypotheses | tip `9314ddc`; shadow LIVE |
 | **F2** | Governance execute API + circuit breakers (`CB_SHADOW`, margin, pixel, stale…) | tip `269248b`; Act zablokowany w shadow |
 | **F2b** | Campaign Vector Memory (Chroma + SQL degrade) + shadow eval-pack | tip `3c4af26`; chroma LIVE |
-| **Eval v2** | Stratified pack + `/mb_eval` + weekly nudge + **staff-eval** | tip **`3912f8b`**; staff n=14/20 acc=100% |
+| **Eval v2** | Stratified pack + `/mb_eval` + weekly nudge + **staff-eval** | tip **`ab1ed04`**; staff **n=20/20 acc=100% gate_ready** |
 | **F3** | Brain Bus webhook + `CB_ECOSYSTEM` + CEO stub + VCMS→jadzia notify | tip **`723a702`**; smoke degraded→recover; scan→HTTP 200 |
 | **Organic DTL** | FB post organic metrics → `organic_er_lift_pct` (+ link clicks lift) | `dtl/facebook_organic.py` in pipeline |
 | **CEO↔brief** | Weekly brief → `ceo.priority` Brain Bus (`BRIEF_CEO_PRIORITY_ENABLED`) | `brief_node._maybe_publish_ceo_priority` |
@@ -43,8 +43,8 @@ mb_mode: "shadow"
 
 | Priorytet | Co | Owner | Blokada |
 |-----------|-----|-------|---------|
-| **1** | **META lean A1→A2→A3** Instant Form €10 | Dowódca | Ads Manager HITL |
-| **2** | Shadow staff-eval → n≥20 ≥70%/14d → GO `propose` | Agent (+ delegacja) | accuracy gate |
+| **1** | **META lean A1→A2→A3** Instant Form | Dowódca | published €5 — hold 7d / later optimize |
+| **2** | Shadow staff-eval → n≥20 ≥70%/14d → GO `propose` | Agent (+ HITL GO) | gate+preflight PASS; flip BLOCKED do ticket GO |
 | **3** | L0 **Purchase** w Test Events | Dowódca | Mollie GO (PARK) |
 | **4** | **F4 Act** | Agent | po #2 GO |
 | **5** | FB `read_insights` token scope | Dowódca | Graph permissions |
@@ -65,12 +65,14 @@ mb_mode: "shadow"
 
 ### F4 propose cutover checklist (NO ACT until GO)
 
-- [ ] Shadow accuracy ≥70% (rubryka)
-- [ ] Breakers: tylko oczekiwany `CB_SHADOW` (przed cutover); po GO — brak RED ecosystem/margin/pixel
-- [ ] Data Health: bez critical RED
-- [ ] L0 InitiateCheckout PASS (done); Purchase status jawny (PARK OK świadomie)
+Runbook: [PROPOSE-CUTOVER.md](./PROPOSE-CUTOVER.md) · CLI `python scripts/mb_propose_preflight.py`
+
+- [x] Shadow accuracy ≥70% (rubryka) — n=20/20 acc=100% @ `ab1ed04`
+- [x] Breakers: tylko `CB_SHADOW` (preflight VPS 2026-07-19); po GO — brak RED ecosystem/margin/pixel
+- [x] Data Health: bez critical RED (overall=amber OK)
+- [x] L0 InitiateCheckout PASS (done); Purchase status jawny (PARK OK świadomie)
 - [ ] Jawny GO Dowódcy: `MB_MODE=propose` na VPS
-- [ ] Ticket template: „GO propose YYYY-MM-DD — accuracy=X% — tip=…”
+- [x] Ticket template ready: `GO propose — accuracy=100% n=20 — tip=ab1ed04 — preflight=READY_FOR_GO`
 
 ### PARK (twarde — nie ruszamy)
 
@@ -80,9 +82,9 @@ Gate D · Mollie LIVE charge · Ads API **create** · TikTok API C1-01 · full a
 
 | # | Item | Status |
 |---|------|--------|
-| H1 | Meta A1→A2→A3 publish €10 | **OPEN** ([META-CLICK-PATH](./META-CLICK-PATH.md)) |
+| H1 | Meta A1→A2→A3 publish €10 | **HOLD** published €5 ([META-CLICK-PATH](./META-CLICK-PATH.md)) |
 | H2 | Purchase Test Events | **PARK** |
-| H3 | Shadow n≥20 (staff-eval + /mb_eval) | OPEN (agent) |
+| H3 | Shadow n≥20 (staff-eval + /mb_eval) | **PASS** n=20/20 @ `ab1ed04` |
 | H4 | WA &lt;15 min na lead po publish | OPEN ([SPEED-TO-LEAD](./SPEED-TO-LEAD.md)) |
 
 ---
