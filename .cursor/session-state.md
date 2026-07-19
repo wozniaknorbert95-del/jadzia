@@ -1,8 +1,7 @@
-﻿# CERTAINTY DONE (2026-07-19)
+﻿# Handoff 2026-07-19 — CLOSEOUT Remote + sync token
 
-- C1 PASS: Deploy pipe+nopipe + REVISION checksums (VCMS tip after merge)
-- C3: sync token scrubbed in git; hosting rotate = upload system/sync/.sync-token
-- C4: remotes agent-os / agent-os-ui / vibe-coach
-- C5: CI docs-build-scan; context-reset golden; deploy-contract
-- Next: IDLE-POST-POLISH; Dowodca rotate sync token on zzpackage hosting
-- PARK: Gate D, Mollie, VIDEO
+- Remote PR#1×3 MERGED (os `7051224`, osui `28de58f`, vibe `79786c6`)
+- zzpackage sync token rotated on Cyber-Folks: old 403, new 200, HARDCODE_PHP_LEFT=0
+- No VCMS/jadzia deploy
+- Next: IDLE-POST-POLISH — Dowódca picks feature (nie VIDEO)
+- SoT: `docs/handoffs/2026-07-19-CLOSEOUT-REMOTE-SYNC-01.md`
