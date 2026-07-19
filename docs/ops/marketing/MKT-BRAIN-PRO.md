@@ -5,7 +5,7 @@ gate: "MKT-BRAIN-PRO"
 updated: "2026-07-19 (eval-pack v2 LIVE bec2b90)"
 supersedes: "MKT-BRAIN-01 (sandbox-first draft — withdrawn)"
 owner: "Norbert Wozniak (Dowódca)"
-runtime_tip: "7b36be3 (eval-pack v2 + weekly nudge)"
+runtime_tip: "3912f8b (PLAN-14D + staff-eval)"
 mb_mode: "shadow"
 ---
 
@@ -21,7 +21,7 @@ mb_mode: "shadow"
 
 ## STATUS BOARD — 2026-07-19 (SoT)
 
-**Runtime tip:** **`7b36be3`** (F0–F3 + F2b + organic/CEO + **eval v2** + weekly nudge) · **MB_MODE:** `shadow` · VCMS Brain Bus: **LIVE**
+**Runtime tip:** **`3912f8b`** (PLAN-14D + staff-eval) · **MB_MODE:** `shadow` · VCMS Brain Bus: **LIVE**
 
 ### DONE (LIVE / PASS)
 
@@ -31,7 +31,7 @@ mb_mode: "shadow"
 | **F1** | Decision engine + shadow log + Telegram HITL (no side-effects) + Organic-to-Paid + Profit Watchdog + hypotheses | tip `9314ddc`; shadow LIVE |
 | **F2** | Governance execute API + circuit breakers (`CB_SHADOW`, margin, pixel, stale…) | tip `269248b`; Act zablokowany w shadow |
 | **F2b** | Campaign Vector Memory (Chroma + SQL degrade) + shadow eval-pack | tip `3c4af26`; chroma LIVE |
-| **Eval v2** | Stratified pack + `marketing_shadow_eval` + `/mb_eval` + accuracy API + weekly nudge | tip **`7b36be3`**; smoke `eval_push sent=1` |
+| **Eval v2** | Stratified pack + `/mb_eval` + weekly nudge + **staff-eval** | tip **`3912f8b`**; staff n=14/20 acc=100% |
 | **F3** | Brain Bus webhook + `CB_ECOSYSTEM` + CEO stub + VCMS→jadzia notify | tip **`723a702`**; smoke degraded→recover; scan→HTTP 200 |
 | **Organic DTL** | FB post organic metrics → `organic_er_lift_pct` (+ link clicks lift) | `dtl/facebook_organic.py` in pipeline |
 | **CEO↔brief** | Weekly brief → `ceo.priority` Brain Bus (`BRIEF_CEO_PRIORITY_ENABLED`) | `brief_node._maybe_publish_ceo_priority` |
