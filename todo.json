@@ -1,15 +1,15 @@
 {
   "project": "Jadzia-Core",
-  "last_updated": "2026-07-19 (PREFLIGHT tip d273b84)",
+  "last_updated": "2026-07-19 (propose+F4 LIVE tip 4ad1e99)",
   "status": "active",
   "plan": "docs/ops/marketing/MKT-BRAIN-PRO.md",
-  "active_gate": "MKT-BRAIN-PRO #1 Meta HOLD; #2 PREFLIGHT PASS tip d273b84 (VPS evidence ab1ed04); GO propose ready_for_human; F4 BLOCKED",
-  "active_plan": "docs/ops/marketing/PLAN-14D.md — #1 Meta HOLD + #2 preflight (kolejność PRO)",
+  "active_gate": "MKT-BRAIN-PRO tip 4ad1e99 MB_MODE=propose; F4 ticket_only LIVE; #1 Meta HOLD; Purchase PARK; Ads create PARK",
+  "active_plan": "docs/ops/marketing/PLAN-14D.md — propose LIVE; Meta #1 HOLD",
   "standing_go_closeout": false,
   "closeout_queue": [],
   "closeout_expires": "2026-07-25",
-  "next_human": "WA <15min gdy lead; GO propose tylko z ticketem z PROPOSE-CUTOVER; Meta #1 hold",
-  "next_agent": "Await HITL GO propose; keep shadow; no F4 without GO; Meta #1 hold",
+  "next_human": "Telegram APPROVE MB tickets; WA <15min na lead; Meta hold 7d; Purchase tylko z Mollie GO",
+  "next_agent": "Observe propose cycles; no Ads API create; Purchase PARK; FB read_insights when Dowodca scopes",
   "agent_rule": "Nie pytaj A/B. Deploy tylko ze zgodą (standing_go_closeout off). Nie sekrety. Nie kasuj parków. Hard STOP: Gate D/Mollie/fake PASS.",
   "sprints": {
     "remediation": "completed",
@@ -1310,11 +1310,11 @@
       "id": "MKT-BRAIN-PRO-F4",
       "sprint": "MKT-BRAIN-PRO",
       "task": "F4 Act after Dowodca GO MB_MODE=propose",
-      "status": "blocked",
+      "status": "completed",
       "priority": "high",
       "owner": "agent",
-      "checklist": "docs/ops/marketing/PROPOSE-CUTOVER.md",
-      "note": "ready_for_human: ticket GO propose accuracy=100% n=20 tip=ab1ed04. Then deploy + CONFIRM=GO_PROPOSE cutover script. Act still token-gated."
+      "checklist": "docs/handoffs/2026-07-19-MKT-BRAIN-PRO-F4-PROPOSE-CLOSE.md",
+      "note": "PASS LIVE 2026-07-19 tip 4ad1e99; MB_MODE=propose; breakers []; cycle tg=1; F4 smoke ticket_only executed=false; Ads create PARK."
     }
   ]
 }

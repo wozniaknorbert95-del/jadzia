@@ -2,11 +2,11 @@
 status: "[ACTIVE]"
 title: "MKT-BRAIN-PRO — World-Class Marketing Ops Architecture"
 gate: "MKT-BRAIN-PRO"
-updated: "2026-07-19 (staff-eval gate PASS ab1ed04)"
+updated: "2026-07-19 (MB_MODE=propose + F4 ticket LIVE 4ad1e99)"
 supersedes: "MKT-BRAIN-01 (sandbox-first draft — withdrawn)"
 owner: "Norbert Wozniak (Dowódca)"
-runtime_tip: "ab1ed04 (staff-eval gate PASS)"
-mb_mode: "shadow"
+runtime_tip: "4ad1e99 (propose LIVE)"
+mb_mode: "propose"
 ---
 
 # MKT-BRAIN-PRO — plan bojowy (post-audit)
@@ -21,7 +21,7 @@ mb_mode: "shadow"
 
 ## STATUS BOARD — 2026-07-19 (SoT)
 
-**Runtime tip:** **`ab1ed04`** · **MB_MODE:** `shadow` · staff-eval gate **PASS** · VCMS Brain Bus: **LIVE**
+**Runtime tip:** **`4ad1e99`** · **MB_MODE:** `propose` · staff-eval gate **PASS** · F4 ticket **LIVE** · VCMS Brain Bus: **LIVE**
 
 ### DONE (LIVE / PASS)
 
@@ -32,7 +32,9 @@ mb_mode: "shadow"
 | **F2** | Governance execute API + circuit breakers (`CB_SHADOW`, margin, pixel, stale…) | tip `269248b`; Act zablokowany w shadow |
 | **F2b** | Campaign Vector Memory (Chroma + SQL degrade) + shadow eval-pack | tip `3c4af26`; chroma LIVE |
 | **Eval v2** | Stratified pack + `/mb_eval` + weekly nudge + **staff-eval** | tip **`ab1ed04`**; staff **n=20/20 acc=100% gate_ready** |
+| **Preflight** | Propose cutover evidence + GO ticket | tip `d273b84` / LIVE `4ad1e99` |
 | **F3** | Brain Bus webhook + `CB_ECOSYSTEM` + CEO stub + VCMS→jadzia notify | tip **`723a702`**; smoke degraded→recover; scan→HTTP 200 |
+| **F4** | Propose mode + HITL execute → **ticket_only** (Ads API create PARK) | tip **`4ad1e99`**; smoke mint+execute ticket_only |
 | **Organic DTL** | FB post organic metrics → `organic_er_lift_pct` (+ link clicks lift) | `dtl/facebook_organic.py` in pipeline |
 | **CEO↔brief** | Weekly brief → `ceo.priority` Brain Bus (`BRIEF_CEO_PRIORITY_ENABLED`) | `brief_node._maybe_publish_ceo_priority` |
 | **L0 IC** | Meta Test Events `InitiateCheckout` | pixel `1084197063740065` · PASS |
@@ -44,9 +46,9 @@ mb_mode: "shadow"
 | Priorytet | Co | Owner | Blokada |
 |-----------|-----|-------|---------|
 | **1** | **META lean A1→A2→A3** Instant Form | Dowódca | published €5 — hold 7d / later optimize |
-| **2** | Shadow staff-eval → n≥20 ≥70%/14d → GO `propose` | Agent (+ HITL GO) | gate+preflight PASS; flip BLOCKED do ticket GO |
+| **2** | Shadow → GO `propose` | — | **DONE** LIVE tip `4ad1e99` |
 | **3** | L0 **Purchase** w Test Events | Dowódca | Mollie GO (PARK) |
-| **4** | **F4 Act** | Agent | po #2 GO |
+| **4** | **F4 Act** ticket_only | — | **DONE** (Ads create nadal PARK) |
 | **5** | FB `read_insights` token scope | Dowódca | Graph permissions |
 
 ### Shadow evaluation rubric (gate → propose)
@@ -68,11 +70,11 @@ mb_mode: "shadow"
 Runbook: [PROPOSE-CUTOVER.md](./PROPOSE-CUTOVER.md) · CLI `python scripts/mb_propose_preflight.py`
 
 - [x] Shadow accuracy ≥70% (rubryka) — n=20/20 acc=100% @ `ab1ed04`
-- [x] Breakers: tylko `CB_SHADOW` (preflight VPS 2026-07-19); po GO — brak RED ecosystem/margin/pixel
+- [x] Breakers: pre-GO tylko `CB_SHADOW`; po GO trips=`[]` allowed=true @ `4ad1e99`
 - [x] Data Health: bez critical RED (overall=amber OK)
 - [x] L0 InitiateCheckout PASS (done); Purchase status jawny (PARK OK świadomie)
-- [ ] Jawny GO Dowódcy: `MB_MODE=propose` na VPS
-- [x] Ticket template ready: `GO propose — accuracy=100% n=20 — tip=ab1ed04 — preflight=READY_FOR_GO`
+- [x] Jawny GO Dowódcy: `MB_MODE=propose` na VPS tip `4ad1e99`
+- [x] Ticket + cutover: `CONFIRM=GO_PROPOSE` · cycle tg=1 · F4 ticket_only smoke PASS
 
 ### PARK (twarde — nie ruszamy)
 

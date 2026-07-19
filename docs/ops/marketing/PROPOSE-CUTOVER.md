@@ -1,15 +1,15 @@
 ---
 status: "[ACTIVE]"
 title: "Propose cutover — ADHD runbook (#2)"
-updated: "2026-07-19"
+updated: "2026-07-19 (LIVE tip 4ad1e99)"
 ---
 
 # Propose cutover — jedna ścieżka
 
 **Nie zastępuje** [MKT-BRAIN-PRO.md](./MKT-BRAIN-PRO.md).  
-To runbook pod **priorytet #2** (shadow → GO `propose`). Meta zostaje **#1**.
+**Status LIVE:** `MB_MODE=propose` tip **`4ad1e99`** (GO 2026-07-19). Meta zostaje **#1**.
 
-**Hard STOP:** ten doc **nie** flipuje `MB_MODE`. Flip tylko po jawnym GO Dowódcy.
+**Hard STOP:** Ads API create / Mollie. Re-flip tylko z nowym GO.
 
 ## Agent
 
