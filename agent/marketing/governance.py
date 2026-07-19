@@ -1,4 +1,4 @@
-"""Governance execute API — approval_token bound to action_id (F2)."""
+"""Governance execute API — approval_token bound to action_id (F2/F4b)."""
 
 from __future__ import annotations
 
@@ -11,12 +11,19 @@ from datetime import datetime, timedelta, timezone
 from typing import Any, Dict, Optional
 
 from agent.db import (
+    db_commander_create_ticket,
     db_get_marketing_shadow,
+    db_merge_marketing_shadow_payload,
     db_update_marketing_shadow_hitl,
     get_connection,
 )
 from agent.marketing.circuit_breakers import is_execute_allowed
 from agent.marketing.decision_engine import get_mb_mode
+from agent.marketing.paste_ready import (
+    attach_commander_id,
+    build_paste_ready,
+    is_paste_executable,
+)
 
 logger = logging.getLogger(__name__)
 
@@ -121,6 +128,97 @@ def _log_breaker_trips(trips: list, action_id: str) -> None:
     conn.commit()
 
 
+def _cached_ticket_result(
+    shadow: Dict[str, Any],
+    *,
+    actor: str,
+) -> Optional[Dict[str, Any]]:
+    payload = shadow.get("payload") or {}
+    if not isinstance(payload, dict):
+        return None
+    paste = payload.get("paste_ready")
+    if shadow.get("hitl_status") != "executed_ticket" or not isinstance(paste, dict):
+        return None
+    ticket_id = paste.get("ticket_id") or payload.get("ticket_id")
+    return {
+        "ok": True,
+        "action_id": shadow.get("action_id"),
+        "mb_mode": get_mb_mode(),
+        "cached": True,
+        "result": {
+            "executed": False,
+            "execution_type": "ticket_only",
+            "proposed_action": shadow.get("proposed_action"),
+            "note": "Ads API create PARK. Cached paste_ready v1.",
+            "ticket_id": ticket_id,
+            "commander_ticket_id": paste.get("commander_ticket_id"),
+            "actor": actor,
+            "paste_ready": paste,
+        },
+        "status_code": 200,
+    }
+
+
+def _build_ticket_result(
+    shadow: Dict[str, Any],
+    *,
+    actor: str,
+) -> Dict[str, Any]:
+    action_id = shadow["action_id"]
+    proposed = shadow.get("proposed_action")
+    ticket_id = f"mkt-{uuid.uuid4().hex[:10]}"
+    paste = build_paste_ready(shadow, ticket_id)
+    commander_id = None
+    if paste.get("create_commander_ticket"):
+        title = (
+            f"MB {proposed} · {shadow.get('heuristic_rule_id')} · {ticket_id}"
+        )[:200]
+        commander_id = db_commander_create_ticket(
+            title=title,
+            description=paste.get("text") or "",
+            source="mb_propose",
+            severity=paste.get("commander_severity") or "HIGH",
+        )
+    paste = attach_commander_id(paste, commander_id)
+    db_merge_marketing_shadow_payload(
+        action_id,
+        {
+            "paste_ready": paste,
+            "ticket_id": ticket_id,
+            "commander_ticket_id": commander_id,
+        },
+    )
+    db_update_marketing_shadow_hitl(
+        action_id, "executed_ticket", governance_result="allow"
+    )
+    logger.info(
+        "[mb.governance] ticket execute action_id=%s type=%s commander=%s actor=%s",
+        action_id,
+        proposed,
+        commander_id,
+        actor,
+    )
+    return {
+        "ok": True,
+        "action_id": action_id,
+        "mb_mode": get_mb_mode(),
+        "cached": False,
+        "result": {
+            "executed": False,
+            "execution_type": "ticket_only",
+            "proposed_action": proposed,
+            "note": (
+                "Ads API create PARK. Approve = ticket / paste-ready for Ads Manager."
+            ),
+            "ticket_id": ticket_id,
+            "commander_ticket_id": commander_id,
+            "actor": actor,
+            "paste_ready": paste,
+        },
+        "status_code": 200,
+    }
+
+
 def execute_action(
     action_id: str,
     approval_token: str,
@@ -130,14 +228,22 @@ def execute_action(
     """
     Governed execute. Shadow mode always denies side-effects.
     Meta/TikTok Ads create remains PARK even when allowed.
+    F4b: returns paste_ready v1; idempotent after first ticket.
     """
     shadow = db_get_marketing_shadow(action_id)
     if not shadow:
         return {"ok": False, "error": "action_not_found", "status_code": 404}
 
+    # Idempotent cache before consuming a fresh token? Plan: consume token then
+    # return cache — still validates approval. Re-fetch after consume.
     token_check = _consume_token(action_id, approval_token)
     if not token_check.get("ok"):
         return {"ok": False, "error": token_check.get("error"), "status_code": 403}
+
+    shadow = db_get_marketing_shadow(action_id) or shadow
+    cached = _cached_ticket_result(shadow, actor=actor)
+    if cached:
+        return cached
 
     breakers = is_execute_allowed()
     if not breakers["allowed"]:
@@ -163,54 +269,87 @@ def execute_action(
             "mb_mode": mode,
         }
 
-    # F2 Act path: ticket / paste-ready only — Ads API create PARK
-    proposed = shadow.get("proposed_action")
-    result_payload = {
-        "executed": False,
-        "execution_type": "ticket_only",
-        "proposed_action": proposed,
-        "note": (
-            "Ads API create PARK. Approve = ticket / paste-ready for Ads Manager."
-        ),
-        "ticket_id": f"mkt-{uuid.uuid4().hex[:10]}",
-        "actor": actor,
-    }
-    db_update_marketing_shadow_hitl(
-        action_id, "executed_ticket", governance_result="allow"
-    )
-    logger.info(
-        "[mb.governance] ticket execute action_id=%s type=%s actor=%s",
-        action_id,
-        proposed,
-        actor,
-    )
-    return {
-        "ok": True,
-        "action_id": action_id,
-        "mb_mode": mode,
-        "result": result_payload,
-        "status_code": 200,
-    }
+    return _build_ticket_result(shadow, actor=actor)
 
 
 def approve_and_mint(action_id: str) -> Dict[str, Any]:
-    """Telegram APPROVE path: record HITL + mint token for optional execute."""
+    """Telegram APPROVE path: HITL + mint; propose auto ticket_only when executable."""
     shadow = db_get_marketing_shadow(action_id)
     if not shadow:
         return {"ok": False, "error": "action_not_found"}
+
+    # Already ticketed — return cache without new side effects
+    cached_early = _cached_ticket_result(shadow, actor="telegram_cache")
+    if cached_early:
+        return {
+            "ok": True,
+            "action_id": action_id,
+            "mb_mode": get_mb_mode(),
+            "cached": True,
+            "execute": cached_early,
+        }
+
     db_update_marketing_shadow_hitl(action_id, "approved", governance_result="allow")
     token = mint_approval_token(action_id)
     mode = get_mb_mode()
-    auto = (os.getenv("MB_AUTO_EXECUTE_ON_APPROVE") or "").strip() == "1"
+    force_auto = (os.getenv("MB_AUTO_EXECUTE_ON_APPROVE") or "").strip() == "1"
+    should_exec = mode != "shadow" and (
+        force_auto or is_paste_executable(shadow)
+    )
+
     out: Dict[str, Any] = {
         "ok": True,
         "action_id": action_id,
         "mb_mode": mode,
-        "approval_token": token["approval_token"],
         "expires_at": token["expires_at"],
+        # Internal only — Telegram must not surface this
+        "approval_token": token["approval_token"],
     }
-    if auto and mode != "shadow":
+    if should_exec:
         out["execute"] = execute_action(
             action_id, token["approval_token"], actor="telegram_auto"
         )
+    else:
+        out["execute"] = None
+        out["ack_only"] = True
     return out
+
+
+def format_approve_telegram_message(minted: Dict[str, Any], shadow: Dict[str, Any]) -> str:
+    """Public TG copy — never includes approval_token."""
+    mode = minted.get("mb_mode") or shadow.get("mb_mode") or "shadow"
+    action_id = shadow.get("action_id")
+    if mode == "shadow":
+        return (
+            f"✅ APPROVE zapisane (SHADOW — nie wykonano side-effect).\n"
+            f"Execute zablokowany w shadow.\n"
+            f"action_id={action_id}"
+        )
+
+    exe = minted.get("execute") or {}
+    result = (exe.get("result") or {}) if isinstance(exe, dict) else {}
+    paste = result.get("paste_ready") if isinstance(result, dict) else None
+
+    if shadow.get("proposed_action") == "hold" or minted.get("ack_only"):
+        rationale = (shadow.get("llm_rationale_nl") or "")[:400]
+        return (
+            f"✅ APPROVE (HOLD / ACK) — brak ticketu Ads.\n"
+            f"action_id={action_id}\n"
+            f"{rationale}"
+        )
+
+    if isinstance(paste, dict) and paste.get("text_tg"):
+        cid = paste.get("commander_ticket_id")
+        head = "✅ APPROVE → paste-ready ticket (Ads API create PARK)\n"
+        if cid:
+            head += f"Commander ticket #{cid}\n"
+        if exe.get("cached"):
+            head += "(cache — bez duplikatu)\n"
+        head += "\n"
+        return head + str(paste.get("text_tg"))
+
+    return (
+        f"✅ APPROVE zapisane.\n"
+        f"action_id={action_id}\n"
+        f"(brak paste_ready — sprawdź Data Health / logi)"
+    )

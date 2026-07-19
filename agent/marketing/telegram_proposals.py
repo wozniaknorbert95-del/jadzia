@@ -179,6 +179,40 @@ def handle_mb_hitl(action: str, action_id: str) -> Dict[str, Any]:
         )
         return {"ok": True, "message": msg, "side_effect": False}
 
+    if action == "approve":
+        from agent.marketing.governance import (
+            approve_and_mint,
+            format_approve_telegram_message,
+        )
+
+        status = row.get("hitl_status")
+        if status == "executed_ticket":
+            minted = approve_and_mint(action_id)
+            row2 = db_get_marketing_shadow(action_id) or row
+            return {
+                "ok": True,
+                "message": format_approve_telegram_message(minted, row2),
+                "side_effect": False,
+                "cached": True,
+            }
+        if status not in (None, "pending", "approved"):
+            return {
+                "ok": True,
+                "message": (
+                    f"Już rozpatrzone: {status} (action_id={action_id})."
+                ),
+                "side_effect": False,
+            }
+
+        minted = approve_and_mint(action_id)
+        row2 = db_get_marketing_shadow(action_id) or row
+        return {
+            "ok": True,
+            "message": format_approve_telegram_message(minted, row2),
+            "side_effect": bool((minted.get("execute") or {}).get("ok")),
+            "cached": bool(minted.get("cached")),
+        }
+
     if row.get("hitl_status") not in (None, "pending"):
         return {
             "ok": True,
@@ -187,34 +221,6 @@ def handle_mb_hitl(action: str, action_id: str) -> Dict[str, Any]:
                 f"(action_id={action_id})."
             ),
             "side_effect": False,
-        }
-
-    if action == "approve":
-        from agent.marketing.governance import approve_and_mint
-
-        minted = approve_and_mint(action_id)
-        mode = row.get("mb_mode") or "shadow"
-        if mode == "shadow":
-            return {
-                "ok": True,
-                "message": (
-                    f"✅ APPROVE zapisane (SHADOW — nie wykonano side-effect).\n"
-                    f"Token zmintowany (TTL 15m) — execute zablokowany przez CB_SHADOW.\n"
-                    f"action_id={action_id}"
-                ),
-                "side_effect": False,
-                "approval_token_minted": bool(minted.get("approval_token")),
-            }
-        # propose/act: token available for Governance execute endpoint
-        return {
-            "ok": True,
-            "message": (
-                f"✅ APPROVE + token (TTL 15m).\n"
-                f"POST /api/v1/marketing/actions/execute\n"
-                f"action_id={action_id}"
-            ),
-            "side_effect": False,
-            "approval_token": minted.get("approval_token"),
         }
 
     if action == "deny":

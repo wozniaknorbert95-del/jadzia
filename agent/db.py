@@ -3062,6 +3062,38 @@ def db_update_marketing_shadow_hitl(
         return False
 
 
+def db_merge_marketing_shadow_payload(
+    action_id: str,
+    patch: Dict[str, Any],
+) -> bool:
+    """Merge keys into marketing_shadow_log.payload_json (F4b paste_ready persist)."""
+    row = db_get_marketing_shadow(action_id)
+    if not row:
+        return False
+    payload = row.get("payload") or {}
+    if not isinstance(payload, dict):
+        payload = {}
+    payload.update(patch or {})
+    now = _utc_now_iso()
+    conn = get_connection()
+    try:
+        conn.execute(
+            """
+            UPDATE marketing_shadow_log
+            SET payload_json = ?, updated_at = ?
+            WHERE action_id = ?
+            """,
+            (json.dumps(payload, ensure_ascii=False, default=str), now, action_id),
+        )
+        conn.commit()
+        return True
+    except Exception as e:
+        conn.rollback()
+        import logging
+        logging.getLogger(__name__).error("[DB] shadow payload merge failed: %s", e)
+        return False
+
+
 def db_list_marketing_shadow(limit: int = 20) -> List[Dict]:
     conn = get_connection()
     rows = conn.execute(
