@@ -11,6 +11,7 @@
 - **Deploy**: `.agents/workflows/jadzia-deploy.md`
 - **Post-coding**: `.agents/workflows/post-coding.md` (fresh GO for VPS)
 - **Latest handoffs**: `docs/handoffs/` (≤15 rolling; MBA archived)
+- **Marketing OS**: `docs/ops/marketing/OPERATOR-TODAY.md` (start) · Commander = organic HITL only; paid = Ads Manager
 
 ## MBA
 

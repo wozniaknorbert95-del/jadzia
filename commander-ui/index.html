@@ -113,14 +113,33 @@
     </section>
 
     <section id="view-marketing" class="view" aria-labelledby="marketing-title" hidden>
-      <h2 id="marketing-title">Marketing — Kolejka publikacji</h2>
+      <h2 id="marketing-title">Marketing — Organic HITL (Facebook)</h2>
+      <p class="hint">Tu publikujesz <strong>organiczne</strong> posty/Reels (HITL). Paid Leads / Instant Form = Meta Ads Manager — nie ten ekran.</p>
+      <aside id="mkt-os-strip" class="mkt-os-strip panel" aria-label="Marketing OS — następny krok">
+        <p class="mkt-os-strip-title">Marketing OS</p>
+        <ol class="mkt-os-steps">
+          <li>L0 + kampania paid → playbook w repo <code>docs/ops/marketing/OPERATOR-TODAY.md</code></li>
+          <li>Ten ekran = 1 organic drop z tego samego master Reel (Asset Factory)</li>
+          <li>PON: scorecard CPA / CPL — nie reach</li>
+        </ol>
+        <p class="mkt-os-links hint">
+          <a href="https://github.com/wozniaknorbert95-del/jadzia/blob/master/docs/ops/marketing/OPERATOR-TODAY.md" target="_blank" rel="noopener">START TUTAJ</a>
+          ·
+          <a href="https://github.com/wozniaknorbert95-del/jadzia/blob/master/docs/ops/marketing/FB-FIRST-CAMPAIGN.md" target="_blank" rel="noopener">Kampania Leads</a>
+          ·
+          <a href="https://github.com/wozniaknorbert95-del/jadzia/blob/master/docs/ops/marketing/WEEKLY-SCORECARD.md" target="_blank" rel="noopener">Scorecard</a>
+          ·
+          <a href="https://business.facebook.com/" target="_blank" rel="noopener">Ads Manager</a>
+        </p>
+      </aside>
       <p id="marketing-status-strip" class="hint"></p>
       <p id="fb-health-strip" class="health-strip" aria-live="polite"></p>
       <p id="gdrive-folder-hint" class="hint" hidden></p>
       <div id="held-banner" class="banner" hidden></div>
 
       <form id="marketing-composer" class="composer panel">
-        <h3>Nowy wpis</h3>
+        <h3>Nowy wpis organiczny</h3>
+        <p class="hint">Tytuł PL = wewnętrzny. Treść NL = to, co idzie na Page. Media = plik z folderu <code>MKT/YYYY-WW/</code>.</p>
         <label for="content-type">Typ treści</label>
         <select id="content-type">
           <option value="text">Tekst</option>
@@ -203,6 +222,7 @@
           <li>VCMS: https://cmd.flexgrafik.nl (Basic Auth)</li>
           <li>VCMS docs: https://cmd.flexgrafik.nl/docs/</li>
           <li>Wizard: https://zzpackage.flexgrafik.nl/wizard/</li>
+          <li>Marketing OS (SoT): jadzia <code>docs/ops/marketing/OPERATOR-TODAY.md</code></li>
           <li>DA health: https://api.zzpackage.flexgrafik.nl/api/v1/design-agent/health</li>
         </ul>
         <button type="submit">Zapisz</button>

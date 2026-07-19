@@ -3,7 +3,7 @@ status: "[ACTIVE]"
 title: "FB Learning Campaign #1 — ZZP Branding Check"
 campaign: "zzp_branding_check_v1"
 updated: "2026-07-19"
-source: "Ingest z FlexGrafik_Pierwsza_Kampania_FB.md (FG-only)"
+source: "Ingest z docs/archive/marketing/2026-07-FlexGrafik_Pierwsza_Kampania_FB.md (FG-only)"
 ---
 
 # Learning loop L1 — Instant Form (14 dni)

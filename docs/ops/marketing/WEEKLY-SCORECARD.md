@@ -6,9 +6,13 @@ updated: "2026-07-19"
 
 # Weekly Scorecard — wypełnij w PON
 
+Skopiuj tę tabelę do notatki / Telegram i wypełnij w 5 min. Decyzja = **jedna** kratka na dole.
+
 **Kampania:** `zzp_branding_check_v1`  
 **Tydzień ISO:** ____-W__  
 **Spend (EUR):** ____  
+
+**Szybki link start:** [OPERATOR-TODAY.md](./OPERATOR-TODAY.md)
 
 | KPI | Wartość | Notatka |
 |-----|---------|---------|
