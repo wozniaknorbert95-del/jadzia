@@ -3,7 +3,7 @@
 ## Ops (LIVE)
 
 - **Operator playbook**: `docs/ops/JADZIA-OPERATOR-PLAYBOOK.md`
-- **Knowledge SoT**: `docs/ops/KNOWLEDGE-SYSTEM-INDEX.md` (COI-KNOW-02 DONE)
+- **Knowledge SoT**: `docs/ops/KNOWLEDGE-SYSTEM-INDEX.md` (ECO-POLISH-01 CLOSE — Docs IA policy)
 - **Process catalog**: `docs/ops/PROCESS-CATALOG.md`
 - **Scorecard**: `docs/ops/SCORECARD-AI-OS-ZALICZENIE.md` — **#1–9 LIVE**
 - **Canonical brain**: `brain.md` · **backlog**: `todo.json`

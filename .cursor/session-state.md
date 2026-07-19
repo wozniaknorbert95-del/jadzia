@@ -1,6 +1,6 @@
-# COI-KNOW-02 DONE (honest VERIFY)
+# ECO-POLISH-01 — CLOSE (in progress → DONE after merge+deploy)
 
-- cmd handbook + surfaces LIVE; global-rules pointer
-- VCMS-VIDEO = obsolete as meta.next → IDLE-POST-KNOW-02
-- Next: wybór Dowódcy / MBA PASS
+- KNOW IA policy in `docs/ops/KNOWLEDGE-SYSTEM-INDEX.md`
+- VCMS meta.next = IDLE-POST-POLISH
+- Next after PASS: Dowódca picks feature (not VIDEO)
 - PARK: Gate D, Mollie, mint/recover, OS merge
