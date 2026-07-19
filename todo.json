@@ -3,7 +3,7 @@
   "last_updated": "2026-07-19 (MKT-BRAIN-PRO handoff — F0 ready)",
   "status": "active",
   "plan": "docs/ops/marketing/MKT-BRAIN-PRO.md",
-  "active_gate": "MKT-BRAIN-PRO F0 ready_for_agent + parallel ready_for_human META-PACK-01 lean",
+  "active_gate": "MKT-BRAIN-PRO F0 CLOSE @ f28a938 — observe 7d DTL; ready_for_human GA4 env + META-PACK L0",
   "active_plan": "MKT-BRAIN-PRO Final Polish: F0 DTL+margin facts. F1 shadow+Telegram HITL+Organic-to-Paid+Profit Watchdog+Hypothesis Ledger. Commander=analytics only. standing_go off.",
   "standing_go_closeout": false,
   "closeout_queue": [],
@@ -1230,11 +1230,11 @@
       "id": "MKT-BRAIN-PRO-F0",
       "sprint": "MKT-BRAIN-PRO",
       "task": "F0 Data Truth Layer: DTL schema + ingest + order_margin_facts + Data Health Commander (analytics only)",
-      "status": "in_progress",
+      "status": "completed",
       "priority": "critical",
       "owner": "agent",
-      "checklist": "docs/ops/marketing/MKT-BRAIN-PRO.md §5 F0",
-      "note": "2026-07-19 code+pytest green (9/9 test_dtl_f0). Local smoke OK. Uncommitted — commit on GO. VPS deploy PARK. DoD 7d continuous ingest = post-deploy."
+      "checklist": "docs/handoffs/2026-07-19-MKT-BRAIN-PRO-F0-CLOSE.md",
+      "note": "PASS 2026-07-19 tip f28a938; pytest 9/9; VPS ingest margin 36/36; GA4 env missing on VPS (honest RED flag). Interval 3600s. Observe 7d."
     },
     {
       "id": "MKT-BRAIN-PRO-F1",
@@ -1244,7 +1244,7 @@
       "priority": "critical",
       "owner": "agent",
       "checklist": "docs/ops/marketing/MKT-BRAIN-PRO.md §5 F1",
-      "note": "Blocked on F0 DoD. Dowódca shadow review ≥70% before F2."
+      "note": "Blocked on F0 7d observe + GA4 env green on VPS. Shadow review ≥70% before F2."
     },
     {
       "id": "MKT-BRAIN-PRO-F2",
