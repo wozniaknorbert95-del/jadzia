@@ -29,7 +29,7 @@ Classify the request into one of the following paths:
 | Structural change, module split, tech debt | **REFACTOR** | `L1: /blueprint` $\to$ `/self-review` | Requires impact mapping. |
 | Bug, regression, unexpected behavior | **BUGFIX** | `L2: /debug` | Requires Root-Cause Analysis. |
 | Known fix, critical outage, trivial change | **HOTFIX** | `L2: /implement` | Fast-track to execution. |
-| DB Schema change / Alembic | **MIGRATE** | `L1: /migrate` | High-risk persistence change. |
+| DB Schema change (SQLite) | **MIGRATE** | `L2: /implement` + backup | Inline migration in `agent/db.py`; path `data/jadzia.db`. |
 | Push to Production | **DEPLOY** | `L3: /jadzia-test` $\to$ `L4: /jadzia-deploy` | Release pipeline. |
 | Production DOWN / Critical Failure | **CRITICAL** | `L-CRIT: /panic` | Emergency restoration. |
 | Perf issues, Slow queries, Latency | **PERF** | `L2: /profile` | Performance engineering. |
