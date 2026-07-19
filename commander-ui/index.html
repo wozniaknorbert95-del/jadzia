@@ -10,14 +10,24 @@
   <link rel="manifest" href="manifest.webmanifest" />
   <link rel="icon" href="icon-192.png" type="image/png" />
   <link rel="apple-touch-icon" href="icon-192.png" />
-  <link rel="stylesheet" href="styles.css?v=polish01b" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="styles.css?v=terminal01" />
 </head>
 <body>
   <a class="skip-link" href="#main">Przejdź do treści</a>
   <div id="delegat-banner" class="banner warning-banner" hidden role="alert">
     Brak Delegata — skonfiguruj email w Ustawieniach (eskalacja 24h).
   </div>
+  <div class="coi-shell">
+  <div class="coi-terminal">
   <header class="topbar" role="banner">
+    <div class="topbar-dots" aria-hidden="true">
+      <span class="topbar-dot topbar-dot--close"></span>
+      <span class="topbar-dot topbar-dot--min"></span>
+      <span class="topbar-dot topbar-dot--max"></span>
+    </div>
     <h1>COI Commander</h1>
     <nav aria-label="Główne menu" id="main-nav" class="nav-desktop">
       <button type="button" data-view="home" class="nav-btn active" aria-current="page">Start</button>
@@ -28,6 +38,7 @@
     </nav>
   </header>
 
+  <div class="coi-terminal__body">
   <section id="auth-panel" class="panel auth-panel" aria-label="Logowanie">
     <div class="auth-summary">
       <p id="auth-status" class="hint" aria-live="polite">Telegram: /commander → jednorazowy link (15 min).</p>
@@ -229,6 +240,11 @@
       </form>
     </section>
   </main>
+  </div><!-- /.coi-terminal__body -->
+
+  <footer class="coi-terminal__footer">jadzia · coi commander · organic hitl</footer>
+  </div><!-- /.coi-terminal -->
+  </div><!-- /.coi-shell -->
 
   <nav id="bottom-nav" class="bottom-nav" aria-label="Menu mobilne">
     <button type="button" data-view="home" class="nav-btn active" aria-current="page">Start</button>
@@ -250,6 +266,6 @@
   </dialog>
 
   <div id="toast" class="toast" role="status" aria-live="polite" hidden></div>
-  <script src="app.js?v=polish01"></script>
+  <script src="app.js?v=terminal01"></script>
 </body>
 </html>
