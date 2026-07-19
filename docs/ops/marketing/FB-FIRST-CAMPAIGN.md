@@ -8,6 +8,8 @@ source: "Ingest z docs/archive/marketing/2026-07-FlexGrafik_Pierwsza_Kampania_FB
 
 # Learning loop L1 — Instant Form (14 dni)
 
+**Lean start (1 Reel, min złożoność):** [META-PACK-LEAN.md](./META-PACK-LEAN.md) — użyj tego do pierwszego publish; ten plik = pełny pack (3 kreacje) / v1.1.
+
 Eksperyment, nie „kampania wizerunkowa”. Jedna zmienna: **creative**.  
 Budżet learning: **€10/dzień**. Zakaz edycji struktury ad setu przez 7 dni.
 

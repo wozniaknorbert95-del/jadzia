@@ -6,17 +6,25 @@ updated: "2026-07-19"
 
 # START TUTAJ — jedna ścieżka (ADHD)
 
+**Lean Meta pack (START):** [META-PACK-LEAN.md](./META-PACK-LEAN.md) — Instant Form €10 + 1 Reel.
+
 Nie czytaj całego katalogu. Idź **wiersz po wierszu**.
 
-## Dziś (zanim wydasz €)
+## Dziś (zanim wydasz €) — META-PACK-01 lean
 
 | # | Zrób | Gdzie | Done |
 |---|------|-------|------|
 | 1 | Test Events: `InitiateCheckout` + `Purchase` | Meta Events Manager → zzpackage | [ ] |
 | 2 | Custom Audience klientów → wykluczenie | Ads Manager | [ ] |
-| 3 | Folder `MKT/YYYY-WW/` + master Reel (lub reuse) | Google Drive COI-Marketing | [ ] |
-| 4 | Kampania Leads Instant Form €10/dzień, 3 kreacje | Ads Manager — paste z [FB-FIRST-CAMPAIGN.md](./FB-FIRST-CAMPAIGN.md) | [ ] |
-| 5 | 1 organic drop = ten sam master | [Commander → Marketing](https://api.zzpackage.flexgrafik.nl/commander/) | [ ] |
+| 3 | `MKT/YYYY-WW/master_reel_9x16.mp4` (real bus) | Google Drive | [ ] |
+| 4 | Kampania Leads Instant Form €10/dzień · **1 Reel** | Ads Manager — paste [META-PACK-LEAN.md](./META-PACK-LEAN.md) | [ ] |
+
+**v1.1 / po d7 (nie blokuje startu):**
+
+| # | Zrób | Kiedy |
+|---|------|--------|
+| 3b | Pełny Asset Factory (carousel, testimonial, TT) | po d7 jeśli CPL OK — [ASSET-FACTORY.md](./ASSET-FACTORY.md) |
+| 5 | 1 organic drop = ten sam master | po d7 — [Commander → Marketing](https://api.zzpackage.flexgrafik.nl/commander/) |
 
 **Zakaz:** edycja ad setu przez 7 dni · cel Sales · wiele ad setów · scale bez Purchase w pikselu.
 
@@ -25,23 +33,17 @@ Nie czytaj całego katalogu. Idź **wiersz po wierszu**.
 | Dzień | 1 akcja |
 |-------|---------|
 | PON | Wypełnij [WEEKLY-SCORECARD.md](./WEEKLY-SCORECARD.md) |
-| WT | Uzupełnij Asset Factory cuts (TT hook, stills) |
-| ŚR | Po d7: kill najsłabszą kreację (tylko to) |
-| CZW | Organic HITL (Commander) |
-| PT | TikTok 1 hook **lub** blog seed na hostingu |
-| NIE | Zero edycji learning |
+| WT–NIE | WA &lt;15 min na każdy lead — [SPEED-TO-LEAD.md](./SPEED-TO-LEAD.md) |
+| ŚR | Po d7: wymień Reel **albo** hold — nie edytuj ad setu wcześniej |
+| CZW+ | Organic / 2. kreacja tylko v1.1 |
 
 ## Gdzie co jest (3 miejsca)
 
 | Potrzeba | Narzędzie |
 |----------|-----------|
-| Publish organiczny FB | **Commander → Marketing** |
+| Publish organiczny FB | **Commander → Marketing** (v1.1) |
 | Paid Leads / Instant Form | **Meta Ads Manager** (nie Commander) |
-| Playbooki / CPA / scorecard | **ten katalog** `docs/ops/marketing/` |
-
-## Po leadzie (&lt;15 min)
-
-WhatsApp wg [SPEED-TO-LEAD.md](./SPEED-TO-LEAD.md) · log SLA w scorecardzie.
+| Lean pack / scorecard | [META-PACK-LEAN.md](./META-PACK-LEAN.md) · ten katalog |
 
 ## Gdy utkniesz
 
