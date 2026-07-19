@@ -46,7 +46,7 @@ chown jadzia:jadzia .env && chmod 640 .env
 
 1. [Graph API Explorer](https://developers.facebook.com/tools/explorer/)
 2. Meta App: **FlexGrafik Jadzia COI**
-3. Permissions: `pages_manage_posts`, `pages_read_engagement`, `pages_show_list`
+3. Permissions: `pages_manage_posts`, `pages_read_engagement`, `pages_show_list`, **`read_insights`** (organic post insights / ER)
 4. **Generate Access Token** → zaloguj / zatwierdź
 5. Wystarczy **User** token (nie musisz wybierać Page — skrypt zrobi long-lived + Page)
 6. **Copy** → przekaż agentowi jako `FB_TOKEN=...` (po zapisie na VPS traktuj jako spalony)

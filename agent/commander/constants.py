@@ -40,6 +40,7 @@ FRESHNESS_SLA_SECONDS: Dict[str, Tuple[int, int]] = {
     "l0_pixel": (2 * 3600, 6 * 3600),
     "attribution": (30 * 60, 2 * 3600),
     "margin": (30 * 60, 2 * 3600),
+    "facebook_organic": (2 * 3600, 6 * 3600),
 }
 
 ROLE_SCOPES: Dict[str, list[str]] = {

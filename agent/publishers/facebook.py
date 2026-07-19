@@ -231,11 +231,13 @@ def parse_publish_error(result: Dict[str, Any]) -> str:
 
 
 def check_token_health() -> Dict[str, Any]:
-    """Preflight FB token — type, expiry, no secret in response."""
+    """Preflight FB token — type, expiry, scopes; no secret in response."""
     if not is_facebook_configured():
         return {
             "ok": False,
             "configured": False,
+            "scopes": [],
+            "has_read_insights": False,
             "message_pl": "Facebook nie skonfigurowany (FB_PAGE_ID / FB_ACCESS_TOKEN)",
         }
 
@@ -253,20 +255,36 @@ def check_token_health() -> Dict[str, Any]:
         return {
             "ok": False,
             "configured": True,
+            "scopes": [],
+            "has_read_insights": False,
             "message_pl": "Nie udało się sprawdzić tokenu Facebook",
         }
 
     token_type = data.get("type") or "UNKNOWN"
     expires_at = data.get("expires_at")
+    scopes_raw = data.get("scopes") or data.get("granular_scopes") or []
+    scopes: list[str] = []
+    if isinstance(scopes_raw, list):
+        for item in scopes_raw:
+            if isinstance(item, str):
+                scopes.append(item)
+            elif isinstance(item, dict) and item.get("scope"):
+                scopes.append(str(item["scope"]))
+    scopes = sorted(set(scopes))
+    has_read_insights = "read_insights" in scopes
+
     days_left: Optional[int] = None
     if expires_at:
         try:
             exp_dt = datetime.fromtimestamp(int(expires_at), tz=timezone.utc)
-            days_left = max(0, int((exp_dt - datetime.now(timezone.utc)).total_seconds() / 86400))
+            days_left = max(
+                0,
+                int((exp_dt - datetime.now(timezone.utc)).total_seconds() / 86400),
+            )
         except (ValueError, TypeError, OSError):
             days_left = None
 
-    ok = data.get("is_valid") and token_type == "PAGE"
+    ok = bool(data.get("is_valid") and token_type == "PAGE")
     message_pl = "Token OK (Page)"
     if not data.get("is_valid"):
         message_pl = "Token Facebook nieważny"
@@ -274,6 +292,11 @@ def check_token_health() -> Dict[str, Any]:
         message_pl = "To nie jest Page Token — użyj FlexGrafik Page Token"
     elif days_left is not None and days_left < 7:
         message_pl = f"Token wygasa za {days_left} dni — zaplanuj rotację"
+    elif ok and not has_read_insights:
+        message_pl = (
+            "Token OK (Page) — brak scope read_insights "
+            "(organic insights degrade; dodaj w Graph Explorer)"
+        )
 
     return {
         "ok": ok,
@@ -281,6 +304,8 @@ def check_token_health() -> Dict[str, Any]:
         "token_type": token_type,
         "expires_at": expires_at,
         "days_left": days_left,
+        "scopes": scopes,
+        "has_read_insights": has_read_insights,
         "message_pl": message_pl,
         "page_id": os.getenv("FB_PAGE_ID"),
     }
@@ -306,6 +331,7 @@ def fetch_post_organic_metrics(post_id: str) -> Dict[str, Any]:
         "impressions": None,
         "link_clicks": None,
         "insights_ok": False,
+        "insights_reason": None,
     }
     try:
         resp = requests.get(
@@ -371,13 +397,26 @@ def fetch_post_organic_metrics(post_id: str) -> Dict[str, Any]:
                     else:
                         out["link_clicks"] = int(val)
             out["insights_ok"] = True
+            out["insights_reason"] = "ok"
         else:
+            body = (ins.text or "").lower()
+            if ins.status_code in (400, 403) and (
+                "permission" in body
+                or "read_insights" in body
+                or "(#10)" in body
+                or "(#200)" in body
+            ):
+                out["insights_reason"] = "insights_scope_missing"
+            else:
+                out["insights_reason"] = f"insights_http_{ins.status_code}"
             logger.info(
-                "[FacebookPublisher] insights unavailable post=%s status=%s",
+                "[FacebookPublisher] insights unavailable post=%s status=%s reason=%s",
                 pid,
                 ins.status_code,
+                out["insights_reason"],
             )
     except requests.RequestException as exc:
+        out["insights_reason"] = "insights_request_error"
         logger.info("[FacebookPublisher] insights skipped post=%s: %s", pid, exc)
 
     return out

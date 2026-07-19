@@ -14,6 +14,9 @@ Skopiuj tę tabelę do notatki / Telegram i wypełnij w 5 min. Decyzja = **jedna
 
 **Szybki link start:** [OPERATOR-TODAY.md](./OPERATOR-TODAY.md)
 
+**Draft z DTL (agent):** `python scripts/mb_weekly_scorecard_draft.py` · `GET /api/v1/commander/marketing/weekly-draft`  
+Spend/CPL z Ads API = `null` — wklej z Ads Manager. Draft **nie** wybiera HOLD/KILL.
+
 | KPI | Wartość | Notatka |
 |-----|---------|---------|
 | Leads (Instant Form) | | |

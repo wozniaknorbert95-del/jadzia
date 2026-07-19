@@ -13,7 +13,15 @@ from agent.db import (
     db_margin_coverage_stats,
 )
 
-DTL_SOURCES = ("ga4", "orders", "leads", "l0_pixel", "attribution", "margin")
+DTL_SOURCES = (
+    "ga4",
+    "orders",
+    "leads",
+    "l0_pixel",
+    "attribution",
+    "margin",
+    "facebook_organic",
+)
 
 
 def _utc_now() -> str:
@@ -95,6 +103,47 @@ def build_data_health_report() -> Dict[str, Any]:
 
     drivers = _drivers(freshness=freshness, flags=flags, overall=overall)
 
+    org_latest = db_get_latest_marketing_raw_ingest("facebook_organic")
+    org_payload = (org_latest or {}).get("payload") or {}
+    if isinstance(org_payload, str):
+        org_payload = {}
+    org_reason = org_payload.get("reason")
+    has_insights = org_payload.get("has_read_insights")
+    try:
+        from agent.publishers.facebook import check_token_health, is_facebook_configured
+
+        if is_facebook_configured():
+            th = check_token_health()
+            has_insights = bool(th.get("has_read_insights"))
+            if not has_insights:
+                org_reason = org_reason or "insights_scope_missing"
+    except Exception:
+        pass
+
+    conscious_parks = [
+        {
+            "id": "l0_purchase",
+            "status": "PARK",
+            "reason": "Mollie GO required — not a Data Health failure",
+        },
+        {
+            "id": "ads_api_create",
+            "status": "PARK",
+            "reason": "MB ticket_only / paste-ready only",
+        },
+    ]
+    if has_insights is False or org_reason == "insights_scope_missing":
+        conscious_parks.append(
+            {
+                "id": "fb_read_insights",
+                "status": "READY_FOR_HUMAN",
+                "reason": (
+                    "Page token missing read_insights — organic ER uses proxy; "
+                    "add scope in Graph Explorer (see FB-TOKEN-ROTATION.md)"
+                ),
+            }
+        )
+
     return {
         "generated_at": _utc_now(),
         "overall_status": overall,
@@ -107,23 +156,18 @@ def build_data_health_report() -> Dict[str, Any]:
             "info": info,
         },
         "drivers": drivers,
-        "conscious_parks": [
-            {
-                "id": "l0_purchase",
-                "status": "PARK",
-                "reason": "Mollie GO required — not a Data Health failure",
-            },
-            {
-                "id": "ads_api_create",
-                "status": "PARK",
-                "reason": "MB ticket_only / paste-ready only",
-            },
-        ],
+        "conscious_parks": conscious_parks,
+        "facebook_organic": {
+            "reason": org_reason,
+            "has_read_insights": has_insights,
+            "ingest_status": (org_latest or {}).get("status"),
+        },
         "margin_coverage": margin,
         "recent_facts": recent_facts,
         "panel": "data_health",
         "note": (
             "Analytics only — info/park flags do not set overall amber/red. "
-            "Set L0_IC_VERIFIED=1 after Events Manager InitiateCheckout PASS."
+            "Set L0_IC_VERIFIED=1 after Events Manager InitiateCheckout PASS. "
+            "FB read_insights missing = conscious park (not overall failure)."
         ),
     }

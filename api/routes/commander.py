@@ -307,6 +307,33 @@ async def get_marketing_fb_health(
     return check_token_health()
 
 
+@router.get("/api/v1/commander/marketing/weekly-draft")
+async def get_marketing_weekly_draft(
+    campaign: Optional[str] = Query(default=None),
+    iso_week: Optional[str] = Query(default=None),
+    notify: bool = Query(default=False),
+    _auth=Depends(require_scope("commander:read")),
+) -> dict:
+    """
+    Weekly scorecard DRAFT from DTL facts.
+    Meta spend/CPL stay null (Ads Manager paste). No HOLD/KILL decision.
+    """
+    from agent.marketing.weekly_scorecard import (
+        build_weekly_scorecard_draft,
+        send_weekly_scorecard_telegram,
+    )
+
+    kwargs = {}
+    if campaign:
+        kwargs["campaign"] = campaign
+    if iso_week:
+        kwargs["iso_week"] = iso_week
+    draft = build_weekly_scorecard_draft(**kwargs)
+    if notify:
+        draft["telegram"] = send_weekly_scorecard_telegram(draft)
+    return draft
+
+
 @router.get("/api/v1/commander/marketing/data-health")
 async def get_marketing_data_health(
     _auth=Depends(require_scope("commander:read")),

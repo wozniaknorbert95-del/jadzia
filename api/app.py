@@ -192,6 +192,7 @@ _last_weekly_brief_check: float = 0.0
 _last_dtl_ingest_check: float = 0.0
 _last_mb_cycle_check: float = 0.0
 _last_mb_eval_nudge_check: float = 0.0
+_last_mb_weekly_scorecard_check: float = 0.0
 
 
 async def _maybe_run_scheduled_fb_publish() -> None:
@@ -350,6 +351,39 @@ async def _maybe_run_marketing_eval_nudge() -> None:
         await asyncio.to_thread(_run)
     except Exception as e:
         _log.error("[worker_loop] marketing eval nudge failed: %s", e)
+
+
+async def _maybe_run_marketing_weekly_scorecard() -> None:
+    """Weekly scorecard DRAFT nudge (DTL facts; no HOLD/KILL)."""
+    global _last_mb_weekly_scorecard_check
+
+    interval = int(
+        os.getenv("MARKETING_WEEKLY_SCORECARD_INTERVAL_SECONDS", "604800") or "0"
+    )
+    if interval <= 0:
+        return
+
+    poll = min(3600, max(60, interval // 24))
+    now = time.monotonic()
+    if now - _last_mb_weekly_scorecard_check < poll:
+        return
+    _last_mb_weekly_scorecard_check = now
+
+    def _run() -> None:
+        from agent.marketing.weekly_scorecard import run_weekly_scorecard_nudge_if_due
+
+        summary = run_weekly_scorecard_nudge_if_due(interval_seconds=interval)
+        if not summary.get("skipped"):
+            _log.info(
+                "[worker_loop] mb weekly scorecard ok=%s sent=%s",
+                summary.get("ok"),
+                (summary.get("push") or {}).get("sent"),
+            )
+
+    try:
+        await asyncio.to_thread(_run)
+    except Exception as e:
+        _log.error("[worker_loop] marketing weekly scorecard failed: %s", e)
 
 
 async def _worker_loop():
@@ -569,6 +603,7 @@ async def _worker_loop():
             await _maybe_run_marketing_dtl_ingest()
             await _maybe_run_marketing_brain()
             await _maybe_run_marketing_eval_nudge()
+            await _maybe_run_marketing_weekly_scorecard()
             await asyncio.sleep(busy_sleep if had_work else idle_backoff_sec)
         except asyncio.CancelledError:
             _log.info("[worker_loop] cancelled")

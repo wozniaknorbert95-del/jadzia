@@ -39,7 +39,11 @@ def ingest_facebook_organic_posts(
     Fetch organic metrics for published calendar FB posts and write DTL facts.
     No Ads API. Skips cleanly when FB not configured.
     """
-    from agent.publishers.facebook import fetch_post_organic_metrics, is_facebook_configured
+    from agent.publishers.facebook import (
+        check_token_health,
+        fetch_post_organic_metrics,
+        is_facebook_configured,
+    )
 
     as_of = _utc_now()
     if not is_facebook_configured():
@@ -50,6 +54,9 @@ def ingest_facebook_organic_posts(
             "as_of": as_of,
         }
 
+    health = check_token_health()
+    has_insights_scope = bool(health.get("has_read_insights"))
+
     entries = db_list_calendar_entries(status="published", platform="facebook", limit=limit)
     post_ids: List[str] = []
     for e in entries:
@@ -57,11 +64,36 @@ def ingest_facebook_organic_posts(
         if pid and pid not in post_ids:
             post_ids.append(pid)
 
+    if not post_ids:
+        ingest_id = db_insert_marketing_raw_ingest(
+            {
+                "source": "facebook_organic",
+                "fetched_at": as_of,
+                "checksum": payload_checksum({"reason": "no_published_posts"}),
+                "payload": {"reason": "no_published_posts", "post_ids": []},
+                "window_label": WINDOW,
+                "status": "degraded",
+            }
+        )
+        return {
+            "source": "facebook_organic",
+            "status": "degraded",
+            "reason": "no_published_posts",
+            "ingest_id": ingest_id,
+            "posts": 0,
+            "facts_written": 0,
+            "as_of": as_of,
+        }
+
     metrics_rows: List[Dict[str, Any]] = []
+    insights_reasons: List[str] = []
     for pid in post_ids:
         m = fetch_post_organic_metrics(pid)
         if not m.get("ok"):
             continue
+        ir = m.get("insights_reason")
+        if ir:
+            insights_reasons.append(str(ir))
         engagements = float(m.get("engagements") or 0)
         impressions = m.get("impressions")
         # Proxy denominator when insights missing: max(engagements, 1) → ER unstable;
@@ -71,6 +103,11 @@ def ingest_facebook_organic_posts(
             er = engagements / impressions_f
             conf = 0.6
             quality_clean = False
+            row_reason = (
+                "insights_scope_missing"
+                if (not has_insights_scope or ir == "insights_scope_missing")
+                else "proxy_er"
+            )
         else:
             impressions_f = float(impressions)
             if impressions_f < float(min_impressions):
@@ -83,6 +120,7 @@ def ingest_facebook_organic_posts(
             er = engagements / impressions_f
             conf = 1.0 if m.get("insights_ok") else 0.8
             quality_clean = True
+            row_reason = "ok"
         link_clicks = m.get("link_clicks")
         metrics_rows.append(
             {
@@ -93,14 +131,28 @@ def ingest_facebook_organic_posts(
                 "link_clicks": float(link_clicks) if link_clicks is not None else None,
                 "confidence": conf,
                 "quality_clean": quality_clean,
+                "reason": row_reason,
             }
         )
+
+    if not has_insights_scope or any(
+        r == "insights_scope_missing" for r in insights_reasons
+    ):
+        degrade_reason = "insights_scope_missing"
+    elif metrics_rows and all(r.get("reason") == "proxy_er" for r in metrics_rows):
+        degrade_reason = "proxy_er"
+    elif metrics_rows and all(r.get("reason") == "ok" for r in metrics_rows):
+        degrade_reason = "ok"
+    else:
+        degrade_reason = "proxy_er" if metrics_rows else "no_published_posts"
 
     payload = {
         "lookback_days": lookback_days,
         "post_ids": post_ids,
         "metrics": metrics_rows,
         "min_impressions": min_impressions,
+        "reason": degrade_reason,
+        "has_read_insights": has_insights_scope,
     }
     ingest_id = db_insert_marketing_raw_ingest(
         {
@@ -109,16 +161,17 @@ def ingest_facebook_organic_posts(
             "checksum": payload_checksum(payload),
             "payload": payload,
             "window_label": WINDOW,
-            "status": "ok" if metrics_rows else "degraded",
+            "status": "ok" if degrade_reason == "ok" else "degraded",
         }
     )
 
     facts_written = 0
     if not metrics_rows:
-        logger.info("[dtl.fb_organic] no metrics posts=%s", len(post_ids))
+        logger.info("[dtl.fb_organic] no metrics posts=%s reason=%s", len(post_ids), degrade_reason)
         return {
             "source": "facebook_organic",
-            "status": "degraded" if post_ids else "ok",
+            "status": "degraded",
+            "reason": degrade_reason,
             "ingest_id": ingest_id,
             "posts": len(post_ids),
             "facts_written": 0,
@@ -225,7 +278,8 @@ def ingest_facebook_organic_posts(
     )
     return {
         "source": "facebook_organic",
-        "status": "ok",
+        "status": "ok" if degrade_reason == "ok" else "degraded",
+        "reason": degrade_reason,
         "ingest_id": ingest_id,
         "posts": len(post_ids),
         "metrics": len(metrics_rows),
