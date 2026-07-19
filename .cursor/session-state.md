@@ -1,7 +1,9 @@
-﻿# Handoff 2026-07-19 — CLOSEOUT Remote + sync token
+﻿# MKT-OS-01 DONE — Marketing OS 20. rzędu
 
-- Remote PR#1×3 MERGED (os `7051224`, osui `28de58f`, vibe `79786c6`)
-- zzpackage sync token rotated on Cyber-Folks: old 403, new 200, HARDCODE_PHP_LEFT=0
-- No VCMS/jadzia deploy
-- Next: IDLE-POST-POLISH — Dowódca picks feature (nie VIDEO)
-- SoT: `docs/handoffs/2026-07-19-CLOSEOUT-REMOTE-SYNC-01.md`
+- SoT: `docs/ops/marketing/README.md`
+- P-MKT-02…05 in PROCESS-CATALOG
+- Blog intent post zzpackage (seed list updated; WP seed = human)
+- Wizard HTML pixel probe PASS; Events Manager = human
+- Next human: L0 Test Events + Ads publish + Asset Factory
+- PARK: Ads API, TikTok API, QF in jadzia
+- Handoff: `docs/handoffs/2026-07-19-MKT-OS-01-CLOSE.md`

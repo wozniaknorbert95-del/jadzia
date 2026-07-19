@@ -53,6 +53,54 @@
 | SoT | COI-MARKETING-PUBLISH-B |
 | Status | LIVE |
 
+### P-MKT-02 — Auction learning loop (critical=N) — COVERED
+
+| Field | Value |
+|-------|-------|
+| Owner | Auction Operator / Dowódca |
+| Trigger | L0 zielone → kampania Leads |
+| AI | — (Ads Manager człowiek; Jadzia = scorecard SoT) |
+| Human | 1 ad set / 3 creatives / kill-scale 7–14d |
+| HITL | yes (budget) |
+| SoT | `docs/ops/marketing/FB-FIRST-CAMPAIGN.md` |
+| Status | READY (SoT); execution ready_for_human |
+
+### P-MKT-03 — Intent blog ZZP (critical=N) — COVERED
+
+| Field | Value |
+|-------|-------|
+| Owner | Intent SEO |
+| Trigger | cluster plan / 2 tyg. |
+| AI | draft optional |
+| Human | truth gate + seed WP |
+| HITL | content approve |
+| SoT | zzpackage `docs/content/blog/`; pointer `docs/ops/marketing/README.md` |
+| Status | LIVE path |
+
+### P-MKT-04 — Asset Factory (critical=N) — COVERED
+
+| Field | Value |
+|-------|-------|
+| Owner | Creative Systems |
+| Trigger | ISO week folder empty |
+| AI | — |
+| Human | 1 shoot → N cuts (FB/TT/blog) |
+| HITL | before public |
+| SoT | `docs/ops/marketing/ASSET-FACTORY.md` |
+| Status | READY (SoT) |
+
+### P-MKT-05 — Speed-to-Lead (critical=N) — COVERED
+
+| Field | Value |
+|-------|-------|
+| Owner | Speed-to-Lead |
+| Trigger | Instant Form lead |
+| AI | MKT-STL-01 later (≥20 leads) |
+| Human | WA &lt;15 min |
+| HITL | yes |
+| SoT | `docs/ops/marketing/SPEED-TO-LEAD.md` |
+| Status | READY manual; kod PARK |
+
 ### P-BOARD-01 — Weekly brief HITL (critical=Y) — COVERED
 
 | Field | Value |
@@ -144,6 +192,10 @@
 | P-DESIGN-01 | INSPIRE / Design Agent | LIVE hop |
 | P-FIN-02 | SMTP Delegat escalation | LIVE ops |
 | P-MBA-01 | AI MBA Week N | spine ACTIVE |
+| P-MKT-02 | Auction learning loop | READY SoT |
+| P-MKT-03 | Intent blog ZZP | LIVE path |
+| P-MKT-04 | Asset Factory | READY SoT |
+| P-MKT-05 | Speed-to-Lead | READY manual |
 
 ## Score
 

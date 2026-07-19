@@ -12,7 +12,7 @@
 | 2 | Brain modułu | per-repo `brain.md` / `todo.json` | stan operacyjny / active_gate |
 | 3 | Governance runtime | `https://cmd.flexgrafik.nl` (+ `/docs/`) | VCMS scan, conflicts, mapa, **ops handbooks** |
 | 4 | Design / kontrakty COI | `jadzia-core/docs/design/coi-commander/` | ADR, specs D0.x, UX brief |
-| 5 | Ops runbooks | `jadzia-core/docs/ops/` | deploy, dogfood, scorecard, **PROCESS-CATALOG**, OPS-AI |
+| 5 | Ops runbooks | `jadzia-core/docs/ops/` | deploy, dogfood, scorecard, **PROCESS-CATALOG**, OPS-AI, **marketing OS** (`docs/ops/marketing/`) |
 | 6 | Learning (AI MBA) | `jadzia-core/docs/learning/` | spine 52 tyg., weeks/WXX |
 | 7 | Handoffy (ephemeral) | `*/docs/handoffs/` | dowód sesji; **nie** nadpisują konstytucji |
 
@@ -70,6 +70,7 @@
 - Phone hub ADR: [../design/coi-commander/adr/D0.6-phone-hub-not-merge.md](../design/coi-commander/adr/D0.6-phone-hub-not-merge.md)
 - Operator playbook (cmd): `Flex-vcms/flex-vcms/docs/study/coi-commander-ops-handbook.md`
 - Design folder pointer: [../design/coi-commander/OPERATOR-PLAYBOOK.md](../design/coi-commander/OPERATOR-PLAYBOOK.md)
+- **Marketing OS (FG):** [marketing/README.md](./marketing/README.md) — unit economics, L0–L5; QuietForge marketing → `services/docs/strategy/` only
 
 ## Docs IA + Archive policy (ECO-POLISH-01)
 
