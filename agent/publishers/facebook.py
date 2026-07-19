@@ -286,6 +286,103 @@ def check_token_health() -> Dict[str, Any]:
     }
 
 
+def fetch_post_organic_metrics(post_id: str) -> Dict[str, Any]:
+    """
+    Read organic engagement for a Page post (no Ads API).
+    Uses post summary fields; optionally post insights when permitted.
+    """
+    _, access_token = _get_config()
+    pid = (post_id or "").strip()
+    if not pid:
+        return {"ok": False, "error": "missing_post_id"}
+
+    out: Dict[str, Any] = {
+        "ok": True,
+        "post_id": pid,
+        "reactions": 0,
+        "comments": 0,
+        "shares": 0,
+        "engagements": 0,
+        "impressions": None,
+        "link_clicks": None,
+        "insights_ok": False,
+    }
+    try:
+        resp = requests.get(
+            f"{FACEBOOK_BASE}/{pid}",
+            params={
+                "fields": (
+                    "id,created_time,"
+                    "reactions.summary(true).limit(0),"
+                    "comments.summary(true).limit(0),"
+                    "shares"
+                ),
+                "access_token": access_token,
+            },
+            timeout=20,
+        )
+        resp.raise_for_status()
+        data = resp.json() or {}
+        reactions = int(
+            ((data.get("reactions") or {}).get("summary") or {}).get("total_count") or 0
+        )
+        comments = int(
+            ((data.get("comments") or {}).get("summary") or {}).get("total_count") or 0
+        )
+        shares = int((data.get("shares") or {}).get("count") or 0)
+        out.update(
+            {
+                "reactions": reactions,
+                "comments": comments,
+                "shares": shares,
+                "engagements": reactions + comments + shares,
+                "created_time": data.get("created_time"),
+            }
+        )
+    except requests.RequestException as exc:
+        logger.warning("[FacebookPublisher] organic metrics failed post=%s: %s", pid, exc)
+        return {"ok": False, "post_id": pid, "error": str(exc)}
+
+    try:
+        ins = requests.get(
+            f"{FACEBOOK_BASE}/{pid}/insights",
+            params={
+                "metric": "post_impressions,post_engaged_users,post_clicks",
+                "access_token": access_token,
+            },
+            timeout=20,
+        )
+        if ins.status_code == 200:
+            for row in (ins.json() or {}).get("data") or []:
+                name = row.get("name")
+                values = row.get("values") or []
+                val = values[-1].get("value") if values else None
+                if name == "post_impressions" and val is not None:
+                    out["impressions"] = int(val)
+                elif name == "post_clicks" and val is not None:
+                    # may be int or dict by type
+                    if isinstance(val, dict):
+                        out["link_clicks"] = int(
+                            val.get("link clicks")
+                            or val.get("link_clicks")
+                            or sum(int(v) for v in val.values() if str(v).isdigit())
+                            or 0
+                        )
+                    else:
+                        out["link_clicks"] = int(val)
+            out["insights_ok"] = True
+        else:
+            logger.info(
+                "[FacebookPublisher] insights unavailable post=%s status=%s",
+                pid,
+                ins.status_code,
+            )
+    except requests.RequestException as exc:
+        logger.info("[FacebookPublisher] insights skipped post=%s: %s", pid, exc)
+
+    return out
+
+
 def delete_post(post_id: str) -> dict:
     """Delete a post (E2E cleanup)."""
     _, access_token = _get_config()

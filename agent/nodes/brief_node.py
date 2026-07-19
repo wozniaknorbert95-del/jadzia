@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import json
 import logging
+import os
 from datetime import UTC, datetime, timedelta
 from typing import Any
 
@@ -387,6 +388,7 @@ def send_weekly_brief() -> bool:
         _send_telegram_alert_sync(message)
         ticket_ids = spawn_brief_hitl_tickets(metrics=metrics)
         sales_ids = spawn_brief_sales_cta_tickets(metrics=metrics)
+        _maybe_publish_ceo_priority(metrics)
         logger.info(
             "[BriefNode] Weekly brief sent; hitl_tickets=%s sales_cta_tickets=%s",
             ticket_ids,
@@ -396,3 +398,45 @@ def send_weekly_brief() -> bool:
     except Exception as exc:
         logger.error("[BriefNode] Weekly brief failed: %s", exc)
         return False
+
+
+def _brief_ceo_priority_enabled() -> bool:
+    """Default ON — Brain Bus CEO stub has no Ads side-effects; set 0 to disable."""
+    raw = (os.getenv("BRIEF_CEO_PRIORITY_ENABLED") or "1").strip().lower()
+    return raw not in ("0", "false", "no", "off")
+
+
+def _maybe_publish_ceo_priority(metrics: dict) -> None:
+    """Push top brief priorities onto Brain Bus (ceo.priority). Never fails the brief."""
+    if not _brief_ceo_priority_enabled():
+        return
+    try:
+        from datetime import datetime, timezone
+
+        from agent.marketing.brain_bus import publish_ceo_priority_stub
+
+        recs = propose_brief_recommendations(metrics)
+        if not recs:
+            return
+        titles = [str(r.get("title") or r.get("code") or "").strip() for r in recs[:3]]
+        titles = [t for t in titles if t]
+        if not titles:
+            return
+        priority = " | ".join(titles)[:400]
+        iso = datetime.now(timezone.utc).isocalendar()
+        week = f"{iso.year}-W{iso.week:02d}"
+        result = publish_ceo_priority_stub(
+            priority,
+            week=week,
+            process_now=True,
+            send_telegram=False,
+        )
+        logger.info(
+            "[BriefNode] CEO priority → Brain Bus ok=%s ticket=%s",
+            result.get("ok"),
+            (result.get("processed") or {}).get("reactions")
+            or result.get("event_id")
+            or result.get("ok"),
+        )
+    except Exception as exc:
+        logger.warning("[BriefNode] CEO priority Brain Bus skipped: %s", exc)

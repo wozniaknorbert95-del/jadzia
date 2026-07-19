@@ -55,7 +55,7 @@ def _organic_candidates_from_facts() -> List[Dict[str, Any]]:
                     "channel": row.get("channel"),
                     "lift_pct": lift,
                     "metric": metric,
-                    "quality_clean": True,
+                    "quality_clean": bool(dims.get("quality_clean", True)),
                 }
             )
     return candidates

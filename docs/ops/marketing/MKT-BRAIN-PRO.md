@@ -30,20 +30,21 @@ mb_mode: "shadow"
 | **F0** | Data Truth Layer (schema, ingest, margin facts, Data Health) | tip `f28a938`+; DTL interval 3600s |
 | **F1** | Decision engine + shadow log + Telegram HITL (no side-effects) + Organic-to-Paid + Profit Watchdog + hypotheses | tip `9314ddc`; shadow LIVE |
 | **F2** | Governance execute API + circuit breakers (`CB_SHADOW`, margin, pixel, stale…) | tip `269248b`; Act zablokowany w shadow |
-| **F2b** | Campaign Vector Memory (Chroma + SQL degrade) + shadow eval-pack | `campaign_memory.py`; pytest F2b; `GET …/memory/status` · `…/shadow/eval-pack` |
+| **F2b** | Campaign Vector Memory (Chroma + SQL degrade) + shadow eval-pack | tip `3c4af26`; chroma LIVE |
 | **F3** | Brain Bus webhook + `CB_ECOSYSTEM` + CEO stub + VCMS→jadzia notify | tip **`723a702`**; smoke degraded→recover; scan→HTTP 200 |
-| **L0 IC** | Meta Test Events `InitiateCheckout` (PL: Zainicjowanie przejścia do kasy) | pixel `1084197063740065` · 15:24:32 · [L0-INSTRUMENTATION.md](./L0-INSTRUMENTATION.md) |
+| **Organic DTL** | FB post organic metrics → `organic_er_lift_pct` (+ link clicks lift) | `dtl/facebook_organic.py` in pipeline |
+| **CEO↔brief** | Weekly brief → `ceo.priority` Brain Bus (`BRIEF_CEO_PRIORITY_ENABLED`) | `brief_node._maybe_publish_ceo_priority` |
+| **L0 IC** | Meta Test Events `InitiateCheckout` | pixel `1084197063740065` · PASS |
 
 ### TODO — następne (kolejność)
 
 | Priorytet | Co | Owner | Blokada |
 |-----------|-----|-------|---------|
-| **1** | **14d shadow review** accuracy ≥70% → GO `MB_MODE=propose` | Dowódca | eval-pack + rubryka poniżej |
-| **2** | L0 **Purchase** w Test Events | Dowódca / agent | brak GO Mollie LIVE / test path |
-| **3** | META-PACK lean: Audience wykluczeń + Reel + Instant Form €10 | Dowódca | Ads Manager (HITL) |
-| **4** | **F4 Act** — propose→governed actions, distribution pack, Meta Lead webhook | Agent | dopiero po #1 GO |
-| **5** | CEO stub ↔ `brief_node` auto-priority (głębsze) | Agent | nice-to-have |
-| **6** | Organic FB insights ingest (minimal ER) | Agent | B3-1 deferred |
+| **1** | **14d shadow review** accuracy ≥70% → GO `MB_MODE=propose` | Dowódca | eval-pack |
+| **2** | L0 **Purchase** w Test Events | Dowódca | Mollie GO |
+| **3** | META-PACK lean: Audience + Reel + Instant Form €10 | Dowódca | Ads Manager HITL |
+| **4** | **F4 Act** | Agent | po #1 GO |
+| **5** | FB `read_insights` token scope (pełne impressions) | Dowódca | Graph permissions |
 
 ### Shadow evaluation rubric (gate → propose)
 
@@ -385,7 +386,7 @@ Tabela `brain_events` + schemat:
 | **MB** → Dowódca | propozycje HITL | **Telegram inline** (primary) — LIVE shadow |
 | **MB** → Commander | audit + DTL analytics | Data Health + brain-bus panels |
 | **MB** → SB (stub) | `lead.qualified` routing | PARK do Sales Brain v2 |
-| **CEO stub** → MB | priorytet tygodnia | API LIVE; auto z `brief_node` = TODO |
+| **CEO stub** → MB | priorytet tygodnia | **LIVE** via weekly brief → `ceo.priority` |
 
 ---
 
@@ -397,7 +398,7 @@ Tabela `brain_events` + schemat:
 |-------------|--------|
 | DTL schema + `order_margin_facts` | **DONE** |
 | Ingest GA4 / orders / leads / L0 HTML probe / margin | **DONE** (worker 3600s) |
-| Organic FB insights ingest | **TODO** (minimal — deferred) |
+| Organic FB insights ingest | **DONE** (minimal; insights optional) |
 | Attribution L1–L2 stitch | **PARTIAL** (L1/L2 w DTL; L3+ PARK) |
 | Commander Data Health | **DONE** |
 | DoD 7d continuous ingest | **IN PROGRESS** (observe) |

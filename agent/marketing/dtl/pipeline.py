@@ -24,6 +24,7 @@ def run_dtl_ingest(
     Each step is isolated — one failure does not abort the rest.
     """
     from agent.marketing.dtl.attribution import ingest_attribution
+    from agent.marketing.dtl.facebook_organic import ingest_facebook_organic_posts
     from agent.marketing.dtl.ga4 import ingest_ga4_snapshot
     from agent.marketing.dtl.l0_probe import ingest_l0_pixel_probe
     from agent.marketing.dtl.margin import ingest_order_margins
@@ -49,6 +50,7 @@ def run_dtl_ingest(
         _safe("l0_pixel", ingest_l0_pixel_probe)
     _safe("margin", ingest_order_margins)
     _safe("attribution", ingest_attribution)
+    _safe("facebook_organic", ingest_facebook_organic_posts)
 
     quality: Dict[str, Any] = {}
     try:

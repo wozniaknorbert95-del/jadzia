@@ -1,15 +1,15 @@
 {
   "project": "Jadzia-Core",
-  "last_updated": "2026-07-19 (MKT-BRAIN-PRO F2b memory + eval-pack)",
+  "last_updated": "2026-07-19 (organic DTL + CEO brief bus)",
   "status": "active",
   "plan": "docs/ops/marketing/MKT-BRAIN-PRO.md",
-  "active_gate": "MKT-BRAIN-PRO F0–F3+F2b LIVE @ 3c4af26; L0 IC PASS; human: 14d shadow eval-pack ≥70%; Purchase PARK; F4 BLOCKED",
-  "active_plan": "F2b Campaign Memory LIVE path + shadow eval-pack. MB_MODE=shadow. F4/propose only after Dowódca GO.",
+  "active_gate": "MKT-BRAIN-PRO F0–F3+F2b+organic+CEO LIVE; human: 14d shadow≥70%, Meta pack, Purchase PARK; F4 BLOCKED",
+  "active_plan": "Organic FB DTL + brief→CEO Brain Bus shipped. Shadow eval-pack ready. Propose blocked until Dowódca GO.",
   "standing_go_closeout": false,
   "closeout_queue": [],
   "closeout_expires": "2026-07-25",
-  "next_human": "Score shadow via eval-pack (agree/partial/disagree) ≥70%/14d → GO propose. Meta pack €10. Purchase PARK.",
-  "next_agent": "Observe memory+shadow. No MB_MODE=propose without GO. Optional organic ingest / brief_node CEO bridge.",
+  "next_human": "Shadow eval-pack ≥70%/14d → GO propose. Meta Instant Form €10. Confirm FB read_insights if needed.",
+  "next_agent": "Observe DTL facebook_organic + CEO flags. No propose without GO.",
   "agent_rule": "Nie pytaj A/B. Deploy tylko ze zgodą (standing_go_closeout off). Nie sekrety. Nie kasuj parków. Hard STOP: Gate D/Mollie/fake PASS.",
   "sprints": {
     "remediation": "completed",
@@ -1275,6 +1275,16 @@
       "owner": "agent",
       "checklist": "docs/handoffs/2026-07-19-MKT-BRAIN-PRO-F2b-CLOSE.md",
       "note": "PASS LIVE 2026-07-19 tip 3c4af26; chroma sync=7; cycle memory=chroma; eval-pack OK; F4 blocked."
+    },
+    {
+      "id": "MKT-BRAIN-PRO-ORG-CEO",
+      "sprint": "MKT-BRAIN-PRO",
+      "task": "Organic FB DTL ingest + weekly brief → CEO Brain Bus priority",
+      "status": "completed",
+      "priority": "high",
+      "owner": "agent",
+      "checklist": "docs/handoffs/2026-07-19-MKT-BRAIN-PRO-ORG-CEO-CLOSE.md",
+      "note": "PASS 2026-07-19 pytest organic+CEO; deploy tip pending."
     }
   ]
 }
