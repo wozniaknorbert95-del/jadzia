@@ -4,7 +4,7 @@
   "status": "active",
   "plan": "docs/ops/marketing/MKT-BRAIN-PRO.md",
   "active_gate": "MKT-BRAIN-PRO F0–F3 LIVE @ 723a702; L0 IC PASS; VCMS→Brain Bus wired; human: 14d shadow ≥70%; Purchase PARK",
-  "active_plan": "MKT-BRAIN-PRO: F0–F3 LIVE shadow. VCMS scan notifies Brain Bus. Act/propose blocked until 14d review. Chroma F2b optional.",
+  "active_plan": "MKT-BRAIN-PRO STATUS BOARD in MKT-BRAIN-PRO.md: F0–F3 LIVE; TODO=14d shadow→propose, Purchase PARK, Meta pack HITL, F2b Chroma optional, F4 blocked.",
   "standing_go_closeout": false,
   "closeout_queue": [],
   "closeout_expires": "2026-07-25",

@@ -2,9 +2,11 @@
 status: "[ACTIVE]"
 title: "MKT-BRAIN-PRO — World-Class Marketing Ops Architecture"
 gate: "MKT-BRAIN-PRO"
-updated: "2026-07-19 (Final Polish)"
+updated: "2026-07-19 (status board F0–F3 LIVE)"
 supersedes: "MKT-BRAIN-01 (sandbox-first draft — withdrawn)"
 owner: "Norbert Wozniak (Dowódca)"
+runtime_tip: "723a702 (F3 code); docs tip-sync 9c6424a"
+mb_mode: "shadow"
 ---
 
 # MKT-BRAIN-PRO — plan bojowy (post-audit)
@@ -17,13 +19,54 @@ owner: "Norbert Wozniak (Dowódca)"
 
 ---
 
+## STATUS BOARD — 2026-07-19 (SoT)
+
+**Runtime tip (kod F3):** `723a702` · **MB_MODE:** `shadow` · VCMS Brain Bus: **LIVE** (PR [#40](https://github.com/wozniaknorbert95-del/Flex-vcms/pull/40))
+
+### DONE (LIVE / PASS)
+
+| ID | Co | Dowód |
+|----|-----|--------|
+| **F0** | Data Truth Layer (schema, ingest, margin facts, Data Health) | tip `f28a938`+; DTL interval 3600s |
+| **F1** | Decision engine + shadow log + Telegram HITL (no side-effects) + Organic-to-Paid + Profit Watchdog + hypotheses | tip `9314ddc`; shadow LIVE |
+| **F2** | Governance execute API + circuit breakers (`CB_SHADOW`, margin, pixel, stale…) | tip `269248b`; Act zablokowany w shadow |
+| **F3** | Brain Bus webhook + `CB_ECOSYSTEM` + CEO stub + VCMS→jadzia notify | tip **`723a702`**; smoke degraded→recover; scan→HTTP 200 |
+| **L0 IC** | Meta Test Events `InitiateCheckout` (PL: Zainicjowanie przejścia do kasy) | pixel `1084197063740065` · 15:24:32 · [L0-INSTRUMENTATION.md](./L0-INSTRUMENTATION.md) |
+
+### TODO — następne (kolejność)
+
+| Priorytet | Co | Owner | Blokada |
+|-----------|-----|-------|---------|
+| **1** | **14d shadow review** accuracy ≥70% → GO `MB_MODE=propose` | Dowódca | czas + ocena |
+| **2** | L0 **Purchase** w Test Events | Dowódca / agent | brak GO Mollie LIVE / test path |
+| **3** | META-PACK lean: Audience wykluczeń + Reel + Instant Form €10 | Dowódca | Ads Manager (HITL) |
+| **4** | **F2b** ChromaDB campaign RAG (opcjonalnie) | Agent | nie blokuje propose |
+| **5** | **F4 Act** — propose→governed actions, distribution pack, Meta Lead webhook | Agent | dopiero po #1 GO |
+| **6** | CEO stub ↔ `brief_node` auto-priority (głębsze) | Agent | nice-to-have |
+| **7** | Organic FB insights ingest (minimal ER) | Agent | B3-1 deferred |
+
+### PARK (twarde — nie ruszamy)
+
+Gate D · Mollie LIVE charge · Ads API **create** · TikTok API C1-01 · full auto-publish · MMM · Redis queue · fake PASS
+
+### Human-only checklist (równolegle do shadow)
+
+| # | Item | Status |
+|---|------|--------|
+| H1 | Shadow log review ≥70% (14d) | **OPEN** |
+| H2 | Purchase Test Events | **PARK** |
+| H3 | Custom Audience klientów → wykluczenie | OPEN ([OPERATOR-TODAY](./OPERATOR-TODAY.md)) |
+| H4 | Kampania Leads Instant Form €10 | OPEN ([META-PACK-LEAN](./META-PACK-LEAN.md)) |
+
+---
+
 ## 0. Co zostaje (fundamenty — nie psuć)
 
 | Fundament | Decyzja | Dowód w ekosystemie |
 |-----------|---------|---------------------|
 | **Build vs Runtime** | Cursor = build; **jadzia VPS** = runtime mózgów 24/7 | `brain.md`, `JADZIA-OPERATOR-PLAYBOOK.md` |
 | **OODA-G** | Reasoning → **Governance Gate** → Act / HITL / Deny | Tor A/B `FB-AUTOMATION-PLAYBOOK.md` |
-| **Brain Bus** | Komunikacja **strukturalna** (JSON events), nie LLM↔LLM chat | INT-006 PARTIAL → TO-BE |
+| **Brain Bus** | Komunikacja **strukturalna** (JSON events), nie LLM↔LLM chat | **F3 LIVE** `POST /api/v1/brain-bus/events` + VCMS scan |
 | **SQLite SoT** | Operacyjny stan w `jadzia.db` — bez in-memory task dicts | `CLAUDE.md`, `agent/db.py` |
 | **HITL publish FB** | Publish tylko po `approved` | `content_calendar_node.py` LIVE |
 | **Agent OS = Engineering Brain** | Kod multi-repo — **nie** runtime MB | `agent-os/graph.py`, SESSION-ANCHOR |
@@ -317,69 +360,60 @@ Tabela `brain_events` + schemat:
 
 | Połączenie | Kierunek | v1 |
 |------------|----------|-----|
-| **KB (KODA/VCMS)** → MB | `system.health.degraded` po scan conflicts > 0 | webhook z VCMS scan |
-| **MB** → Dowódca | propozycje HITL | **Telegram inline** (primary) |
-| **MB** → Commander | audit + DTL analytics | queue / panels |
+| **KB (KODA/VCMS)** → MB | `system.health.degraded` / `recovered` | **LIVE** — `vcms-scan` → Brain Bus |
+| **MB** → Dowódca | propozycje HITL | **Telegram inline** (primary) — LIVE shadow |
+| **MB** → Commander | audit + DTL analytics | Data Health + brain-bus panels |
 | **MB** → SB (stub) | `lead.qualified` routing | PARK do Sales Brain v2 |
-| **CEO stub** → MB | priorytet tygodnia | rozszerzenie `brief_node` |
+| **CEO stub** → MB | priorytet tygodnia | API LIVE; auto z `brief_node` = TODO |
 
 ---
 
 ## 5. Fazy implementacji (MKT-BRAIN-PRO)
 
-### Faza 0 — Data Truth + Observability (2 tyg.)
+### Faza 0 — Data Truth + Observability — **DONE LIVE**
 
-**Cel:** MB jeszcze **nie decyduje** — tylko zbiera i ocenia jakość danych.
+| Deliverable | Status |
+|-------------|--------|
+| DTL schema + `order_margin_facts` | **DONE** |
+| Ingest GA4 / orders / leads / L0 HTML probe / margin | **DONE** (worker 3600s) |
+| Organic FB insights ingest | **TODO** (minimal — deferred) |
+| Attribution L1–L2 stitch | **PARTIAL** (L1/L2 w DTL; L3+ PARK) |
+| Commander Data Health | **DONE** |
+| DoD 7d continuous ingest | **IN PROGRESS** (observe) |
 
-| Deliverable | Opis |
-|-------------|------|
-| DTL schema | ingest/facts/quality + **`order_margin_facts`** |
-| Ingest workers | GA4, orders, leads, L0 pixel, **order margin (COGS v1)** |
-| Organic metrics ingest | FB post insights (B3-1 deferred → **minimal read** dla ER/clicks) |
-| Attribution L1-L2 | stitch UTM → session → order w facts |
-| Quality report | Commander **Data Health** (nie approval queue) |
-| DoD | 7 dni ciągłego ingest bez critical flags; **margin facts** na real orders |
+### Faza 1 — Decision Engine + Shadow — **DONE LIVE** (`MB_MODE=shadow`)
 
-**Nie:** sandbox z fake CPL jako substytut prawdy — fixture tylko w **pytest**, nie prod.
+| Deliverable | Status |
+|-------------|--------|
+| heuristics + decision_engine + hypotheses | **DONE** |
+| Shadow log + Telegram proposals (no side-effects) | **DONE** |
+| EDC `brain_events` processor | **DONE** (rozszerzone w F3) |
+| DoD: Dowódca shadow review ≥70% | **TODO** (14d clock) |
 
-### Faza 1 — Decision Engine + Shadow Mode (2 tyg.)
+### Faza 2 — Governance + Breakers — **DONE LIVE (core)** · Chroma = **F2b TODO**
 
-| Deliverable | Opis |
-|-------------|------|
-| `heuristics.py` | North Star + **`HEU_ORGANIC_WINNER`** + **`HEU_PROFIT_WATCHDOG`** |
-| `decision_engine.py` | facts → Decision |
-| **`marketing_hypotheses`** | Experimentation Ledger + review events |
-| Shadow log | 14 dni default |
-| **Telegram MB proposals** | inline approve/deny/details (shadow: no side-effects) |
-| EDC v1 | `brain_events` + processor |
-| Heartbeats | MB + ingest workers |
-| DoD | Dowódca review shadow log ≥70%; Telegram E2E shadow proposal |
+| Deliverable | Status |
+|-------------|--------|
+| Governance `approval_token` + execute API | **DONE** (shadow blocks execute) |
+| Circuit breakers (+ F3 `CB_ECOSYSTEM`) | **DONE** |
+| Commander analytics (shadow / breakers) | **DONE** |
+| ChromaDB RAG | **TODO F2b** (SQL shadow = degraded path) |
+| DoD: Telegram APPROVE → real Act | **BLOCKED** do F4 + propose GO |
 
-### Faza 2 — Governance API + Circuit Breakers + Telegram Act path (1–2 tyg.)
+### Faza 3 — Brain Bus + KB bridge — **DONE LIVE** tip `723a702`
 
-| Deliverable | Opis |
-|-------------|------|
-| Governance endpoint | approval_token + **Telegram callback → execute** |
-| Circuit breakers | CB_* + **`CB_MARGIN_FLOOR`** |
-| Commander Data Health UI | facts + margin + hypothesis history (analytics only) |
-| Publish refactor | side-effects przez Governance API |
-| ChromaDB RAG | campaign memory (uzupełnia ledger) |
-| DoD | E2E: organic winner alert → Telegram APPROVE → governed action; breaker trip test |
+| Deliverable | Status |
+|-------------|--------|
+| `POST /api/v1/brain-bus/events` + secret | **DONE** |
+| degraded → flag + ticket + TG + hold | **DONE** |
+| CEO stub API | **DONE** |
+| VCMS scan notify | **DONE** (Flex-vcms #40) |
 
-### Faza 3 — Brain Bus + KB bridge (1 tyg.) — **CLOSE 2026-07-19**
-
-| Deliverable | Opis |
-|-------------|------|
-| VCMS → jadzia webhook | `POST /api/v1/brain-bus/events` + `BRAIN_BUS_SECRET` |
-| MB reaguje | `ecosystem_red` flag + `CB_ECOSYSTEM` + TG + Commander ticket |
-| CEO stub | `ceo.priority` + `POST …/brain-bus/ceo-priority` |
-| DoD | pytest F3 4/4; VCMS wire + VPS tip = ops follow-up |
-
-### Faza 4 — Act (post-shadow GO)
+### Faza 4 — Act (post-shadow GO) — **TODO / BLOCKED**
 
 | Deliverable | Warunek |
 |-------------|---------|
-| `MB_MODE=propose` | po shadow review GO |
+| `MB_MODE=propose` | po shadow review GO (**TODO #1**) |
 | Distribution pack | 1 asset → FB + TT/blog tasks |
 | Blog seed orchestration | SSH HITL |
 | Meta Lead webhook | ≥20 leadów + MKT-STL-01 GO |

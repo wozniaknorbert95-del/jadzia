@@ -1,12 +1,21 @@
 ---
 status: "[ACTIVE]"
 title: "Marketing OS — START TUTAJ (operator)"
-updated: "2026-07-19"
+updated: "2026-07-19 (F0–F3 LIVE board)"
 ---
 
 # START TUTAJ — jedna ścieżka (ADHD)
 
 **Lean Meta pack (START):** [META-PACK-LEAN.md](./META-PACK-LEAN.md) — Instant Form €10 + 1 Reel.
+
+**MB plan SoT:** [MKT-BRAIN-PRO.md](./MKT-BRAIN-PRO.md) → sekcja **STATUS BOARD** (DONE vs TODO).
+
+| MB | Status |
+|----|--------|
+| F0–F3 | **LIVE** tip `723a702` · `MB_MODE=shadow` |
+| L0 InitiateCheckout | **PASS** |
+| L0 Purchase | PARK |
+| Twój gate | 14d shadow ≥70% → GO propose · + Meta pack poniżej |
 
 Nie czytaj całego katalogu. Idź **wiersz po wierszu**.
 
