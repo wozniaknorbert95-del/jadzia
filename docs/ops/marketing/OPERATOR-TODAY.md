@@ -17,13 +17,22 @@ updated: "2026-07-19 (PLAN-14D)"
 | L0 Purchase | PARK (nie blokuje Instant Form) |
 | Twoje zadanie | **A1 → A2 → A3 → Publish → WA** |
 
-## Dziś — tylko 3 bloki
+## Dziś — status Meta (agent w Ads Manager 2026-07-19)
 
-| # | Zrób | Plik | Done |
-|---|------|------|------|
-| A1 | Audience wykluczenie | [META-CLICK-PATH](./META-CLICK-PATH.md) | [ ] |
-| A2 | Kampania Instant Form €10 | [META-CLICK-PATH](./META-CLICK-PATH.md) | [ ] |
-| A3 | Reel **lub** static + Publish | [META-CLICK-PATH](./META-CLICK-PATH.md) | [ ] |
+| # | Zrób | Status |
+|---|------|--------|
+| A1 | Audience `flexgrafik` (Gotowa) | **DONE** — użyć jako wykluczenie w ad secie |
+| A2 | Draft kampanii Kontakty | **DONE** draft: `zzp_branding_check_v1` · €10/dzień · Instant Form · regulamin leadów zaakceptowany |
+| A2b | Formularz | **IN PROGRESS** — `zzp_branding_check_v1_form` + nagłówek/intro NL wklejone |
+| A3 | Kreacja + Publish | **BLOCKED** — brak uploadu Reel/static + **Konto nierozliczone** |
+
+### TY MUSISZ TERAZ (bez mnie nie pójdzie)
+
+1. **Zapłać zaległość Ads** — banner „Konto nierozliczone” → **Zapłać teraz** (ja nie wkładam karty).
+2. Dokończ formularz (Pytania: Naam/WA/E-mail/Vak · Privacy · Thank-you z Wizard UTM).
+3. Wrzuć **1 Reel lub zdjęcie bus** → **Opublikuj**.
+
+Draft IDs (act `758460034566524`): campaign `120254517992840360`.
 
 **Zakaz:** edycja ad setu 7 dni · cel Sales · wiele claimów „PASS” bez publish.
 
