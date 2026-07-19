@@ -13,8 +13,8 @@ active_gate_next: "ready_for_human Meta pack (OPERATOR-TODAY #1–4)"
 
 | Krok | Evidence |
 |------|----------|
-| Git hygiene jadzia | tip `3e60437` (UX strip od `c874999`) · origin synced |
-| Deploy jadzia VPS | `/opt/jadzia` `3e60437` · `systemctl active` · health OK · `Organic HITL` + `mkt-os-strip` w `commander-ui` |
+| Git hygiene jadzia | tip at ship close `3e60437` (UX strip od `c874999`) · origin synced |
+| Deploy jadzia VPS | ship tip `3e60437` · later tip **`8d40efc`** (terminal UI) — see CLOSEOUT-HONESTY-01 · `Organic HITL` + `mkt-os-strip` |
 | Blog seed Cyber-Folks | `wp eval-file system/maintenance/seed-zzp-blog-posts.php` · post created · **HTTP 200** `https://zzpackage.flexgrafik.nl/blog/zzp-bus-belettering-herkenbaar/` |
 | VCMS knowledge | handbook Scenariusz 3 Marketing OS · study-index · surfaces pointer · PR [#38](https://github.com/wozniaknorbert95-del/Flex-vcms/pull/38) · tip `29d4e87` · Deploy-VPS Integrity PASS |
 | services | **nietknięte** (dirty media poza zakresem) |

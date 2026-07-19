@@ -1,14 +1,14 @@
 {
   "project": "Jadzia-Core",
-  "last_updated": "2026-07-19 (MKT-SHIP-01 PASS — deploy+blog+VCMS)",
+  "last_updated": "2026-07-19 (CLOSEOUT-HONESTY-01 — tip 8d40efc verified)",
   "status": "active",
   "plan": "docs/ops/marketing/OPERATOR-TODAY.md",
   "active_gate": "ready_for_human Meta pack (OPERATOR-TODAY #1-4)",
-  "active_plan": "MKT-SHIP-01 PASS: jadzia VPS 3e60437, blog slug LIVE 200, VCMS handbook tip 29d4e87. Next: human Meta Events/Ads/shoot/€10 campaign. Gate D parked. standing_go off.",
+  "active_plan": "Honesty closeout DONE. jadzia VPS tip 8d40efc (terminal UI). Blog slug LIVE 200 (asset MD5 match tip; hosting NOT full-git). FB check_token_health ok=true PAGE. Meta #1-4 still human. Gate D parked. standing_go off.",
   "standing_go_closeout": false,
   "closeout_queue": [],
   "closeout_expires": "2026-07-25",
-  "next_human": "OPERATOR-TODAY #1-4: Events Manager Test Events; Custom Audience; Asset Factory shoot; Ads Instant Form €10/d (paste FB-FIRST). Organic #5 when media ready. Gate D parked.",
+  "next_human": "OPERATOR-TODAY #1-4 Meta (Events/Audience/Asset/Ads €10). Ack/close stale FB-expired queue tickets if still showing (token health LIVE ok). Organic #5 only with Drive media. Gate D parked.",
   "next_agent": "/vibe-init — after Dowódca Meta pack: WEEKLY-SCORECARD PON OR organic Commander #5.",
   "agent_rule": "Nie pytaj A/B. Deploy tylko ze zgodą (standing_go_closeout off). Nie sekrety. Nie kasuj parków. Hard STOP: Gate D/Mollie/fake PASS.",
   "sprints": {
