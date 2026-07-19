@@ -1,7 +1,7 @@
 ---
 status: "[ACTIVE]"
 title: "Marketing OS — START TUTAJ (operator)"
-updated: "2026-07-19 (F0–F3 LIVE board)"
+updated: "2026-07-19 (eval-pack v2)"
 ---
 
 # START TUTAJ — jedna ścieżka (ADHD)
@@ -12,10 +12,11 @@ updated: "2026-07-19 (F0–F3 LIVE board)"
 
 | MB | Status |
 |----|--------|
-| F0–F3 | **LIVE** tip `723a702` · `MB_MODE=shadow` |
+| F0–F3 + F2b | **LIVE** · `MB_MODE=shadow` |
+| Eval pack | Telegram `/mb_eval` (po deploy v2) · gate ≥70% + n≥20 / 14d |
 | L0 InitiateCheckout | **PASS** |
 | L0 Purchase | PARK |
-| Twój gate | 14d shadow ≥70% → GO propose · + Meta pack poniżej |
+| Twój gate | score shadow → GO propose · + Meta pack poniżej |
 
 Nie czytaj całego katalogu. Idź **wiersz po wierszu**.
 

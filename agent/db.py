@@ -564,6 +564,21 @@ def _init_marketing_f1_schema(conn: sqlite3.Connection) -> None:
         ON marketing_hypotheses(status, review_at)
     """)
 
+    # F2b eval v2 — separate from hot-path shadow_log
+    conn.execute("""
+        CREATE TABLE IF NOT EXISTS marketing_shadow_eval (
+            action_id TEXT PRIMARY KEY,
+            eval_score TEXT NOT NULL,
+            scored_at TEXT NOT NULL,
+            scorer TEXT NOT NULL DEFAULT 'dowodca',
+            FOREIGN KEY(action_id) REFERENCES marketing_shadow_log(action_id)
+        )
+    """)
+    conn.execute("""
+        CREATE INDEX IF NOT EXISTS idx_marketing_shadow_eval_scored
+        ON marketing_shadow_eval(scored_at DESC)
+    """)
+
     conn.execute("""
         CREATE TABLE IF NOT EXISTS brain_events (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -3067,6 +3082,106 @@ def db_list_marketing_shadow(limit: int = 20) -> List[Dict]:
         item["would_execute"] = bool(item.get("would_execute"))
         result.append(item)
     return result
+
+
+def db_upsert_marketing_shadow_eval(
+    action_id: str,
+    eval_score: str,
+    scorer: str = "dowodca",
+) -> bool:
+    """Record Dowódca eval score: agree|partial|disagree."""
+    now = _utc_now_iso()
+    conn = get_connection()
+    try:
+        conn.execute(
+            """
+            INSERT INTO marketing_shadow_eval (action_id, eval_score, scored_at, scorer)
+            VALUES (?, ?, ?, ?)
+            ON CONFLICT(action_id) DO UPDATE SET
+                eval_score=excluded.eval_score,
+                scored_at=excluded.scored_at,
+                scorer=excluded.scorer
+            """,
+            (action_id, eval_score, now, scorer),
+        )
+        conn.commit()
+        return True
+    except Exception as e:
+        import logging
+        logging.getLogger(__name__).error(
+            "[DB] shadow eval upsert failed action_id=%s: %s", action_id, e
+        )
+        return False
+
+
+def db_get_marketing_shadow_eval(action_id: str) -> Optional[Dict]:
+    conn = get_connection()
+    row = conn.execute(
+        "SELECT * FROM marketing_shadow_eval WHERE action_id = ?",
+        (action_id,),
+    ).fetchone()
+    return dict(row) if row else None
+
+
+def db_list_marketing_shadow_eval_joined(
+    *,
+    window_days: int = 14,
+    only_unscored: bool = False,
+    limit: int = 200,
+) -> List[Dict]:
+    """Shadow rows (optionally with eval) for accuracy / pack selection."""
+    conn = get_connection()
+    if only_unscored:
+        rows = conn.execute(
+            """
+            SELECT s.*, e.eval_score, e.scored_at AS eval_scored_at
+            FROM marketing_shadow_log s
+            LEFT JOIN marketing_shadow_eval e ON e.action_id = s.action_id
+            WHERE e.action_id IS NULL
+              AND s.created_at >= datetime('now', ?)
+            ORDER BY s.created_at DESC
+            LIMIT ?
+            """,
+            (f"-{int(window_days)} days", limit),
+        ).fetchall()
+    else:
+        rows = conn.execute(
+            """
+            SELECT s.*, e.eval_score, e.scored_at AS eval_scored_at
+            FROM marketing_shadow_log s
+            LEFT JOIN marketing_shadow_eval e ON e.action_id = s.action_id
+            WHERE s.created_at >= datetime('now', ?)
+            ORDER BY s.created_at DESC
+            LIMIT ?
+            """,
+            (f"-{int(window_days)} days", limit),
+        ).fetchall()
+    result = []
+    for row in rows:
+        item = dict(row)
+        try:
+            item["payload"] = json.loads(item.pop("payload_json") or "{}")
+        except Exception:
+            item["payload"] = {}
+        item["would_execute"] = bool(item.get("would_execute"))
+        result.append(item)
+    return result
+
+
+def db_list_scored_evals(window_days: int = 14) -> List[Dict]:
+    conn = get_connection()
+    rows = conn.execute(
+        """
+        SELECT e.*, s.heuristic_rule_id, s.proposed_action, s.governance_result,
+               s.would_execute, s.created_at AS shadow_created_at
+        FROM marketing_shadow_eval e
+        JOIN marketing_shadow_log s ON s.action_id = e.action_id
+        WHERE e.scored_at >= datetime('now', ?)
+        ORDER BY e.scored_at DESC
+        """,
+        (f"-{int(window_days)} days",),
+    ).fetchall()
+    return [dict(r) for r in rows]
 
 
 def db_insert_marketing_hypothesis(row: Dict) -> bool:

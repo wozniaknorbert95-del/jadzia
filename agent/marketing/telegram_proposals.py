@@ -31,9 +31,25 @@ def build_mb_inline_keyboard(action_id: str) -> dict:
     }
 
 
+def build_mb_eval_keyboard(action_id: str) -> dict:
+    """Eval-pack scoring (trust test) — separate from HITL approve/deny."""
+    return {
+        "inline_keyboard": [
+            [
+                {"text": "✅ Zgadzam się", "callback_data": f"mb_score_agree:{action_id}"},
+                {"text": "🟡 Częściowo", "callback_data": f"mb_score_partial:{action_id}"},
+            ],
+            [
+                {"text": "❌ Nie", "callback_data": f"mb_score_disagree:{action_id}"},
+            ],
+        ]
+    }
+
+
 def parse_mb_callback(callback_data: str) -> Optional[Tuple[str, str]]:
     """
-    Returns (action, action_id) where action in approve|deny|details.
+    Returns (action, action_id) where action in
+    approve|deny|details|score_agree|score_partial|score_disagree.
     """
     if not callback_data or ":" not in callback_data:
         return None
@@ -42,6 +58,9 @@ def parse_mb_callback(callback_data: str) -> Optional[Tuple[str, str]]:
         "mb_approve": "approve",
         "mb_deny": "deny",
         "mb_details": "details",
+        "mb_score_agree": "score_agree",
+        "mb_score_partial": "score_partial",
+        "mb_score_disagree": "score_disagree",
     }
     if prefix not in mapping or not rest.strip():
         return None
@@ -105,7 +124,38 @@ def handle_mb_hitl(action: str, action_id: str) -> Dict[str, Any]:
     """
     Process Telegram HITL for MB proposal.
     F1 shadow: APPROVE/DENY only update shadow_log — no Ads/publish side-effects.
+    Eval scores (score_*) go to marketing_shadow_eval — trust gate, not execute.
     """
+    if action in ("score_agree", "score_partial", "score_disagree"):
+        from agent.marketing.shadow_eval import compute_accuracy, record_eval_score
+
+        score_map = {
+            "score_agree": "agree",
+            "score_partial": "partial",
+            "score_disagree": "disagree",
+        }
+        result = record_eval_score(action_id, score_map[action])
+        if not result.get("ok"):
+            return {
+                "ok": False,
+                "message": result.get("error") or "score failed",
+                "side_effect": False,
+            }
+        acc = compute_accuracy(window_days=14)
+        acc_s = acc.get("accuracy")
+        acc_txt = f"{acc_s:.0%}" if isinstance(acc_s, float) else "n/a"
+        gate = "🟢 gate OK" if acc.get("gate_ready") else f"🔴 {acc.get('gate_reason')}"
+        return {
+            "ok": True,
+            "message": (
+                f"📝 Eval zapisane: {score_map[action]}\n"
+                f"action_id={action_id}\n"
+                f"14d accuracy={acc_txt} (n={acc.get('n_scored')}) {gate}"
+            ),
+            "side_effect": False,
+            "accuracy": acc,
+        }
+
     row = db_get_marketing_shadow(action_id)
     if not row:
         return {
@@ -176,3 +226,77 @@ def handle_mb_hitl(action: str, action_id: str) -> Dict[str, Any]:
         }
 
     return {"ok": False, "message": "Nieznana akcja MB."}
+
+
+def _telegram_admin_chat() -> Tuple[str, str]:
+    bot_token = os.getenv("TELEGRAM_BOT_TOKEN", "").strip()
+    admin_id = os.getenv("TELEGRAM_ADMIN_CHAT_ID", "").strip()
+    if not admin_id:
+        allowed = os.getenv("ALLOWED_TELEGRAM_USERS", "").strip()
+        if allowed:
+            admin_id = allowed.split(",")[0].strip()
+    return bot_token, admin_id
+
+
+def send_eval_pack_telegram(*, limit: int = 10, window_days: int = 7) -> Dict[str, Any]:
+    """Push stratified eval cards with score buttons (Telegram-first pack)."""
+    from agent.marketing.shadow_eval import build_eval_pack, format_eval_card
+
+    bot_token, admin_id = _telegram_admin_chat()
+    if not bot_token or not admin_id:
+        return {
+            "ok": False,
+            "error": "missing TELEGRAM_BOT_TOKEN or admin chat",
+            "sent": 0,
+        }
+
+    pack = build_eval_pack(limit=limit, window_days=window_days, stratified=True)
+    decisions = pack.get("decisions") or []
+    if not decisions:
+        return {
+            "ok": True,
+            "sent": 0,
+            "message": "Brak niescorowanych decyzji w oknie — shadow musi najpierw coś zalogować.",
+            "accuracy_snapshot": pack.get("accuracy_snapshot"),
+        }
+
+    url = f"https://api.telegram.org/bot{bot_token}/sendMessage"
+    sent = 0
+    errors = 0
+    total = len(decisions)
+    try:
+        with httpx.Client(timeout=15.0) as client:
+            for i, d in enumerate(decisions, start=1):
+                aid = d.get("action_id") or ""
+                text = format_eval_card(d, i, total)
+                r = client.post(
+                    url,
+                    json={
+                        "chat_id": admin_id,
+                        "text": text,
+                        "reply_markup": build_mb_eval_keyboard(aid),
+                    },
+                )
+                if r.is_success:
+                    sent += 1
+                else:
+                    errors += 1
+                    logger.error(
+                        "[mb.telegram] eval card failed action_id=%s status=%s",
+                        aid,
+                        r.status_code,
+                    )
+    except Exception as exc:
+        logger.error("[mb.telegram] eval pack send failed: %s", exc)
+        return {"ok": False, "error": str(exc), "sent": sent}
+
+    acc = pack.get("accuracy_snapshot") or {}
+    logger.info("[mb.telegram] eval pack sent=%s errors=%s", sent, errors)
+    return {
+        "ok": errors == 0,
+        "sent": sent,
+        "errors": errors,
+        "n_pack": total,
+        "accuracy_snapshot": acc,
+        "message": f"Wysłano {sent}/{total} kart eval. Oceń przyciskami.",
+    }

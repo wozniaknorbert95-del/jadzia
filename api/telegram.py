@@ -91,6 +91,8 @@ def parse_telegram_command(message: str, callback_data: Optional[str] = None) ->
         return "ticket", payload
     if cmd_lower in ("/commander", "commander", "/jwt", "jwt"):
         return "commander", ""
+    if cmd_lower in ("/mb_eval", "mb_eval"):
+        return "mb_eval", ""
     if lower in ("tak", "nie", "t", "n", "yes", "no"):
         return "approval", "true" if lower in ("tak", "t", "yes") else "false"
     return "message", msg
@@ -332,11 +334,27 @@ async def _handle_webhook_request(
             approval = payload == "true"
             return await _handle_approval(chat_id, task_id, approval, jwt_token, base_url)
 
+        if command == "mb_eval":
+            from agent.marketing.shadow_eval import compute_accuracy
+            from agent.marketing.telegram_proposals import send_eval_pack_telegram
+
+            push = send_eval_pack_telegram(limit=10, window_days=7)
+            acc = push.get("accuracy_snapshot") or compute_accuracy(window_days=14)
+            acc_s = acc.get("accuracy")
+            acc_txt = f"{acc_s:.0%}" if isinstance(acc_s, float) else "n/a"
+            gate = "gate OK" if acc.get("gate_ready") else acc.get("gate_reason")
+            text = (
+                f"{push.get('message') or 'Eval pack'}\n"
+                f"14d accuracy={acc_txt} n={acc.get('n_scored')} ({gate})"
+            )
+            messages = format_response_for_telegram(text, awaiting_input=False)
+            return TelegramWebhookResponse(success=bool(push.get("ok")), messages=messages)
+
         if command == "pomoc":
             text = get_help_message()
             messages = format_response_for_telegram(text, awaiting_input=False)
             if not messages or not any(m.get("text") for m in messages):
-                messages = [{"text": "Pomoc: /zadanie, /status, /cofnij, /pomoc", "parse_mode": None}]
+                messages = [{"text": "Pomoc: /zadanie, /status, /cofnij, /mb_eval, /pomoc", "parse_mode": None}]
             return TelegramWebhookResponse(success=True, messages=messages)
 
         if command == "cofnij":

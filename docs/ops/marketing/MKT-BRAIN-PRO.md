@@ -2,10 +2,10 @@
 status: "[ACTIVE]"
 title: "MKT-BRAIN-PRO — World-Class Marketing Ops Architecture"
 gate: "MKT-BRAIN-PRO"
-updated: "2026-07-19 (F2b memory + shadow eval-pack)"
+updated: "2026-07-19 (eval-pack v2 Telegram-first)"
 supersedes: "MKT-BRAIN-01 (sandbox-first draft — withdrawn)"
 owner: "Norbert Wozniak (Dowódca)"
-runtime_tip: "3c4af26 (F2b memory + eval-pack)"
+runtime_tip: "(eval v2 pending tip-sync)"
 mb_mode: "shadow"
 ---
 
@@ -54,9 +54,11 @@ mb_mode: "shadow"
 | **partial** | Kierunek OK, zły severity/timing/kanał |
 | **disagree** | Zła / szkodliwa vs ocena Dowódcy |
 
-**Formula:** `accuracy = (agree + 0.5×partial) / scored × 100` · **gate ≥ 70%** na oknie 14d.
+**Formula:** `accuracy = avg(agree=1, partial=0.5, disagree=0)` · **gate:** ≥70% **oraz** `n_scored ≥ 20` na 14d · preferuj **2 tygodnie z rzędu** zielone przed GO propose.
 
-**Export:** `GET /api/v1/commander/marketing/shadow/eval-pack?limit=50` · CLI `python scripts/mb_shadow_eval_export.py --format csv -o eval.csv`
+**Kanał (v2, kanoniczny):** Telegram `/mb_eval` → karty ze score buttons · API `GET …/shadow/accuracy` · `POST …/shadow/eval-push`.
+
+**Backup CSV/JSON:** `GET …/shadow/eval-pack?limit=12` · CLI `python scripts/mb_shadow_eval_export.py --format csv -o eval.csv`
 
 ### F4 propose cutover checklist (NO ACT until GO)
 

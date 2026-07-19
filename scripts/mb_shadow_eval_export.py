@@ -15,7 +15,13 @@ if str(ROOT) not in sys.path:
 
 def main() -> int:
     parser = argparse.ArgumentParser(description="MB shadow eval-pack export")
-    parser.add_argument("--limit", type=int, default=50)
+    parser.add_argument("--limit", type=int, default=12)
+    parser.add_argument("--window-days", type=int, default=7)
+    parser.add_argument(
+        "--dump",
+        action="store_true",
+        help="v1 raw dump (no stratification)",
+    )
     parser.add_argument("--format", choices=("json", "csv"), default="json")
     parser.add_argument("-o", "--output", help="Write to file (default stdout)")
     args = parser.parse_args()
@@ -26,7 +32,11 @@ def main() -> int:
         eval_pack_to_json,
     )
 
-    pack = build_eval_pack(limit=args.limit)
+    pack = build_eval_pack(
+        limit=args.limit,
+        window_days=args.window_days,
+        stratified=not args.dump,
+    )
     text = (
         eval_pack_to_csv(pack)
         if args.format == "csv"
@@ -34,7 +44,10 @@ def main() -> int:
     )
     if args.output:
         Path(args.output).write_text(text, encoding="utf-8")
-        print(f"wrote {args.output} count={pack.get('count')}", file=sys.stderr)
+        print(
+            f"wrote {args.output} n={pack.get('n')} ver={pack.get('pack_version')}",
+            file=sys.stderr,
+        )
     else:
         print(text)
     return 0

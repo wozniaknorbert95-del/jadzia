@@ -347,13 +347,55 @@ async def get_marketing_shadow(
 
 @router.get("/api/v1/commander/marketing/shadow/eval-pack")
 async def get_marketing_shadow_eval_pack(
-    limit: int = Query(default=50, ge=1, le=200),
+    limit: int = Query(default=12, ge=1, le=200),
+    window_days: int = Query(default=7, ge=1, le=90),
+    stratified: bool = Query(default=True),
     _auth=Depends(require_scope("commander:read")),
 ) -> dict:
-    """Shadow Evaluation Pack — Dowódca 14d accuracy review (≥70% gate)."""
+    """Shadow Evaluation Pack v2 — stratified sample for Telegram/CSV scoring."""
     from agent.marketing.shadow_eval import build_eval_pack
 
-    return build_eval_pack(limit=limit)
+    return build_eval_pack(
+        limit=limit, window_days=window_days, stratified=stratified
+    )
+
+
+@router.get("/api/v1/commander/marketing/shadow/accuracy")
+async def get_marketing_shadow_accuracy(
+    window_days: int = Query(default=14, ge=1, le=90),
+    _auth=Depends(require_scope("commander:read")),
+) -> dict:
+    """Rolling Dowódca score accuracy — gate before MB_MODE=propose."""
+    from agent.marketing.shadow_eval import compute_accuracy
+
+    return compute_accuracy(window_days=window_days)
+
+
+@router.post("/api/v1/commander/marketing/shadow/eval-score")
+async def post_marketing_shadow_eval_score(
+    action_id: str = Query(...),
+    eval_score: str = Query(..., description="agree|partial|disagree"),
+    _auth=Depends(require_scope("commander:read")),
+) -> dict:
+    """Record one eval score (API backup for Telegram buttons)."""
+    from agent.marketing.shadow_eval import compute_accuracy, record_eval_score
+
+    result = record_eval_score(action_id, eval_score)
+    if result.get("ok"):
+        result["accuracy"] = compute_accuracy(window_days=14)
+    return result
+
+
+@router.post("/api/v1/commander/marketing/shadow/eval-push")
+async def post_marketing_shadow_eval_push(
+    limit: int = Query(default=10, ge=1, le=20),
+    window_days: int = Query(default=7, ge=1, le=30),
+    _auth=Depends(require_scope("commander:read")),
+) -> dict:
+    """Push stratified eval cards to Telegram admin chat."""
+    from agent.marketing.telegram_proposals import send_eval_pack_telegram
+
+    return send_eval_pack_telegram(limit=limit, window_days=window_days)
 
 
 @router.get("/api/v1/commander/marketing/memory/status")
