@@ -14,7 +14,7 @@ Nie czytaj całego katalogu. Idź **wiersz po wierszu**.
 
 | # | Zrób | Gdzie | Done |
 |---|------|-------|------|
-| 1 | Test Events: `InitiateCheckout` + `Purchase` | Meta Events Manager → zzpackage | [ ] |
+| 1 | Test Events: `InitiateCheckout` + `Purchase` | Meta Events Manager → zzpackage | [x] IC PASS 15:24:32 · Purchase PARK (brak GO Mollie) |
 | 2 | Custom Audience klientów → wykluczenie | Ads Manager | [ ] |
 | 3 | `MKT/YYYY-WW/master_reel_9x16.mp4` (real bus) | Google Drive | [ ] |
 | 4 | Kampania Leads Instant Form €10/dzień · **1 Reel** | Ads Manager — paste [META-PACK-LEAN.md](./META-PACK-LEAN.md) | [ ] |

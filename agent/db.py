@@ -3208,6 +3208,28 @@ def db_finish_brain_event(
     conn.commit()
 
 
+def db_list_brain_events(limit: int = 20) -> List[Dict]:
+    """Recent brain_events for Commander analytics (F3 Brain Bus)."""
+    conn = get_connection()
+    rows = conn.execute(
+        """
+        SELECT * FROM brain_events
+        ORDER BY id DESC
+        LIMIT ?
+        """,
+        (limit,),
+    ).fetchall()
+    out: List[Dict] = []
+    for row in rows:
+        item = dict(row)
+        try:
+            item["payload"] = json.loads(item.pop("payload_json") or "{}")
+        except Exception:
+            item["payload"] = {}
+        out.append(item)
+    return out
+
+
 def db_rolling_net_margin_pct(limit: int = 50) -> Optional[float]:
     """Average net_margin_pct across recent margin facts (proxy for 7d rolling)."""
     conn = get_connection()

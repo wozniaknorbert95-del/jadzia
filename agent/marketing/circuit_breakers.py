@@ -55,6 +55,17 @@ def evaluate_breakers(context: Optional[Dict[str, Any]] = None) -> List[BreakerT
                     message="L0 pixel health red — block scale",
                 )
             )
+        if (
+            f.get("source") == "vcms"
+            and f.get("flag_type") == "ecosystem_red"
+            and f.get("severity") in ("red", "critical")
+        ):
+            trips.append(
+                BreakerTrip(
+                    breaker_id="CB_ECOSYSTEM",
+                    message="VCMS/KODA ecosystem red — MB HOLD (Brain Bus)",
+                )
+            )
 
     margin = db_rolling_net_margin_pct(limit=50)
     if margin is not None and margin < MARGIN_FLOOR_PCT:

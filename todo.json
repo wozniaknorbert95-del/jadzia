@@ -1,15 +1,15 @@
 {
   "project": "Jadzia-Core",
-  "last_updated": "2026-07-19 (MKT-BRAIN-PRO handoff — F0 ready)",
+  "last_updated": "2026-07-19 (MKT-BRAIN-PRO F3 Brain Bus + L0 IC PASS)",
   "status": "active",
   "plan": "docs/ops/marketing/MKT-BRAIN-PRO.md",
-  "active_gate": "MKT-BRAIN-PRO F0–F2 LIVE @ 269248b shadow — human: Meta Events + 14d shadow review; F3 next / Chroma F2b",
-  "active_plan": "MKT-BRAIN-PRO Final Polish: F0 DTL+margin facts. F1 shadow+Telegram HITL+Organic-to-Paid+Profit Watchdog+Hypothesis Ledger. Commander=analytics only. standing_go off.",
+  "active_gate": "MKT-BRAIN-PRO F0–F3 code PASS; L0 IC PASS; VPS F3 pending tip; human: 14d shadow + Purchase PARK + VCMS webhook wire",
+  "active_plan": "MKT-BRAIN-PRO: F0–F3 done locally. Shadow LIVE. Act/propose blocked until 14d review. Chroma F2b optional.",
   "standing_go_closeout": false,
   "closeout_queue": [],
   "closeout_expires": "2026-07-25",
-  "next_human": "META-PACK-LEAN L0 (parallel). After MB F1 shadow 14d: review shadow log accuracy ≥70%. GO MKT-BRAIN-PRO F0 to start agent build.",
-  "next_agent": "GO MKT-BRAIN-PRO F0: agent/marketing/dtl + db migrations + ingest + Commander Data Health. Attach MKT-BRAIN-PRO.md. standing_go off — no VPS deploy without GO.",
+  "next_human": "Commit+deploy F3 tip + BRAIN_BUS_SECRET on VPS. Wire VCMS scan→webhook. 14d shadow ≥70%. Purchase only with Mollie GO.",
+  "next_agent": "After tip LIVE: smoke POST brain-bus degraded→ticket+CB_ECOSYSTEM. Optional F2b Chroma. No MB_MODE=propose without human GO.",
   "agent_rule": "Nie pytaj A/B. Deploy tylko ze zgodą (standing_go_closeout off). Nie sekrety. Nie kasuj parków. Hard STOP: Gate D/Mollie/fake PASS.",
   "sprints": {
     "remediation": "completed",
@@ -1260,11 +1260,11 @@
       "id": "MKT-BRAIN-PRO-F3",
       "sprint": "MKT-BRAIN-PRO",
       "task": "F3 Brain Bus v1: VCMS/KODA health events → MB + CEO brief stub",
-      "status": "blocked",
+      "status": "completed",
       "priority": "medium",
       "owner": "agent",
-      "checklist": "docs/ops/marketing/MKT-BRAIN-PRO.md §5 F3",
-      "note": "Blocked on F2. Webhook from VCMS scan."
+      "checklist": "docs/handoffs/2026-07-19-MKT-BRAIN-PRO-F3-CLOSE.md",
+      "note": "PASS 2026-07-19 local pytest 4/4; CB_ECOSYSTEM + webhook + CEO stub. VPS tip pending commit/deploy."
     }
   ]
 }

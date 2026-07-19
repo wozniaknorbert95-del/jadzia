@@ -366,14 +366,14 @@ Tabela `brain_events` + schemat:
 | ChromaDB RAG | campaign memory (uzupełnia ledger) |
 | DoD | E2E: organic winner alert → Telegram APPROVE → governed action; breaker trip test |
 
-### Faza 3 — Brain Bus + KB bridge (1 tyg.)
+### Faza 3 — Brain Bus + KB bridge (1 tyg.) — **CLOSE 2026-07-19**
 
 | Deliverable | Opis |
 |-------------|------|
-| VCMS → jadzia webhook | conflicts/scan summary event |
-| MB reaguje | alert + hold jeśli ecosystem red |
-| CEO stub | brief → `brain_events` priority |
-| DoD | scan conflict → Telegram + Commander ticket |
+| VCMS → jadzia webhook | `POST /api/v1/brain-bus/events` + `BRAIN_BUS_SECRET` |
+| MB reaguje | `ecosystem_red` flag + `CB_ECOSYSTEM` + TG + Commander ticket |
+| CEO stub | `ceo.priority` + `POST …/brain-bus/ceo-priority` |
+| DoD | pytest F3 4/4; VCMS wire + VPS tip = ops follow-up |
 
 ### Faza 4 — Act (post-shadow GO)
 

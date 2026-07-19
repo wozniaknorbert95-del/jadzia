@@ -394,6 +394,45 @@ async def get_marketing_breakers(
     return is_execute_allowed()
 
 
+@router.get("/api/v1/commander/marketing/brain-bus")
+async def get_marketing_brain_bus(
+    limit: int = Query(default=20, ge=1, le=100),
+    _auth=Depends(require_scope("commander:read")),
+) -> dict:
+    """Brain Bus recent events + ecosystem hold flag (F3 analytics)."""
+    from agent.db import db_list_active_quality_flags, db_list_brain_events
+
+    flags = [
+        f
+        for f in db_list_active_quality_flags(limit=50)
+        if f.get("source") in ("vcms", "ceo_stub")
+        or f.get("flag_type") in ("ecosystem_red", "ceo_priority")
+    ]
+    return {
+        "events": db_list_brain_events(limit=limit),
+        "ecosystem_flags": flags,
+    }
+
+
+@router.post("/api/v1/commander/marketing/brain-bus/ceo-priority")
+async def post_ceo_priority_stub(
+    body: dict,
+    _auth=Depends(require_scope("commander:read")),
+) -> dict:
+    """CEO stub — push weekly priority onto Brain Bus (no Ads side-effects)."""
+    from agent.marketing.brain_bus import publish_ceo_priority_stub
+
+    priority = (body or {}).get("priority") or (body or {}).get("text") or ""
+    if not str(priority).strip():
+        raise HTTPException(status_code=422, detail="priority required")
+    return publish_ceo_priority_stub(
+        str(priority).strip(),
+        week=(body or {}).get("week"),
+        process_now=True,
+        send_telegram=bool((body or {}).get("send_telegram", True)),
+    )
+
+
 @router.post("/api/v1/content-calendar/{entry_id}/publish")
 async def commander_publish_entry(
     entry_id: str,
