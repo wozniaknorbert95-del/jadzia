@@ -7,7 +7,7 @@ updated: "2026-07-19 (MB F0–F3 LIVE)"
 
 # Marketing OS — FlexGrafik
 
-**Zaczynaj tutaj:** [OPERATOR-TODAY.md](./OPERATOR-TODAY.md) · **Meta lean:** [META-PACK-LEAN.md](./META-PACK-LEAN.md) · **Marketing Brain (F0–F3 LIVE / F4 TODO):** [MKT-BRAIN-PRO.md](./MKT-BRAIN-PRO.md) → **STATUS BOARD**.
+**Zaczynaj tutaj:** [OPERATOR-TODAY.md](./OPERATOR-TODAY.md) · **Plan 14d:** [PLAN-14D.md](./PLAN-14D.md) · **Klik Meta:** [META-CLICK-PATH.md](./META-CLICK-PATH.md) · **Paste NL:** [META-PACK-LEAN.md](./META-PACK-LEAN.md) · **MB STATUS:** [MKT-BRAIN-PRO.md](./MKT-BRAIN-PRO.md).
 
 North Star: `CPA_wizard` < 40% marży brutto ZZPackage. Bez Purchase w pikselu → **zakaz scale** (tylko learning ≤ €10/dzień Leads).
 

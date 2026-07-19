@@ -375,14 +375,19 @@ async def get_marketing_shadow_accuracy(
 async def post_marketing_shadow_eval_score(
     action_id: str = Query(...),
     eval_score: str = Query(..., description="agree|partial|disagree"),
+    scorer: str = Query(default="dowodca", description="dowodca|staff"),
     _auth=Depends(require_scope("commander:read")),
 ) -> dict:
     """Record one eval score (API backup for Telegram buttons)."""
     from agent.marketing.shadow_eval import compute_accuracy, record_eval_score
 
-    result = record_eval_score(action_id, eval_score)
+    who = (scorer or "dowodca").strip().lower()
+    if who not in ("dowodca", "staff"):
+        return {"ok": False, "error": "scorer must be dowodca|staff"}
+    result = record_eval_score(action_id, eval_score, scorer=who)
     if result.get("ok"):
         result["accuracy"] = compute_accuracy(window_days=14)
+        result["scorer"] = who
     return result
 
 
@@ -396,6 +401,21 @@ async def post_marketing_shadow_eval_push(
     from agent.marketing.telegram_proposals import send_eval_pack_telegram
 
     return send_eval_pack_telegram(limit=limit, window_days=window_days)
+
+
+@router.post("/api/v1/commander/marketing/shadow/staff-eval")
+async def post_marketing_shadow_staff_eval(
+    limit: int = Query(default=20, ge=1, le=50),
+    window_days: int = Query(default=14, ge=1, le=90),
+    notify: bool = Query(default=True),
+    _auth=Depends(require_scope("commander:read")),
+) -> dict:
+    """Staff proxy scores unscored shadow rows + PL Telegram summary."""
+    from agent.marketing.shadow_eval import run_staff_eval_batch
+
+    return run_staff_eval_batch(
+        limit=limit, window_days=window_days, notify_telegram=notify
+    )
 
 
 @router.get("/api/v1/commander/marketing/memory/status")

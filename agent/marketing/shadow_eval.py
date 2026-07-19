@@ -291,6 +291,151 @@ def format_eval_card(decision: Dict[str, Any], idx: int, total: int) -> str:
     )
 
 
+def recommend_staff_score(row: Dict[str, Any]) -> Dict[str, str]:
+    """
+    Staff proxy score + one PL sentence for Dowódca.
+    Conservative: prefer agree on HOLD/watch when data is weak; disagree on
+    would_execute scale-like actions under low attribution.
+    """
+    rule = (row.get("heuristic_rule_id") or "").upper()
+    action = (row.get("proposed_action") or "").lower()
+    would = bool(row.get("would_execute"))
+    rationale = (row.get("rationale_nl") or "")[:200]
+
+    if rule == "HEU_ATTRIBUTION_LOW":
+        if action in ("hold", "review", "watch") or not would:
+            return {
+                "eval_score": "agree",
+                "pl": "Mało wiemy skąd są klienci — lepiej nic nie zmieniać w reklamach na ślepo.",
+            }
+        return {
+            "eval_score": "disagree",
+            "pl": "Bot chciał działać przy słabych danych atrybucji — to ryzykowne.",
+        }
+
+    if rule == "HEU_DATA_QUALITY_RED":
+        if action in ("hold", "review", "watch") or not would:
+            return {
+                "eval_score": "agree",
+                "pl": "Dane są czerwone — najpierw naprawa pomiaru, nie większy budżet.",
+            }
+        return {
+            "eval_score": "disagree",
+            "pl": "Przy czerwonych danych nie skalujemy ani nie kupujemy agresywnie.",
+        }
+
+    if rule == "HEU_PROFIT_WATCHDOG":
+        if "pause" in action or "hold" in action or "cut" in action or not would:
+            return {
+                "eval_score": "agree",
+                "pl": "Marża/CPA wygląda źle — ostrożność albo stop ma sens.",
+            }
+        return {
+            "eval_score": "partial",
+            "pl": "Watchdog marży OK kierunkowo, ale akcja wymaga Twojego spojrzenia na €.",
+        }
+
+    if rule == "HEU_ORGANIC_WINNER":
+        if would and ("boost" in action or "paid" in action or "scale" in action):
+            return {
+                "eval_score": "partial",
+                "pl": "Mocny organiczny post — boost możliwy, ale dopiero po Audience + Form €10.",
+            }
+        return {
+            "eval_score": "agree",
+            "pl": "Wyróżnić zwycięski organiczny content — rozsądne.",
+        }
+
+    if rule == "HEU_NO_SIGNAL":
+        return {
+            "eval_score": "partial",
+            "pl": "Bot nic nie widzi do zrobienia — OK na teraz, ale to nie decyzja biznesowa.",
+        }
+
+    if would and action in ("scale", "increase_budget", "boost"):
+        return {
+            "eval_score": "partial",
+            "pl": f"Skala/budżet ({action}) — ostrożnie; najpierw Meta €10 i WA. {rationale[:80]}",
+        }
+
+    if action in ("hold", "review", "watch") or not would:
+        return {
+            "eval_score": "agree",
+            "pl": "Ostrożna decyzja (hold/watch) przy shadow — zgoda.",
+        }
+
+    return {
+        "eval_score": "partial",
+        "pl": f"Kierunek do sprawdzenia: {rule} / {action}.",
+    }
+
+
+def run_staff_eval_batch(
+    *,
+    limit: int = 20,
+    window_days: int = 14,
+    notify_telegram: bool = True,
+) -> Dict[str, Any]:
+    """
+    Score unscored shadow rows as scorer=staff and optionally notify Telegram
+    with plain-PL one-liners (Dowódca delegated scoring).
+    """
+    from agent.marketing.telegram_proposals import send_staff_eval_summary_telegram
+
+    pool = db_list_marketing_shadow_eval_joined(
+        window_days=window_days,
+        only_unscored=True,
+        limit=max(limit * 3, 50),
+    )
+    # Prefer diverse rules; still fill up to limit
+    picked: List[Dict[str, Any]] = []
+    per_rule: Dict[str, int] = defaultdict(int)
+    for row in pool:
+        rid = row.get("heuristic_rule_id") or "?"
+        if per_rule[rid] >= 5 and len(picked) >= limit // 2:
+            continue
+        picked.append(row)
+        per_rule[rid] += 1
+        if len(picked) >= limit:
+            break
+
+    results = []
+    for row in picked:
+        rec = recommend_staff_score(row)
+        aid = row.get("action_id") or ""
+        saved = record_eval_score(aid, rec["eval_score"], scorer="staff")
+        results.append(
+            {
+                "action_id": aid,
+                "heuristic_rule_id": row.get("heuristic_rule_id"),
+                "proposed_action": row.get("proposed_action"),
+                "eval_score": rec["eval_score"],
+                "pl": rec["pl"],
+                "ok": bool(saved.get("ok")),
+            }
+        )
+
+    accuracy = compute_accuracy(window_days=14)
+    tg_ok = False
+    if notify_telegram and results:
+        tg_ok = send_staff_eval_summary_telegram(results, accuracy)
+
+    logger.info(
+        "[mb.eval] staff batch n=%s tg=%s accuracy=%s",
+        len(results),
+        tg_ok,
+        accuracy.get("accuracy"),
+    )
+    return {
+        "ok": True,
+        "scored": len(results),
+        "results": results,
+        "accuracy": accuracy,
+        "telegram_sent": tg_ok,
+        "scorer": "staff",
+    }
+
+
 def run_eval_nudge_if_due(*, interval_seconds: int, limit: int = 10) -> Dict[str, Any]:
     """
     Durable weekly (or custom) Telegram eval push.

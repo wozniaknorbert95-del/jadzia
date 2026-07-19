@@ -300,3 +300,46 @@ def send_eval_pack_telegram(*, limit: int = 10, window_days: int = 7) -> Dict[st
         "accuracy_snapshot": acc,
         "message": f"Wysłano {sent}/{total} kart eval. Oceń przyciskami.",
     }
+
+
+def send_staff_eval_summary_telegram(
+    results: list,
+    accuracy: Dict[str, Any],
+) -> bool:
+    """One plain-PL message: staff scored N cards + why (max ~8 lines)."""
+    bot_token, admin_id = _telegram_admin_chat()
+    if not bot_token or not admin_id:
+        logger.warning("[mb.telegram] staff-eval summary skipped — no bot/admin")
+        return False
+
+    lines = [
+        "🧠 Staff ocenił decyzje MB (za Ciebie — nie musisz klikać)",
+        f"Ocena: {len(results)} kart",
+    ]
+    for r in results[:8]:
+        score = r.get("eval_score") or "?"
+        pl = r.get("pl") or ""
+        rule = r.get("heuristic_rule_id") or "?"
+        lines.append(f"• {score.upper()} | {rule}: {pl}")
+    if len(results) > 8:
+        lines.append(f"… i {len(results) - 8} więcej")
+
+    acc_s = accuracy.get("accuracy")
+    acc_txt = f"{acc_s:.0%}" if isinstance(acc_s, float) else "n/a"
+    gate = "gotowe do propose" if accuracy.get("gate_ready") else "jeszcze zbieramy"
+    lines.append(
+        f"14d: accuracy={acc_txt} · n={accuracy.get('n_scored')}/20 · {gate}"
+    )
+    lines.append("Ty: Meta A1→A2→A3 (PLAN-14D / META-CLICK-PATH)")
+
+    text = "\n".join(lines)
+    url = f"https://api.telegram.org/bot{bot_token}/sendMessage"
+    try:
+        with httpx.Client(timeout=12.0) as client:
+            r = client.post(url, json={"chat_id": admin_id, "text": text})
+            r.raise_for_status()
+        logger.info("[mb.telegram] staff-eval summary sent n=%s", len(results))
+        return True
+    except Exception as exc:
+        logger.error("[mb.telegram] staff-eval summary failed: %s", exc)
+        return False

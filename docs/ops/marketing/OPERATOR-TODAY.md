@@ -1,62 +1,39 @@
 ---
 status: "[ACTIVE]"
 title: "Marketing OS — START TUTAJ (operator)"
-updated: "2026-07-19 (eval v2 LIVE bec2b90)"
+updated: "2026-07-19 (PLAN-14D)"
 ---
 
 # START TUTAJ — jedna ścieżka (ADHD)
 
-**Lean Meta pack (START):** [META-PACK-LEAN.md](./META-PACK-LEAN.md) — Instant Form €10 + 1 Reel.
+**Plan 14 dni:** [PLAN-14D.md](./PLAN-14D.md)  
+**Klikaj Meta tutaj:** [META-CLICK-PATH.md](./META-CLICK-PATH.md) — **A1 → A2 → A3**  
+**Teksty NL do wklejenia:** [META-PACK-LEAN.md](./META-PACK-LEAN.md)
 
-**MB plan SoT:** [MKT-BRAIN-PRO.md](./MKT-BRAIN-PRO.md) → sekcja **STATUS BOARD** (DONE vs TODO).
-
-| MB | Status |
+| Co | Status |
 |----|--------|
-| F0–F3 + F2b + eval v2 | **LIVE** tip `7b36be3` · `MB_MODE=shadow` |
-| Eval pack | Telegram `/mb_eval` · gate ≥70% + n≥20 / 14d |
-| L0 InitiateCheckout | **PASS** |
-| L0 Purchase | PARK |
-| Twój gate | score shadow → GO propose · + Meta pack poniżej |
+| Eval / shadow | Agent (staff-eval) — Ty **nie musisz** klikać score w TG |
+| L0 InitiateCheckout | PASS |
+| L0 Purchase | PARK (nie blokuje Instant Form) |
+| Twoje zadanie | **A1 → A2 → A3 → Publish → WA** |
 
-Nie czytaj całego katalogu. Idź **wiersz po wierszu**.
+## Dziś — tylko 3 bloki
 
-## Dziś (zanim wydasz €) — META-PACK-01 lean
+| # | Zrób | Plik | Done |
+|---|------|------|------|
+| A1 | Audience wykluczenie | [META-CLICK-PATH](./META-CLICK-PATH.md) | [ ] |
+| A2 | Kampania Instant Form €10 | [META-CLICK-PATH](./META-CLICK-PATH.md) | [ ] |
+| A3 | Reel **lub** static + Publish | [META-CLICK-PATH](./META-CLICK-PATH.md) | [ ] |
 
-| # | Zrób | Gdzie | Done |
-|---|------|-------|------|
-| 1 | Test Events: `InitiateCheckout` + `Purchase` | Meta Events Manager → zzpackage | [x] IC PASS 15:24:32 · Purchase PARK (brak GO Mollie) |
-| 2 | Custom Audience klientów → wykluczenie | Ads Manager | [ ] |
-| 3 | `MKT/YYYY-WW/master_reel_9x16.mp4` (real bus) | Google Drive | [ ] |
-| 4 | Kampania Leads Instant Form €10/dzień · **1 Reel** | Ads Manager — paste [META-PACK-LEAN.md](./META-PACK-LEAN.md) | [ ] |
+**Zakaz:** edycja ad setu 7 dni · cel Sales · wiele claimów „PASS” bez publish.
 
-**v1.1 / po d7 (nie blokuje startu):**
+## Po publish
 
-| # | Zrób | Kiedy |
-|---|------|--------|
-| 3b | Pełny Asset Factory (carousel, testimonial, TT) | po d7 jeśli CPL OK — [ASSET-FACTORY.md](./ASSET-FACTORY.md) |
-| 5 | 1 organic drop = ten sam master | po d7 — [Commander → Marketing](https://api.zzpackage.flexgrafik.nl/commander/) |
+| Kiedy | Akcja |
+|-------|--------|
+| Lead | WA &lt;15 min — [SPEED-TO-LEAD.md](./SPEED-TO-LEAD.md) |
+| PON / D7 | [WEEKLY-SCORECARD.md](./WEEKLY-SCORECARD.md) |
 
-**Zakaz:** edycja ad setu przez 7 dni · cel Sales · wiele ad setów · scale bez Purchase w pikselu.
+## MB / architektura (opcjonalnie)
 
-## Ten tydzień (rytm)
-
-| Dzień | 1 akcja |
-|-------|---------|
-| PON | Wypełnij [WEEKLY-SCORECARD.md](./WEEKLY-SCORECARD.md) |
-| WT–NIE | WA &lt;15 min na każdy lead — [SPEED-TO-LEAD.md](./SPEED-TO-LEAD.md) |
-| ŚR | Po d7: wymień Reel **albo** hold — nie edytuj ad setu wcześniej |
-| CZW+ | Organic / 2. kreacja tylko v1.1 |
-
-## Gdzie co jest (3 miejsca)
-
-| Potrzeba | Narzędzie |
-|----------|-----------|
-| Publish organiczny FB | **Commander → Marketing** (v1.1) |
-| Paid Leads / Instant Form | **Meta Ads Manager** (nie Commander) |
-| Lean pack / scorecard | [META-PACK-LEAN.md](./META-PACK-LEAN.md) · ten katalog |
-
-## Gdy utkniesz
-
-1. North Star = [UNIT-ECONOMICS.md](./UNIT-ECONOMICS.md)  
-2. L0 czerwone? → [L0-INSTRUMENTATION.md](./L0-INSTRUMENTATION.md)  
-3. Reszta mapy → [README.md](./README.md)
+[MKT-BRAIN-PRO.md](./MKT-BRAIN-PRO.md) · tip LIVE w STATUS BOARD.

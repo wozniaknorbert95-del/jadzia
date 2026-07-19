@@ -39,13 +39,15 @@ mb_mode: "shadow"
 
 ### TODO — następne (kolejność)
 
+**SoT tygodnia:** [PLAN-14D.md](./PLAN-14D.md) · klik Meta: [META-CLICK-PATH.md](./META-CLICK-PATH.md)
+
 | Priorytet | Co | Owner | Blokada |
 |-----------|-----|-------|---------|
-| **1** | **14d shadow review** — Telegram `/mb_eval` → GO `propose` | Dowódca | accuracy gate |
-| **2** | L0 **Purchase** w Test Events | Dowódca | Mollie GO |
-| **3** | META-PACK lean: Audience + Reel + Instant Form €10 | Dowódca | Ads Manager HITL |
-| **4** | **F4 Act** | Agent | po #1 GO |
-| **5** | FB `read_insights` token scope (pełne impressions) | Dowódca | Graph permissions |
+| **1** | **META lean A1→A2→A3** Instant Form €10 | Dowódca | Ads Manager HITL |
+| **2** | Shadow staff-eval → n≥20 ≥70%/14d → GO `propose` | Agent (+ delegacja) | accuracy gate |
+| **3** | L0 **Purchase** w Test Events | Dowódca | Mollie GO (PARK) |
+| **4** | **F4 Act** | Agent | po #2 GO |
+| **5** | FB `read_insights` token scope | Dowódca | Graph permissions |
 
 ### Shadow evaluation rubric (gate → propose)
 
@@ -78,10 +80,10 @@ Gate D · Mollie LIVE charge · Ads API **create** · TikTok API C1-01 · full a
 
 | # | Item | Status |
 |---|------|--------|
-| H1 | Shadow log review ≥70% (14d) — użyj eval-pack | **OPEN** |
+| H1 | Meta A1→A2→A3 publish €10 | **OPEN** ([META-CLICK-PATH](./META-CLICK-PATH.md)) |
 | H2 | Purchase Test Events | **PARK** |
-| H3 | Custom Audience klientów → wykluczenie | OPEN ([OPERATOR-TODAY](./OPERATOR-TODAY.md)) |
-| H4 | Kampania Leads Instant Form €10 | OPEN ([META-PACK-LEAN](./META-PACK-LEAN.md)) |
+| H3 | Shadow n≥20 (staff-eval + /mb_eval) | OPEN (agent) |
+| H4 | WA &lt;15 min na lead po publish | OPEN ([SPEED-TO-LEAD](./SPEED-TO-LEAD.md)) |
 
 ---
 
