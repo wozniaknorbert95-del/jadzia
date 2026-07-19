@@ -420,6 +420,7 @@ def _init_schema(conn: sqlite3.Connection):
     _migrate_widget_chat_created_at(conn)
     _init_marketing_dtl_schema(conn)
     _init_marketing_f1_schema(conn)
+    _init_marketing_governance_schema(conn)
 
     conn.commit()
 
@@ -581,6 +582,36 @@ def _init_marketing_f1_schema(conn: sqlite3.Connection) -> None:
     conn.execute("""
         CREATE INDEX IF NOT EXISTS idx_brain_events_status
         ON brain_events(status, created_at)
+    """)
+
+
+def _init_marketing_governance_schema(conn: sqlite3.Connection) -> None:
+    """MKT-BRAIN-PRO F2 — approval tokens + circuit breaker events."""
+    conn.execute("""
+        CREATE TABLE IF NOT EXISTS marketing_approval_tokens (
+            token_hash TEXT PRIMARY KEY,
+            action_id TEXT NOT NULL,
+            expires_at TEXT NOT NULL,
+            used_at TEXT,
+            created_at TEXT NOT NULL
+        )
+    """)
+    conn.execute("""
+        CREATE INDEX IF NOT EXISTS idx_marketing_approval_action
+        ON marketing_approval_tokens(action_id)
+    """)
+    conn.execute("""
+        CREATE TABLE IF NOT EXISTS circuit_breaker_events (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            breaker_id TEXT NOT NULL,
+            message TEXT NOT NULL,
+            action_id TEXT,
+            created_at TEXT NOT NULL
+        )
+    """)
+    conn.execute("""
+        CREATE INDEX IF NOT EXISTS idx_circuit_breaker_created
+        ON circuit_breaker_events(created_at DESC)
     """)
 
 

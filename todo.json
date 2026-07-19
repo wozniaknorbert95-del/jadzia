@@ -3,7 +3,7 @@
   "last_updated": "2026-07-19 (MKT-BRAIN-PRO handoff — F0 ready)",
   "status": "active",
   "plan": "docs/ops/marketing/MKT-BRAIN-PRO.md",
-  "active_gate": "MKT-BRAIN-PRO F0 CLOSE @ f28a938 — observe 7d DTL; ready_for_human GA4 env + META-PACK L0",
+  "active_gate": "MKT-BRAIN-PRO F1 LIVE @ 9314ddc shadow — F2 next; human-only: Meta Events verify + 14d shadow review",
   "active_plan": "MKT-BRAIN-PRO Final Polish: F0 DTL+margin facts. F1 shadow+Telegram HITL+Organic-to-Paid+Profit Watchdog+Hypothesis Ledger. Commander=analytics only. standing_go off.",
   "standing_go_closeout": false,
   "closeout_queue": [],
@@ -1240,21 +1240,21 @@
       "id": "MKT-BRAIN-PRO-F1",
       "sprint": "MKT-BRAIN-PRO",
       "task": "F1 Decision Engine + Shadow 14d + Telegram MB proposals + Organic-to-Paid + Profit Watchdog + hypothesis ledger",
-      "status": "in_progress",
+      "status": "completed",
       "priority": "critical",
       "owner": "agent",
-      "checklist": "docs/ops/marketing/MKT-BRAIN-PRO.md §5 F1",
-      "note": "2026-07-19 GO autonomous — F0 GA4 fixed; implementing F1 shadow+Telegram."
+      "checklist": "docs/handoffs/2026-07-19-MKT-BRAIN-PRO-F1-CLOSE.md",
+      "note": "PASS 2026-07-19 tip 9314ddc; pytest 7/7 F1; VPS cycle tg_sent=1 shadow LIVE. Human: 14d shadow review before propose."
     },
     {
       "id": "MKT-BRAIN-PRO-F2",
       "sprint": "MKT-BRAIN-PRO",
       "task": "F2 Governance API + Telegram Act path + circuit breakers + Commander Data Health UI + ChromaDB RAG",
-      "status": "blocked",
+      "status": "in_progress",
       "priority": "high",
       "owner": "agent",
       "checklist": "docs/ops/marketing/MKT-BRAIN-PRO.md §5 F2",
-      "note": "Blocked on F1 shadow GO. Publish refactor through governance execute API."
+      "note": "2026-07-19 autonomous — implement governance+breakers shadow-safe; Chroma secondary; Act still gated by MB_MODE."
     },
     {
       "id": "MKT-BRAIN-PRO-F3",

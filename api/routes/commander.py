@@ -355,6 +355,45 @@ async def post_marketing_brain_cycle(
     return run_marketing_brain_cycle(send_telegram=True)
 
 
+class MarketingExecuteRequest(BaseModel):
+    action_id: str
+    approval_token: str
+
+
+@router.post("/api/v1/marketing/actions/execute")
+async def post_marketing_action_execute(
+    body: MarketingExecuteRequest,
+    auth=Depends(require_scope("marketing:approve")),
+) -> dict:
+    """
+    Governance execute — requires one-time approval_token.
+    Shadow mode / circuit breakers deny side-effects (423).
+    """
+    from agent.commander.authz import actor_from_payload
+    from agent.marketing.governance import execute_action
+
+    actor_id, _ = actor_from_payload(auth)
+    result = execute_action(
+        body.action_id,
+        body.approval_token,
+        actor=actor_id or "unknown",
+    )
+    code = int(result.pop("status_code", 200 if result.get("ok") else 400))
+    if not result.get("ok"):
+        raise HTTPException(status_code=code, detail=result)
+    return result
+
+
+@router.get("/api/v1/commander/marketing/breakers")
+async def get_marketing_breakers(
+    _auth=Depends(require_scope("commander:read")),
+) -> dict:
+    """Current circuit breaker status (analytics)."""
+    from agent.marketing.circuit_breakers import is_execute_allowed
+
+    return is_execute_allowed()
+
+
 @router.post("/api/v1/content-calendar/{entry_id}/publish")
 async def commander_publish_entry(
     entry_id: str,

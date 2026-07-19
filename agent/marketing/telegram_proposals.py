@@ -140,25 +140,31 @@ def handle_mb_hitl(action: str, action_id: str) -> Dict[str, Any]:
         }
 
     if action == "approve":
-        db_update_marketing_shadow_hitl(action_id, "approved", governance_result="allow")
+        from agent.marketing.governance import approve_and_mint
+
+        minted = approve_and_mint(action_id)
         mode = row.get("mb_mode") or "shadow"
         if mode == "shadow":
             return {
                 "ok": True,
                 "message": (
                     f"✅ APPROVE zapisane (SHADOW — nie wykonano side-effect).\n"
+                    f"Token zmintowany (TTL 15m) — execute zablokowany przez CB_SHADOW.\n"
                     f"action_id={action_id}"
                 ),
                 "side_effect": False,
+                "approval_token_minted": bool(minted.get("approval_token")),
             }
-        # F2+: governance execute path
+        # propose/act: token available for Governance execute endpoint
         return {
             "ok": True,
             "message": (
-                f"✅ APPROVE zapisane — execute wymaga F2 Governance API.\n"
+                f"✅ APPROVE + token (TTL 15m).\n"
+                f"POST /api/v1/marketing/actions/execute\n"
                 f"action_id={action_id}"
             ),
             "side_effect": False,
+            "approval_token": minted.get("approval_token"),
         }
 
     if action == "deny":
