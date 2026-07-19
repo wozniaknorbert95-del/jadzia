@@ -36,6 +36,10 @@ FRESHNESS_SLA_SECONDS: Dict[str, Tuple[int, int]] = {
     "orders": (15 * 60, 3600),
     "leads": (15 * 60, 3600),
     "worker": (2 * 60, 5 * 60),
+    # DTL extras reuse ga4 SLA via report mapping; explicit keys for future
+    "l0_pixel": (2 * 3600, 6 * 3600),
+    "attribution": (30 * 60, 2 * 3600),
+    "margin": (30 * 60, 2 * 3600),
 }
 
 ROLE_SCOPES: Dict[str, list[str]] = {

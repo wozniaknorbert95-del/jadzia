@@ -185,6 +185,19 @@
     <section id="view-analytics" class="view" aria-labelledby="analytics-title" hidden>
       <h2 id="analytics-title">Analityka i przychody</h2>
       <div id="analytics-tiles" class="card-grid"></div>
+
+      <h3>Data Health (DTL)</h3>
+      <p class="hint">Świeżość faktów marketingowych, flagi jakości, pokrycie marży — bez kolejki approve (Telegram = F1).</p>
+      <p id="dtl-overall" class="health-strip" aria-live="polite"></p>
+      <div id="dtl-freshness" class="card-grid"></div>
+      <h4>Margin coverage</h4>
+      <p id="dtl-margin" class="hint"></p>
+      <h4>Quality flags</h4>
+      <div id="dtl-flags" class="list"></div>
+      <div class="composer-actions">
+        <button type="button" id="dtl-refresh-ingest">Odśwież ingest DTL</button>
+      </div>
+
       <h3>Zamówienia</h3>
       <div id="orders-list" class="list"></div>
       <h3>Leady</h3>

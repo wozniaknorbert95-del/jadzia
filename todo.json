@@ -1230,11 +1230,11 @@
       "id": "MKT-BRAIN-PRO-F0",
       "sprint": "MKT-BRAIN-PRO",
       "task": "F0 Data Truth Layer: DTL schema + ingest + order_margin_facts + Data Health Commander (analytics only)",
-      "status": "ready",
+      "status": "in_progress",
       "priority": "critical",
       "owner": "agent",
       "checklist": "docs/ops/marketing/MKT-BRAIN-PRO.md §5 F0",
-      "note": "2w observability before MB decisions. No fake prod sandbox. pytest fixtures only."
+      "note": "2026-07-19 code+pytest green (9/9 test_dtl_f0). Local smoke OK. Uncommitted — commit on GO. VPS deploy PARK. DoD 7d continuous ingest = post-deploy."
     },
     {
       "id": "MKT-BRAIN-PRO-F1",

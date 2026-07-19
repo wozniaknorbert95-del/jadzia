@@ -306,6 +306,29 @@ async def get_marketing_fb_health(
     return check_token_health()
 
 
+@router.get("/api/v1/commander/marketing/data-health")
+async def get_marketing_data_health(
+    _auth=Depends(require_scope("commander:read")),
+) -> dict:
+    """DTL Data Health — freshness, quality flags, margin coverage (analytics only)."""
+    from agent.marketing.dtl import build_data_health_report
+
+    return build_data_health_report()
+
+
+@router.post("/api/v1/commander/marketing/dtl/ingest")
+async def post_marketing_dtl_ingest(
+    _auth=Depends(require_scope("commander:read")),
+) -> dict:
+    """
+    Manual DTL ingest trigger (local/ops smoke).
+    Does not require queue:act — read-scope operators may refresh facts.
+    """
+    from agent.marketing.dtl import run_dtl_ingest
+
+    return run_dtl_ingest()
+
+
 @router.post("/api/v1/content-calendar/{entry_id}/publish")
 async def commander_publish_entry(
     entry_id: str,

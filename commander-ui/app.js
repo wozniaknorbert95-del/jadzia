@@ -630,6 +630,42 @@ document.querySelectorAll("#queue-filters .chip").forEach((chip) => {
 });
 toggleMediaField();
 
+function renderDataHealth(health) {
+  const overallEl = document.getElementById("dtl-overall");
+  const freshEl = document.getElementById("dtl-freshness");
+  const marginEl = document.getElementById("dtl-margin");
+  const flagsEl = document.getElementById("dtl-flags");
+  if (!overallEl || !freshEl || !marginEl || !flagsEl) return;
+
+  const overall = health.overall_status || "—";
+  overallEl.innerHTML = `DTL overall: <span class="badge ${overall}">${overall}</span>
+    · flags: ${health.quality_summary?.active_total ?? 0}
+    · red/critical: ${health.quality_summary?.critical_or_red ?? 0}`;
+
+  const f = health.freshness || {};
+  const entries = Object.entries(f);
+  freshEl.innerHTML = entries.length
+    ? entries.map(([k, v]) => `
+    <article class="card">
+      <strong>${k}</strong>
+      <p>Sync: ${v.last_sync_at || "—"}</p>
+      <span class="badge ${v.status}">${v.status}</span>
+      ${v.ingest_status ? `<small>ingest=${v.ingest_status}</small>` : ""}
+    </article>`).join("")
+    : "<p class=\"state-empty\">Brak źródeł DTL — uruchom ingest.</p>";
+
+  const m = health.margin_coverage || {};
+  marginEl.textContent =
+    `Zamówienia: ${m.orders_total ?? 0} · margin facts: ${m.margin_facts ?? 0} · coverage: ${m.coverage_pct ?? 0}%`;
+
+  const flags = health.quality_flags || [];
+  flagsEl.innerHTML = flags.length
+    ? flags.map((fl) =>
+      `<div><span class="badge ${fl.severity}">${fl.severity}</span> · ${fl.source}/${fl.flag_type}: ${fl.message}</div>`
+    ).join("")
+    : "<p class=\"state-empty\">Brak aktywnych flag jakości.</p>";
+}
+
 async function loadAnalytics() {
   const tiles = document.getElementById("analytics-tiles");
   const ordersEl = document.getElementById("orders-list");
@@ -638,11 +674,13 @@ async function loadAnalytics() {
   let snap;
   let orders;
   let leads;
+  let health;
   try {
-    [snap, orders, leads] = await Promise.all([
+    [snap, orders, leads, health] = await Promise.all([
       api("/api/v1/commander/analytics/snapshot"),
       api("/api/v1/orders"),
       api("/api/v1/leads"),
+      api("/api/v1/commander/marketing/data-health"),
     ]);
   } catch (e) {
     tiles.innerHTML = `<p class="state-error">Nie udało się pobrać analityki. <button type="button" id="analytics-retry">Spróbuj ponownie</button></p>`;
@@ -663,6 +701,9 @@ async function loadAnalytics() {
       ${v.staleness_seconds != null ? `<small>${v.staleness_seconds}s temu</small>` : ""}
     </article>`).join("")
     : "<p class=\"state-empty\">Brak kafelków świeżości — spokój.</p>";
+
+  renderDataHealth(health || {});
+
   ordersEl.innerHTML =
     (orders.orders || []).slice(0, 10).map((o) =>
       `<div>#${o.order_id} · ${o.status} · €${o.total_gross}</div>`).join("")
@@ -688,6 +729,17 @@ async function loadAnalytics() {
     };
   });
 }
+
+document.getElementById("dtl-refresh-ingest")?.addEventListener("click", async () => {
+  try {
+    toast("DTL ingest…");
+    await api("/api/v1/commander/marketing/dtl/ingest", { method: "POST", body: {} });
+    toast("DTL ingest OK");
+    await loadAnalytics();
+  } catch (e) {
+    toast(e.message || "DTL ingest failed");
+  }
+});
 
 async function loadAgents() {
   let data;

@@ -418,8 +418,102 @@ def _init_schema(conn: sqlite3.Connection):
     _migrate_commander_feedback_confidence(conn)
     _migrate_leads_disposition(conn)
     _migrate_widget_chat_created_at(conn)
+    _init_marketing_dtl_schema(conn)
 
     conn.commit()
+
+
+def _init_marketing_dtl_schema(conn: sqlite3.Connection) -> None:
+    """MKT-BRAIN-PRO F0 — Data Truth Layer tables (idempotent)."""
+    conn.execute("""
+        CREATE TABLE IF NOT EXISTS marketing_raw_ingest (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            source TEXT NOT NULL,
+            fetched_at TEXT NOT NULL,
+            checksum TEXT NOT NULL,
+            payload_json TEXT NOT NULL,
+            window_label TEXT,
+            status TEXT NOT NULL DEFAULT 'ok',
+            error_message TEXT,
+            created_at TEXT NOT NULL
+        )
+    """)
+    conn.execute("""
+        CREATE INDEX IF NOT EXISTS idx_marketing_raw_source_fetched
+        ON marketing_raw_ingest(source, fetched_at DESC)
+    """)
+    conn.execute("""
+        CREATE INDEX IF NOT EXISTS idx_marketing_raw_checksum
+        ON marketing_raw_ingest(source, checksum)
+    """)
+
+    conn.execute("""
+        CREATE TABLE IF NOT EXISTS marketing_facts (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            metric_key TEXT NOT NULL,
+            channel TEXT NOT NULL DEFAULT 'unknown',
+            window_label TEXT NOT NULL,
+            value REAL NOT NULL,
+            confidence REAL NOT NULL DEFAULT 1.0,
+            as_of TEXT NOT NULL,
+            source_ingest_id INTEGER,
+            dims_json TEXT NOT NULL DEFAULT '{}',
+            created_at TEXT NOT NULL,
+            UNIQUE(metric_key, channel, window_label, as_of)
+        )
+    """)
+    conn.execute("""
+        CREATE INDEX IF NOT EXISTS idx_marketing_facts_key_asof
+        ON marketing_facts(metric_key, as_of DESC)
+    """)
+    conn.execute("""
+        CREATE INDEX IF NOT EXISTS idx_marketing_facts_channel
+        ON marketing_facts(channel, window_label, as_of DESC)
+    """)
+
+    conn.execute("""
+        CREATE TABLE IF NOT EXISTS data_quality_flags (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            flag_type TEXT NOT NULL,
+            source TEXT NOT NULL,
+            severity TEXT NOT NULL DEFAULT 'amber',
+            message TEXT NOT NULL,
+            details_json TEXT NOT NULL DEFAULT '{}',
+            active INTEGER NOT NULL DEFAULT 1,
+            as_of TEXT NOT NULL,
+            resolved_at TEXT,
+            created_at TEXT NOT NULL
+        )
+    """)
+    conn.execute("""
+        CREATE INDEX IF NOT EXISTS idx_data_quality_active
+        ON data_quality_flags(active, severity, as_of DESC)
+    """)
+    conn.execute("""
+        CREATE INDEX IF NOT EXISTS idx_data_quality_source
+        ON data_quality_flags(source, active, as_of DESC)
+    """)
+
+    conn.execute("""
+        CREATE TABLE IF NOT EXISTS order_margin_facts (
+            order_id TEXT PRIMARY KEY,
+            gross REAL NOT NULL,
+            cogs REAL NOT NULL,
+            shipping REAL NOT NULL DEFAULT 0,
+            refunds_alloc REAL NOT NULL DEFAULT 0,
+            net_margin REAL NOT NULL,
+            net_margin_pct REAL NOT NULL,
+            cogs_method TEXT NOT NULL DEFAULT 'playbook_60pct',
+            attribution_channel TEXT,
+            as_of TEXT NOT NULL,
+            created_at TEXT NOT NULL,
+            updated_at TEXT NOT NULL
+        )
+    """)
+    conn.execute("""
+        CREATE INDEX IF NOT EXISTS idx_order_margin_asof
+        ON order_margin_facts(as_of DESC)
+    """)
 
 
 def _migrate_widget_chat_created_at(conn: sqlite3.Connection) -> None:
@@ -2409,3 +2503,353 @@ if __name__ == "__main__":
     print(f"[OK] Health check: {healthy}")
 
     print("\nAll tests passed! DB layer working.")
+
+
+# ============================================================================
+# Marketing Data Truth Layer (MKT-BRAIN-PRO F0)
+# ============================================================================
+
+
+def _utc_now_iso() -> str:
+    return datetime.now(timezone.utc).replace(microsecond=0).isoformat()
+
+
+def db_insert_marketing_raw_ingest(row: Dict) -> Optional[int]:
+    """Append-only raw marketing ingest. Returns row id."""
+    now = _utc_now_iso()
+    conn = get_connection()
+    try:
+        cursor = conn.execute(
+            """
+            INSERT INTO marketing_raw_ingest
+            (source, fetched_at, checksum, payload_json, window_label,
+             status, error_message, created_at)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+            """,
+            (
+                row["source"],
+                row["fetched_at"],
+                row["checksum"],
+                json.dumps(row.get("payload", {})),
+                row.get("window_label"),
+                row.get("status", "ok"),
+                row.get("error_message"),
+                now,
+            ),
+        )
+        conn.commit()
+        return int(cursor.lastrowid)
+    except Exception as e:
+        conn.rollback()
+        import logging
+        logging.getLogger(__name__).error("[DB] marketing_raw_ingest insert failed: %s", e)
+        return None
+
+
+def db_get_latest_marketing_raw_ingest(source: str) -> Optional[Dict]:
+    conn = get_connection()
+    row = conn.execute(
+        """
+        SELECT * FROM marketing_raw_ingest
+        WHERE source = ?
+        ORDER BY fetched_at DESC, id DESC
+        LIMIT 1
+        """,
+        (source,),
+    ).fetchone()
+    if not row:
+        return None
+    item = dict(row)
+    try:
+        item["payload"] = json.loads(item.pop("payload_json") or "{}")
+    except Exception:
+        item["payload"] = {}
+    return item
+
+
+def db_find_marketing_raw_by_checksum(source: str, checksum: str) -> Optional[Dict]:
+    conn = get_connection()
+    row = conn.execute(
+        """
+        SELECT id, source, fetched_at, checksum, status
+        FROM marketing_raw_ingest
+        WHERE source = ? AND checksum = ?
+        ORDER BY id DESC
+        LIMIT 1
+        """,
+        (source, checksum),
+    ).fetchone()
+    return dict(row) if row else None
+
+
+def db_upsert_marketing_fact(fact: Dict) -> Optional[int]:
+    """Upsert normalized marketing fact by unique key tuple."""
+    now = _utc_now_iso()
+    conn = get_connection()
+    try:
+        cursor = conn.execute(
+            """
+            INSERT INTO marketing_facts
+            (metric_key, channel, window_label, value, confidence, as_of,
+             source_ingest_id, dims_json, created_at)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+            ON CONFLICT(metric_key, channel, window_label, as_of) DO UPDATE SET
+                value = excluded.value,
+                confidence = excluded.confidence,
+                source_ingest_id = excluded.source_ingest_id,
+                dims_json = excluded.dims_json
+            """,
+            (
+                fact["metric_key"],
+                fact.get("channel", "unknown"),
+                fact["window_label"],
+                float(fact["value"]),
+                float(fact.get("confidence", 1.0)),
+                fact["as_of"],
+                fact.get("source_ingest_id"),
+                json.dumps(fact.get("dims", {})),
+                now,
+            ),
+        )
+        conn.commit()
+        return int(cursor.lastrowid)
+    except Exception as e:
+        conn.rollback()
+        import logging
+        logging.getLogger(__name__).error("[DB] marketing_facts upsert failed: %s", e)
+        return None
+
+
+def db_list_marketing_facts(
+    metric_key: Optional[str] = None,
+    limit: int = 100,
+) -> List[Dict]:
+    conn = get_connection()
+    if metric_key:
+        rows = conn.execute(
+            """
+            SELECT * FROM marketing_facts
+            WHERE metric_key = ?
+            ORDER BY as_of DESC, id DESC
+            LIMIT ?
+            """,
+            (metric_key, limit),
+        ).fetchall()
+    else:
+        rows = conn.execute(
+            """
+            SELECT * FROM marketing_facts
+            ORDER BY as_of DESC, id DESC
+            LIMIT ?
+            """,
+            (limit,),
+        ).fetchall()
+    result = []
+    for row in rows:
+        item = dict(row)
+        try:
+            item["dims"] = json.loads(item.pop("dims_json") or "{}")
+        except Exception:
+            item["dims"] = {}
+        result.append(item)
+    return result
+
+
+def db_get_latest_fact_as_of(metric_key: str, channel: str = "all") -> Optional[str]:
+    conn = get_connection()
+    row = conn.execute(
+        """
+        SELECT as_of FROM marketing_facts
+        WHERE metric_key = ? AND channel = ?
+        ORDER BY as_of DESC
+        LIMIT 1
+        """,
+        (metric_key, channel),
+    ).fetchone()
+    return row["as_of"] if row else None
+
+
+def db_deactivate_quality_flags(source: str, flag_type: Optional[str] = None) -> int:
+    """Mark active quality flags as resolved for a source (optionally typed)."""
+    now = _utc_now_iso()
+    conn = get_connection()
+    if flag_type:
+        cursor = conn.execute(
+            """
+            UPDATE data_quality_flags
+            SET active = 0, resolved_at = ?
+            WHERE source = ? AND flag_type = ? AND active = 1
+            """,
+            (now, source, flag_type),
+        )
+    else:
+        cursor = conn.execute(
+            """
+            UPDATE data_quality_flags
+            SET active = 0, resolved_at = ?
+            WHERE source = ? AND active = 1
+            """,
+            (now, source),
+        )
+    conn.commit()
+    return int(cursor.rowcount or 0)
+
+
+def db_insert_quality_flag(flag: Dict) -> Optional[int]:
+    """Insert a quality flag; deactivates prior active flags of same source+type."""
+    now = _utc_now_iso()
+    source = flag["source"]
+    flag_type = flag["flag_type"]
+    db_deactivate_quality_flags(source, flag_type)
+    conn = get_connection()
+    try:
+        cursor = conn.execute(
+            """
+            INSERT INTO data_quality_flags
+            (flag_type, source, severity, message, details_json, active, as_of, created_at)
+            VALUES (?, ?, ?, ?, ?, 1, ?, ?)
+            """,
+            (
+                flag_type,
+                source,
+                flag.get("severity", "amber"),
+                flag["message"],
+                json.dumps(flag.get("details", {})),
+                flag.get("as_of", now),
+                now,
+            ),
+        )
+        conn.commit()
+        return int(cursor.lastrowid)
+    except Exception as e:
+        conn.rollback()
+        import logging
+        logging.getLogger(__name__).error("[DB] data_quality_flags insert failed: %s", e)
+        return None
+
+
+def db_list_active_quality_flags(limit: int = 100) -> List[Dict]:
+    conn = get_connection()
+    rows = conn.execute(
+        """
+        SELECT * FROM data_quality_flags
+        WHERE active = 1
+        ORDER BY
+            CASE severity
+                WHEN 'critical' THEN 0
+                WHEN 'red' THEN 1
+                WHEN 'amber' THEN 2
+                ELSE 3
+            END,
+            as_of DESC
+        LIMIT ?
+        """,
+        (limit,),
+    ).fetchall()
+    result = []
+    for row in rows:
+        item = dict(row)
+        try:
+            item["details"] = json.loads(item.pop("details_json") or "{}")
+        except Exception:
+            item["details"] = {}
+        result.append(item)
+    return result
+
+
+def db_upsert_order_margin_fact(row: Dict) -> bool:
+    now = _utc_now_iso()
+    conn = get_connection()
+    try:
+        conn.execute(
+            """
+            INSERT INTO order_margin_facts
+            (order_id, gross, cogs, shipping, refunds_alloc, net_margin, net_margin_pct,
+             cogs_method, attribution_channel, as_of, created_at, updated_at)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+            ON CONFLICT(order_id) DO UPDATE SET
+                gross = excluded.gross,
+                cogs = excluded.cogs,
+                shipping = excluded.shipping,
+                refunds_alloc = excluded.refunds_alloc,
+                net_margin = excluded.net_margin,
+                net_margin_pct = excluded.net_margin_pct,
+                cogs_method = excluded.cogs_method,
+                attribution_channel = excluded.attribution_channel,
+                as_of = excluded.as_of,
+                updated_at = excluded.updated_at
+            """,
+            (
+                row["order_id"],
+                float(row["gross"]),
+                float(row["cogs"]),
+                float(row.get("shipping", 0)),
+                float(row.get("refunds_alloc", 0)),
+                float(row["net_margin"]),
+                float(row["net_margin_pct"]),
+                row.get("cogs_method", "playbook_60pct"),
+                row.get("attribution_channel"),
+                row.get("as_of", now),
+                now,
+                now,
+            ),
+        )
+        conn.commit()
+        return True
+    except Exception as e:
+        conn.rollback()
+        import logging
+        logging.getLogger(__name__).error("[DB] order_margin_facts upsert failed: %s", e)
+        return False
+
+
+def db_get_order_margin_fact(order_id: str) -> Optional[Dict]:
+    conn = get_connection()
+    row = conn.execute(
+        "SELECT * FROM order_margin_facts WHERE order_id = ?",
+        (order_id,),
+    ).fetchone()
+    return dict(row) if row else None
+
+
+def db_count_order_margin_facts() -> int:
+    conn = get_connection()
+    row = conn.execute("SELECT COUNT(*) AS n FROM order_margin_facts").fetchone()
+    return int(row["n"] if row else 0)
+
+
+def db_count_orders() -> int:
+    conn = get_connection()
+    row = conn.execute("SELECT COUNT(*) AS n FROM orders").fetchone()
+    return int(row["n"] if row else 0)
+
+
+def db_list_orders_full(limit: int = 500) -> List[Dict]:
+    """Full order rows with attribution — for DTL ingest (not Commander list)."""
+    conn = get_connection()
+    rows = conn.execute(
+        """
+        SELECT * FROM orders
+        ORDER BY created_at DESC
+        LIMIT ?
+        """,
+        (limit,),
+    ).fetchall()
+    return [_row_to_order_dict(row) for row in rows]
+
+
+def db_margin_coverage_stats() -> Dict[str, Any]:
+    """Orders vs margin facts coverage for Data Health."""
+    conn = get_connection()
+    total = int(
+        conn.execute("SELECT COUNT(*) AS n FROM orders").fetchone()["n"] or 0
+    )
+    with_margin = int(
+        conn.execute("SELECT COUNT(*) AS n FROM order_margin_facts").fetchone()["n"] or 0
+    )
+    pct = (with_margin / total * 100.0) if total else 0.0
+    return {
+        "orders_total": total,
+        "margin_facts": with_margin,
+        "coverage_pct": round(pct, 2),
+    }
