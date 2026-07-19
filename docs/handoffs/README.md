@@ -4,7 +4,7 @@ Session continuity for `/vibe-init`: read the **last 2** handoffs from this fold
 
 ## Start here (vibe-init) — 2026-07-19 CLOSEOUT
 
-1. [`2026-07-19-CLOSEOUT-HONESTY-01.md`](2026-07-19-CLOSEOUT-HONESTY-01.md) — tip `345031e` honesty · DoD matrix · FB health OK · Meta park
+1. [`2026-07-19-CLOSEOUT-HONESTY-01.md`](2026-07-19-CLOSEOUT-HONESTY-01.md) — honesty DoD · tip ≥ `8d40efc` · FB health OK · Meta park
 2. [`2026-07-19-MKT-SHIP-01-CLOSE.md`](2026-07-19-MKT-SHIP-01-CLOSE.md) — deploy + blog + VCMS ship
 3. [`2026-07-19-MKT-OS-01-CLOSE.md`](2026-07-19-MKT-OS-01-CLOSE.md) — Marketing OS SoT docs
 
