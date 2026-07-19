@@ -7,7 +7,7 @@ updated: "2026-07-19"
 
 # Marketing OS — FlexGrafik
 
-**Zaczynaj tutaj:** [OPERATOR-TODAY.md](./OPERATOR-TODAY.md) · **Meta lean:** [META-PACK-LEAN.md](./META-PACK-LEAN.md).
+**Zaczynaj tutaj:** [OPERATOR-TODAY.md](./OPERATOR-TODAY.md) · **Meta lean:** [META-PACK-LEAN.md](./META-PACK-LEAN.md) · **Marketing Brain (TO-BE):** [MKT-BRAIN-PRO.md](./MKT-BRAIN-PRO.md).
 
 North Star: `CPA_wizard` < 40% marży brutto ZZPackage. Bez Purchase w pikselu → **zakaz scale** (tylko learning ≤ €10/dzień Leads).
 
@@ -24,6 +24,7 @@ North Star: `CPA_wizard` < 40% marży brutto ZZPackage. Bez Purchase w pikselu �
 | Kiedy | Plik |
 |-------|------|
 | Start dnia / tygodnia | [OPERATOR-TODAY.md](./OPERATOR-TODAY.md) |
+| Marketing Brain architecture | [MKT-BRAIN-PRO.md](./MKT-BRAIN-PRO.md) |
 | Meta lean (1 Reel €10) | [META-PACK-LEAN.md](./META-PACK-LEAN.md) |
 | Publish kampanii (pełny paste / 3 kreacje) | [FB-FIRST-CAMPAIGN.md](./FB-FIRST-CAMPAIGN.md) |
 | L0 przed € | [L0-INSTRUMENTATION.md](./L0-INSTRUMENTATION.md) |
@@ -48,3 +49,5 @@ P-MKT-01 publish HITL · P-MKT-02 auction · P-MKT-03 blog · P-MKT-04 asset · 
 ## PARK
 
 Gate D, Mollie experiments, TikTok API, Ads API, QF w jadzia, auto-publish.
+
+**TO-BE (plan):** [MKT-BRAIN-PRO.md](./MKT-BRAIN-PRO.md) — Data Truth, Shadow Mode, Governance API, Brain Bus.

@@ -1,15 +1,15 @@
 {
   "project": "Jadzia-Core",
-  "last_updated": "2026-07-19 (META-PACK-01 lean READY)",
+  "last_updated": "2026-07-19 (MKT-BRAIN-PRO handoff — F0 ready)",
   "status": "active",
-  "plan": "docs/ops/marketing/META-PACK-LEAN.md",
-  "active_gate": "ready_for_human META-PACK-01 lean",
-  "active_plan": "META-PACK-LEAN SoT + HTML pixel PASS (fbq). Dowódca: L0 Events + Audience + 1 Reel + Instant Form €10 + WA <15m. Organic/3 creatives = v1.1 after d7. Gate D parked. standing_go off.",
+  "plan": "docs/ops/marketing/MKT-BRAIN-PRO.md",
+  "active_gate": "MKT-BRAIN-PRO F0 ready_for_agent + parallel ready_for_human META-PACK-01 lean",
+  "active_plan": "MKT-BRAIN-PRO Final Polish: F0 DTL+margin facts. F1 shadow+Telegram HITL+Organic-to-Paid+Profit Watchdog+Hypothesis Ledger. Commander=analytics only. standing_go off.",
   "standing_go_closeout": false,
   "closeout_queue": [],
   "closeout_expires": "2026-07-25",
-  "next_human": "META-PACK-LEAN checklist: Events InitiateCheckout+Purchase; Custom Audience exclude; master_reel_9x16; Ads Leads Instant Form €10/d 1 Reel; WA <15min. Then reply META-PACK LIVE. Gate D parked.",
-  "next_agent": "/vibe-init — after Dowódca META-PACK LIVE: WEEKLY-SCORECARD assist OR organic #5 (v1.1).",
+  "next_human": "META-PACK-LEAN L0 (parallel). After MB F1 shadow 14d: review shadow log accuracy ≥70%. GO MKT-BRAIN-PRO F0 to start agent build.",
+  "next_agent": "GO MKT-BRAIN-PRO F0: agent/marketing/dtl + db migrations + ingest + Commander Data Health. Attach MKT-BRAIN-PRO.md. standing_go off — no VPS deploy without GO.",
   "agent_rule": "Nie pytaj A/B. Deploy tylko ze zgodą (standing_go_closeout off). Nie sekrety. Nie kasuj parków. Hard STOP: Gate D/Mollie/fake PASS.",
   "sprints": {
     "remediation": "completed",
@@ -1225,6 +1225,46 @@
       "owner": "agent",
       "checklist": "docs/handoffs/2026-07-17-da-insire-enterprise-merge-PROOF.md",
       "note": "Merged+deployed 2026-07-17 @ 46e4fc2; smoke PASS; stash dropped (superseded)"
+    },
+    {
+      "id": "MKT-BRAIN-PRO-F0",
+      "sprint": "MKT-BRAIN-PRO",
+      "task": "F0 Data Truth Layer: DTL schema + ingest + order_margin_facts + Data Health Commander (analytics only)",
+      "status": "ready",
+      "priority": "critical",
+      "owner": "agent",
+      "checklist": "docs/ops/marketing/MKT-BRAIN-PRO.md §5 F0",
+      "note": "2w observability before MB decisions. No fake prod sandbox. pytest fixtures only."
+    },
+    {
+      "id": "MKT-BRAIN-PRO-F1",
+      "sprint": "MKT-BRAIN-PRO",
+      "task": "F1 Decision Engine + Shadow 14d + Telegram MB proposals + Organic-to-Paid + Profit Watchdog + hypothesis ledger",
+      "status": "blocked",
+      "priority": "critical",
+      "owner": "agent",
+      "checklist": "docs/ops/marketing/MKT-BRAIN-PRO.md §5 F1",
+      "note": "Blocked on F0 DoD. Dowódca shadow review ≥70% before F2."
+    },
+    {
+      "id": "MKT-BRAIN-PRO-F2",
+      "sprint": "MKT-BRAIN-PRO",
+      "task": "F2 Governance API + Telegram Act path + circuit breakers + Commander Data Health UI + ChromaDB RAG",
+      "status": "blocked",
+      "priority": "high",
+      "owner": "agent",
+      "checklist": "docs/ops/marketing/MKT-BRAIN-PRO.md §5 F2",
+      "note": "Blocked on F1 shadow GO. Publish refactor through governance execute API."
+    },
+    {
+      "id": "MKT-BRAIN-PRO-F3",
+      "sprint": "MKT-BRAIN-PRO",
+      "task": "F3 Brain Bus v1: VCMS/KODA health events → MB + CEO brief stub",
+      "status": "blocked",
+      "priority": "medium",
+      "owner": "agent",
+      "checklist": "docs/ops/marketing/MKT-BRAIN-PRO.md §5 F3",
+      "note": "Blocked on F2. Webhook from VCMS scan."
     }
   ]
 }
