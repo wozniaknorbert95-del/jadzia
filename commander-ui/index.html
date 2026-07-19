@@ -13,7 +13,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" href="styles.css?v=terminal01" />
+  <link rel="stylesheet" href="styles.css?v=mkt-dash01" />
 </head>
 <body>
   <a class="skip-link" href="#main">Przejdź do treści</a>
@@ -126,17 +126,20 @@
     <section id="view-marketing" class="view" aria-labelledby="marketing-title" hidden>
       <h2 id="marketing-title">Marketing — Organic HITL (Facebook)</h2>
       <p class="hint">Tu publikujesz <strong>organiczne</strong> posty/Reels (HITL). Paid Leads / Instant Form = Meta Ads Manager — nie ten ekran.</p>
-      <aside id="mkt-os-strip" class="mkt-os-strip panel" aria-label="Marketing OS — następny krok">
+      <aside id="mkt-os-strip" class="mkt-os-strip panel" aria-label="Marketing OS — Program Close">
         <p class="mkt-os-strip-title">Marketing OS</p>
+        <p class="hint mkt-os-status">MB propose · overall ~86% · agent observe · ten ekran = organic HITL</p>
         <ol class="mkt-os-steps">
-          <li>L0 + kampania paid → playbook w repo <code>docs/ops/marketing/OPERATOR-TODAY.md</code></li>
-          <li>Ten ekran = 1 organic drop z tego samego master Reel (Asset Factory)</li>
-          <li>PON: scorecard CPA / CPL — nie reach</li>
+          <li><strong>H-Meta</strong> — hold 7d €5 → optimize (Ads Manager)</li>
+          <li><strong>H-Purchase</strong> — Mollie GO → Test Events Purchase</li>
+          <li><strong>H-Insights</strong> — Graph <code>read_insights</code> → nowy token</li>
+          <li><strong>H-WA</strong> — lead → WA &lt;15 min</li>
+          <li><strong>H-F4x</strong> — distribution / blog / webhook — po triggerach</li>
         </ol>
         <p class="mkt-os-links hint">
           <a href="https://github.com/wozniaknorbert95-del/jadzia/blob/master/docs/ops/marketing/OPERATOR-TODAY.md" target="_blank" rel="noopener">START TUTAJ</a>
           ·
-          <a href="https://github.com/wozniaknorbert95-del/jadzia/blob/master/docs/ops/marketing/FB-FIRST-CAMPAIGN.md" target="_blank" rel="noopener">Kampania Leads</a>
+          <a href="https://github.com/wozniaknorbert95-del/jadzia/blob/master/docs/ops/marketing/META-CLICK-PATH.md" target="_blank" rel="noopener">Meta klik</a>
           ·
           <a href="https://github.com/wozniaknorbert95-del/jadzia/blob/master/docs/ops/marketing/WEEKLY-SCORECARD.md" target="_blank" rel="noopener">Scorecard</a>
           ·
@@ -145,6 +148,14 @@
       </aside>
       <p id="marketing-status-strip" class="hint"></p>
       <p id="fb-health-strip" class="health-strip" aria-live="polite"></p>
+      <section id="weekly-draft-panel" class="panel weekly-draft-panel" aria-label="Weekly scorecard draft">
+        <h3>Weekly scorecard — draft</h3>
+        <p class="hint">Z DTL (leads/margin). Spend/CPL wklej z Ads Manager. Decyzja HOLD/KILL = Ty (HITL).</p>
+        <p id="weekly-draft-body" class="weekly-draft-body" aria-live="polite">Ładowanie draftu…</p>
+        <div class="composer-actions">
+          <button type="button" id="weekly-draft-refresh">Odśwież draft</button>
+        </div>
+      </section>
       <p id="gdrive-folder-hint" class="hint" hidden></p>
       <div id="held-banner" class="banner" hidden></div>
 
@@ -187,8 +198,13 @@
       <div id="analytics-tiles" class="card-grid"></div>
 
       <h3>Data Health (DTL)</h3>
-      <p class="hint">Świeżość faktów marketingowych, flagi jakości, pokrycie marży — bez kolejki approve (Telegram = F1).</p>
+      <p class="hint">Świeżość faktów, drivers, świadome parks (info ≠ failure). Approve MB = Telegram.</p>
       <p id="dtl-overall" class="health-strip" aria-live="polite"></p>
+      <h4>Drivers</h4>
+      <div id="dtl-drivers" class="list"></div>
+      <h4>Conscious parks</h4>
+      <div id="dtl-parks" class="list"></div>
+      <p id="dtl-organic" class="hint" aria-live="polite"></p>
       <div id="dtl-freshness" class="card-grid"></div>
       <h4>Margin coverage</h4>
       <p id="dtl-margin" class="hint"></p>
@@ -279,6 +295,6 @@
   </dialog>
 
   <div id="toast" class="toast" role="status" aria-live="polite" hidden></div>
-  <script src="app.js?v=terminal01"></script>
+  <script src="app.js?v=mkt-dash01"></script>
 </body>
 </html>

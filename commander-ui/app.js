@@ -474,16 +474,25 @@ async function loadMarketing() {
   if (fbHealth) {
     fbStrip.hidden = false;
     fbStrip.className = "health-strip";
-    if (fbHealth.ok) fbStrip.classList.add("fb-health-ok");
+    const hasInsights = !!fbHealth.has_read_insights;
+    if (fbHealth.ok && hasInsights) fbStrip.classList.add("fb-health-ok");
+    else if (fbHealth.ok && !hasInsights) fbStrip.classList.add("fb-health-warn");
     else if (fbHealth.configured) fbStrip.classList.add("fb-health-bad");
     else fbStrip.classList.add("fb-health-warn");
     const expiry = fbHealth.days_left != null
       ? ` · ważny jeszcze ${fbHealth.days_left} dni`
       : "";
-    fbStrip.textContent = `Facebook: ${fbHealth.message_pl || "—"}${expiry}`;
+    const insightsChip = hasInsights ? "insights: OK" : "insights: brak (read_insights)";
+    fbStrip.textContent =
+      `Facebook: ${fbHealth.message_pl || "—"} · ${insightsChip}${expiry}`;
   } else {
     fbStrip.hidden = true;
   }
+
+  await renderWeeklyDraft().catch(() => {
+    const body = document.getElementById("weekly-draft-body");
+    if (body) body.textContent = "Draft niedostępny — spróbuj Odśwież.";
+  });
 
   const entries = (cal.entries || []).slice().sort((a, b) => {
     const da = a.scheduled_publish_at || a.scheduled_at || "";
@@ -630,17 +639,88 @@ document.querySelectorAll("#queue-filters .chip").forEach((chip) => {
 });
 toggleMediaField();
 
+function _fmtDraftVal(v) {
+  if (v == null || v === "") return "—";
+  if (typeof v === "number") {
+    if (Math.abs(v - Math.round(v)) < 1e-9) return String(Math.round(v));
+    return v.toFixed(2);
+  }
+  return String(v);
+}
+
+async function renderWeeklyDraft() {
+  const body = document.getElementById("weekly-draft-body");
+  if (!body) return;
+  let draft;
+  try {
+    draft = await api("/api/v1/commander/marketing/weekly-draft");
+  } catch (e) {
+    body.textContent = "Nie udało się pobrać draftu.";
+    throw e;
+  }
+  const k = draft.kpis || {};
+  body.innerHTML = `
+    <p><strong>${draft.iso_week || "—"}</strong> · ${draft.campaign || "—"}</p>
+    <ul class="weekly-draft-kpis">
+      <li>Leads: ${_fmtDraftVal(k.leads)} (open ${_fmtDraftVal(k.leads_open)})</li>
+      <li>Spend / CPL: — <span class="hint">(Ads Manager)</span></li>
+      <li>Purchases≈orders: ${_fmtDraftVal(k.purchases)}</li>
+      <li>Margin net: ${_fmtDraftVal(k.margin_net_sum)}</li>
+      <li>Attr coverage %: ${_fmtDraftVal(k.attribution_coverage_pct)}</li>
+      <li>Organic ER baseline: ${_fmtDraftVal(k.organic_er_baseline_30d)}</li>
+      <li>Decyzja OS: — <span class="hint">(HITL — nie auto HOLD/KILL)</span></li>
+    </ul>`;
+}
+
 function renderDataHealth(health) {
   const overallEl = document.getElementById("dtl-overall");
   const freshEl = document.getElementById("dtl-freshness");
   const marginEl = document.getElementById("dtl-margin");
   const flagsEl = document.getElementById("dtl-flags");
+  const driversEl = document.getElementById("dtl-drivers");
+  const parksEl = document.getElementById("dtl-parks");
+  const organicEl = document.getElementById("dtl-organic");
   if (!overallEl || !freshEl || !marginEl || !flagsEl) return;
 
   const overall = health.overall_status || "—";
+  const qs = health.quality_summary || {};
   overallEl.innerHTML = `DTL overall: <span class="badge ${overall}">${overall}</span>
-    · flags: ${health.quality_summary?.active_total ?? 0}
-    · red/critical: ${health.quality_summary?.critical_or_red ?? 0}`;
+    · flags: ${qs.active_total ?? 0}
+    · red/critical: ${qs.critical_or_red ?? 0}
+    · info: ${qs.info ?? 0}`;
+
+  if (driversEl) {
+    const drivers = health.drivers || [];
+    driversEl.innerHTML = drivers.length
+      ? drivers.map((d) => {
+        const sev = d.severity || "amber";
+        const label = d.source || d.kind || "driver";
+        const msg = d.message || d.reason || "";
+        return `<div><span class="badge ${sev}">${sev}</span> · ${label}: ${msg}</div>`;
+      }).join("")
+      : "<p class=\"state-empty\">Brak driverów — overall czysty.</p>";
+  }
+
+  if (parksEl) {
+    const parks = health.conscious_parks || [];
+    parksEl.innerHTML = parks.length
+      ? parks.map((p) =>
+        `<div><span class="badge info">${p.status || "PARK"}</span> · <strong>${p.id || "?"}</strong>: ${p.reason || ""}</div>`
+      ).join("")
+      : "<p class=\"state-empty\">Brak świadomych parków.</p>";
+  }
+
+  if (organicEl) {
+    const org = health.facebook_organic || {};
+    const insights = org.has_read_insights === true
+      ? "OK"
+      : org.has_read_insights === false
+        ? "brak"
+        : "—";
+    organicEl.textContent =
+      `FB organic: reason=${org.reason || "—"} · read_insights=${insights}` +
+      (org.ingest_status ? ` · ingest=${org.ingest_status}` : "");
+  }
 
   const f = health.freshness || {};
   const entries = Object.entries(f);
@@ -738,6 +818,16 @@ document.getElementById("dtl-refresh-ingest")?.addEventListener("click", async (
     await loadAnalytics();
   } catch (e) {
     toast(e.message || "DTL ingest failed");
+  }
+});
+
+document.getElementById("weekly-draft-refresh")?.addEventListener("click", async () => {
+  try {
+    toast("Weekly draft…");
+    await renderWeeklyDraft();
+    toast("Draft OK");
+  } catch (e) {
+    toast(e.message || "Draft failed");
   }
 });
 

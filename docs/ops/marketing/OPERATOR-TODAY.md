@@ -9,7 +9,7 @@ updated: "2026-07-19 (PROGRAM CLOSE tip 3c2fc6e ~86%)"
 **Roadmapa:** [MKT-BRAIN-PRO.md](./MKT-BRAIN-PRO.md) — **~86%** overall · runtime **100%** · **MB_MODE=propose**  
 **Handoff:** [PROGRAM-CLOSE](../../handoffs/2026-07-19-MKT-BRAIN-PRO-PROGRAM-CLOSE.md)  
 **Meta:** [META-CLICK-PATH.md](./META-CLICK-PATH.md) · Scorecard: [WEEKLY-SCORECARD.md](./WEEKLY-SCORECARD.md)  
-**Draft scorecard:** `GET …/marketing/weekly-draft` · `python scripts/mb_weekly_scorecard_draft.py`
+**Draft scorecard:** Commander → Marketing (panel) · `GET …/marketing/weekly-draft` · CLI `scripts/mb_weekly_scorecard_draft.py`
 
 | Co | Status |
 |----|--------|
