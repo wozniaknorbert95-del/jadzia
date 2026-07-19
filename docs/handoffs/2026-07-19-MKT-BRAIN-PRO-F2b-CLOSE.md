@@ -3,10 +3,20 @@ status: "[ACTIVE]"
 title: "MKT-BRAIN-PRO F2b + Wave B eval — CLOSE"
 gate: "MKT-BRAIN-PRO-F2b"
 updated: "2026-07-19"
-result: "PASS — memory + eval-pack; F4/propose BLOCKED"
+result: "PASS LIVE tip 3c4af26 — memory + eval-pack; F4/propose BLOCKED"
 ---
 
 # MKT-BRAIN-PRO F2b + Shadow Eval Ops — CLOSE
+
+## VPS evidence
+
+| Check | Result |
+|-------|--------|
+| tip | **`3c4af26`** |
+| health | OK |
+| memory_source | **chroma** · synced 7 · cycle `memory=['chroma']` |
+| eval-pack | rubric True · count≥5 |
+| MB_MODE | **shadow** (unchanged) |
 
 ## Wave A — Campaign Memory
 

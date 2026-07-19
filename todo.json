@@ -3,7 +3,7 @@
   "last_updated": "2026-07-19 (MKT-BRAIN-PRO F2b memory + eval-pack)",
   "status": "active",
   "plan": "docs/ops/marketing/MKT-BRAIN-PRO.md",
-  "active_gate": "MKT-BRAIN-PRO F0–F3+F2b; L0 IC PASS; human: 14d shadow eval-pack ≥70%; Purchase PARK; F4 BLOCKED",
+  "active_gate": "MKT-BRAIN-PRO F0–F3+F2b LIVE @ 3c4af26; L0 IC PASS; human: 14d shadow eval-pack ≥70%; Purchase PARK; F4 BLOCKED",
   "active_plan": "F2b Campaign Memory LIVE path + shadow eval-pack. MB_MODE=shadow. F4/propose only after Dowódca GO.",
   "standing_go_closeout": false,
   "closeout_queue": [],
@@ -1274,7 +1274,7 @@
       "priority": "high",
       "owner": "agent",
       "checklist": "docs/handoffs/2026-07-19-MKT-BRAIN-PRO-F2b-CLOSE.md",
-      "note": "PASS 2026-07-19; pytest F2b; memory status/sync + eval-pack API; F4 blocked."
+      "note": "PASS LIVE 2026-07-19 tip 3c4af26; chroma sync=7; cycle memory=chroma; eval-pack OK; F4 blocked."
     }
   ]
 }

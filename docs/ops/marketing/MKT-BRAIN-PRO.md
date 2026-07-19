@@ -5,7 +5,7 @@ gate: "MKT-BRAIN-PRO"
 updated: "2026-07-19 (F2b memory + shadow eval-pack)"
 supersedes: "MKT-BRAIN-01 (sandbox-first draft — withdrawn)"
 owner: "Norbert Wozniak (Dowódca)"
-runtime_tip: "pending F2b tip"
+runtime_tip: "3c4af26 (F2b memory + eval-pack)"
 mb_mode: "shadow"
 ---
 
@@ -21,7 +21,7 @@ mb_mode: "shadow"
 
 ## STATUS BOARD — 2026-07-19 (SoT)
 
-**Runtime tip:** F0–F3 `723a702` + **F2b** (campaign memory) · **MB_MODE:** `shadow` · VCMS Brain Bus: **LIVE**
+**Runtime tip:** **`3c4af26`** (F0–F3 + F2b) · **MB_MODE:** `shadow` · VCMS Brain Bus: **LIVE**
 
 ### DONE (LIVE / PASS)
 
