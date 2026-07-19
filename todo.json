@@ -1,9 +1,9 @@
 {
   "project": "Jadzia-Core",
-  "last_updated": "2026-07-19 (MKT-BRAIN-PRO-PREFLIGHT)",
+  "last_updated": "2026-07-19 (PREFLIGHT tip d273b84)",
   "status": "active",
   "plan": "docs/ops/marketing/MKT-BRAIN-PRO.md",
-  "active_gate": "MKT-BRAIN-PRO #1 Meta HOLD €5; #2 eval PASS n=20 @ ab1ed04; preflight→GO propose BLOCKED; F4 BLOCKED; Purchase PARK",
+  "active_gate": "MKT-BRAIN-PRO #1 Meta HOLD; #2 PREFLIGHT PASS tip d273b84 (VPS evidence ab1ed04); GO propose ready_for_human; F4 BLOCKED",
   "active_plan": "docs/ops/marketing/PLAN-14D.md — #1 Meta HOLD + #2 preflight (kolejność PRO)",
   "standing_go_closeout": false,
   "closeout_queue": [],
