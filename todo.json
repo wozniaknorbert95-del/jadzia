@@ -1,10 +1,10 @@
 {
   "project": "Jadzia-Core",
-  "last_updated": "2026-07-19 (CLOSEOUT-HONESTY-01 — tip 8d40efc verified)",
+  "last_updated": "2026-07-19 (CLOSEOUT-HONESTY-01 — tip 345031e verified)",
   "status": "active",
   "plan": "docs/ops/marketing/OPERATOR-TODAY.md",
   "active_gate": "ready_for_human Meta pack (OPERATOR-TODAY #1-4)",
-  "active_plan": "Honesty closeout DONE. jadzia VPS tip 8d40efc (terminal UI). Blog slug LIVE 200 (asset MD5 match tip; hosting NOT full-git). FB check_token_health ok=true PAGE. Meta #1-4 still human. Gate D parked. standing_go off.",
+  "active_plan": "Honesty closeout DONE. jadzia tip 345031e (terminal UI in 8d40efc). Blog slug LIVE 200 (asset MD5 match; hosting NOT full-git). FB check_token_health ok=true PAGE. Meta #1-4 still human. Gate D parked. standing_go off.",
   "standing_go_closeout": false,
   "closeout_queue": [],
   "closeout_expires": "2026-07-25",
