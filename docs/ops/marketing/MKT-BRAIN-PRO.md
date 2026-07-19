@@ -2,10 +2,10 @@
 status: "[ACTIVE]"
 title: "MKT-BRAIN-PRO — World-Class Marketing Ops Architecture"
 gate: "MKT-BRAIN-PRO"
-updated: "2026-07-19 (MB_MODE=propose + F4 ticket LIVE 4ad1e99)"
+updated: "2026-07-19 (F4b paste_ready v1 LIVE 0ae8244)"
 supersedes: "MKT-BRAIN-01 (sandbox-first draft — withdrawn)"
 owner: "Norbert Wozniak (Dowódca)"
-runtime_tip: "4ad1e99 (propose LIVE)"
+runtime_tip: "0ae8244 (propose + F4b paste_ready)"
 mb_mode: "propose"
 ---
 
@@ -21,7 +21,7 @@ mb_mode: "propose"
 
 ## STATUS BOARD — 2026-07-19 (SoT)
 
-**Runtime tip:** **`4ad1e99`** · **MB_MODE:** `propose` · staff-eval gate **PASS** · F4 ticket **LIVE** · VCMS Brain Bus: **LIVE**
+**Runtime tip:** **`0ae8244`** · **MB_MODE:** `propose` · F4b paste_ready **v1 LIVE** · VCMS Brain Bus: **LIVE**
 
 ### DONE (LIVE / PASS)
 
@@ -35,6 +35,7 @@ mb_mode: "propose"
 | **Preflight** | Propose cutover evidence + GO ticket | tip `d273b84` / LIVE `4ad1e99` |
 | **F3** | Brain Bus webhook + `CB_ECOSYSTEM` + CEO stub + VCMS→jadzia notify | tip **`723a702`**; smoke degraded→recover; scan→HTTP 200 |
 | **F4** | Propose mode + HITL execute → **ticket_only** (Ads API create PARK) | tip **`4ad1e99`**; smoke mint+execute ticket_only |
+| **F4b** | paste_ready v1 templates + persist + idempotent Commander + TG no-token | tip **`0ae8244`**; smoke commander#15 cached |
 | **Organic DTL** | FB post organic metrics → `organic_er_lift_pct` (+ link clicks lift) | `dtl/facebook_organic.py` in pipeline |
 | **CEO↔brief** | Weekly brief → `ceo.priority` Brain Bus (`BRIEF_CEO_PRIORITY_ENABLED`) | `brief_node._maybe_publish_ceo_priority` |
 | **L0 IC** | Meta Test Events `InitiateCheckout` | pixel `1084197063740065` · PASS |
@@ -48,7 +49,7 @@ mb_mode: "propose"
 | **1** | **META lean A1→A2→A3** Instant Form | Dowódca | published €5 — hold 7d / later optimize |
 | **2** | Shadow → GO `propose` | — | **DONE** LIVE tip `4ad1e99` |
 | **3** | L0 **Purchase** w Test Events | Dowódca | Mollie GO (PARK) |
-| **4** | **F4 Act** ticket_only | — | **DONE** (Ads create nadal PARK) |
+| **4** | **F4/F4b Act** ticket_only + paste_ready v1 | — | **DONE** tip `0ae8244` (Ads create PARK) |
 | **5** | FB `read_insights` token scope | Dowódca | Graph permissions |
 
 ### Shadow evaluation rubric (gate → propose)

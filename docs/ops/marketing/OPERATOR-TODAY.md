@@ -6,7 +6,7 @@ updated: "2026-07-19 (propose LIVE 4ad1e99)"
 
 # START TUTAJ — jedna ścieżka (ADHD)
 
-**Roadmapa:** [MKT-BRAIN-PRO.md](./MKT-BRAIN-PRO.md) — tip **`4ad1e99`** · **MB_MODE=propose** · F4 ticket LIVE  
+**Roadmapa:** [MKT-BRAIN-PRO.md](./MKT-BRAIN-PRO.md) — tip **`0ae8244`** · **MB_MODE=propose** · F4b paste_ready LIVE  
 **Plan 14 dni:** [PLAN-14D.md](./PLAN-14D.md)  
 **Meta:** [META-CLICK-PATH.md](./META-CLICK-PATH.md) · [META-PACK-LEAN.md](./META-PACK-LEAN.md)  
 **Propose:** [PROPOSE-CUTOVER.md](./PROPOSE-CUTOVER.md)
@@ -15,7 +15,7 @@ updated: "2026-07-19 (propose LIVE 4ad1e99)"
 |----|--------|
 | **#1 Meta lean** | **HOLD** — published €5; 7d bez edycji |
 | **#2 Propose** | **LIVE** tip `4ad1e99` |
-| **#4 F4** | **LIVE** ticket_only (Ads create PARK) |
+| **#4 F4/F4b** | **LIVE** ticket_only + paste_ready v1 (Ads create PARK) |
 | L0 InitiateCheckout | PASS |
 | L0 Purchase | PARK (Mollie) |
 | Twoje zadanie | Telegram APPROVE → ticket · Lead → WA &lt;15 min |
