@@ -92,6 +92,7 @@ async function api(path, options = {}) {
   }
   const res = await fetch(`${API_BASE}${path}`, { ...options, headers });
   if (res.status === 401) {
+    clearToken();
     setAuthExpanded(true);
     throw new Error("Sesja wygasła — Telegram /commander lub wklej token");
   }
@@ -441,25 +442,28 @@ function matchesMarketingFilter(entry) {
   return true;
 }
 
+function setWeeklyDraftMessage(text) {
+  const body = document.getElementById("weekly-draft-body");
+  if (body) body.textContent = text;
+}
+
 async function loadMarketing() {
-  let cal;
-  let agents;
-  let settings;
-  let fbHealth;
-  try {
-    [cal, agents, settings, fbHealth] = await Promise.all([
-      api("/api/v1/content-calendar"),
-      api("/api/v1/agents"),
-      api("/api/v1/commander/settings").catch(() => ({})),
-      api("/api/v1/commander/marketing/fb-health").catch(() => null),
-    ]);
-  } catch (e) {
-    document.getElementById("calendar-entries").innerHTML =
-      `<p class="state-error">Nie udało się pobrać kolejki marketingu. <button type="button" id="mkt-retry">Spróbuj ponownie</button></p>`;
-    const retry = document.getElementById("mkt-retry");
-    if (retry) retry.onclick = () => loadMarketing().catch((err) => toast(err.message));
-    throw e;
-  }
+  const draftBody = document.getElementById("weekly-draft-body");
+  if (draftBody) draftBody.textContent = "Ładowanie draftu…";
+
+  let calErr = null;
+  const [cal, agents, settings, fbHealth] = await Promise.all([
+    api("/api/v1/content-calendar").catch((e) => {
+      calErr = e;
+      return { entries: [] };
+    }),
+    api("/api/v1/agents").catch(() => ({ agents: [] })),
+    api("/api/v1/commander/settings").catch(() => ({})),
+    api("/api/v1/commander/marketing/fb-health").catch(() => null),
+  ]);
+
+  const sessionDead = !getToken()
+    || (calErr && String(calErr.message || "").includes("Sesja wygasła"));
 
   const folderUrl = settings.marketing_gdrive_folder_url;
   const folderHint = document.getElementById("gdrive-folder-hint");
@@ -471,7 +475,11 @@ async function loadMarketing() {
   }
 
   const fbStrip = document.getElementById("fb-health-strip");
-  if (fbHealth) {
+  if (sessionDead) {
+    fbStrip.hidden = false;
+    fbStrip.className = "health-strip fb-health-warn";
+    fbStrip.textContent = "Facebook: sesja wygasła — zaloguj ponownie (nie sprawdzono tokenu)";
+  } else if (fbHealth) {
     fbStrip.hidden = false;
     fbStrip.className = "health-strip";
     const hasInsights = !!fbHealth.has_read_insights;
@@ -489,10 +497,32 @@ async function loadMarketing() {
     fbStrip.hidden = true;
   }
 
-  await renderWeeklyDraft().catch(() => {
-    const body = document.getElementById("weekly-draft-body");
-    if (body) body.textContent = "Draft niedostępny — spróbuj Odśwież.";
-  });
+  try {
+    if (sessionDead) {
+      setWeeklyDraftMessage("Sesja wygasła — Telegram /commander lub wklej token (Sesja).");
+    } else {
+      await renderWeeklyDraft();
+    }
+  } catch (e) {
+    const msg = String(e.message || "");
+    setWeeklyDraftMessage(
+      msg.includes("Sesja wygasła")
+        ? "Sesja wygasła — Telegram /commander lub wklej token (Sesja)."
+        : "Draft niedostępny — spróbuj Odśwież.",
+    );
+  }
+
+  if (calErr) {
+    document.getElementById("calendar-entries").innerHTML =
+      `<p class="state-error">${sessionDead ? "Sesja wygasła — zaloguj ponownie." : "Nie udało się pobrać kolejki marketingu."}
+ <button type="button" id="mkt-retry">Spróbuj ponownie</button></p>`;
+    const retry = document.getElementById("mkt-retry");
+    if (retry) retry.onclick = () => loadMarketing().catch((err) => toast(err.message));
+    document.getElementById("marketing-status-strip").textContent = "—";
+    document.getElementById("held-banner").hidden = true;
+    if (sessionDead) toast(calErr.message || "Sesja wygasła", "err");
+    return;
+  }
 
   const entries = (cal.entries || []).slice().sort((a, b) => {
     const da = a.scheduled_publish_at || a.scheduled_at || "";
@@ -655,7 +685,10 @@ async function renderWeeklyDraft() {
   try {
     draft = await api("/api/v1/commander/marketing/weekly-draft");
   } catch (e) {
-    body.textContent = "Nie udało się pobrać draftu.";
+    const msg = String(e.message || "");
+    body.textContent = msg.includes("Sesja wygasła")
+      ? "Sesja wygasła — Telegram /commander lub wklej token (Sesja)."
+      : "Nie udało się pobrać draftu.";
     throw e;
   }
   const k = draft.kpis || {};
