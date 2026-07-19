@@ -12,7 +12,7 @@ updated: "2026-07-19 (eval v2 LIVE bec2b90)"
 
 | MB | Status |
 |----|--------|
-| F0–F3 + F2b + eval v2 | **LIVE** tip `bec2b90` · `MB_MODE=shadow` |
+| F0–F3 + F2b + eval v2 | **LIVE** tip `7b36be3` · `MB_MODE=shadow` |
 | Eval pack | Telegram `/mb_eval` · gate ≥70% + n≥20 / 14d |
 | L0 InitiateCheckout | **PASS** |
 | L0 Purchase | PARK |
