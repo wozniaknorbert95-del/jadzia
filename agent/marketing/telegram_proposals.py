@@ -72,8 +72,16 @@ def send_mb_proposal_telegram(
     """Send proposal with inline buttons to TELEGRAM_ADMIN_CHAT_ID."""
     bot_token = os.getenv("TELEGRAM_BOT_TOKEN", "").strip()
     admin_id = os.getenv("TELEGRAM_ADMIN_CHAT_ID", "").strip()
+    if not admin_id:
+        # Fallback: first allowlisted Dowódca user_id (same chat for private bots)
+        allowed = os.getenv("ALLOWED_TELEGRAM_USERS", "").strip()
+        if allowed:
+            admin_id = allowed.split(",")[0].strip()
     if not bot_token or not admin_id:
-        logger.warning("[mb.telegram] skipped — missing TELEGRAM_BOT_TOKEN or TELEGRAM_ADMIN_CHAT_ID")
+        logger.warning(
+            "[mb.telegram] skipped — missing TELEGRAM_BOT_TOKEN or admin chat "
+            "(TELEGRAM_ADMIN_CHAT_ID / ALLOWED_TELEGRAM_USERS)"
+        )
         return False
     text = format_proposal_text(action_id, decision, mb_mode)
     url = f"https://api.telegram.org/bot{bot_token}/sendMessage"
