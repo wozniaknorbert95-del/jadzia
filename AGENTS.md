@@ -1,25 +1,26 @@
 # Agent rules — Jadzia Core / FlexGrafik
 
-## Canonical knowledge
+## Ops (LIVE)
 
-- **Canonical brain**: `brain.md` (this repo)
-- **Canonical backlog**: `todo.json` (this repo)
-- **Active program**: FlexGrafik AI OS LIVE; **MBA Agent YEAR 100%** (W00–W52)
-- **Active plan / gate**: none — COI-KNOW-02 DONE; VCMS-VIDEO **not** default next (stale)
-- **Latest handoff**: `Flex-vcms/.../docs/handoffs/2026-07-18-coi-know-02-PROOF-FINAL.md` · KNOW index LIVE
+- **Operator playbook**: `docs/ops/JADZIA-OPERATOR-PLAYBOOK.md`
+- **Knowledge SoT**: `docs/ops/KNOWLEDGE-SYSTEM-INDEX.md` (COI-KNOW-02 DONE)
+- **Process catalog**: `docs/ops/PROCESS-CATALOG.md`
 - **Scorecard**: `docs/ops/SCORECARD-AI-OS-ZALICZENIE.md` — **#1–9 LIVE**
-- **MBA spine**: `docs/learning/AI-MBA-FLEXGRAFIK-SPINE.md` + `docs/learning/weeks/INDEX.md`
-- **Post-coding**: `.agents/workflows/post-coding.md` (fresh GO for VPS)
-- **Knowledge / processes**: `docs/ops/KNOWLEDGE-SYSTEM-INDEX.md`, `PROCESS-CATALOG.md`
+- **Canonical brain**: `brain.md` · **backlog**: `todo.json`
 - **Prod tip SoT:** VPS `/opt/jadzia` `git rev-parse --short HEAD`
 - **Deploy**: `.agents/workflows/jadzia-deploy.md`
+- **Post-coding**: `.agents/workflows/post-coding.md` (fresh GO for VPS)
+- **Latest handoffs**: `docs/handoffs/` (≤15 rolling; MBA archived)
+
+## MBA
+
+**COMPLETE** (W00–W52) — nie regeneruj tygodni; nie zaznaczaj kolumny Dowódca.
 
 ## Guardrails
 
 - **No-ask:** one path, execute; park human-only as `ready_for_human`.
 - **Zasada 11:** VPS only with GO (`standing_go_closeout` **false**).
 - **Hard STOP:** Gate D, Mollie LIVE, secrets, merge OS↔jadzia, fake PASS.
-- **MBA:** COMPLETE — nie regeneruj W00–W52; nie zaznaczaj kolumny Dowódca.
 - **Least privilege:** no `_mint_*` / `_recover_*` in commits (gitignored).
 
 ## Copy & languages
