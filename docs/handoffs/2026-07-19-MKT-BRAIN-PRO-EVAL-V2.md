@@ -1,40 +1,24 @@
-# Handoff — MB shadow eval-pack v2 (Telegram-first)
+# Handoff — MB eval-pack v2 LIVE + weekly nudge
 
 **Date:** 2026-07-19  
 **Gate:** MKT-BRAIN-PRO  
-**Status:** CODE READY — deploy needs Dowódca GO (Zasada 11)
+**Status:** EVAL V2 LIVE tip `bec2b90`; weekly nudge shipping in follow-up tip
 
-## Co to jest eval-pack
+## Deploy evidence (bec2b90)
 
-Tygodniowy test zaufania: Dowódca ocenia decyzje shadow MB (agree/partial/disagree).  
-Gate przed `MB_MODE=propose`: accuracy ≥70% **oraz** ≥20 scored na 14d (preferuj 2 tygodnie z rzędu).
+```
+tip=bec2b90
+health OK
+accuracy None n 0 gate False no_scores   # expected until Dowódca scores
+pack v2_stratified n 3
+marketing_shadow_eval present
+=== EVAL_V2_DEPLOY_OK ===
+```
 
-## Werdykt (pro) — wdrożone w kodzie
+## Human next
 
-| Element | v1 (stare) | v2 (teraz) |
-|---------|------------|------------|
-| Sample | dump last N | stratified ~10–12/tydz, cap/rule, skip HEU_NO_SIGNAL spam |
-| Scoring | CSV blank | Telegram buttons + API |
-| Persist | brak | `marketing_shadow_eval` |
-| Gate | tylko doc | `compute_accuracy` + `GET …/shadow/accuracy` |
+Telegram: `/mb_eval` → score agree/partial/disagree until n≥20 and accuracy≥70% / 14d.
 
-## Jak używać (po deploy)
+## Agent follow-up
 
-1. Telegram: `/mb_eval` → karty ze score  
-2. Lub `POST …/commander/marketing/shadow/eval-push`  
-3. Progress: `GET …/shadow/accuracy`  
-4. Backup CSV: `python scripts/mb_shadow_eval_export.py --format csv -o eval.csv`
-
-## Pliki
-
-- `agent/marketing/shadow_eval.py`
-- `agent/marketing/telegram_proposals.py` (`mb_score_*`, `send_eval_pack_telegram`)
-- `agent/db.py` (`marketing_shadow_eval`)
-- `api/telegram.py` (`/mb_eval`)
-- `api/routes/commander.py` (accuracy / eval-score / eval-push)
-- `tests/unit/test_mb_shadow_eval.py` — 4 passed
-
-## NIE zrobione
-
-- Deploy VPS (czekaj GO)
-- Flip `MB_MODE=propose`
+Weekly durable nudge: `run_eval_nudge_if_due` + `MARKETING_EVAL_PUSH_INTERVAL_SECONDS=604800`.

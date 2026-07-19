@@ -289,3 +289,62 @@ def format_eval_card(decision: Dict[str, Any], idx: int, total: int) -> str:
         f"action_id={decision.get('action_id')}\n"
         f"Oceń: zgadzam się / częściowo / nie"
     )
+
+
+def run_eval_nudge_if_due(*, interval_seconds: int, limit: int = 10) -> Dict[str, Any]:
+    """
+    Durable weekly (or custom) Telegram eval push.
+    Uses commander agent_state mb_eval_nudge.last_run_at — survives restarts.
+    """
+    import os
+    from datetime import datetime, timezone, timedelta
+
+    from agent.db import db_commander_get_agent_state, db_commander_upsert_agent_state
+    from agent.marketing.telegram_proposals import send_eval_pack_telegram
+
+    if interval_seconds <= 0:
+        return {"ok": True, "skipped": True, "reason": "disabled"}
+
+    now = datetime.now(timezone.utc).replace(microsecond=0)
+    state = db_commander_get_agent_state("mb_eval_nudge") or {}
+    last_raw = state.get("last_run_at")
+    if last_raw:
+        try:
+            last = datetime.fromisoformat(str(last_raw).replace("Z", "+00:00"))
+            if last.tzinfo is None:
+                last = last.replace(tzinfo=timezone.utc)
+            if now - last < timedelta(seconds=interval_seconds):
+                return {
+                    "ok": True,
+                    "skipped": True,
+                    "reason": "not_due",
+                    "last_run_at": last_raw,
+                    "interval_seconds": interval_seconds,
+                }
+        except Exception:
+            pass
+
+    push = send_eval_pack_telegram(limit=limit, window_days=7)
+    now_iso = now.isoformat()
+    db_commander_upsert_agent_state(
+        "mb_eval_nudge",
+        {
+            "status": "LIVE" if push.get("ok") else "DEGRADED",
+            "last_run_at": now_iso,
+            "last_error": None if push.get("ok") else (push.get("error") or "push_failed"),
+            "expected_interval_seconds": interval_seconds,
+        },
+    )
+    logger.info(
+        "[mb.eval] nudge sent=%s skipped_pack=%s",
+        push.get("sent"),
+        push.get("n_pack"),
+    )
+    return {
+        "ok": bool(push.get("ok")),
+        "skipped": False,
+        "push": push,
+        "last_run_at": now_iso,
+        "interval_seconds": interval_seconds,
+        "env_hint": os.getenv("MARKETING_EVAL_PUSH_INTERVAL_SECONDS"),
+    }

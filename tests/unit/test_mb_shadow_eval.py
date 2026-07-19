@@ -85,3 +85,64 @@ def test_build_eval_pack_v2_shape():
     assert "accuracy_snapshot" in pack
     assert "scoring" in pack
     assert isinstance(pack["decisions"], list)
+
+
+def test_eval_nudge_skips_when_recent(monkeypatch):
+    from agent.db import db_commander_upsert_agent_state
+    from agent.marketing import shadow_eval as se
+    from datetime import datetime, timezone
+
+    now = datetime.now(timezone.utc).replace(microsecond=0).isoformat()
+    db_commander_upsert_agent_state(
+        "mb_eval_nudge",
+        {"status": "LIVE", "last_run_at": now, "expected_interval_seconds": 604800},
+    )
+    called = {"n": 0}
+
+    def _fake(**kwargs):
+        called["n"] += 1
+        return {"ok": True, "sent": 0}
+
+    monkeypatch.setattr(
+        "agent.marketing.telegram_proposals.send_eval_pack_telegram",
+        _fake,
+    )
+    out = se.run_eval_nudge_if_due(interval_seconds=604800)
+    assert out.get("skipped") is True
+    assert called["n"] == 0
+
+
+def test_eval_nudge_fires_when_stale(monkeypatch):
+    from agent.db import db_commander_upsert_agent_state
+    from agent.marketing import shadow_eval as se
+
+    db_commander_upsert_agent_state(
+        "mb_eval_nudge",
+        {
+            "status": "LIVE",
+            "last_run_at": "2020-01-01T00:00:00+00:00",
+            "expected_interval_seconds": 604800,
+        },
+    )
+    called = {"n": 0}
+
+    def _fake(**kwargs):
+        called["n"] += 1
+        return {"ok": True, "sent": 2, "n_pack": 2}
+
+    monkeypatch.setattr(
+        "agent.marketing.telegram_proposals.send_eval_pack_telegram",
+        _fake,
+    )
+    out = se.run_eval_nudge_if_due(interval_seconds=604800)
+    assert out.get("skipped") is False
+    assert out.get("ok") is True
+    assert called["n"] == 1
+
+
+def test_eval_nudge_disabled():
+    from agent.marketing.shadow_eval import run_eval_nudge_if_due
+
+    out = run_eval_nudge_if_due(interval_seconds=0)
+    assert out.get("skipped") is True
+    assert out.get("reason") == "disabled"

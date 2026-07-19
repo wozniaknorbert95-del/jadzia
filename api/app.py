@@ -191,6 +191,7 @@ _last_fb_publish_check: float = 0.0
 _last_weekly_brief_check: float = 0.0
 _last_dtl_ingest_check: float = 0.0
 _last_mb_cycle_check: float = 0.0
+_last_mb_eval_nudge_check: float = 0.0
 
 
 async def _maybe_run_scheduled_fb_publish() -> None:
@@ -317,6 +318,38 @@ async def _maybe_run_marketing_brain() -> None:
         await asyncio.to_thread(_run)
     except Exception as e:
         _log.error("[worker_loop] marketing brain cycle failed: %s", e)
+
+
+async def _maybe_run_marketing_eval_nudge() -> None:
+    """MKT eval-pack v2 — weekly Telegram score cards (durable last_run_at)."""
+    global _last_mb_eval_nudge_check
+
+    interval = int(os.getenv("MARKETING_EVAL_PUSH_INTERVAL_SECONDS", "604800") or "0")
+    if interval <= 0:
+        return
+
+    # Cheap poll every hour; durable gate lives in run_eval_nudge_if_due
+    poll = min(3600, max(60, interval // 24))
+    now = time.monotonic()
+    if now - _last_mb_eval_nudge_check < poll:
+        return
+    _last_mb_eval_nudge_check = now
+
+    def _run() -> None:
+        from agent.marketing.shadow_eval import run_eval_nudge_if_due
+
+        summary = run_eval_nudge_if_due(interval_seconds=interval, limit=10)
+        if not summary.get("skipped"):
+            _log.info(
+                "[worker_loop] mb eval nudge ok=%s sent=%s",
+                summary.get("ok"),
+                (summary.get("push") or {}).get("sent"),
+            )
+
+    try:
+        await asyncio.to_thread(_run)
+    except Exception as e:
+        _log.error("[worker_loop] marketing eval nudge failed: %s", e)
 
 
 async def _worker_loop():
@@ -535,6 +568,7 @@ async def _worker_loop():
             await _maybe_run_weekly_brief()
             await _maybe_run_marketing_dtl_ingest()
             await _maybe_run_marketing_brain()
+            await _maybe_run_marketing_eval_nudge()
             await asyncio.sleep(busy_sleep if had_work else idle_backoff_sec)
         except asyncio.CancelledError:
             _log.info("[worker_loop] cancelled")

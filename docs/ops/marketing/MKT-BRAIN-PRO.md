@@ -2,10 +2,10 @@
 status: "[ACTIVE]"
 title: "MKT-BRAIN-PRO — World-Class Marketing Ops Architecture"
 gate: "MKT-BRAIN-PRO"
-updated: "2026-07-19 (eval-pack v2 Telegram-first)"
+updated: "2026-07-19 (eval-pack v2 LIVE bec2b90)"
 supersedes: "MKT-BRAIN-01 (sandbox-first draft — withdrawn)"
 owner: "Norbert Wozniak (Dowódca)"
-runtime_tip: "(eval v2 pending tip-sync)"
+runtime_tip: "bec2b90 (eval-pack v2)"
 mb_mode: "shadow"
 ---
 
@@ -21,16 +21,17 @@ mb_mode: "shadow"
 
 ## STATUS BOARD — 2026-07-19 (SoT)
 
-**Runtime tip:** **`3c4af26`** (F0–F3 + F2b) · **MB_MODE:** `shadow` · VCMS Brain Bus: **LIVE**
+**Runtime tip:** **`bec2b90`** (F0–F3 + F2b + organic/CEO + **eval v2**) · **MB_MODE:** `shadow` · VCMS Brain Bus: **LIVE**
 
 ### DONE (LIVE / PASS)
 
 | ID | Co | Dowód |
-|----|-----|--------|
+|----|-----|-------|
 | **F0** | Data Truth Layer (schema, ingest, margin facts, Data Health) | tip `f28a938`+; DTL interval 3600s |
 | **F1** | Decision engine + shadow log + Telegram HITL (no side-effects) + Organic-to-Paid + Profit Watchdog + hypotheses | tip `9314ddc`; shadow LIVE |
 | **F2** | Governance execute API + circuit breakers (`CB_SHADOW`, margin, pixel, stale…) | tip `269248b`; Act zablokowany w shadow |
 | **F2b** | Campaign Vector Memory (Chroma + SQL degrade) + shadow eval-pack | tip `3c4af26`; chroma LIVE |
+| **Eval v2** | Stratified pack + `marketing_shadow_eval` + `/mb_eval` + accuracy API | tip **`bec2b90`**; gate n≥20 + ≥70%/14d |
 | **F3** | Brain Bus webhook + `CB_ECOSYSTEM` + CEO stub + VCMS→jadzia notify | tip **`723a702`**; smoke degraded→recover; scan→HTTP 200 |
 | **Organic DTL** | FB post organic metrics → `organic_er_lift_pct` (+ link clicks lift) | `dtl/facebook_organic.py` in pipeline |
 | **CEO↔brief** | Weekly brief → `ceo.priority` Brain Bus (`BRIEF_CEO_PRIORITY_ENABLED`) | `brief_node._maybe_publish_ceo_priority` |
@@ -40,7 +41,7 @@ mb_mode: "shadow"
 
 | Priorytet | Co | Owner | Blokada |
 |-----------|-----|-------|---------|
-| **1** | **14d shadow review** accuracy ≥70% → GO `MB_MODE=propose` | Dowódca | eval-pack |
+| **1** | **14d shadow review** — Telegram `/mb_eval` → GO `propose` | Dowódca | accuracy gate |
 | **2** | L0 **Purchase** w Test Events | Dowódca | Mollie GO |
 | **3** | META-PACK lean: Audience + Reel + Instant Form €10 | Dowódca | Ads Manager HITL |
 | **4** | **F4 Act** | Agent | po #1 GO |
@@ -56,7 +57,7 @@ mb_mode: "shadow"
 
 **Formula:** `accuracy = avg(agree=1, partial=0.5, disagree=0)` · **gate:** ≥70% **oraz** `n_scored ≥ 20` na 14d · preferuj **2 tygodnie z rzędu** zielone przed GO propose.
 
-**Kanał (v2, kanoniczny):** Telegram `/mb_eval` → karty ze score buttons · API `GET …/shadow/accuracy` · `POST …/shadow/eval-push`.
+**Kanał (v2, kanoniczny):** Telegram `/mb_eval` → karty ze score buttons · auto-nudge co 7d (`MARKETING_EVAL_PUSH_INTERVAL_SECONDS`) · API `GET …/shadow/accuracy` · `POST …/shadow/eval-push`.
 
 **Backup CSV/JSON:** `GET …/shadow/eval-pack?limit=12` · CLI `python scripts/mb_shadow_eval_export.py --format csv -o eval.csv`
 
