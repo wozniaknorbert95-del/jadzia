@@ -5,7 +5,7 @@ gate: "MKT-BRAIN-PRO"
 updated: "2026-07-19 (DH-AMBER + progress % )"
 supersedes: "MKT-BRAIN-01 (sandbox-first draft — withdrawn)"
 owner: "Norbert Wozniak (Dowódca)"
-runtime_tip: "DH-AMBER tip (see STATUS)"
+runtime_tip: "5299b22 (DH-AMBER + progress ~82%)"
 mb_mode: "propose"
 ---
 
@@ -21,7 +21,7 @@ mb_mode: "propose"
 
 ## STATUS BOARD — 2026-07-19 (SoT)
 
-**Runtime tip:** LIVE `propose` + F4b · Data Health drivers · VCMS Brain Bus: **LIVE**
+**Runtime tip:** **`5299b22`** · **MB_MODE:** `propose` · Data Health **ok** · F4b LIVE · VCMS Brain Bus: **LIVE**
 
 ### Progress (SoT %)
 

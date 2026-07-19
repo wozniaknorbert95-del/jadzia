@@ -1,9 +1,9 @@
 {
   "project": "Jadzia-Core",
-  "last_updated": "2026-07-19 (DH-AMBER + progress ~82%)",
+  "last_updated": "2026-07-19 (DH-AMBER LIVE tip 5299b22 ~82%)",
   "status": "active",
   "plan": "docs/ops/marketing/MKT-BRAIN-PRO.md",
-  "active_gate": "MKT-BRAIN-PRO ~82% overall; runtime F0-F4b 100%; MB_MODE=propose; DH drivers; #1 Meta HOLD 70%; L0 IC PASS / Purchase PARK; Ads create PARK",
+  "active_gate": "MKT-BRAIN-PRO ~82% tip 5299b22; runtime 100%; DH overall=ok; MB_MODE=propose; Meta HOLD 70%; Purchase PARK; Ads create PARK",
   "active_plan": "docs/ops/marketing/PLAN-14D.md — propose+F4b+DH LIVE; Meta #1 HOLD",
   "standing_go_closeout": false,
   "closeout_queue": [],
