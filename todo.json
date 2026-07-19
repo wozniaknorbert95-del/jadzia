@@ -3,7 +3,7 @@
   "last_updated": "2026-07-19 (organic DTL + CEO brief bus)",
   "status": "active",
   "plan": "docs/ops/marketing/MKT-BRAIN-PRO.md",
-  "active_gate": "MKT-BRAIN-PRO F0–F3+F2b+organic+CEO LIVE; human: 14d shadow≥70%, Meta pack, Purchase PARK; F4 BLOCKED",
+  "active_gate": "MKT-BRAIN-PRO LIVE @ b9060ba (F0–F3+F2b+organic+CEO); human: 14d shadow≥70%, Meta pack, Purchase PARK; F4 BLOCKED",
   "active_plan": "Organic FB DTL + brief→CEO Brain Bus shipped. Shadow eval-pack ready. Propose blocked until Dowódca GO.",
   "standing_go_closeout": false,
   "closeout_queue": [],
@@ -1284,7 +1284,7 @@
       "priority": "high",
       "owner": "agent",
       "checklist": "docs/handoffs/2026-07-19-MKT-BRAIN-PRO-ORG-CEO-CLOSE.md",
-      "note": "PASS 2026-07-19 pytest organic+CEO; deploy tip pending."
+      "note": "PASS LIVE 2026-07-19 tip b9060ba; dtl facebook_organic degraded OK; CEO brief bus on; F4 blocked."
     }
   ]
 }

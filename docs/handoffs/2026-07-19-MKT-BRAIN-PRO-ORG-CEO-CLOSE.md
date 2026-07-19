@@ -3,10 +3,20 @@ status: "[ACTIVE]"
 title: "MKT-BRAIN-PRO — Organic DTL + CEO brief bridge CLOSE"
 gate: "MKT-BRAIN-PRO-ORG-CEO"
 updated: "2026-07-19"
-result: "PASS local pytest — deploy pending tip"
+result: "PASS LIVE tip b9060ba — dtl facebook_organic degraded (no/low posts) OK; cycle chroma"
 ---
 
 # Organic FB DTL + CEO↔brief — CLOSE
+
+## VPS evidence
+
+| Check | Result |
+|-------|--------|
+| tip | **`b9060ba`** |
+| health | OK |
+| DTL | steps_ok=7 err=0 · `facebook_organic:degraded` (brak/mało published posts z insights — expected) |
+| MB cycle | ok · memory chroma |
+| MB_MODE | shadow |
 
 ## Done
 
