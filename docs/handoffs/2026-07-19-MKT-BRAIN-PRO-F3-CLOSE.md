@@ -3,7 +3,7 @@ status: "[ACTIVE]"
 title: "MKT-BRAIN-PRO F3 — Brain Bus CLOSE"
 gate: "MKT-BRAIN-PRO-F3"
 updated: "2026-07-19"
-result: "PASS (local pytest 4/4) — VPS deploy pending commit+GO tip"
+result: "PASS LIVE tip 723a702 — VCMS wire HTTP 200"
 ---
 
 # MKT-BRAIN-PRO F3 — CLOSE
@@ -27,6 +27,9 @@ result: "PASS (local pytest 4/4) — VPS deploy pending commit+GO tip"
 | CEO stub `POST …/brain-bus/ceo-priority` | DONE |
 | Commander `GET …/brain-bus` analytics | DONE |
 | pytest `tests/unit/test_mb_f3_brain_bus.py` | **4/4** |
+| VPS tip | **`723a702`** health OK; smoke degraded→recover |
+| `BRAIN_BUS_SECRET` | generated on VPS `.env` |
+| VCMS `vcms-scan` → Brain Bus | **LIVE** conflicts=0 → `system.health.recovered` HTTP 200 |
 
 ## VCMS → jadzia (ops)
 

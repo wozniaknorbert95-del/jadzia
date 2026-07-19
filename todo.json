@@ -1,15 +1,15 @@
 {
   "project": "Jadzia-Core",
-  "last_updated": "2026-07-19 (MKT-BRAIN-PRO F3 Brain Bus + L0 IC PASS)",
+  "last_updated": "2026-07-19 (MKT-BRAIN-PRO F3 LIVE @ 723a702 + VCMS wire)",
   "status": "active",
   "plan": "docs/ops/marketing/MKT-BRAIN-PRO.md",
-  "active_gate": "MKT-BRAIN-PRO F0–F3 code PASS; L0 IC PASS; VPS F3 pending tip; human: 14d shadow + Purchase PARK + VCMS webhook wire",
-  "active_plan": "MKT-BRAIN-PRO: F0–F3 done locally. Shadow LIVE. Act/propose blocked until 14d review. Chroma F2b optional.",
+  "active_gate": "MKT-BRAIN-PRO F0–F3 LIVE @ 723a702; L0 IC PASS; VCMS→Brain Bus wired; human: 14d shadow ≥70%; Purchase PARK",
+  "active_plan": "MKT-BRAIN-PRO: F0–F3 LIVE shadow. VCMS scan notifies Brain Bus. Act/propose blocked until 14d review. Chroma F2b optional.",
   "standing_go_closeout": false,
   "closeout_queue": [],
   "closeout_expires": "2026-07-25",
-  "next_human": "Commit+deploy F3 tip + BRAIN_BUS_SECRET on VPS. Wire VCMS scan→webhook. 14d shadow ≥70%. Purchase only with Mollie GO.",
-  "next_agent": "After tip LIVE: smoke POST brain-bus degraded→ticket+CB_ECOSYSTEM. Optional F2b Chroma. No MB_MODE=propose without human GO.",
+  "next_human": "14d shadow accuracy ≥70% then GO propose. Purchase only with Mollie GO. Optional Meta Leads €10.",
+  "next_agent": "Optional F2b Chroma. No MB_MODE=propose without human GO. Observe Brain Bus + shadow cycles.",
   "agent_rule": "Nie pytaj A/B. Deploy tylko ze zgodą (standing_go_closeout off). Nie sekrety. Nie kasuj parków. Hard STOP: Gate D/Mollie/fake PASS.",
   "sprints": {
     "remediation": "completed",
@@ -1264,7 +1264,7 @@
       "priority": "medium",
       "owner": "agent",
       "checklist": "docs/handoffs/2026-07-19-MKT-BRAIN-PRO-F3-CLOSE.md",
-      "note": "PASS 2026-07-19 local pytest 4/4; CB_ECOSYSTEM + webhook + CEO stub. VPS tip pending commit/deploy."
+      "note": "PASS LIVE 2026-07-19 tip 723a702; smoke degraded+recover; VCMS scan→Brain Bus HTTP 200; BRAIN_BUS_SECRET on VPS."
     }
   ]
 }
