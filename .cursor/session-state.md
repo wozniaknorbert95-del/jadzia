@@ -1,6 +1,7 @@
-# ECO-POLISH-01 — CLOSE (in progress → DONE after merge+deploy)
+# ECO-POLISH-01 DONE (2026-07-19)
 
-- KNOW IA policy in `docs/ops/KNOWLEDGE-SYSTEM-INDEX.md`
-- VCMS meta.next = IDLE-POST-POLISH
-- Next after PASS: Dowódca picks feature (not VIDEO)
+- PROOF: Flex-vcms `docs/handoffs/2026-07-19-eco-polish-01-PROOF-FINAL.md`
+- VCMS LIVE tip `adf6141`; jadzia `363142d`; Conflicts 0; handbook+surfaces 200
+- meta.next = IDLE-POST-POLISH (not VIDEO)
+- Next: wybór Dowódcy / MBA PASS
 - PARK: Gate D, Mollie, mint/recover, OS merge
