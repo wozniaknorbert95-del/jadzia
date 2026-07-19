@@ -131,18 +131,54 @@ def ingest_l0_pixel_probe(url: Optional[str] = None) -> Dict[str, Any]:
     else:
         db_deactivate_quality_flags(source, "api_error")
         db_deactivate_quality_flags(source, "missing")
-        # Soft note: event fire still human-verified
+        # Split IC vs Purchase — do not keep a single amber that blocks overall
+        # after InitiateCheckout PASS + Purchase conscious PARK.
+        db_deactivate_quality_flags(f"{source}_events", "missing")
+        ic_verified = (os.getenv("L0_IC_VERIFIED") or "").strip().lower() in (
+            "1",
+            "true",
+            "yes",
+        )
+        if ic_verified:
+            db_insert_quality_flag(
+                {
+                    "flag_type": "ack",
+                    "source": f"{source}_events_ic",
+                    "severity": "info",
+                    "message": (
+                        "L0 InitiateCheckout VERIFIED (L0_IC_VERIFIED=1) — "
+                        "HTML pixel OK"
+                    ),
+                    "as_of": as_of,
+                    "details": {"url": target, "event": "InitiateCheckout"},
+                }
+            )
+        else:
+            db_insert_quality_flag(
+                {
+                    "flag_type": "missing",
+                    "source": f"{source}_events_ic",
+                    "severity": "amber",
+                    "message": (
+                        "HTML pixel OK — InitiateCheckout still needs Events "
+                        "Manager verification (set L0_IC_VERIFIED=1 after PASS)"
+                    ),
+                    "as_of": as_of,
+                    "details": {"url": target, "event": "InitiateCheckout"},
+                }
+            )
+        # Purchase = conscious PARK (Mollie) — info only, never drives overall amber
+        db_deactivate_quality_flags(f"{source}_events_purchase", "park")
         db_insert_quality_flag(
             {
-                "flag_type": "missing",
-                "source": f"{source}_events",
-                "severity": "amber",
+                "flag_type": "park",
+                "source": f"{source}_events_purchase",
+                "severity": "info",
                 "message": (
-                    "HTML pixel OK — InitiateCheckout/Purchase still require "
-                    "Events Manager verification (human)"
+                    "L0 Purchase PARK (Mollie GO) — conscious; not a health failure"
                 ),
                 "as_of": as_of,
-                "details": {"url": target},
+                "details": {"url": target, "event": "Purchase", "park": True},
             }
         )
 

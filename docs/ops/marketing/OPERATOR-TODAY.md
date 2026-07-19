@@ -6,7 +6,7 @@ updated: "2026-07-19 (propose LIVE 4ad1e99)"
 
 # START TUTAJ — jedna ścieżka (ADHD)
 
-**Roadmapa:** [MKT-BRAIN-PRO.md](./MKT-BRAIN-PRO.md) — tip **`0ae8244`** · **MB_MODE=propose** · F4b paste_ready LIVE  
+**Roadmapa:** [MKT-BRAIN-PRO.md](./MKT-BRAIN-PRO.md) — **~82%** overall · runtime **100%** · **MB_MODE=propose**  
 **Plan 14 dni:** [PLAN-14D.md](./PLAN-14D.md)  
 **Meta:** [META-CLICK-PATH.md](./META-CLICK-PATH.md) · [META-PACK-LEAN.md](./META-PACK-LEAN.md)  
 **Propose:** [PROPOSE-CUTOVER.md](./PROPOSE-CUTOVER.md)

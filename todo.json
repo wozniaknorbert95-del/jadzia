@@ -1,15 +1,15 @@
 {
   "project": "Jadzia-Core",
-  "last_updated": "2026-07-19 (F4b paste_ready LIVE tip a761a0f)",
+  "last_updated": "2026-07-19 (DH-AMBER + progress ~82%)",
   "status": "active",
   "plan": "docs/ops/marketing/MKT-BRAIN-PRO.md",
-  "active_gate": "MKT-BRAIN-PRO tip a761a0f (runtime F4b 0ae8244) MB_MODE=propose; paste_ready v1 LIVE; #1 Meta HOLD; Ads create PARK",
-  "active_plan": "docs/ops/marketing/PLAN-14D.md — propose+F4b LIVE; Meta #1 HOLD",
+  "active_gate": "MKT-BRAIN-PRO ~82% overall; runtime F0-F4b 100%; MB_MODE=propose; DH drivers; #1 Meta HOLD 70%; L0 IC PASS / Purchase PARK; Ads create PARK",
+  "active_plan": "docs/ops/marketing/PLAN-14D.md — propose+F4b+DH LIVE; Meta #1 HOLD",
   "standing_go_closeout": false,
   "closeout_queue": [],
   "closeout_expires": "2026-07-25",
-  "next_human": "Telegram APPROVE → paste w TG; WA <15min na lead; Meta hold 7d",
-  "next_agent": "Observe propose cycles; Data Health amber later; no Ads create; Purchase PARK",
+  "next_human": "Meta hold 7d; WA <15min; Telegram APPROVE opcjonalnie; Purchase tylko z Mollie GO",
+  "next_agent": "Observe propose cycles; no Ads create; FB read_insights when scope; F4 extras PARK",
   "agent_rule": "Nie pytaj A/B. Deploy tylko ze zgodą (standing_go_closeout off). Nie sekrety. Nie kasuj parków. Hard STOP: Gate D/Mollie/fake PASS.",
   "sprints": {
     "remediation": "completed",
@@ -1325,6 +1325,16 @@
       "owner": "agent",
       "checklist": "docs/handoffs/2026-07-19-MKT-BRAIN-PRO-F4b-CLOSE.md",
       "note": "PASS LIVE 2026-07-19 tip 0ae8244; pytest 14; VPS smoke paste v1 commander#15 cached; Ads create PARK; #1 Meta HOLD."
+    },
+    {
+      "id": "MKT-BRAIN-PRO-DH-AMBER",
+      "sprint": "MKT-BRAIN-PRO",
+      "task": "Data Health drivers + L0 IC verified ack / Purchase park-info (info != amber)",
+      "status": "completed",
+      "priority": "high",
+      "owner": "agent",
+      "checklist": "docs/handoffs/2026-07-19-MKT-BRAIN-PRO-DH-AMBER-CLOSE.md",
+      "note": "Root cause was legacy l0_pixel_events amber lumping IC+Purchase. Split flags; L0_IC_VERIFIED=1; report.drivers + conscious_parks. Progress SoT ~82% overall."
     }
   ]
 }

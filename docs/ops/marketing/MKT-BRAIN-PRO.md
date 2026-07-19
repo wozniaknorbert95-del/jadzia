@@ -2,10 +2,10 @@
 status: "[ACTIVE]"
 title: "MKT-BRAIN-PRO — World-Class Marketing Ops Architecture"
 gate: "MKT-BRAIN-PRO"
-updated: "2026-07-19 (F4b paste_ready v1 LIVE 0ae8244)"
+updated: "2026-07-19 (DH-AMBER + progress % )"
 supersedes: "MKT-BRAIN-01 (sandbox-first draft — withdrawn)"
 owner: "Norbert Wozniak (Dowódca)"
-runtime_tip: "0ae8244 (propose + F4b paste_ready)"
+runtime_tip: "DH-AMBER tip (see STATUS)"
 mb_mode: "propose"
 ---
 
@@ -21,7 +21,20 @@ mb_mode: "propose"
 
 ## STATUS BOARD — 2026-07-19 (SoT)
 
-**Runtime tip:** **`0ae8244`** · **MB_MODE:** `propose` · F4b paste_ready **v1 LIVE** · VCMS Brain Bus: **LIVE**
+**Runtime tip:** LIVE `propose` + F4b · Data Health drivers · VCMS Brain Bus: **LIVE**
+
+### Progress (SoT %)
+
+| Warstwa | Done | Left | % |
+|---------|------|------|---|
+| **Runtime MB (F0→F4b + Eval + Preflight + Organic + CEO)** | 13/13 deliverables | — | **100%** |
+| **Data Health honesty** | drivers + IC ack + Purchase park-info | observe 7d | **95%** |
+| **Paid Meta ops (#1 lean)** | published €5 HOLD | optimize later / pack €10 parity | **70%** |
+| **L0 pixel events** | IC PASS | Purchase PARK (Mollie) | **50%** |
+| **Faza 4 extras** (distribution / blog / lead webhook) | — | PARK / later | **0%** |
+| **Program overall** (runtime + ops + parks) | — | Meta hold · Purchase · insights · F4 extras | **~82%** |
+
+**Szacunek overall ~82%** = runtime zamknięty; reszta to świadome PARK/HITL (nie dług techniczny F0–F4b).
 
 ### DONE (LIVE / PASS)
 
@@ -36,6 +49,7 @@ mb_mode: "propose"
 | **F3** | Brain Bus webhook + `CB_ECOSYSTEM` + CEO stub + VCMS→jadzia notify | tip **`723a702`**; smoke degraded→recover; scan→HTTP 200 |
 | **F4** | Propose mode + HITL execute → **ticket_only** (Ads API create PARK) | tip **`4ad1e99`**; smoke mint+execute ticket_only |
 | **F4b** | paste_ready v1 templates + persist + idempotent Commander + TG no-token | tip **`0ae8244`**; smoke commander#15 cached |
+| **DH-AMBER** | Data Health drivers + L0 IC ack / Purchase park-info (info ≠ amber) | `L0_IC_VERIFIED=1` |
 | **Organic DTL** | FB post organic metrics → `organic_er_lift_pct` (+ link clicks lift) | `dtl/facebook_organic.py` in pipeline |
 | **CEO↔brief** | Weekly brief → `ceo.priority` Brain Bus (`BRIEF_CEO_PRIORITY_ENABLED`) | `brief_node._maybe_publish_ceo_priority` |
 | **L0 IC** | Meta Test Events `InitiateCheckout` | pixel `1084197063740065` · PASS |
@@ -72,7 +86,7 @@ Runbook: [PROPOSE-CUTOVER.md](./PROPOSE-CUTOVER.md) · CLI `python scripts/mb_pr
 
 - [x] Shadow accuracy ≥70% (rubryka) — n=20/20 acc=100% @ `ab1ed04`
 - [x] Breakers: pre-GO tylko `CB_SHADOW`; po GO trips=`[]` allowed=true @ `4ad1e99`
-- [x] Data Health: bez critical RED (overall=amber OK)
+- [x] Data Health: bez critical RED; drivers + IC ack (`L0_IC_VERIFIED`); Purchase park=info
 - [x] L0 InitiateCheckout PASS (done); Purchase status jawny (PARK OK świadomie)
 - [x] Jawny GO Dowódcy: `MB_MODE=propose` na VPS tip `4ad1e99`
 - [x] Ticket + cutover: `CONFIRM=GO_PROPOSE` · cycle tg=1 · F4 ticket_only smoke PASS
@@ -442,14 +456,15 @@ Tabela `brain_events` + schemat:
 | CEO stub API | **DONE** |
 | VCMS scan notify | **DONE** (Flex-vcms #40) |
 
-### Faza 4 — Act (post-shadow GO) — **TODO / BLOCKED**
+### Faza 4 — Act (post-shadow GO) — **CORE LIVE** · extras PARK
 
 | Deliverable | Warunek |
 |-------------|---------|
 | `MB_MODE=propose` | **LIVE** tip `4ad1e99` (GO 2026-07-19) |
-| Distribution pack | 1 asset → FB + TT/blog tasks |
-| Blog seed orchestration | SSH HITL |
-| Meta Lead webhook | ≥20 leadów + MKT-STL-01 GO |
+| paste_ready v1 (F4b) | **LIVE** tip `0ae8244` |
+| Distribution pack | PARK later (1 asset → FB + TT/blog tasks) |
+| Blog seed orchestration | PARK (SSH HITL) |
+| Meta Lead webhook | PARK (≥20 leadów + MKT-STL-01 GO) |
 
 ### PARK (bez zmian)
 

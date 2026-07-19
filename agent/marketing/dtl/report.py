@@ -20,6 +20,49 @@ def _utc_now() -> str:
     return datetime.now(timezone.utc).replace(microsecond=0).isoformat()
 
 
+def _drivers(
+    *,
+    freshness: Dict[str, Any],
+    flags: List[Dict[str, Any]],
+    overall: str,
+) -> List[Dict[str, Any]]:
+    """Human-readable list of what drives overall_status (no secrets)."""
+    out: List[Dict[str, Any]] = []
+    for source, entry in freshness.items():
+        st = entry.get("status")
+        if st in ("red", "amber"):
+            out.append(
+                {
+                    "kind": "freshness",
+                    "source": source,
+                    "severity": st,
+                    "message": f"ingest freshness={st}",
+                }
+            )
+    for f in flags:
+        sev = (f.get("severity") or "").lower()
+        if sev in ("critical", "red", "amber"):
+            out.append(
+                {
+                    "kind": "quality_flag",
+                    "source": f.get("source"),
+                    "flag_type": f.get("flag_type"),
+                    "severity": sev,
+                    "message": f.get("message"),
+                }
+            )
+    if not out and overall == "ok":
+        out.append(
+            {
+                "kind": "ok",
+                "source": "all",
+                "severity": "ok",
+                "message": "No red/amber drivers (info/park acks ignored)",
+            }
+        )
+    return out
+
+
 def build_data_health_report() -> Dict[str, Any]:
     """Aggregate freshness, quality flags, margin coverage, recent facts."""
     freshness: Dict[str, Any] = {}
@@ -37,6 +80,7 @@ def build_data_health_report() -> Dict[str, Any]:
 
     critical = sum(1 for f in flags if f.get("severity") in ("critical", "red"))
     amber = sum(1 for f in flags if f.get("severity") == "amber")
+    info = sum(1 for f in flags if f.get("severity") == "info")
 
     if critical:
         overall = "red"
@@ -49,6 +93,8 @@ def build_data_health_report() -> Dict[str, Any]:
     else:
         overall = "ok"
 
+    drivers = _drivers(freshness=freshness, flags=flags, overall=overall)
+
     return {
         "generated_at": _utc_now(),
         "overall_status": overall,
@@ -58,9 +104,26 @@ def build_data_health_report() -> Dict[str, Any]:
             "active_total": len(flags),
             "critical_or_red": critical,
             "amber": amber,
+            "info": info,
         },
+        "drivers": drivers,
+        "conscious_parks": [
+            {
+                "id": "l0_purchase",
+                "status": "PARK",
+                "reason": "Mollie GO required — not a Data Health failure",
+            },
+            {
+                "id": "ads_api_create",
+                "status": "PARK",
+                "reason": "MB ticket_only / paste-ready only",
+            },
+        ],
         "margin_coverage": margin,
         "recent_facts": recent_facts,
         "panel": "data_health",
-        "note": "Analytics only — MB decisions / Telegram HITL are F1+",
+        "note": (
+            "Analytics only — info/park flags do not set overall amber/red. "
+            "Set L0_IC_VERIFIED=1 after Events Manager InitiateCheckout PASS."
+        ),
     }
