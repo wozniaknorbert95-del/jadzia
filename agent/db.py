@@ -419,6 +419,7 @@ def _init_schema(conn: sqlite3.Connection):
     _migrate_leads_disposition(conn)
     _migrate_widget_chat_created_at(conn)
     _init_marketing_dtl_schema(conn)
+    _init_marketing_f1_schema(conn)
 
     conn.commit()
 
@@ -513,6 +514,73 @@ def _init_marketing_dtl_schema(conn: sqlite3.Connection) -> None:
     conn.execute("""
         CREATE INDEX IF NOT EXISTS idx_order_margin_asof
         ON order_margin_facts(as_of DESC)
+    """)
+
+
+def _init_marketing_f1_schema(conn: sqlite3.Connection) -> None:
+    """MKT-BRAIN-PRO F1 — shadow log, hypotheses, brain_events (idempotent)."""
+    conn.execute("""
+        CREATE TABLE IF NOT EXISTS marketing_shadow_log (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            action_id TEXT NOT NULL UNIQUE,
+            observed_facts_ref TEXT,
+            proposed_action TEXT NOT NULL,
+            heuristic_rule_id TEXT NOT NULL,
+            llm_rationale_nl TEXT,
+            would_execute INTEGER NOT NULL DEFAULT 0,
+            governance_result TEXT NOT NULL DEFAULT 'review',
+            mb_mode TEXT NOT NULL DEFAULT 'shadow',
+            hitl_status TEXT NOT NULL DEFAULT 'pending',
+            payload_json TEXT NOT NULL DEFAULT '{}',
+            created_at TEXT NOT NULL,
+            updated_at TEXT NOT NULL
+        )
+    """)
+    conn.execute("""
+        CREATE INDEX IF NOT EXISTS idx_marketing_shadow_created
+        ON marketing_shadow_log(created_at DESC)
+    """)
+    conn.execute("""
+        CREATE INDEX IF NOT EXISTS idx_marketing_shadow_hitl
+        ON marketing_shadow_log(hitl_status, created_at DESC)
+    """)
+
+    conn.execute("""
+        CREATE TABLE IF NOT EXISTS marketing_hypotheses (
+            hypothesis_id TEXT PRIMARY KEY,
+            statement TEXT NOT NULL,
+            proposed_action_ref TEXT,
+            status TEXT NOT NULL DEFAULT 'open',
+            review_at TEXT,
+            outcome TEXT,
+            learnings_nl TEXT,
+            created_at TEXT NOT NULL,
+            updated_at TEXT NOT NULL
+        )
+    """)
+    conn.execute("""
+        CREATE INDEX IF NOT EXISTS idx_marketing_hypotheses_status
+        ON marketing_hypotheses(status, review_at)
+    """)
+
+    conn.execute("""
+        CREATE TABLE IF NOT EXISTS brain_events (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            event_type TEXT NOT NULL,
+            source_brain TEXT NOT NULL,
+            payload_json TEXT NOT NULL DEFAULT '{}',
+            correlation_id TEXT,
+            status TEXT NOT NULL DEFAULT 'pending',
+            attempts INTEGER NOT NULL DEFAULT 0,
+            error_message TEXT,
+            created_at TEXT NOT NULL,
+            updated_at TEXT NOT NULL,
+            processed_at TEXT
+        )
+    """)
+    conn.execute("""
+        CREATE INDEX IF NOT EXISTS idx_brain_events_status
+        ON brain_events(status, created_at)
     """)
 
 
@@ -2853,3 +2921,276 @@ def db_margin_coverage_stats() -> Dict[str, Any]:
         "margin_facts": with_margin,
         "coverage_pct": round(pct, 2),
     }
+
+
+# ============================================================================
+# Marketing Brain F1 — shadow / hypotheses / brain_events
+# ============================================================================
+
+
+def db_insert_marketing_shadow(row: Dict) -> Optional[int]:
+    now = _utc_now_iso()
+    conn = get_connection()
+    try:
+        cursor = conn.execute(
+            """
+            INSERT INTO marketing_shadow_log
+            (action_id, observed_facts_ref, proposed_action, heuristic_rule_id,
+             llm_rationale_nl, would_execute, governance_result, mb_mode,
+             hitl_status, payload_json, created_at, updated_at)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+            """,
+            (
+                row["action_id"],
+                row.get("observed_facts_ref"),
+                row["proposed_action"],
+                row["heuristic_rule_id"],
+                row.get("llm_rationale_nl"),
+                1 if row.get("would_execute") else 0,
+                row.get("governance_result", "review"),
+                row.get("mb_mode", "shadow"),
+                row.get("hitl_status", "pending"),
+                json.dumps(row.get("payload", {})),
+                now,
+                now,
+            ),
+        )
+        conn.commit()
+        return int(cursor.lastrowid)
+    except Exception as e:
+        conn.rollback()
+        import logging
+        logging.getLogger(__name__).error("[DB] marketing_shadow_log insert failed: %s", e)
+        return None
+
+
+def db_get_marketing_shadow(action_id: str) -> Optional[Dict]:
+    conn = get_connection()
+    row = conn.execute(
+        "SELECT * FROM marketing_shadow_log WHERE action_id = ?",
+        (action_id,),
+    ).fetchone()
+    if not row:
+        return None
+    item = dict(row)
+    try:
+        item["payload"] = json.loads(item.pop("payload_json") or "{}")
+    except Exception:
+        item["payload"] = {}
+    item["would_execute"] = bool(item.get("would_execute"))
+    return item
+
+
+def db_update_marketing_shadow_hitl(
+    action_id: str,
+    hitl_status: str,
+    governance_result: Optional[str] = None,
+) -> bool:
+    now = _utc_now_iso()
+    conn = get_connection()
+    try:
+        if governance_result:
+            conn.execute(
+                """
+                UPDATE marketing_shadow_log
+                SET hitl_status = ?, governance_result = ?, updated_at = ?
+                WHERE action_id = ?
+                """,
+                (hitl_status, governance_result, now, action_id),
+            )
+        else:
+            conn.execute(
+                """
+                UPDATE marketing_shadow_log
+                SET hitl_status = ?, updated_at = ?
+                WHERE action_id = ?
+                """,
+                (hitl_status, now, action_id),
+            )
+        conn.commit()
+        return True
+    except Exception as e:
+        conn.rollback()
+        import logging
+        logging.getLogger(__name__).error("[DB] shadow hitl update failed: %s", e)
+        return False
+
+
+def db_list_marketing_shadow(limit: int = 20) -> List[Dict]:
+    conn = get_connection()
+    rows = conn.execute(
+        """
+        SELECT * FROM marketing_shadow_log
+        ORDER BY created_at DESC
+        LIMIT ?
+        """,
+        (limit,),
+    ).fetchall()
+    result = []
+    for row in rows:
+        item = dict(row)
+        try:
+            item["payload"] = json.loads(item.pop("payload_json") or "{}")
+        except Exception:
+            item["payload"] = {}
+        item["would_execute"] = bool(item.get("would_execute"))
+        result.append(item)
+    return result
+
+
+def db_insert_marketing_hypothesis(row: Dict) -> bool:
+    now = _utc_now_iso()
+    conn = get_connection()
+    try:
+        conn.execute(
+            """
+            INSERT INTO marketing_hypotheses
+            (hypothesis_id, statement, proposed_action_ref, status, review_at,
+             outcome, learnings_nl, created_at, updated_at)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+            """,
+            (
+                row["hypothesis_id"],
+                row["statement"],
+                row.get("proposed_action_ref"),
+                row.get("status", "open"),
+                row.get("review_at"),
+                row.get("outcome"),
+                row.get("learnings_nl"),
+                now,
+                now,
+            ),
+        )
+        conn.commit()
+        return True
+    except Exception as e:
+        conn.rollback()
+        import logging
+        logging.getLogger(__name__).error("[DB] marketing_hypotheses insert failed: %s", e)
+        return False
+
+
+def db_list_marketing_hypotheses(
+    status: Optional[str] = None,
+    limit: int = 50,
+) -> List[Dict]:
+    conn = get_connection()
+    if status:
+        rows = conn.execute(
+            """
+            SELECT * FROM marketing_hypotheses
+            WHERE status = ?
+            ORDER BY created_at DESC
+            LIMIT ?
+            """,
+            (status, limit),
+        ).fetchall()
+    else:
+        rows = conn.execute(
+            """
+            SELECT * FROM marketing_hypotheses
+            ORDER BY created_at DESC
+            LIMIT ?
+            """,
+            (limit,),
+        ).fetchall()
+    return [dict(r) for r in rows]
+
+
+def db_enqueue_brain_event(event: Dict) -> Optional[int]:
+    now = _utc_now_iso()
+    conn = get_connection()
+    try:
+        cursor = conn.execute(
+            """
+            INSERT INTO brain_events
+            (event_type, source_brain, payload_json, correlation_id,
+             status, attempts, created_at, updated_at)
+            VALUES (?, ?, ?, ?, 'pending', 0, ?, ?)
+            """,
+            (
+                event["event_type"],
+                event.get("source_brain", "mb"),
+                json.dumps(event.get("payload", {})),
+                event.get("correlation_id"),
+                now,
+                now,
+            ),
+        )
+        conn.commit()
+        return int(cursor.lastrowid)
+    except Exception as e:
+        conn.rollback()
+        import logging
+        logging.getLogger(__name__).error("[DB] brain_events enqueue failed: %s", e)
+        return None
+
+
+def db_claim_brain_events(limit: int = 20) -> List[Dict]:
+    """Mark pending events as processing and return them."""
+    now = _utc_now_iso()
+    conn = get_connection()
+    rows = conn.execute(
+        """
+        SELECT * FROM brain_events
+        WHERE status = 'pending'
+        ORDER BY id ASC
+        LIMIT ?
+        """,
+        (limit,),
+    ).fetchall()
+    claimed = []
+    for row in rows:
+        conn.execute(
+            """
+            UPDATE brain_events
+            SET status = 'processing', attempts = attempts + 1, updated_at = ?
+            WHERE id = ? AND status = 'pending'
+            """,
+            (now, row["id"]),
+        )
+        item = dict(row)
+        try:
+            item["payload"] = json.loads(item.pop("payload_json") or "{}")
+        except Exception:
+            item["payload"] = {}
+        claimed.append(item)
+    conn.commit()
+    return claimed
+
+
+def db_finish_brain_event(
+    event_id: int,
+    status: str,
+    error_message: Optional[str] = None,
+) -> None:
+    now = _utc_now_iso()
+    conn = get_connection()
+    conn.execute(
+        """
+        UPDATE brain_events
+        SET status = ?, error_message = ?, processed_at = ?, updated_at = ?
+        WHERE id = ?
+        """,
+        (status, error_message, now if status in ("done", "dead") else None, now, event_id),
+    )
+    conn.commit()
+
+
+def db_rolling_net_margin_pct(limit: int = 50) -> Optional[float]:
+    """Average net_margin_pct across recent margin facts (proxy for 7d rolling)."""
+    conn = get_connection()
+    row = conn.execute(
+        """
+        SELECT AVG(net_margin_pct) AS avg_pct, COUNT(*) AS n
+        FROM (
+            SELECT net_margin_pct FROM order_margin_facts
+            ORDER BY as_of DESC
+            LIMIT ?
+        )
+        """,
+        (limit,),
+    ).fetchone()
+    if not row or not row["n"]:
+        return None
+    return float(row["avg_pct"])

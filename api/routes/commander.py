@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import json
 import logging
+import os
 from datetime import datetime, timezone
 from typing import Any, Dict, List, Literal, Optional
 
@@ -327,6 +328,31 @@ async def post_marketing_dtl_ingest(
     from agent.marketing.dtl import run_dtl_ingest
 
     return run_dtl_ingest()
+
+
+@router.get("/api/v1/commander/marketing/shadow")
+async def get_marketing_shadow(
+    limit: int = Query(default=20, ge=1, le=100),
+    _auth=Depends(require_scope("commander:read")),
+) -> dict:
+    """Shadow decision log — analytics / Dowódca review (F1)."""
+    from agent.db import db_list_marketing_hypotheses, db_list_marketing_shadow
+
+    return {
+        "shadow": db_list_marketing_shadow(limit=limit),
+        "hypotheses": db_list_marketing_hypotheses(limit=limit),
+        "mb_mode": os.getenv("MB_MODE", "shadow"),
+    }
+
+
+@router.post("/api/v1/commander/marketing/brain/cycle")
+async def post_marketing_brain_cycle(
+    _auth=Depends(require_scope("commander:read")),
+) -> dict:
+    """Manual MB decision cycle (shadow Telegram if configured)."""
+    from agent.marketing import run_marketing_brain_cycle
+
+    return run_marketing_brain_cycle(send_telegram=True)
 
 
 @router.post("/api/v1/content-calendar/{entry_id}/publish")

@@ -285,6 +285,19 @@ async def _handle_webhook_request(
 
     try:
         if command == "callback":
+            # MKT-BRAIN-PRO F1 — MB proposal HITL (shadow: no side-effects)
+            from agent.marketing.telegram_proposals import handle_mb_hitl, parse_mb_callback
+
+            mb_parsed = parse_mb_callback(payload)
+            if mb_parsed:
+                mb_action, mb_action_id = mb_parsed
+                result = handle_mb_hitl(mb_action, mb_action_id)
+                messages = format_response_for_telegram(
+                    result.get("message") or "OK",
+                    awaiting_input=False,
+                )
+                return TelegramWebhookResponse(success=bool(result.get("ok")), messages=messages)
+
             parsed = parse_callback_approval(payload)
             if not parsed:
                 msg = format_response_for_telegram("Nieprawidłowy callback.", awaiting_input=False)

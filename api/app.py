@@ -188,6 +188,7 @@ WORKER_AWAITING_TIMEOUT_MINUTES = int(os.getenv("WORKER_AWAITING_TIMEOUT_MINUTES
 _last_fb_publish_check: float = 0.0
 _last_weekly_brief_check: float = 0.0
 _last_dtl_ingest_check: float = 0.0
+_last_mb_cycle_check: float = 0.0
 
 
 async def _maybe_run_scheduled_fb_publish() -> None:
@@ -284,6 +285,36 @@ async def _maybe_run_marketing_dtl_ingest() -> None:
         await asyncio.to_thread(_run)
     except Exception as e:
         _log.error("[worker_loop] marketing DTL ingest failed: %s", e)
+
+
+async def _maybe_run_marketing_brain() -> None:
+    """MKT-BRAIN-PRO F1 — decision cycle + shadow Telegram (0 = disabled)."""
+    global _last_mb_cycle_check
+
+    interval = int(os.getenv("MARKETING_BRAIN_INTERVAL_SECONDS", "0") or "0")
+    if interval <= 0:
+        return
+
+    now = time.monotonic()
+    if now - _last_mb_cycle_check < interval:
+        return
+    _last_mb_cycle_check = now
+
+    def _run() -> None:
+        from agent.marketing import run_marketing_brain_cycle
+
+        summary = run_marketing_brain_cycle(send_telegram=True)
+        _log.info(
+            "[worker_loop] mb cycle ok=%s records=%s tg=%s",
+            summary.get("ok"),
+            summary.get("records"),
+            summary.get("telegram_sent"),
+        )
+
+    try:
+        await asyncio.to_thread(_run)
+    except Exception as e:
+        _log.error("[worker_loop] marketing brain cycle failed: %s", e)
 
 
 async def _worker_loop():
@@ -501,6 +532,7 @@ async def _worker_loop():
             await _maybe_run_scheduled_fb_publish()
             await _maybe_run_weekly_brief()
             await _maybe_run_marketing_dtl_ingest()
+            await _maybe_run_marketing_brain()
             await asyncio.sleep(busy_sleep if had_work else idle_backoff_sec)
         except asyncio.CancelledError:
             _log.info("[worker_loop] cancelled")

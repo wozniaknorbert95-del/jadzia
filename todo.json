@@ -1240,11 +1240,11 @@
       "id": "MKT-BRAIN-PRO-F1",
       "sprint": "MKT-BRAIN-PRO",
       "task": "F1 Decision Engine + Shadow 14d + Telegram MB proposals + Organic-to-Paid + Profit Watchdog + hypothesis ledger",
-      "status": "blocked",
+      "status": "in_progress",
       "priority": "critical",
       "owner": "agent",
       "checklist": "docs/ops/marketing/MKT-BRAIN-PRO.md §5 F1",
-      "note": "Blocked on F0 7d observe + GA4 env green on VPS. Shadow review ≥70% before F2."
+      "note": "2026-07-19 GO autonomous — F0 GA4 fixed; implementing F1 shadow+Telegram."
     },
     {
       "id": "MKT-BRAIN-PRO-F2",

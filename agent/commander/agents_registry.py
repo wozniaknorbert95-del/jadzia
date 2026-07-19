@@ -20,6 +20,7 @@ logger = logging.getLogger(__name__)
 
 DEFAULT_AGENTS = [
     {"agent_id": "marketing", "label": "Marketing / FB", "expected_interval_seconds": 3600},
+    {"agent_id": "marketing_brain", "label": "Marketing Brain (MB)", "expected_interval_seconds": 3600},
     {"agent_id": "analytics", "label": "Analytics GA4", "expected_interval_seconds": 7200},
     {"agent_id": "sales", "label": "Sales / Leads", "expected_interval_seconds": 1800},
     {"agent_id": "operations", "label": "Operations / Orders", "expected_interval_seconds": 1800},
