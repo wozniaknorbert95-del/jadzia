@@ -1,9 +1,9 @@
 {
   "project": "Jadzia-Core",
-  "last_updated": "2026-07-19 (propose+F4 LIVE tip 4ad1e99)",
+  "last_updated": "2026-07-19 (propose+F4 LIVE tip 529978e)",
   "status": "active",
   "plan": "docs/ops/marketing/MKT-BRAIN-PRO.md",
-  "active_gate": "MKT-BRAIN-PRO tip 4ad1e99 MB_MODE=propose; F4 ticket_only LIVE; #1 Meta HOLD; Purchase PARK; Ads create PARK",
+  "active_gate": "MKT-BRAIN-PRO tip 529978e (runtime propose from 4ad1e99); F4 ticket_only LIVE; #1 Meta HOLD; Purchase PARK; Ads create PARK",
   "active_plan": "docs/ops/marketing/PLAN-14D.md — propose LIVE; Meta #1 HOLD",
   "standing_go_closeout": false,
   "closeout_queue": [],

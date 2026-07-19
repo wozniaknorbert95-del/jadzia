@@ -430,7 +430,7 @@ Tabela `brain_events` + schemat:
 | Commander analytics (shadow / breakers) | **DONE** |
 | ChromaDB RAG (hash embed + SQL degrade) | **DONE F2b** |
 | Shadow eval-pack + rubric | **DONE** |
-| DoD: Telegram APPROVE → real Act | **BLOCKED** do F4 + propose GO |
+| DoD: Telegram APPROVE → ticket Act | **LIVE** tip `4ad1e99` (Ads create PARK) |
 
 ### Faza 3 — Brain Bus + KB bridge — **DONE LIVE** tip `723a702`
 
@@ -445,7 +445,7 @@ Tabela `brain_events` + schemat:
 
 | Deliverable | Warunek |
 |-------------|---------|
-| `MB_MODE=propose` | po shadow review GO (**TODO #1**) |
+| `MB_MODE=propose` | **LIVE** tip `4ad1e99` (GO 2026-07-19) |
 | Distribution pack | 1 asset → FB + TT/blog tasks |
 | Blog seed orchestration | SSH HITL |
 | Meta Lead webhook | ≥20 leadów + MKT-STL-01 GO |
