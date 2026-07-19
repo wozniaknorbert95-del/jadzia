@@ -1,7 +1,7 @@
 # Knowledge System Index — FlexGrafik
 
-**Status:** LIVE (COI-KNOW-02) — SoT w jadzia + mirror pointery w meta i VCMS  
-**Date:** 2026-07-18  
+**Status:** LIVE (ECO-POLISH-01) — SoT w jadzia + mirror pointery w meta i VCMS  
+**Date:** 2026-07-19  
 **Cel:** Jedna hierarchy SoT — zero sprzecznych kanonów.
 
 ## Hierarchy (od najwyższego)
@@ -71,6 +71,20 @@
 - Operator playbook (cmd): `Flex-vcms/flex-vcms/docs/study/coi-commander-ops-handbook.md`
 - Design folder pointer: [../design/coi-commander/OPERATOR-PLAYBOOK.md](../design/coi-commander/OPERATOR-PLAYBOOK.md)
 
+## Docs IA + Archive policy (ECO-POLISH-01)
+
+| Reguła | Znaczenie |
+|--------|-----------|
+| **I-1** | 1 brain + 1 todo kanoniczne per repo (zzp: thin `brain.md` → `MASTER-BRAIN.md` SoT + `docs/audit-todo.json`) |
+| **I-2** | Pełne `global-rules` / `workflow-manual` **tylko** w `flexgrafik-meta/docs/core/` |
+| **I-3** | KNOW / PROCESS / scorecard **tylko** w `jadzia-core/docs/ops/` |
+| **I-4** | cmd VitePress **nie** hostuje ADR D0.x, MBA weeks, product-master, skill map T1–T7 |
+| **I-5** | Antigravity / Gemini CLI **nigdy** w LIVE nav / README / AGENTS jako aktywny stack |
+| **I-6** | Handoffs **rolling** w `docs/handoffs/` (≤15 plików lub ≤30 dni); cold → `docs/archive/handoffs/` |
+| Archive ≫ delete | Evidence idzie do archive; delete tylko sekrety, tokeny, tarballe, binary junk |
+| VitePress | `srcExclude: ['**/archive/**']` — cold poza buildem; nie czytaj archive default |
+| Entry | Agent / Dowódca w ≤60s wie: SoT, LIVE vs historia |
+
 ## Konflikt resolution
 
 1. Meta konstytucja wygrywa nad lokalnym brain przy sprzeczności zasad.  
@@ -78,3 +92,4 @@
 3. ADR D0.x wygrywa nad komentarzem w UI.  
 4. Handoff aktualizuje scorecard status, nie odwrotnie bez dowodu.  
 5. VCMS `global-rules` pointer nie może wrócić do pełnej kopii bez decyzji Dowódcy.
+6. Archive off-nav; rolling handoffs ≤15 — nie wracaj PH4/journal/lab do LIVE sidebar.
