@@ -9,7 +9,7 @@ Session continuity for `/vibe-init`: read the **last 2** handoffs from this fold
 
 ## Latest independent audit — 2026-07-21
 
-- [`2026-07-21-AUD-REM-GIT-DEPLOY-01-CLOSE.md`](2026-07-21-AUD-REM-GIT-DEPLOY-01-CLOSE.md) — **DEPLOY-READY** · Dowódca GO → commit/push PR
+- [`2026-07-21-AUD-REM-GIT-DEPLOY-01-CLOSE.md`](2026-07-21-AUD-REM-GIT-DEPLOY-01-CLOSE.md) — **CI GREEN** · [PR #9](https://github.com/wozniaknorbert95-del/jadzia/pull/9) · merge + VPS GO next
 - [`2026-07-21-AUD-REM-GIT-DEPLOY-READY.md`](2026-07-21-AUD-REM-GIT-DEPLOY-READY.md) — batch inventory (superseded by CLOSE)
 - [`2026-07-21-AUD-REM-INGRESS-01-CLOSE.md`](2026-07-21-AUD-REM-INGRESS-01-CLOSE.md) — F-07 ingress LOCAL PASS
 - [`2026-07-21-AUDIT-REMEDIATION-PROGRAM-HANDOFF.md`](2026-07-21-AUDIT-REMEDIATION-PROGRAM-HANDOFF.md) — sequential F-01..F-13 program

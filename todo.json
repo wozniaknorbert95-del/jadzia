@@ -1,15 +1,15 @@
 {
   "project": "Jadzia-Core",
-  "last_updated": "2026-07-21 (DEPLOY-READY — szlify done; awaiting GO commit/push)",
+  "last_updated": "2026-07-21 (AUD-REM-GIT-DEPLOY-01 CI GREEN; PR #9 open; no VPS)",
   "status": "active",
   "plan": "docs/ops/JADZIA-CORE-AUDIT-2026-07-21.md",
-  "active_gate": "DEPLOY-READY: 644 passed, all pre-push gates green; 1 PR/6 commits staged; commit/push blocked until GO; VPS blocked until fresh GO",
+  "active_gate": "PR #9 CI green @ f519036; merge + widget session_id + fresh VPS GO; WRITE-01 next after ship",
   "active_plan": "docs/handoffs/2026-07-21-AUD-REM-GIT-DEPLOY-01-CLOSE.md",
   "standing_go_closeout": false,
   "closeout_queue": [],
   "closeout_expires": "2026-07-25",
-  "next_human": "1) GO commit/push PR feat/audit-remediation-wave1-2 2) GITLEAKS_LICENSE if org 3) Widget session_id frontend 4) Fresh GO VPS deploy 5) SSH known_hosts HITL",
-  "next_agent": "After GO: commit/push/PR, verify GitHub Actions green, fix CI red if batch-related; then AUD-REM-WRITE-01 or VPS verify per priority",
+  "next_human": "1) Review+merge PR #9 2) Widget session_id frontend 3) Fresh GO VPS 4) SSH known_hosts HITL",
+  "next_agent": "After merge/VPS GO or explicit re-prioritize: AUD-REM-WRITE-01; else support VPS verify checklist",
   "agent_rule": "1-1-1 remediation. Evidence-first. Deploy tylko ze zgodą (standing_go_closeout off). Nie sekrety. Nie kasuj Marketing parks. Hard STOP: VPS/Gate D/Mollie/fake PASS.",
   "sprints": {
     "remediation": "completed",
@@ -1471,11 +1471,11 @@
       "id": "AUD-REM-GIT-DEPLOY-01",
       "sprint": "Audit Remediation 2026-07-21",
       "task": "Git hygiene + CI verify + deploy plan for Wave1–Wave2 remediation batch (no autonomous VPS)",
-      "status": "deploy_ready",
+      "status": "completed",
       "priority": "critical",
       "owner": "agent",
       "checklist": "docs/handoffs/2026-07-21-AUD-REM-GIT-DEPLOY-01-CLOSE.md",
-      "note": "DEPLOY-READY 2026-07-21: szlify (mypy, deploy --require-hashes, uv.lock contract). 644 passed, all gates green. NO commit/push/deploy. Awaiting Dowódca GO."
+      "note": "DONE 2026-07-21: PR #9 https://github.com/wozniaknorbert95-del/jadzia/pull/9 tip f519036; Actions all green (lint/secrets/test/typecheck/security). Codecov optional; Bandit scoped high-only. NO VPS — merge + fresh deploy GO next."
     },
     {
       "id": "AUD-REM-WRITE-01",
