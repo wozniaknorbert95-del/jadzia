@@ -5,9 +5,10 @@
 **Authority:** requires **fresh Dowódca GO** (`standing_go_closeout=false`)  
 **Hard STOP:** no autonomous SSH/deploy from agent
 
-## Pre-merge tip
+## Post-merge tip (2026-07-21)
 
-- GitHub `master`: `da46c49` (PR #9 Wave1–2) + Wave3–4 PR when merged
+- GitHub `master`: **`3604f60`** (PR #10 Wave3–4 merged; includes Wave1–2)
+- flexgrafik-nl `main`: **`a5cfa36`** (PR #3 widget session_id)
 
 ## Env checklist (VPS `/opt/jadzia/.env`)
 
@@ -65,5 +66,5 @@ curl -sf http://127.0.0.1:8000/worker/health | head
 ## GO prompt
 
 ```text
-GO VPS deploy+verify AUD-REM-VPS-VERIFY-01 tip <sha>
+GO VPS deploy+verify AUD-REM-VPS-VERIFY-01 tip 3604f60
 ```

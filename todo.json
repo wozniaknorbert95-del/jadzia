@@ -1,15 +1,15 @@
 {
   "project": "Jadzia-Core",
-  "last_updated": "2026-07-21 (Wave3-4 LOCAL PASS; PR#9 merged; VPS READY_FOR_HUMAN)",
+  "last_updated": "2026-07-21 (CMD-DASH-TRUST-01 — ops health + DA health; deploy pending)",
   "status": "active",
-  "plan": "docs/ops/JADZIA-CORE-AUDIT-2026-07-21.md",
-  "active_gate": "Wave1-2 on master@da46c49; Wave3-4 local; next fresh GO VPS deploy+verify; standing_go_closeout=false",
-  "active_plan": "docs/handoffs/2026-07-21-AUD-REM-VPS-READY.md",
+  "plan": "docs/ops/COMMANDER-DASHBOARD-AUDIT-2026-07-21.md",
+  "active_gate": "feat/cmd-dash-trust-01 OPS-HEALTH+DEAD-HOP+VERIFY; NEXT=merge+deploy; standing_go_closeout=false until tip sync",
+  "active_plan": "docs/handoffs/2026-07-21-CMD-DASH-TRUST-01-CLOSE.md",
   "standing_go_closeout": false,
   "closeout_queue": [],
   "closeout_expires": "2026-07-25",
-  "next_human": "1) Merge Wave3-4 PR 2) Deploy flexgrafik-nl chat-widget session_id 3) Fresh GO VPS per AUD-REM-VPS-READY 4) Restore drill evidence",
-  "next_agent": "After VPS GO: execute verify checklist RO; else support Wave3-4 PR CI",
+  "next_human": "Optional tip-sync docs after deploy evidence",
+  "next_agent": "After deploy: CMD-DASH-PARKS-LIVE-01 or MB-PANEL-01",
   "agent_rule": "1-1-1 remediation. Evidence-first. Deploy tylko ze zgodą (standing_go_closeout off). Nie sekrety. Nie kasuj Marketing parks. Hard STOP: VPS/Gate D/Mollie/fake PASS.",
   "sprints": {
     "remediation": "completed",
@@ -1535,11 +1535,101 @@
       "id": "AUD-REM-VPS-VERIFY-01",
       "sprint": "Audit Remediation 2026-07-21",
       "task": "Independent VPS evidence and final re-audit after all local remediation",
-      "status": "ready_for_human",
+      "status": "completed",
       "priority": "critical",
-      "owner": "human",
-      "checklist": "docs/handoffs/2026-07-21-AUD-REM-VPS-READY.md",
-      "note": "READY_FOR_HUMAN. Fresh GO required. Pack prepared 2026-07-21."
+      "owner": "agent",
+      "checklist": "docs/handoffs/2026-07-21-AUD-REM-DEPLOY-PIPELINE-CLOSE.md",
+      "note": "PASS @3604f60 2026-07-21T17:37:31Z — health healthy, WAL, docs404, TG401, widget session E2E, SSH pin+key under secrets."
+    },
+    {
+      "id": "AUD-REM-DEPLOY-PIPELINE-01",
+      "sprint": "Audit Remediation 2026-07-21",
+      "task": "Full deploy pipeline: merge Wave3-4 + widget FE, VPS ship, E2E tool test, production evidence",
+      "status": "completed",
+      "priority": "critical",
+      "owner": "agent",
+      "checklist": "docs/handoffs/2026-07-21-AUD-REM-DEPLOY-PIPELINE-CLOSE.md",
+      "note": "DONE: merge#10+#3, GO deploy, py311 hashed lock, env HITL, WP widget live, audyt production PASS."
+    },
+    {
+      "id": "CMD-DASH-AUDIT-01",
+      "sprint": "Commander Dashboard Audit 2026-07-21",
+      "task": "Expert audit: Commander utilization vs API/ops potential; scorecard + gap backlog",
+      "status": "completed",
+      "priority": "critical",
+      "owner": "agent",
+      "checklist": "docs/ops/COMMANDER-DASHBOARD-AUDIT-2026-07-21.md",
+      "note": "PASS as audit. UTILIZATION ~58% PARTIAL. Dogfood 2026-07-21T17:48:09Z tip 3604f60. Next: OPS-HEALTH-01."
+    },
+    {
+      "id": "CMD-DASH-OPS-HEALTH-01",
+      "sprint": "Commander Dashboard Audit 2026-07-21",
+      "task": "Wire Home health strip to GET /worker/health (status/ssh/sqlite/uptime badges; soft-fail)",
+      "status": "completed",
+      "priority": "critical",
+      "owner": "agent",
+      "checklist": "docs/ops/COMMANDER-DASHBOARD-AUDIT-2026-07-21.md",
+      "note": "DONE in feat/cmd-dash-trust-01: Home strip fetches /worker/health (ops/ssh/sqlite/loop/uptime)."
+    },
+    {
+      "id": "CMD-DASH-DEAD-HOP-01",
+      "sprint": "Commander Dashboard Audit 2026-07-21",
+      "task": "Fix or remove design-agent/health hop (system map + Agenci INSPIRE) — route 404 live",
+      "status": "completed",
+      "priority": "high",
+      "owner": "agent",
+      "checklist": "docs/ops/COMMANDER-DASHBOARD-AUDIT-2026-07-21.md",
+      "note": "DONE: GET /api/v1/design-agent/health public readiness + unit test."
+    },
+    {
+      "id": "CMD-DASH-PARKS-LIVE-01",
+      "sprint": "Commander Dashboard Audit 2026-07-21",
+      "task": "Replace static Marketing OS parks strip with propose-preflight + breakers read-only",
+      "status": "pending",
+      "priority": "high",
+      "owner": "agent",
+      "checklist": "docs/ops/COMMANDER-DASHBOARD-AUDIT-2026-07-21.md",
+      "note": "Static H-Meta…H-F4x in index.html; APIs exist (401 without JWT)."
+    },
+    {
+      "id": "CMD-DASH-MB-PANEL-01",
+      "sprint": "Commander Dashboard Audit 2026-07-21",
+      "task": "Read-only Marketing Brain strip: breakers + brain-bus + shadow accuracy (no execute)",
+      "status": "pending",
+      "priority": "high",
+      "owner": "agent",
+      "checklist": "docs/ops/COMMANDER-DASHBOARD-AUDIT-2026-07-21.md",
+      "note": "Orphan APIs confirmed live. Hard STOP: no marketing/actions/execute button."
+    },
+    {
+      "id": "CMD-DASH-AGENTS-TRUTH-01",
+      "sprint": "Commander Dashboard Audit 2026-07-21",
+      "task": "Agents panel truth: next_expected_run + Agent OS hop (engineering or static PM card)",
+      "status": "pending",
+      "priority": "medium",
+      "owner": "agent",
+      "checklist": "docs/ops/COMMANDER-DASHBOARD-AUDIT-2026-07-21.md",
+      "note": "next_expected_run always null; engineering hop never renders."
+    },
+    {
+      "id": "CMD-DASH-VERIFY-01",
+      "sprint": "Commander Dashboard Audit 2026-07-21",
+      "task": "Align mkt-dash verify script with cache tag mkt-dash02; ship on tip or retire",
+      "status": "completed",
+      "priority": "medium",
+      "owner": "agent",
+      "checklist": "docs/ops/COMMANDER-DASHBOARD-AUDIT-2026-07-21.md",
+      "note": "DONE: script greps mkt-dash03 + probes worker/DA health."
+    },
+    {
+      "id": "CMD-DASH-ORPHAN-SOT-01",
+      "sprint": "Commander Dashboard Audit 2026-07-21",
+      "task": "Document intentional API-only surfaces (execute/graduation/feedback/bulk) in OPERATOR-TODAY",
+      "status": "pending",
+      "priority": "low",
+      "owner": "agent",
+      "checklist": "docs/ops/COMMANDER-DASHBOARD-AUDIT-2026-07-21.md",
+      "note": "Prevent accidental unsafe UI; keep execute on TG/HITL token path."
     }
   ]
 }
