@@ -8,6 +8,7 @@ import pytest
 from unittest.mock import patch, AsyncMock
 
 from agent.nodes.approval import handle_approval, execute_changes
+from agent.state import OperationStatus
 
 
 @pytest.mark.asyncio
@@ -43,30 +44,69 @@ async def test_handle_approval_yes():
 
 
 @pytest.mark.asyncio
-async def test_execute_changes():
-    """execute_changes: mock write_file, zwraca msg z listą plików i deploy."""
-    state = {"id": "op-1"}
-    new_contents = {"a.php": "content a", "b.css": "content b"}
+async def test_execute_changes_partial_write_rolls_back_and_never_completes():
+    """Second-file failure must ROLLED_BACK / FAILED — never COMPLETED."""
+    state = {"id": "op-partial", "dry_run": False}
+    new_contents = {"a.php": "ok", "b.php": "fail"}
+
+    def _write(path, content, *args, **kwargs):
+        if path == "b.php":
+            raise RuntimeError("simulated write failure")
+
+    statuses: list[str] = []
+
+    def _status(status, *args, **kwargs):
+        statuses.append(status)
+
     with patch("agent.nodes.approval.get_stored_contents", return_value=new_contents):
-        with patch("agent.nodes.approval.write_file") as mock_write:
-            with patch("agent.nodes.approval.update_operation_status"):
-                with patch("agent.nodes.approval.set_awaiting_response"):
-                    with patch("agent.nodes.approval.log_event"):
-                        with patch("agent.nodes.approval.add_error"):
-                            text, awaiting, input_type, _ = await execute_changes(
-                                "chat1", "http", state
-                            )
+        with patch("agent.nodes.approval.write_file", side_effect=_write) as mock_write:
+            with patch("agent.nodes.approval.update_operation_status", side_effect=_status):
+                with patch("agent.nodes.approval.log_event"):
+                    with patch("agent.nodes.approval.add_error"):
+                        with patch("agent.nodes.approval.send_alert"):
+                            with patch(
+                                "agent.tools.rest.rollback",
+                                return_value={
+                                    "status": "ok",
+                                    "msg": "restored 1",
+                                    "restored": ["a.php"],
+                                },
+                            ) as mock_rollback:
+                                text, awaiting, input_type, next_id = await execute_changes(
+                                    "chat1", "http", state
+                                )
+
     assert mock_write.call_count == 2
-    call_args = mock_write.call_args_list[0][0]
-    assert call_args[0] == "a.php"
-    assert call_args[1] == "content a"
-    assert call_args[2] == "op-1"
-    assert call_args[3] == "chat1"
-    assert call_args[4] == "http"
-    assert "Zapisano" in text
-    assert "a.php" in text
-    assert "strona" in text.lower() and ("działa" in text.lower() or "sprawdź" in text.lower())
-    assert input_type == "deploy_approval"
+    mock_rollback.assert_called_once()
+    assert OperationStatus.COMPLETED not in statuses
+    assert OperationStatus.ROLLED_BACK in statuses
+    assert awaiting is False
+    assert input_type is None
+    assert next_id is None
+    assert "Blad zapisu" in text or "b.php" in text
+
+
+@pytest.mark.asyncio
+async def test_execute_changes_all_fail_marks_failed_without_rollback():
+    state = {"id": "op-fail", "dry_run": False}
+    new_contents = {"a.php": "x"}
+
+    with patch("agent.nodes.approval.get_stored_contents", return_value=new_contents):
+        with patch("agent.nodes.approval.write_file", side_effect=RuntimeError("boom")):
+            with patch("agent.nodes.approval.update_operation_status") as mock_status:
+                with patch("agent.nodes.approval.log_event"):
+                    with patch("agent.nodes.approval.add_error"):
+                        with patch("agent.nodes.approval.send_alert"):
+                            with patch("agent.tools.rest.rollback") as mock_rollback:
+                                text, awaiting, _, _ = await execute_changes(
+                                    "chat1", "http", state
+                                )
+
+    mock_rollback.assert_not_called()
+    assert any(c.args[0] == OperationStatus.FAILED for c in mock_status.call_args_list)
+    assert awaiting is False
+    assert "boom" in text or "Blad" in text
+
 
 
 @pytest.mark.asyncio

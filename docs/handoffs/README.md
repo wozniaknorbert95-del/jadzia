@@ -2,37 +2,26 @@
 
 Session continuity for `/vibe-init`: read the **last 2** handoffs from this folder.
 
-## Start here (vibe-init) — 2026-07-19 SESSION CLOSE
+## Start here — 2026-07-21 audit remediation
 
-1. [`2026-07-19-SESSION-CLOSE-MKT-DASH.md`](2026-07-19-SESSION-CLOSE-MKT-DASH.md) — **SESSION CLOSE** tip `29043cb` · dash `mkt-dash02`
-2. [`docs/ops/marketing/OPERATOR-TODAY.md`](../ops/marketing/OPERATOR-TODAY.md) — operator start + human parks
+1. [`2026-07-21-AUD-REM-WAVE3-4-CLOSE.md`](2026-07-21-AUD-REM-WAVE3-4-CLOSE.md) — Wave3–4 local implementation
+2. [`2026-07-21-AUD-REM-VPS-READY.md`](2026-07-21-AUD-REM-VPS-READY.md) — **NEXT human:** fresh GO VPS deploy + verify
+3. [`2026-07-21-AUD-REM-GIT-DEPLOY-01-CLOSE.md`](2026-07-21-AUD-REM-GIT-DEPLOY-01-CLOSE.md) — PR #9 merged @ `da46c49`
 
-## Latest independent audit — 2026-07-21
+## Program + audit SoT
 
-- [`2026-07-21-AUD-REM-GIT-DEPLOY-01-CLOSE.md`](2026-07-21-AUD-REM-GIT-DEPLOY-01-CLOSE.md) — **CI GREEN** · [PR #9](https://github.com/wozniaknorbert95-del/jadzia/pull/9) · merge + VPS GO next
-- [`2026-07-21-AUD-REM-GIT-DEPLOY-READY.md`](2026-07-21-AUD-REM-GIT-DEPLOY-READY.md) — batch inventory (superseded by CLOSE)
-- [`2026-07-21-AUD-REM-INGRESS-01-CLOSE.md`](2026-07-21-AUD-REM-INGRESS-01-CLOSE.md) — F-07 ingress LOCAL PASS
-- [`2026-07-21-AUDIT-REMEDIATION-PROGRAM-HANDOFF.md`](2026-07-21-AUDIT-REMEDIATION-PROGRAM-HANDOFF.md) — sequential F-01..F-13 program
-- [`2026-07-21-JADZIA-CORE-AUDIT-CLOSE.md`](2026-07-21-JADZIA-CORE-AUDIT-CLOSE.md) — repo gate **FAIL**, production **UNVERIFIED**, no deploy
-- [`docs/ops/JADZIA-CORE-AUDIT-2026-07-21.md`](../ops/JADZIA-CORE-AUDIT-2026-07-21.md) — canonical findings, evidence and remediation order
+- [`2026-07-21-AUDIT-REMEDIATION-PROGRAM-HANDOFF.md`](2026-07-21-AUDIT-REMEDIATION-PROGRAM-HANDOFF.md)
+- [`2026-07-21-JADZIA-CORE-AUDIT-CLOSE.md`](2026-07-21-JADZIA-CORE-AUDIT-CLOSE.md)
+- [`docs/ops/JADZIA-CORE-AUDIT-2026-07-21.md`](../ops/JADZIA-CORE-AUDIT-2026-07-21.md)
+- [`docs/ops/SLO-DR-RUNBOOK.md`](../ops/SLO-DR-RUNBOOK.md)
 
-## Ops rolling (hot ≤15)
+## Marketing (hot)
 
-| Handoff | Topic |
-|---------|-------|
-| [`2026-07-19-MKT-BRAIN-PRO-PLAN-HANDOFF.md`](2026-07-19-MKT-BRAIN-PRO-PLAN-HANDOFF.md) | MKT-BRAIN-PRO plan + F0 ready |
-| [`2026-07-19-META-PACK-01-READY.md`](2026-07-19-META-PACK-01-READY.md) | Meta pack lean READY |
-| [`2026-07-19-CHAT-TRUST-PACK-DEPLOY-CLOSE.md`](2026-07-19-CHAT-TRUST-PACK-DEPLOY-CLOSE.md) | Chat Trust Pack |
-| [`2026-07-19-CLOSEOUT-HONESTY-01.md`](2026-07-19-CLOSEOUT-HONESTY-01.md) | Honesty closeout |
-| [`2026-07-19-MKT-SHIP-01-CLOSE.md`](2026-07-19-MKT-SHIP-01-CLOSE.md) | Marketing ship |
-| [`2026-07-19-MKT-OS-01-CLOSE.md`](2026-07-19-MKT-OS-01-CLOSE.md) | Marketing OS SoT |
-
-## Canonical ops docs
-
-- [`docs/ops/marketing/META-PACK-LEAN.md`](../ops/marketing/META-PACK-LEAN.md) — Meta START
-- [`docs/ops/marketing/OPERATOR-TODAY.md`](../ops/marketing/OPERATOR-TODAY.md)
-- [`docs/ops/JADZIA-OPERATOR-PLAYBOOK.md`](../ops/JADZIA-OPERATOR-PLAYBOOK.md)
+- [`2026-07-19-META-PACK-01-READY.md`](2026-07-19-META-PACK-01-READY.md)
+- [`2026-07-19-MKT-BRAIN-PRO-PLAN-HANDOFF.md`](2026-07-19-MKT-BRAIN-PRO-PLAN-HANDOFF.md)
+- [`2026-07-19-MKT-BRAIN-PRO-PROGRAM-CLOSE.md`](2026-07-19-MKT-BRAIN-PRO-PROGRAM-CLOSE.md)
+- [`2026-07-19-SESSION-CLOSE-MKT-DASH.md`](2026-07-19-SESSION-CLOSE-MKT-DASH.md)
 
 ## Archive
 
-- [`../archive/handoffs/`](../archive/handoffs/)
+Wave1–2 per-task closes and older MKT F* closes: [`../archive/handoffs/`](../archive/handoffs/)

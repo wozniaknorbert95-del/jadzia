@@ -100,7 +100,7 @@ z `.agents/workflows/jadzia-test.md` wymaga zera błędów, więc wynik jest `FA
 
 ### F-01 — P0 — release gate daje fałszywy zielony sygnał
 
-**Status:** FAIL · **Pewność:** wysoka  
+**Status:** PASS (remediated 2026-07-21 · PR #9) · **Pewność:** wysoka  
 **Dowód:** `.github/workflows/ci.yml:22-44`, `.github/workflows/tests.yml:34-38`,
 pełny lokalny run 2026-07-21.
 
@@ -117,7 +117,7 @@ rzeczywisty coverage artifact i udokumentowany czas gate.
 
 ### F-02 — P1 — callback workera umożliwia SSRF
 
-**Status:** FAIL · **Pewność:** wysoka  
+**Status:** PASS (remediated 2026-07-21 · PR #9) · **Pewność:** wysoka  
 **Dowód:** `core/models.py:398-402`, `api/routes/worker.py:97-101`,
 `api/webhooks.py:49-74`.
 
@@ -135,7 +135,7 @@ private/link-local po resolve i po każdym redirect, limity URL/payload, redakcj
 
 ### F-03 — P1 — SSH nie weryfikuje tożsamości hosta
 
-**Status:** FAIL · **Pewność:** wysoka  
+**Status:** PASS (remediated 2026-07-21 · PR #9; VPS host-key HITL remaining) · **Pewność:** wysoka  
 **Dowód:** `agent/tools/ssh_pure.py:113,186`,
 `agent/tools/wp_explorer/ssh_connector.py:230`; Bandit B507.
 
@@ -147,7 +147,7 @@ private/link-local po resolve i po każdym redirect, limity URL/payload, redakcj
 
 ### F-04 — P1 — wieloplikowy zapis nie jest atomowy i może zostać oznaczony sukcesem
 
-**Status:** FAIL · **Pewność:** wysoka  
+**Status:** PASS (remediated 2026-07-21 · Wave3 WRITE-01) · **Pewność:** wysoka  
 **Dowód:** `agent/nodes/approval.py:131-148`.
 
 Każdy plik jest zapisywany niezależnie. Jeśli pierwszy zapis się uda, a drugi
@@ -161,7 +161,7 @@ plików przy dowolnym błędzie, status `FAILED/ROLLED_BACK`, test fault-injecti
 
 ### F-05 — P1 — dependency gate jest niespójny i zawiera podatny ChromaDB
 
-**Status:** FAIL · **Pewność:** wysoka  
+**Status:** PASS (remediated 2026-07-21 · PR #9) · **Pewność:** wysoka  
 **Dowód:** `requirements.txt`, `requirements.lock`, `deployment/deploy-to-vps.sh:167`,
 pip-audit 2.10.1.
 
@@ -179,7 +179,7 @@ embedded client albo usunięte/zastąpione do czasu bezpiecznej wersji.
 
 ### F-06 — P1 — telemetryka health jest odłączona od callbacków runtime
 
-**Status:** FAIL · **Pewność:** wysoka  
+**Status:** PASS (remediated 2026-07-21 · Wave3 HEALTH-01; process-local) · **Pewność:** wysoka  
 **Dowód:** `api/webhooks.py:10-46`, `api/routes/dashboard.py:118-157`; brak
 jakiegokolwiek wywołania `set_health_metrics()`.
 
@@ -194,7 +194,7 @@ zdarzeń.
 
 ### F-07 — P1 — ingress publiczny nie ma spójnej ochrony przed abuse/replay
 
-**Status:** FAIL · **Pewność:** wysoka
+**Status:** PASS (remediated 2026-07-21 · PR #9; widget FE session adopt in flexgrafik-nl) · **Pewność:** wysoka  
 
 - Widget i Portal są publiczne; widget wywołuje LLM bez rate limitu.
 - `CustomerChatRequest` nie ma limitu wiadomości, a client-controlled `session_id`
@@ -213,7 +213,7 @@ idempotency key, świadoma polityka OpenAPI na produkcji.
 
 ### F-08 — P2 — SQLite ma ograniczoną odporność na contention
 
-**Status:** PARTIAL · **Pewność:** wysoka  
+**Status:** PASS (remediated 2026-07-21 · Wave3 DB-01 WAL/busy; VPS journal verify pending) · **Pewność:** wysoka  
 **Dowód:** `agent/db.py:24-47,697-749`.
 
 Połączenia są thread-local i mają transakcje oraz trzy retry, lecz brak
@@ -226,7 +226,7 @@ po pomiarze, kontrolowany contention test oraz idempotentne schedulery/leader lo
 
 ### F-09 — P2 — command/tar safety w narzędziach SSH wymaga domknięcia
 
-**Status:** FAIL · **Pewność:** średnia-wysoka  
+**Status:** PASS (remediated 2026-07-21 · PR #9) · **Pewność:** średnia-wysoka  
 **Dowód:** `agent/tools/ssh_orchestrator.py:238-242`,
 `agent/tools/wp_explorer/ssh_connector.py:466`; Bandit B202/B601.
 
@@ -240,7 +240,7 @@ safe extraction z kontrolą resolved path i testy payloadów `../`/symlink.
 
 ### F-10 — P2 — prywatność ma retencję bez egzekucji
 
-**Status:** PARTIAL · **Pewność:** wysoka  
+**Status:** PASS (remediated 2026-07-21 · Wave4 PRIVACY-01; VPS purge evidence pending) · **Pewność:** wysoka  
 **Dowód:** `agent/portal_qualification/lead_store.py:28-52,70-81`.
 
 Lead jest zapisywany po consent i dostaje `expires_at`, ale audyt nie znalazł
@@ -253,7 +253,7 @@ w Telegram/logach, threat model sesji oraz test usunięcia po TTL.
 
 ### F-11 — P2 — workflow jakości nie odpowiada repo
 
-**Status:** FAIL · **Pewność:** wysoka  
+**Status:** PASS (remediated 2026-07-21 · PR #9) · **Pewność:** wysoka  
 **Dowód:** `.agents/workflows/jadzia-test.md:12-18`.
 
 Workflow wymaga `ruff check .`, `mypy .`, wszystkich unit tests i
@@ -266,7 +266,7 @@ nie może oznaczać globalnego `PASS`, jeśli gate opisuje zero wszystkich błę
 
 ### F-12 — P2 — operacje nie mają formalnego SLO i DR
 
-**Status:** PARTIAL · **Pewność:** wysoka  
+**Status:** PARTIAL (runbook+systemd+safe deploy default shipped; restore drill HITL pending) · **Pewność:** wysoka  
 **Dowód:** `deployment/jadzia.service`, `deployment/deploy-to-vps.sh`,
 `.agents/workflows/panic.md`, brak dedykowanych dokumentów SLO/DR.
 
@@ -282,7 +282,7 @@ SLO + alert mapping, DR runbook i udokumentowany restore test.
 
 ### F-13 — P2 — SoT i dowody operacyjne są stare lub sprzeczne
 
-**Status:** FAIL governance · **Pewność:** wysoka
+**Status:** PARTIAL (handoffs ≤15 + tip fields refreshed; prod tip after VPS verify) · **Pewność:** wysoka  
 
 - `brain.md` deklaruje ~93% operational spine, aktywny Marketing OS ~86%;
   metryki mierzą inne mianowniki, ale nie wyjaśniają relacji.
@@ -354,5 +354,6 @@ Audyt nie łączył się z VPS. Po świeżym GO wykonać wyłącznie read-only e
   ręcznie powiązane z aktywnym kodem lub opisane jako warunkowe.
 
 **Audytor:** Cursor Agent, niezależny przebieg read-only/local  
-**Decyzja:** `FAIL repo gate` · `UNVERIFIED production` · `NO DEPLOY`  
-**Następny właściwy task:** `AUD-REM-CI-01`
+**Decyzja:** `LOCAL remediations PASS (F-01..F-11)` · `F-12/F-13 PARTIAL` · `UNVERIFIED production` · `NO DEPLOY without fresh GO`  
+**Następny właściwy task:** fresh GO → `AUD-REM-VPS-VERIFY-01` (see `docs/handoffs/2026-07-21-AUD-REM-VPS-READY.md`)
+**Prod tip (git):** `master` @ `da46c49` (+ Wave3–4 PR when merged)

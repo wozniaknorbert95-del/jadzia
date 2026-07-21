@@ -5,6 +5,7 @@ Returns: (response_text, awaiting_input, input_type, next_task_id)
 
 import asyncio
 import logging
+import os
 from datetime import datetime, timezone
 from typing import Dict, Tuple, Optional
 
@@ -138,16 +139,36 @@ async def execute_changes(
         except Exception as e:
             errors.append(f"{path}: {e}")
             add_error(f"Blad zapisu {path}: {e}", chat_id, source, task_id=task_id)
+            # Stop further writes — partial success must not become COMPLETED.
+            break
 
-    if errors and not written:
-        update_operation_status(OperationStatus.FAILED, chat_id, source, task_id=task_id)
+    if errors:
+        rollback_msg = ""
+        if written:
+            from agent.tools.rest import rollback as restore_backups
+
+            restore = restore_backups(operation_id, chat_id, source)
+            rollback_msg = restore.get("msg", "")
+            update_operation_status(
+                OperationStatus.ROLLED_BACK,
+                chat_id,
+                source,
+                task_id=task_id,
+                files_written=written,
+                rollback=restore,
+            )
+        else:
+            update_operation_status(OperationStatus.FAILED, chat_id, source, task_id=task_id)
         send_alert("task_failed", task_id, "\n".join(errors))
-        # Do NOT clear_state: keep task in DB with status=failed so client can GET /worker/task/{id} and see error
-        return (f"Blad zapisu plikow:\n" + "\n".join(errors), False, None, None)
+        detail = f"Blad zapisu plikow:\n" + "\n".join(errors)
+        if rollback_msg:
+            detail += f"\n\nRollback: {rollback_msg}"
+        return (detail, False, None, None)
 
     update_operation_status(OperationStatus.COMPLETED, chat_id, source, task_id=task_id, files_written=written)
 
-    # Self-healing verification (only when not dry_run)
+    # Self-healing verification (only when not dry_run).
+    # Default True when key missing preserves legacy tasks that omit dry_run after writes.
     if not task.get("dry_run", True):
         from agent.tools.rest import health_check_wordpress
         from api.webhooks import record_deployment_verification
@@ -171,7 +192,12 @@ async def execute_changes(
             }
         else:
             await asyncio.sleep(2)
-            health = await health_check_wordpress("https://zzpackage.flexgrafik.nl", timeout=15)
+            health_url = (
+                os.getenv("WP_HEALTH_CHECK_URL")
+                or os.getenv("SHOP_URL")
+                or "https://zzpackage.flexgrafik.nl"
+            ).rstrip("/")
+            health = await health_check_wordpress(health_url, timeout=15)
 
         timestamp_iso = datetime.now(timezone.utc).isoformat()
         if not health["healthy"]:
@@ -244,8 +270,6 @@ async def execute_changes(
 
     msg = f"✅ Zapisano {len(written)} plików:\n"
     msg += "\n".join(f"- {f}" for f in written)
-    if errors:
-        msg += f"\n\n⚠️ Błędy:\n" + "\n".join(errors)
     msg += "\n\nSprawdź proszę w przeglądarce, czy strona działa. Gdy potwierdzisz, napisz **Tak** (zadanie zostanie zamknięte)."
 
     return (msg, True, "deploy_approval", None)

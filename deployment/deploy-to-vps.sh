@@ -144,14 +144,15 @@ echo "💾 Handling SQLite database..."
 if [ -f "data/jadzia.db" ]; then
     DB_SIZE=$(du -h data/jadzia.db | cut -f1)
     echo "Local database found (size: $DB_SIZE)"
-    read -p "Upload database to VPS? (Y/n): " -n 1 -r
+    echo "Default is NOT to upload — production DB must stay on VPS."
+    read -p "Upload LOCAL database to VPS? (y/N): " -n 1 -r
     echo
-    if [[ ! $REPLY =~ ^[Nn]$ ]]; then
+    if [[ $REPLY =~ ^[Yy]$ ]]; then
         run_ssh "mkdir -p ${VPS_PROJECT_DIR}/data"
         upload_file "data/jadzia.db" "${VPS_PROJECT_DIR}/data/jadzia.db"
         echo -e "${GREEN}✅ Database uploaded${NC}"
     else
-        echo -e "${YELLOW}⚠️  Starting with fresh database${NC}"
+        echo -e "${YELLOW}⚠️  Keeping VPS database (no local upload)${NC}"
         run_ssh "mkdir -p ${VPS_PROJECT_DIR}/data"
     fi
 else
