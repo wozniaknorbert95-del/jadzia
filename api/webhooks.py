@@ -1,13 +1,13 @@
 """Webhook notifications and health metrics callbacks."""
 
+from datetime import UTC, datetime
+
 import httpx
-from datetime import datetime, timezone
-from typing import Optional
 
-from agent.log import log_event, log_error
+from agent.log import log_error, log_event
+from core.webhook_url_guard import CallbackUrlError, redact_callback_url, validate_callback_url
 
-
-_health_metrics: Optional[dict] = None
+_health_metrics: dict | None = None
 
 
 def set_health_metrics(metrics: dict) -> None:
@@ -17,17 +17,19 @@ def set_health_metrics(metrics: dict) -> None:
 
 def record_task_success() -> None:
     if _health_metrics is not None:
-        _health_metrics["last_success"] = datetime.now(timezone.utc).isoformat()
+        _health_metrics["last_success"] = datetime.now(UTC).isoformat()
         _health_metrics["total_tasks"] = _health_metrics.get("total_tasks", 0) + 1
 
 
 def record_task_failure(error: str) -> None:
     if _health_metrics is not None:
         _health_metrics["failed_tasks"] = _health_metrics.get("failed_tasks", 0) + 1
-        _health_metrics.setdefault("errors_last_hour", []).append({
-            "timestamp": datetime.now(timezone.utc).isoformat(),
-            "error": error,
-        })
+        _health_metrics.setdefault("errors_last_hour", []).append(
+            {
+                "timestamp": datetime.now(UTC).isoformat(),
+                "error": error,
+            }
+        )
 
 
 def record_deployment_verification(
@@ -54,24 +56,44 @@ async def notify_webhook(
 ) -> None:
     if not webhook_url:
         return
+    try:
+        validated_url = validate_callback_url(webhook_url)
+    except CallbackUrlError as exc:
+        log_error(
+            f"[WEBHOOK] Rejected callback: {type(exc).__name__}",
+            task_id=task_id,
+        )
+        return
+    if validated_url is None:
+        return
+    callback_target = redact_callback_url(validated_url)
 
     payload = {
         "task_id": task_id,
         "status": status,
-        "timestamp": datetime.now(timezone.utc).isoformat(),
+        "timestamp": datetime.now(UTC).isoformat(),
         "result": result,
     }
 
     if status == "completed":
         record_task_success()
     try:
-        log_event("webhook", f"[WEBHOOK] Calling {webhook_url}", task_id=task_id)
-        async with httpx.AsyncClient(timeout=10.0) as client:
-            response = await client.post(webhook_url, json=payload)
+        log_event("webhook", f"[WEBHOOK] Calling {callback_target}", task_id=task_id)
+        async with httpx.AsyncClient(timeout=10.0, follow_redirects=False) as client:
+            response = await client.post(validated_url, json=payload)
+            if response.is_redirect:
+                log_error(
+                    f"[WEBHOOK] Rejected redirect from {callback_target}",
+                    task_id=task_id,
+                )
+                return
             response.raise_for_status()
         log_event("webhook", f"[WEBHOOK] Success: {response.status_code}", task_id=task_id)
-    except Exception as e:
-        log_error(f"[WEBHOOK] Failed to notify {webhook_url}: {str(e)}", task_id=task_id)
+    except Exception as exc:
+        log_error(
+            f"[WEBHOOK] Failed to notify {callback_target}: {type(exc).__name__}",
+            task_id=task_id,
+        )
 
 
 __all__ = [

@@ -8,10 +8,10 @@ from typing import Any, Dict, List, Literal, Optional
 
 from pydantic import BaseModel, ConfigDict, Field, field_validator, model_validator
 
-
 # ──────────────────────────────────────────────
 # Chat / Agent models
 # ──────────────────────────────────────────────
+
 
 class ChatRequest(BaseModel):
     message: str
@@ -25,11 +25,12 @@ class ChatResponse(BaseModel):
 
 
 class CustomerChatRequest(BaseModel):
-    session_id: str
-    message: str
+    session_id: Optional[str] = Field(default=None, max_length=128)
+    message: str = Field(min_length=1, max_length=1500)
 
 
 class CustomerChatResponse(BaseModel):
+    session_id: str = ""
     reply: str
     lead: dict = Field(default_factory=dict)
     lead_score: Optional[int] = None
@@ -182,9 +183,7 @@ class WooOrderWebhookRequest(BaseModel):
                 or self.payment_mode != "live"
                 or self.checkout_environment != "production"
             ):
-                raise ValueError(
-                    "real INT-002 v2 order requires paid live payment in production"
-                )
+                raise ValueError("real INT-002 v2 order requires paid live payment in production")
         elif self.classification == "test":
             if self.is_test is not True or not self.test_reason:
                 raise ValueError("test INT-002 v2 order requires is_test=true and test_reason")
@@ -327,9 +326,7 @@ class ContentCalendarEntry(BaseModel):
     title: str
     body_nl: str
     scheduled_at: str
-    status: Literal[
-        "draft", "pending_approval", "approved", "published", "cancelled", "failed"
-    ]
+    status: Literal["draft", "pending_approval", "approved", "published", "cancelled", "failed"]
     source_order_id: Optional[str] = None
     fb_post_id: Optional[str] = None
     publish_result: Optional[str] = None
@@ -345,9 +342,7 @@ class ContentCalendarPublishStatusResponse(BaseModel):
     """INT-011 publish status for a calendar entry."""
 
     entry_id: str
-    status: Literal[
-        "draft", "pending_approval", "approved", "published", "cancelled", "failed"
-    ]
+    status: Literal["draft", "pending_approval", "approved", "published", "cancelled", "failed"]
     fb_post_id: Optional[str] = None
     publish_result: Optional[str] = None
     platform: Literal["facebook", "tiktok"]
@@ -395,11 +390,22 @@ class RollbackResponse(BaseModel):
 # Worker Task API models
 # ──────────────────────────────────────────────
 
+
 class WorkerTaskRequest(BaseModel):
     instruction: str
     chat_id: str
     webhook_url: Optional[str] = None
     test_mode: bool = False
+
+    @field_validator("webhook_url")
+    @classmethod
+    def validate_webhook_url(cls, value: Optional[str]) -> Optional[str]:
+        from core.webhook_url_guard import CallbackUrlError, validate_callback_url
+
+        try:
+            return validate_callback_url(value)
+        except CallbackUrlError as exc:
+            raise ValueError(str(exc)) from exc
 
 
 class WorkerTaskCreateResponse(BaseModel):
@@ -453,6 +459,7 @@ class WorkerTaskResponse(BaseModel):
 # Telegram models
 # ──────────────────────────────────────────────
 
+
 class TelegramUser(BaseModel):
     id: int
     is_bot: bool = False
@@ -505,6 +512,7 @@ class TelegramWebhookRequest(BaseModel):
 # Health / Metrics models
 # ──────────────────────────────────────────────
 
+
 class DeploymentVerification(BaseModel):
     timestamp: Optional[str] = None
     healthy: Optional[bool] = None
@@ -517,7 +525,9 @@ class HealthMetrics(BaseModel):
     total_tasks: int = 0
     failed_tasks: int = 0
     errors_last_hour: List[dict] = []
-    last_deployment_verification: DeploymentVerification = Field(default_factory=DeploymentVerification)
+    last_deployment_verification: DeploymentVerification = Field(
+        default_factory=DeploymentVerification
+    )
 
 
 class WorkerHealthResponse(BaseModel):
@@ -539,6 +549,7 @@ class WorkerHealthResponse(BaseModel):
 # ──────────────────────────────────────────────
 # Dashboard models
 # ──────────────────────────────────────────────
+
 
 class DashboardMetrics(BaseModel):
     total_tasks: int = 0
@@ -562,6 +573,7 @@ class TaskListItem(BaseModel):
 # ──────────────────────────────────────────────
 # Agent / Operation models
 # ──────────────────────────────────────────────
+
 
 class OperationState(BaseModel):
     id: Optional[str] = None
@@ -595,6 +607,7 @@ class SessionState(BaseModel):
 # ──────────────────────────────────────────────
 # Cost tracking models
 # ──────────────────────────────────────────────
+
 
 class CostStats(BaseModel):
     input_tokens: int = 0

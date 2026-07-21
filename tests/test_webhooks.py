@@ -1,7 +1,8 @@
 """Tests for webhook notifications."""
 
+from unittest.mock import AsyncMock, Mock, patch
+
 import pytest
-from unittest.mock import Mock, patch, AsyncMock
 
 from api.webhooks import notify_webhook
 
@@ -9,24 +10,25 @@ from api.webhooks import notify_webhook
 @pytest.mark.asyncio
 async def test_notify_webhook_success():
     """Webhook notification should POST to URL."""
-    webhook_url = "http://director:9000/callback"
+    webhook_url = "https://callbacks.example.test/callback"
     task_id = "test_task_1"
 
     with patch("api.webhooks.httpx.AsyncClient") as mock_client:
         mock_response = Mock()
         mock_response.status_code = 200
+        mock_response.is_redirect = False
         mock_response.raise_for_status = Mock()
 
         mock_client.return_value.__aenter__.return_value.post = AsyncMock(
             return_value=mock_response
         )
-
-        await notify_webhook(
-            webhook_url=webhook_url,
-            task_id=task_id,
-            status="completed",
-            result={"files": ["test.css"]},
-        )
+        with patch("api.webhooks.validate_callback_url", return_value=webhook_url):
+            await notify_webhook(
+                webhook_url=webhook_url,
+                task_id=task_id,
+                status="completed",
+                result={"files": ["test.css"]},
+            )
 
         mock_client.return_value.__aenter__.return_value.post.assert_called_once()
         call_args = mock_client.return_value.__aenter__.return_value.post.call_args
@@ -38,19 +40,20 @@ async def test_notify_webhook_success():
 @pytest.mark.asyncio
 async def test_notify_webhook_failure_does_not_raise():
     """Webhook failure should not raise exception."""
-    webhook_url = "http://invalid:9999/callback"
+    webhook_url = "https://callbacks.example.test/callback"
 
     with patch("api.webhooks.httpx.AsyncClient") as mock_client:
         mock_client.return_value.__aenter__.return_value.post = AsyncMock(
             side_effect=Exception("Connection failed")
         )
 
-        await notify_webhook(
-            webhook_url=webhook_url,
-            task_id="test",
-            status="completed",
-            result={},
-        )
+        with patch("api.webhooks.validate_callback_url", return_value=webhook_url):
+            await notify_webhook(
+                webhook_url=webhook_url,
+                task_id="test",
+                status="completed",
+                result={},
+            )
 
 
 @pytest.mark.asyncio
@@ -59,7 +62,7 @@ async def test_webhook_called_on_task_completion():
     from agent.nodes.approval import execute_changes
 
     task_id = "webhook_task_1"
-    webhook_url = "http://test/webhook"
+    webhook_url = "https://callbacks.example.test/webhook"
     state = {
         "tasks": {
             task_id: {
