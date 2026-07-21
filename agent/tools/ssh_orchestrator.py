@@ -6,20 +6,29 @@ Also SSHOrchestrator class with verify_deployment for self-healing.
 
 import asyncio
 import os
+import shlex
 import time
 from pathlib import Path
 from typing import Optional, Tuple, List, Dict, Any
 
 from dotenv import load_dotenv
+
 load_dotenv()
 
-from agent.guardrails import validate_operation, validate_content, check_wordpress_safety, OperationType, get_safe_path
+from agent.guardrails import (
+    validate_operation,
+    validate_content,
+    check_wordpress_safety,
+    OperationType,
+    get_safe_path,
+)
 from agent.state import mark_file_written
 from agent.log import log_event, log_error, EventType
 
 
 class SecurityError(Exception):
     """Raised when security validation fails."""
+
     pass
 
 
@@ -187,7 +196,12 @@ def write_file(
         safety_result = check_wordpress_safety(content, path)
         if not safety_result.get("safe", True):
             error_msg = f"PHP Security validation failed: {safety_result.get('reason', 'unknown')}"
-            log_error(error_msg, context={"chat_id": chat_id, "path": path}, operation_id=operation_id, task_id=task_id)
+            log_error(
+                error_msg,
+                context={"chat_id": chat_id, "path": path},
+                operation_id=operation_id,
+                task_id=task_id,
+            )
             raise SecurityError(error_msg)
         log_event(
             EventType.FILE_WRITE,
@@ -201,7 +215,9 @@ def write_file(
     try:
         current_content = read_file_ssh_bytes(HOST, PORT, USER, PASSWORD, full_path, KEY_PATH)
         write_file_ssh_bytes(HOST, PORT, USER, PASSWORD, backup_path, current_content, KEY_PATH)
-        log_event(EventType.FILE_BACKUP, f"Backup: {path}", operation_id=operation_id, task_id=task_id)
+        log_event(
+            EventType.FILE_BACKUP, f"Backup: {path}", operation_id=operation_id, task_id=task_id
+        )
     except FileNotFoundError:
         backup_path = None
     write_file_ssh(HOST, PORT, USER, PASSWORD, full_path, content, KEY_PATH)
@@ -229,22 +245,22 @@ def list_directory(path: str = "", recursive: bool = False) -> Tuple[bool, List[
         full_path = get_safe_path(BASE_PATH, path)
     else:
         full_path = BASE_PATH.rstrip("/")
-    return list_directory_ssh(HOST, PORT, USER, PASSWORD, full_path, recursive=recursive, key_path=KEY_PATH)
+    return list_directory_ssh(
+        HOST, PORT, USER, PASSWORD, full_path, recursive=recursive, key_path=KEY_PATH
+    )
 
 
 @with_retry(max_attempts=3)
 def list_files(pattern: str = "*", directory: str = "") -> List[str]:
     """List files on server matching pattern. Returns relative paths."""
-    base = BASE_PATH
-    if directory:
-        base = f"{base.rstrip('/')}/{directory.lstrip('/')}"
-    cmd = f"find {base} -name '{pattern}' -type f 2>/dev/null | head -100"
+    if not pattern or "/" in pattern or "\\" in pattern or "\x00" in pattern:
+        raise ValueError("Pattern must be a filename glob without path separators.")
+    base = get_safe_path(BASE_PATH, directory) if directory else BASE_PATH.rstrip("/")
+    cmd = f"find {shlex.quote(base)} -name {shlex.quote(pattern)} -type f 2>/dev/null | head -100"
     success, stdout, _ = exec_command_ssh(HOST, PORT, USER, PASSWORD, cmd, KEY_PATH)
     files = stdout.strip().split("\n")
     relative = [
-        f.replace(BASE_PATH.rstrip("/") + "/", "")
-        for f in files
-        if f and f.startswith(BASE_PATH)
+        f.replace(BASE_PATH.rstrip("/") + "/", "") for f in files if f and f.startswith(BASE_PATH)
     ]
     return [f for f in relative if f]
 

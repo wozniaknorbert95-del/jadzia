@@ -12,6 +12,8 @@ from typing import Tuple, List, Optional, Callable, Dict, Any
 
 from dotenv import load_dotenv
 
+from agent.tools.ssh_host_policy import configure_host_key_policy, verify_host_key_fingerprint
+
 
 def with_retry(
     max_attempts: int = 3,
@@ -20,6 +22,7 @@ def with_retry(
     exceptions: tuple = (Exception,),
 ):
     """Decorator adding retry with exponential backoff (sync)."""
+
     def decorator(func: Callable):
         @wraps(func)
         def wrapper(*args, **kwargs):
@@ -34,6 +37,7 @@ def with_retry(
                         raise
                     try:
                         from agent.log import log_event
+
                         log_event(
                             "retry",
                             f"[RETRY] Attempt {attempt}/{max_attempts} failed: {str(e)}. Retrying in {current_delay}s...",
@@ -43,7 +47,9 @@ def with_retry(
                     time.sleep(current_delay)
                     current_delay *= backoff
             raise last_error
+
         return wrapper
+
     return decorator
 
 
@@ -54,6 +60,7 @@ def async_with_retry(
     exceptions: tuple = (Exception,),
 ):
     """Decorator adding retry with exponential backoff (async)."""
+
     def decorator(func: Callable):
         @wraps(func)
         async def wrapper(*args, **kwargs):
@@ -68,6 +75,7 @@ def async_with_retry(
                         raise
                     try:
                         from agent.log import log_event
+
                         log_event(
                             "retry",
                             f"[RETRY] Attempt {attempt}/{max_attempts} failed: {str(e)}. Retrying in {current_delay}s...",
@@ -77,12 +85,15 @@ def async_with_retry(
                     await asyncio.sleep(current_delay)
                     current_delay *= backoff
             raise last_error
+
         return wrapper
+
     return decorator
 
 
 class ConnectionError(Exception):
     """Błąd połączenia z serwerem"""
+
     pass
 
 
@@ -109,8 +120,9 @@ class SSHConnection:
 
     def __enter__(self):
         import paramiko
+
         self._ssh = paramiko.SSHClient()
-        self._ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
+        configure_host_key_policy(self._ssh)
         connect_kwargs = {
             "hostname": self._host,
             "port": self._port,
@@ -124,6 +136,7 @@ class SSHConnection:
         if not connect_kwargs.get("key_filename") and not connect_kwargs.get("password"):
             raise ValueError("Provide key_path or password")
         self._ssh.connect(**connect_kwargs)
+        verify_host_key_fingerprint(self._ssh)
         self._sftp = self._ssh.open_sftp()
         return self
 
@@ -149,11 +162,19 @@ class SSHConnection:
 
     def exec_command(self, cmd: str, timeout: int = 30) -> Tuple[str, str]:
         stdin, stdout, stderr = self._ssh.exec_command(cmd, timeout=timeout)
-        return stdout.read().decode("utf-8", errors="replace"), stderr.read().decode("utf-8", errors="replace")
+        return stdout.read().decode("utf-8", errors="replace"), stderr.read().decode(
+            "utf-8", errors="replace"
+        )
 
 
 def _conn_kwargs(host, port, username, password, key_path):
-    return {"host": host, "port": port, "username": username, "password": password, "key_path": key_path}
+    return {
+        "host": host,
+        "port": port,
+        "username": username,
+        "password": password,
+        "key_path": key_path,
+    }
 
 
 def get_ssh_client(timeout: int = 30) -> Optional[Any]:
@@ -182,8 +203,9 @@ def get_ssh_client(timeout: int = 30) -> Optional[Any]:
 
     try:
         import paramiko
+
         client = paramiko.SSHClient()
-        client.set_missing_host_key_policy(paramiko.AutoAddPolicy())
+        configure_host_key_policy(client)
         connect_kwargs = {
             "hostname": host,
             "port": port,
@@ -195,6 +217,7 @@ def get_ssh_client(timeout: int = 30) -> Optional[Any]:
         if password:
             connect_kwargs["password"] = password
         client.connect(**connect_kwargs)
+        verify_host_key_fingerprint(client)
         return client
     except Exception:
         return None
