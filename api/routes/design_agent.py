@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import os
+from typing import Any
 
 from fastapi import APIRouter, File, Form, Header, Request, UploadFile
 
@@ -13,7 +14,7 @@ router = APIRouter(tags=["design-agent"])
 
 
 @router.get("/api/v1/design-agent/health")
-async def design_agent_health() -> dict:
+async def design_agent_health() -> dict[str, Any]:
     """Public readiness probe for Commander system map / Agenci INSPIRE hop."""
     provider = (os.getenv("INSPIRE_GENERATOR_PROVIDER") or "stub").strip() or "stub"
     return {
