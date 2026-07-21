@@ -159,12 +159,22 @@ def create_app() -> FastAPI:
 
         Path("logs").mkdir(exist_ok=True)
         health_metrics["startup_time"] = datetime.now(timezone.utc).isoformat()
+        from api.webhooks import set_health_metrics
 
-        # Clean up old sessions
+        # Wire process-local metrics store so record_task_* updates /worker/health.
+        set_health_metrics(health_metrics)
+
+        # Clean up old sessions + expired portal leads (GDPR retention)
         try:
             cleanup_old_sessions(days=7)
         except Exception as e:
             _log.warning("Session cleanup failed: %s", e)
+        try:
+            from agent.portal_qualification.lead_store import purge_expired_portal_qual_leads
+
+            purge_expired_portal_qual_leads()
+        except Exception as e:
+            _log.warning("Portal lead retention purge failed: %s", e)
 
         # Start worker loop
         try:

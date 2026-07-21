@@ -34,12 +34,18 @@ def get_connection() -> sqlite3.Connection:
             # Ensure data directory exists
             os.makedirs(os.path.dirname(DB_PATH), exist_ok=True)
 
-            # Create connection
-            _local.conn = sqlite3.connect(DB_PATH, check_same_thread=False)
+            # Create connection with busy timeout (ms) for lock waits
+            _local.conn = sqlite3.connect(
+                DB_PATH,
+                check_same_thread=False,
+                timeout=30.0,
+            )
             _local.conn.row_factory = sqlite3.Row  # Access columns by name
 
-            # Enable foreign keys
+            # Enable foreign keys + WAL for multi-reader / worker contention
             _local.conn.execute("PRAGMA foreign_keys = ON")
+            _local.conn.execute("PRAGMA journal_mode = WAL")
+            _local.conn.execute("PRAGMA busy_timeout = 30000")
 
             # Initialize schema
             _init_schema(_local.conn)

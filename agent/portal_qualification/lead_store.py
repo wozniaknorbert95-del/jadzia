@@ -72,12 +72,35 @@ def _maybe_hot_lead_alert(profile: Dict[str, Optional[str]], preset_id: str) -> 
 
         from agent.customer_agent import _send_telegram_alert_sync
 
-        summary = json.dumps(profile, ensure_ascii=False)
+        summary = {
+            "industry": profile.get("industry"),
+            "goal": profile.get("goal"),
+            "vehicle": profile.get("vehicle"),
+            "budget_tier": profile.get("budget_tier"),
+        }
         msg = (
             f"🔥 <b>PORTAL QUAL LEAD</b>\n"
             f"<b>Preset:</b> {preset_id}\n"
-            f"<b>Profiel:</b> <code>{summary}</code>"
+            f"<b>Profiel:</b> <code>{json.dumps(summary, ensure_ascii=False)}</code>"
         )
         Thread(target=_send_telegram_alert_sync, args=(msg,), daemon=True).start()
     except Exception as e:
         logger.warning("[PortalQual] Hot lead alert skipped: %s", e)
+
+
+def purge_expired_portal_qual_leads(*, now: datetime | None = None) -> int:
+    """Delete portal qualification leads past expires_at. Returns rows removed."""
+    cutoff = (now or datetime.now(timezone.utc)).isoformat()
+    try:
+        with db_transaction() as conn:
+            cur = conn.execute(
+                "DELETE FROM portal_qual_leads WHERE expires_at IS NOT NULL AND expires_at < ?",
+                (cutoff,),
+            )
+            deleted = int(cur.rowcount or 0)
+        if deleted:
+            logger.info("[PortalQual] Purged %s expired lead(s)", deleted)
+        return deleted
+    except Exception as e:
+        logger.error("[PortalQual] Retention purge failed: %s", e, exc_info=True)
+        return 0

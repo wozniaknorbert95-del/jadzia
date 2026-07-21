@@ -35,6 +35,12 @@ CPUQuota=200%
 # Security hardening
 NoNewPrivileges=true
 PrivateTmp=true
+ProtectSystem=strict
+ProtectHome=true
+PrivateDevices=true
+RestrictAddressFamilies=AF_UNIX AF_INET AF_INET6
+ReadWritePaths=/opt/jadzia/data /opt/jadzia/logs /opt/jadzia/venv
+# Single-process invariant: do not run multiple uvicorn workers (duplicated schedulers).
 
 [Install]
 WantedBy=multi-user.target
