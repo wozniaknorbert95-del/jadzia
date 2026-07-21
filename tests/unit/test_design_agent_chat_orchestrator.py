@@ -12,6 +12,12 @@ from agent.inspire import chat_session_store
 from agent.inspire.chat_advisor import SESSIONS
 from api.app import create_app
 
+_INSPIRE_ROOT = Path(__file__).resolve().parents[3] / "flexgrafik-inspire"
+pytestmark = pytest.mark.skipif(
+    not (_INSPIRE_ROOT / "engine").is_dir(),
+    reason="flexgrafik-inspire engine not available",
+)
+
 
 @pytest.fixture(autouse=True)
 def _orch_env(monkeypatch: pytest.MonkeyPatch, tmp_path: Path) -> None:

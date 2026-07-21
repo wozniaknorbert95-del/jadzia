@@ -16,6 +16,11 @@ _TIER_MATRIX = (
     Path(__file__).resolve().parents[3] / "flexgrafik-inspire" / "brain" / "tier-matrix.json"
 )
 
+pytestmark = pytest.mark.skipif(
+    not _TIER_MATRIX.is_file(),
+    reason="flexgrafik-inspire tier matrix not available",
+)
+
 
 @pytest.fixture(autouse=True)
 def _tier_matrix_env(monkeypatch: pytest.MonkeyPatch) -> None:

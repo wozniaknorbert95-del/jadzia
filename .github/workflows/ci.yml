@@ -38,6 +38,9 @@ jobs:
       - name: Install dependencies
         run: uv sync --locked --all-extras
       - name: Run full blocking test suite with coverage
+        env:
+          ANTHROPIC_API_KEY: sk-ant-test-ci-placeholder
+          JWT_SECRET: test-jwt-secret-for-ci-only-32b
         run: uv run --locked python -m pytest tests/ -v --cov=agent --cov=api --cov=core --cov=cli --cov-report=term-missing --cov-report=xml:coverage.xml
       - name: Upload coverage artifact
         if: always()
