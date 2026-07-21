@@ -39,8 +39,9 @@ ProtectSystem=strict
 ProtectHome=true
 PrivateDevices=true
 RestrictAddressFamilies=AF_UNIX AF_INET AF_INET6
-ReadWritePaths=/opt/jadzia/data /opt/jadzia/logs /opt/jadzia/venv
+ReadWritePaths=/opt/jadzia/data /opt/jadzia/logs /opt/jadzia/venv /opt/jadzia/secrets
 # Single-process invariant: do not run multiple uvicorn workers (duplicated schedulers).
+# SSH key + known_hosts live under /opt/jadzia/secrets (ProtectHome blocks /root/.ssh).
 
 [Install]
 WantedBy=multi-user.target

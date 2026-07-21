@@ -2,12 +2,30 @@
 
 from __future__ import annotations
 
+import os
+from typing import Any
+
 from fastapi import APIRouter, File, Form, Header, Request, UploadFile
 
 from agent.design_agent_service import process_design_agent_generate
 from core.models import DesignAgentGenerateResponse
 
 router = APIRouter(tags=["design-agent"])
+
+
+@router.get("/api/v1/design-agent/health")
+async def design_agent_health() -> dict[str, Any]:
+    """Public readiness probe for Commander system map / Agenci INSPIRE hop."""
+    provider = (os.getenv("INSPIRE_GENERATOR_PROVIDER") or "stub").strip() or "stub"
+    return {
+        "status": "ok",
+        "service": "design-agent",
+        "inspire_provider": provider,
+        "routes": {
+            "generate": "/api/v1/design-agent/generate",
+            "chat": "/api/v1/design-agent/chat",
+        },
+    }
 
 
 @router.post("/api/v1/design-agent/generate", response_model=DesignAgentGenerateResponse)

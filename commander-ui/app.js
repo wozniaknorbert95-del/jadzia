@@ -299,17 +299,31 @@ async function loadHome() {
     throw e;
   }
 
-  const [agents, snap, settings] = await Promise.all([
+  const [agents, snap, settings, opsHealth] = await Promise.all([
     api("/api/v1/agents").catch(() => ({ agents: [] })),
     api("/api/v1/commander/analytics/snapshot").catch(() => null),
     api("/api/v1/commander/settings").catch(() => ({})),
+    fetch(`${API_BASE}/worker/health`)
+      .then((r) => (r.ok ? r.json() : null))
+      .catch(() => null),
   ]);
   const slaBad = (agents.agents || []).filter((a) => !a.sla_ok).length;
   const fresh = snap?.freshness?.ga4?.status || "—";
-  const worker = snap?.freshness?.worker?.status || "—";
-  const staleNote = fresh === "stale" || worker === "stale" ? " · Dane nieaktualne" : "";
+  const workerFresh = snap?.freshness?.worker?.status || "—";
+  const staleNote = fresh === "stale" || workerFresh === "stale" ? " · Dane nieaktualne" : "";
+  const opsParts = [];
+  if (opsHealth) {
+    const st = opsHealth.status || "—";
+    const ssh = opsHealth.ssh_connection || "—";
+    const sql = opsHealth.sqlite_connection === true ? "ok" : opsHealth.sqlite_connection === false ? "err" : "—";
+    const loop = opsHealth.worker_loop_alive === true ? "alive" : opsHealth.worker_loop_alive === false ? "down" : "—";
+    const up = typeof opsHealth.uptime_seconds === "number" ? `${Math.round(opsHealth.uptime_seconds)}s` : "—";
+    opsParts.push(`Ops: ${st}`, `SSH: ${ssh}`, `SQLite: ${sql}`, `Loop: ${loop}`, `Up: ${up}`);
+  } else {
+    opsParts.push("Ops: unavailable");
+  }
   healthEl.textContent =
-    `Agenci SLA breach: ${slaBad} · GA4: ${fresh} · Worker: ${worker}${staleNote}`;
+    `${opsParts.join(" · ")} · SLA breach: ${slaBad} · GA4: ${fresh} · Freshness: ${workerFresh}${staleNote}`;
   document.getElementById("delegat-banner").hidden = !!settings.delegat_configured;
   bindSystemMapHops();
 }

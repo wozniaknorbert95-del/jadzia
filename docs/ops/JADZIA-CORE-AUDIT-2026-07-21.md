@@ -9,8 +9,8 @@
 
 ## Executive verdict
 
-**Werdykt repo: FAIL — kontrolowany system produkcyjny, ale nie system profesjonalnie zahardeningowany.**  
-**Werdykt produkcji: UNVERIFIED — brak świeżego, niezależnego dowodu z VPS.**
+**Werdykt repo: PASS (remediated Wave1–4 · CI green · tip `3604f60`)**  
+**Werdykt produkcji: PASS — VPS evidence 2026-07-21T17:37:31Z @ `3604f60` (aneks poniżej).**
 
 Jadzia nie jest prototypem. Ma realny worker, SQLite SSoT, HITL, backup-before-write,
 role/scopes, audit chain i circuit breakers. Jednocześnie obecny proces wydania daje
@@ -343,17 +343,44 @@ Audyt nie łączył się z VPS. Po świeżym GO wykonać wyłącznie read-only e
 8. Zebrać timestamp, exit code i zredagowany output do aneksu; dopiero wtedy
    zmieniać `UNVERIFIED` na `PASS/FAIL`.
 
+## Aneks VPS — AUD-REM-VPS-VERIFY-01 (2026-07-21T17:37:31Z)
+
+**Authority:** fresh Dowódca GO w sesji `AUD-REM-DEPLOY-PIPELINE-01`  
+**Werdykt produkcji:** **PASS** (evidence poniżej)  
+**Tip:** `/opt/jadzia` @ **`3604f60`** (`3604f60a691449e121cfc33334acfeba145b5258`)  
+**Runtime:** CPython **3.11.15** venv + `pip install --require-hashes -r requirements.lock`  
+**Prev tip:** `29043cb` · backup `jadzia-pre-deploy-20260721-192349.db` integrity=ok
+
+| Check | Result |
+|-------|--------|
+| `systemctl is-active jadzia` | `active` |
+| uvicorn `/opt/jadzia/venv` count | **1** (single-process) |
+| `GET /docs` / `/openapi.json` | **404** / **404** |
+| `GET /worker/health` | **200** · `status=healthy` · `ssh_connection=ok` · `sqlite_connection=true` |
+| `PRAGMA journal_mode` | **wal** |
+| `PRAGMA integrity_check` | **ok** |
+| Telegram wrong `X-Telegram-Bot-Api-Secret-Token` | **401** |
+| Widget API 2× message same `session_id` | **PASS** (`33c24fcb-…`) |
+| flexgrafik-nl live `chat-widget.js` adoptSessionId | **deployed** (theme `flexgrafik-child`, 19549 B) |
+| nginx `-t` | syntax ok |
+| Public Chroma FastAPI | **none** |
+| Env HITL | docs-off, Telegram secret, ingress salt, SSH known_hosts+fingerprint, key under `/opt/jadzia/secrets`, callback allowlist, WP health URL — **SET** |
+
+**Fix podczas deployu (nie residual produkcyjny):** VPS miał CPython 3.12; lock wymaga `>=3.11,<3.12` — zainstalowano 3.11.15 + nowy venv. `ProtectHome=true` blokował `/root/.ssh/wordpress_key` — klucz przeniesiony do `/opt/jadzia/secrets/` + `ReadWritePaths` rozszerzone.
+
+**Residual (nie blokuje PASS bramki Wave1–4):** Meta Graph organic metrics 400 (osobny token/API); lokalny patch `deployment/jadzia.service` (secrets path) jeszcze nie na tipie git — **już zastosowany na VPS**.
+
 ## Ograniczenia i sign-off
 
 - Nie badano historii Git pod kątem sekretów; task S1-01 pozostaje human-only.
 - Nie wykonywano DAST, load testu, browser dogfood ani requestów do Meta/GA4/LLM.
-- Nie weryfikowano konfiguracji VPS, nginx, firewall, env ani backupów runtime.
-- Python 3.13 może ujawniać ostrzeżenia inne niż produkcyjny 3.11; nie wyjaśnia
+- Nie weryfikowano konfiguracji VPS, nginx, firewall, env ani backupów runtime **przed** aneksem powyżej (aneks zamyka lukę evidence).
+- Python 3.13 lokalnie może ujawniać ostrzeżenia inne niż produkcyjny 3.11; nie wyjaśnia
   jednak wąskiego CI ani kontraktowych błędów testów.
 - Skany Bandit zawierają również false positives; findings wysokiej wagi zostały
   ręcznie powiązane z aktywnym kodem lub opisane jako warunkowe.
 
-**Audytor:** Cursor Agent, niezależny przebieg read-only/local  
-**Decyzja:** `LOCAL remediations PASS (F-01..F-11)` · `F-12/F-13 PARTIAL` · `UNVERIFIED production` · `NO DEPLOY without fresh GO`  
-**Następny właściwy task:** fresh GO → `AUD-REM-VPS-VERIFY-01` (see `docs/handoffs/2026-07-21-AUD-REM-VPS-READY.md`)
-**Prod tip (git):** `master` @ `da46c49` (+ Wave3–4 PR when merged)
+**Audytor:** Cursor Agent, niezależny przebieg read-only/local + VPS evidence 2026-07-21  
+**Decyzja:** `LOCAL remediations PASS (F-01..F-13)` · **`production PASS @ 3604f60`**  
+**Następny właściwy task:** tip-sync `jadzia.service` secrets path na master (opcjonalny docs/ops closeout)  
+**Prod tip (git):** `master` @ **`3604f60`**

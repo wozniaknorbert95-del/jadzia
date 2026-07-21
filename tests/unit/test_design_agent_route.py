@@ -49,6 +49,17 @@ def test_design_agent_route_registered(client: TestClient) -> None:
     assert openapi.status_code == 200
     paths = set(openapi.json().get("paths", {}).keys())
     assert "/api/v1/design-agent/generate" in paths
+    assert "/api/v1/design-agent/health" in paths
+
+
+def test_design_agent_health_200(client: TestClient) -> None:
+    resp = client.get("/api/v1/design-agent/health")
+    assert resp.status_code == 200
+    body = resp.json()
+    assert body["status"] == "ok"
+    assert body["service"] == "design-agent"
+    assert "inspire_provider" in body
+    assert body["routes"]["generate"].endswith("/design-agent/generate")
 
 
 @patch("api.routes.design_agent.process_design_agent_generate", new_callable=AsyncMock)

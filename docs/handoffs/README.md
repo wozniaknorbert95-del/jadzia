@@ -2,11 +2,12 @@
 
 Session continuity for `/vibe-init`: read the **last 2** handoffs from this folder.
 
-## Start here — 2026-07-21 audit remediation
+## Start here — 2026-07-21
 
-1. [`2026-07-21-AUD-REM-WAVE3-4-CLOSE.md`](2026-07-21-AUD-REM-WAVE3-4-CLOSE.md) — Wave3–4 local implementation
-2. [`2026-07-21-AUD-REM-VPS-READY.md`](2026-07-21-AUD-REM-VPS-READY.md) — **NEXT human:** fresh GO VPS deploy + verify
-3. [`2026-07-21-AUD-REM-GIT-DEPLOY-01-CLOSE.md`](2026-07-21-AUD-REM-GIT-DEPLOY-01-CLOSE.md) — PR #9 merged @ `da46c49`
+1. [`2026-07-21-CMD-DASH-TRUST-01-CLOSE.md`](2026-07-21-CMD-DASH-TRUST-01-CLOSE.md) — **NEXT:** merge+deploy trust pack / then PARKS-LIVE
+2. [`2026-07-21-CMD-DASH-AUDIT-01-CLOSE.md`](2026-07-21-CMD-DASH-AUDIT-01-CLOSE.md) — utilization audit
+3. [`docs/ops/COMMANDER-DASHBOARD-AUDIT-2026-07-21.md`](../ops/COMMANDER-DASHBOARD-AUDIT-2026-07-21.md)
+4. [`2026-07-21-AUD-REM-DEPLOY-PIPELINE-CLOSE.md`](2026-07-21-AUD-REM-DEPLOY-PIPELINE-CLOSE.md) — VPS PASS @ `3604f60`
 
 ## Program + audit SoT
 
