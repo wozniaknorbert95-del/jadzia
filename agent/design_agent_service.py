@@ -7,9 +7,11 @@ import logging
 import os
 import sys
 from pathlib import Path
+from typing import Any
 
 from fastapi import HTTPException, UploadFile
 
+from agent.rate_store import check_and_record
 from core.models import (
     DesignAgentGenerateResponse,
     DesignAgentMockupItem,
@@ -17,8 +19,6 @@ from core.models import (
 )
 
 logger = logging.getLogger(__name__)
-
-from agent.rate_store import check_and_record
 
 _RATE_LIMIT = 2
 _RATE_WINDOW_SEC = 3600
@@ -192,7 +192,7 @@ def _verify_api_key(header_key: str | None) -> None:
         raise HTTPException(status_code=401, detail="Ongeldige API-sleutel.")
 
 
-def _parse_json_list(raw: str) -> list:
+def _parse_json_list(raw: str) -> list[Any]:
     try:
         val = json.loads(raw) if raw else []
         return val if isinstance(val, list) else []
@@ -210,13 +210,16 @@ def _resolve_positionering(positionering: str, stijl: str) -> str:
     return "balanced"
 
 
-def _load_ssot_rows(ssot_path: Path) -> list[dict]:
+def _load_ssot_rows(ssot_path: Path) -> list[dict[str, Any]]:
     if not ssot_path.is_file():
         return []
-    return json.loads(ssot_path.read_text(encoding="utf-8"))
+    raw_rows: object = json.loads(ssot_path.read_text(encoding="utf-8"))
+    if not isinstance(raw_rows, list):
+        return []
+    return [dict(row) for row in raw_rows if isinstance(row, dict)]
 
 
-def _ssot_product(rows: list[dict], sku: str) -> tuple[str, float]:
+def _ssot_product(rows: list[dict[str, Any]], sku: str) -> tuple[str, float]:
     for row in rows:
         if row.get("sku") == sku:
             return str(row.get("naam", sku)), float(row.get("price_suggested", 0))
@@ -330,8 +333,8 @@ async def process_design_agent_generate(
                 brand_colors=colors,
                 tekst_opties=opts,
                 slogan=slogan,
-                stijl=user_positionering,  # type: ignore[arg-type]
-                positionering=user_positionering,  # type: ignore[arg-type]
+                stijl=user_positionering,
+                positionering=user_positionering,
                 diensten=diensten,
                 doelgroep=doelgroep,
                 regio=regio,
@@ -351,7 +354,7 @@ async def process_design_agent_generate(
             from vge.services.design_agent import generate_design_agent_mockups
 
             brief = DesignAgentBrief(
-                vehicle=vehicle,  # type: ignore[arg-type]
+                vehicle=vehicle,
                 branche=branche,
                 bedrijfsnaam=bedrijfsnaam.strip(),
                 telefoon=telefoon,
@@ -359,7 +362,7 @@ async def process_design_agent_generate(
                 brand_colors=colors,
                 tekst_opties=opts,
                 slogan=slogan,
-                stijl=user_positionering,  # type: ignore[arg-type]
+                stijl=user_positionering,
             )
             result = generate_design_agent_mockups(
                 brief,

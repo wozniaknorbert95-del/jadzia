@@ -46,10 +46,11 @@ def test_at_chat_01_opening_no_helpen(client: TestClient) -> None:
     assert body["opening_source"] == "brain"
 
 
-def test_at_chat_02_opening_standard_premium(client: TestClient) -> None:
+def test_at_chat_02_opening_defers_standard_premium_to_recommendation(client: TestClient) -> None:
     body = client.get("/api/v1/design-agent/chat/opening").json()
-    assert re.search(r"Standard", body["reply_nl"], re.I)
-    assert re.search(r"Premium", body["reply_nl"], re.I)
+    assert not re.search(r"Standard", body["reply_nl"], re.I)
+    assert not re.search(r"Premium", body["reply_nl"], re.I)
+    assert re.search(r"bedrijfsnaam", body["reply_nl"], re.I)
 
 
 def test_at_chat_04_no_budget_not_ready(client: TestClient) -> None:

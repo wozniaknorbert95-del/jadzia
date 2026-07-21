@@ -1,16 +1,16 @@
 {
   "project": "Jadzia-Core",
-  "last_updated": "2026-07-19 (PROGRAM CLOSE tip 3c2fc6e ~86%)",
+  "last_updated": "2026-07-21 (DEPLOY-READY — szlify done; awaiting GO commit/push)",
   "status": "active",
-  "plan": "docs/ops/marketing/MKT-BRAIN-PRO.md",
-  "active_gate": "MKT-BRAIN-PRO ~86% tip 3c2fc6e; runtime 100%; weekly draft LIVE; insights agent-half READY; Meta HOLD; Purchase/Graph/F4x ready_for_human",
-  "active_plan": "docs/ops/marketing/OPERATOR-TODAY.md — observe + 5 human parks",
+  "plan": "docs/ops/JADZIA-CORE-AUDIT-2026-07-21.md",
+  "active_gate": "DEPLOY-READY: 644 passed, all pre-push gates green; 1 PR/6 commits staged; commit/push blocked until GO; VPS blocked until fresh GO",
+  "active_plan": "docs/handoffs/2026-07-21-AUD-REM-GIT-DEPLOY-01-CLOSE.md",
   "standing_go_closeout": false,
   "closeout_queue": [],
   "closeout_expires": "2026-07-25",
-  "next_human": "1) Meta hold 7d→optimize 2) Mollie GO→Purchase Test Events 3) Graph read_insights→set-fb-access-token 4) WA <15min 5) F4 extras po triggerach",
-  "next_agent": "Observe-only propose cycles; no Ads create; no Mollie; no fake PASS parks",
-  "agent_rule": "Nie pytaj A/B. Deploy tylko ze zgodą (standing_go_closeout off). Nie sekrety. Nie kasuj parków. Hard STOP: Gate D/Mollie/fake PASS.",
+  "next_human": "1) GO commit/push PR feat/audit-remediation-wave1-2 2) GITLEAKS_LICENSE if org 3) Widget session_id frontend 4) Fresh GO VPS deploy 5) SSH known_hosts HITL",
+  "next_agent": "After GO: commit/push/PR, verify GitHub Actions green, fix CI red if batch-related; then AUD-REM-WRITE-01 or VPS verify per priority",
+  "agent_rule": "1-1-1 remediation. Evidence-first. Deploy tylko ze zgodą (standing_go_closeout off). Nie sekrety. Nie kasuj Marketing parks. Hard STOP: VPS/Gate D/Mollie/fake PASS.",
   "sprints": {
     "remediation": "completed",
     "coi_phase_a": "deploy_complete",
@@ -31,7 +31,8 @@
     "rev_demand_03": "completed_2026-07-18",
     "rev_demand_04": "completed_2026-07-18",
     "coi_cmd_mobile_01": "completed_2026-07-18",
-    "coi_cmd_mobile_02": "completed_2026-07-18"
+    "coi_cmd_mobile_02": "completed_2026-07-18",
+    "audit_remediation_2026_07_21": "ready"
   },
   "tasks": [
     {
@@ -1365,7 +1366,180 @@
       "owner": "agent",
       "checklist": "docs/handoffs/2026-07-19-MKT-BRAIN-PRO-PROGRAM-CLOSE.md",
       "note": "Agent debt CLOSED. Cap: Meta HOLD, Purchase, Graph read_insights, WA, F4 extras. next_agent=observe-only."
+    },
+    {
+      "id": "CMD-MKT-DASH-01",
+      "sprint": "MKT-BRAIN-PRO",
+      "task": "Commander UI sync Program Close surfaces (FB amber, parks, weekly draft, DH)",
+      "status": "completed",
+      "priority": "high",
+      "owner": "agent",
+      "checklist": "docs/handoffs/2026-07-19-CMD-MKT-DASH-01.md",
+      "note": "LIVE tip 1f7001a / cache mkt-dash01; superseded polish tip 660c5f8 mkt-dash02."
+    },
+    {
+      "id": "CMD-MKT-DASH-02",
+      "sprint": "MKT-BRAIN-PRO",
+      "task": "JWT-resilient Marketing load + OPERATOR-TODAY + VCMS handbook sync",
+      "status": "completed",
+      "priority": "high",
+      "owner": "agent",
+      "checklist": "docs/handoffs/2026-07-19-CMD-MKT-DASH-02.md",
+      "note": "LIVE tip 660c5f8 tip-sync 29043cb; VCMS PR #41 MERGED; dogfood full dashboard PASS."
+    },
+    {
+      "id": "NEW-AUDIT-2026-07-21",
+      "sprint": "Independent system audit",
+      "task": "Professional repo audit: architecture, security, reliability, CI, data, ops and governance",
+      "status": "completed",
+      "priority": "critical",
+      "owner": "agent",
+      "checklist": "docs/handoffs/2026-07-21-JADZIA-CORE-AUDIT-CLOSE.md",
+      "note": "AUDIT COMPLETE: repo gate FAIL; production UNVERIFIED; no deploy. Next 1-1-1 task AUD-REM-CI-01. VPS evidence READY_FOR_HUMAN after fresh GO."
+    },
+    {
+      "id": "AUD-REM-00",
+      "sprint": "Audit Remediation 2026-07-21",
+      "task": "Parent: close all F-01..F-13 with evidence-first 1-1-1 remediation",
+      "status": "pending",
+      "priority": "critical",
+      "owner": "agent",
+      "checklist": "docs/handoffs/2026-07-21-AUDIT-REMEDIATION-PROGRAM-HANDOFF.md",
+      "note": "READY. Sequential only; no mega-diff. Final production status remains UNVERIFIED until AUD-REM-VPS-VERIFY-01 after fresh GO."
+    },
+    {
+      "id": "AUD-REM-CI-01",
+      "sprint": "Audit Remediation 2026-07-21",
+      "task": "Restore release-gate trust: debug 6 full-suite failures, blocking full pytest, real coverage.xml",
+      "status": "completed",
+      "priority": "critical",
+      "owner": "agent",
+      "checklist": "docs/handoffs/2026-07-21-AUD-REM-CI-01-CLOSE.md",
+      "note": "LOCAL PASS 2026-07-21: 609 passed, 17 skipped, 1 xfailed; real coverage.xml 63%; canonical full blocking ci.yml; GitHub Actions pending explicit commit/push. No deploy."
+    },
+    {
+      "id": "AUD-REM-QUALITY-01",
+      "sprint": "Audit Remediation 2026-07-21",
+      "task": "Engineering quality baseline: Ruff/Black/Mypy policy, test workflow truth, route coverage, Commander UI smoke",
+      "status": "completed",
+      "priority": "high",
+      "owner": "agent",
+      "checklist": "docs/handoffs/2026-07-21-AUD-REM-QUALITY-01-CLOSE.md",
+      "note": "LOCAL PASS 2026-07-21: scoped Ruff/Black/Mypy 0 errors; Commander UI smoke and workflow contract; full pytest 611 passed, 17 skipped, 1 xfailed; real coverage.xml 63%. Repo-wide debt remains explicit; GitHub Actions pending explicit commit/push."
+    },
+    {
+      "id": "AUD-REM-CALLBACK-01",
+      "sprint": "Audit Remediation 2026-07-21",
+      "task": "Close worker callback SSRF with allowlist, private-IP/redirect blocking, limits and log redaction",
+      "status": "completed",
+      "priority": "critical",
+      "owner": "agent",
+      "checklist": "docs/handoffs/2026-07-21-AUD-REM-CALLBACK-01-CLOSE.md",
+      "note": "LOCAL PASS 2026-07-21: allowlisted HTTPS callback guard, public-DNS validation, redirects blocked and logs redacted; SSRF negative tests 16/16; full pytest 624 passed, 17 skipped, 1 xfailed; real coverage.xml 63%. GitHub Actions pending explicit commit/push."
+    },
+    {
+      "id": "AUD-REM-SSH-01",
+      "sprint": "Audit Remediation 2026-07-21",
+      "task": "SSH trust and command safety: known-host pinning, RejectPolicy, safe listing and tar extraction",
+      "status": "completed",
+      "priority": "critical",
+      "owner": "agent",
+      "checklist": "docs/handoffs/2026-07-21-AUD-REM-SSH-01-CLOSE.md",
+      "note": "LOCAL PASS 2026-07-21: known-host RejectPolicy, optional SHA256 host-key pinning, safe archive extraction and quoted list-files; SSH negative tests 11/11; full pytest 630 passed, 17 skipped, 1 xfailed. Host-key evidence remains human/VPS-gated; no connection/deploy."
+    },
+    {
+      "id": "AUD-REM-DEPS-01",
+      "sprint": "Audit Remediation 2026-07-21",
+      "task": "Reproducible Python 3.11 lock, Chroma mitigation, blocking dependency and secret scans",
+      "status": "completed",
+      "priority": "critical",
+      "owner": "agent",
+      "checklist": "docs/handoffs/2026-07-21-AUD-REM-DEPS-01-CLOSE.md",
+      "note": "LOCAL PASS 2026-07-21: pyproject declarations + uv.lock/hashed pip export for CPython 3.11; ChromaDB removed pending a fixed release and SQL fallback retained; clean install 85 runtime packages; pip-audit clean; CI blocks lock, audit and gitleaks. GitHub Actions unverified until explicit commit/push; no deploy."
+    },
+    {
+      "id": "AUD-REM-INGRESS-01",
+      "sprint": "Audit Remediation 2026-07-21",
+      "task": "Ingress abuse/replay controls: rate and payload limits, widget sessions, Telegram secret/dedup, Brain Bus idempotency, OpenAPI policy",
+      "status": "completed",
+      "priority": "critical",
+      "owner": "agent",
+      "checklist": "docs/handoffs/2026-07-21-AUD-REM-INGRESS-01-CLOSE.md",
+      "note": "LOCAL PASS 2026-07-21: bounded widget/Telegram/Brain Bus bodies, SQLite-backed rate/replay controls, server-issued widget UUID sessions, native Telegram secret validation, Brain Bus correlation idempotency and production docs-off policy; 643 passed, 17 skipped, 1 xfailed. Re-verify ingress 7/7. GitHub Actions unverified until explicit commit/push; no deploy."
+    },
+    {
+      "id": "AUD-REM-GIT-DEPLOY-01",
+      "sprint": "Audit Remediation 2026-07-21",
+      "task": "Git hygiene + CI verify + deploy plan for Wave1–Wave2 remediation batch (no autonomous VPS)",
+      "status": "deploy_ready",
+      "priority": "critical",
+      "owner": "agent",
+      "checklist": "docs/handoffs/2026-07-21-AUD-REM-GIT-DEPLOY-01-CLOSE.md",
+      "note": "DEPLOY-READY 2026-07-21: szlify (mypy, deploy --require-hashes, uv.lock contract). 644 passed, all gates green. NO commit/push/deploy. Awaiting Dowódca GO."
+    },
+    {
+      "id": "AUD-REM-WRITE-01",
+      "sprint": "Audit Remediation 2026-07-21",
+      "task": "Atomic multi-file SSH write with all-or-rollback, truthful statuses and configurable health target",
+      "status": "pending",
+      "priority": "critical",
+      "owner": "agent",
+      "note": "Fault-injection must prove no partial COMPLETED state."
+    },
+    {
+      "id": "AUD-REM-HEALTH-01",
+      "sprint": "Audit Remediation 2026-07-21",
+      "task": "Wire runtime health metrics, correlation IDs and durable or explicit process-local cost telemetry",
+      "status": "pending",
+      "priority": "high",
+      "owner": "agent",
+      "note": "Forced failure must become visible in /worker/health."
+    },
+    {
+      "id": "AUD-REM-DB-01",
+      "sprint": "Audit Remediation 2026-07-21",
+      "task": "SQLite contention and scheduler safety: benchmark, WAL/busy policy, source-aware locks, single-process invariant",
+      "status": "pending",
+      "priority": "high",
+      "owner": "agent",
+      "note": "Measure before changing journal mode; preserve SQLite SSoT."
+    },
+    {
+      "id": "AUD-REM-PRIVACY-01",
+      "sprint": "Audit Remediation 2026-07-21",
+      "task": "Enforce retention and data minimization for portal/widget PII, Telegram and logs",
+      "status": "pending",
+      "priority": "high",
+      "owner": "agent",
+      "note": "Add cleanup/anonymization evidence and session isolation/TTL tests."
+    },
+    {
+      "id": "AUD-REM-OPS-01",
+      "sprint": "Audit Remediation 2026-07-21",
+      "task": "Operational maturity: SLO, RPO/RTO, backup/restore drill, systemd hardening and safe deploy contract",
+      "status": "pending",
+      "priority": "high",
+      "owner": "agent",
+      "note": "No default prod DB upload; off-site backup and restore evidence require human-owned infrastructure."
+    },
+    {
+      "id": "AUD-REM-SOT-01",
+      "sprint": "Audit Remediation 2026-07-21",
+      "task": "Truth repair: one prod tip, readiness definitions, OPS-AI re-window procedure, valid links and rolling handoffs",
+      "status": "pending",
+      "priority": "high",
+      "owner": "agent",
+      "note": "Archive to <=15 hot handoffs without deleting evidence."
+    },
+    {
+      "id": "AUD-REM-VPS-VERIFY-01",
+      "sprint": "Audit Remediation 2026-07-21",
+      "task": "Independent VPS evidence and final re-audit after all local remediation",
+      "status": "blocked",
+      "priority": "critical",
+      "owner": "human",
+      "checklist": "docs/handoffs/2026-07-21-AUDIT-REMEDIATION-PROGRAM-HANDOFF.md",
+      "note": "READY_FOR_HUMAN only after prior gates and fresh GO. Read-only evidence first; deploy is a separate explicit-GO task."
     }
   ]
 }
-

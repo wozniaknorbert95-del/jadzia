@@ -23,15 +23,15 @@ def test_parse_command_callback_takes_precedence():
     assert payload == "abc-123:approve:yes"
 
 
-def test_parse_command_zadanie_with_instruction():
+def test_parse_command_zadanie_alias_creates_ticket_with_instruction():
     cmd, payload = parse_telegram_command("/zadanie zmień kolor przycisku")
-    assert cmd == "zadanie"
+    assert cmd == "ticket"
     assert payload == "zmień kolor przycisku"
 
 
-def test_parse_command_zadanie_empty_rest():
+def test_parse_command_zadanie_alias_creates_ticket_without_payload():
     cmd, payload = parse_telegram_command("/zadanie")
-    assert cmd == "zadanie"
+    assert cmd == "ticket"
     assert payload == ""
 
 
@@ -96,10 +96,10 @@ def test_parse_command_status_with_bot_username():
     assert payload == ""
 
 
-def test_parse_command_zadanie_with_bot_username_and_payload():
-    """Telegram sends /zadanie@BotName instruction in groups; payload must be the rest."""
+def test_parse_command_zadanie_alias_with_bot_username_and_payload():
+    """Telegram's /zadanie group alias must still resolve to the ticket handler."""
     cmd, payload = parse_telegram_command("/zadanie@Bot nowe zadanie")
-    assert cmd == "zadanie"
+    assert cmd == "ticket"
     assert payload == "nowe zadanie"
 
 

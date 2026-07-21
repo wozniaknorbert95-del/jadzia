@@ -2,10 +2,19 @@
 
 Session continuity for `/vibe-init`: read the **last 2** handoffs from this folder.
 
-## Start here (vibe-init) — 2026-07-19 MKT-BRAIN-PRO
+## Start here (vibe-init) — 2026-07-19 SESSION CLOSE
 
-1. [`2026-07-19-MKT-BRAIN-PRO-PROGRAM-CLOSE.md`](2026-07-19-MKT-BRAIN-PRO-PROGRAM-CLOSE.md) — **PROGRAM CLOSE ~86%** tip `3c2fc6e`
+1. [`2026-07-19-SESSION-CLOSE-MKT-DASH.md`](2026-07-19-SESSION-CLOSE-MKT-DASH.md) — **SESSION CLOSE** tip `29043cb` · dash `mkt-dash02`
 2. [`docs/ops/marketing/OPERATOR-TODAY.md`](../ops/marketing/OPERATOR-TODAY.md) — operator start + human parks
+
+## Latest independent audit — 2026-07-21
+
+- [`2026-07-21-AUD-REM-GIT-DEPLOY-01-CLOSE.md`](2026-07-21-AUD-REM-GIT-DEPLOY-01-CLOSE.md) — **DEPLOY-READY** · Dowódca GO → commit/push PR
+- [`2026-07-21-AUD-REM-GIT-DEPLOY-READY.md`](2026-07-21-AUD-REM-GIT-DEPLOY-READY.md) — batch inventory (superseded by CLOSE)
+- [`2026-07-21-AUD-REM-INGRESS-01-CLOSE.md`](2026-07-21-AUD-REM-INGRESS-01-CLOSE.md) — F-07 ingress LOCAL PASS
+- [`2026-07-21-AUDIT-REMEDIATION-PROGRAM-HANDOFF.md`](2026-07-21-AUDIT-REMEDIATION-PROGRAM-HANDOFF.md) — sequential F-01..F-13 program
+- [`2026-07-21-JADZIA-CORE-AUDIT-CLOSE.md`](2026-07-21-JADZIA-CORE-AUDIT-CLOSE.md) — repo gate **FAIL**, production **UNVERIFIED**, no deploy
+- [`docs/ops/JADZIA-CORE-AUDIT-2026-07-21.md`](../ops/JADZIA-CORE-AUDIT-2026-07-21.md) — canonical findings, evidence and remediation order
 
 ## Ops rolling (hot ≤15)
 

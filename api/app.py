@@ -18,7 +18,7 @@ from fastapi.responses import JSONResponse
 from starlette.requests import Request
 
 from api._state import health_metrics
-from core.config import validate_production_config
+from core.config import require_secrets_enabled, validate_production_config
 
 load_dotenv()
 
@@ -28,11 +28,20 @@ _log = logging.getLogger("api.app")
 def create_app() -> FastAPI:
     """Create and configure the FastAPI application."""
     validate_production_config()
+    docs_opt_in = os.getenv("PUBLIC_API_DOCS_ENABLED", "").strip().lower() in (
+        "1",
+        "true",
+        "yes",
+    )
+    public_docs_enabled = docs_opt_in or not require_secrets_enabled()
 
     app = FastAPI(
         title="JADZIA API",
         description="AI Agent for online store management",
         version="1.0.0",
+        docs_url="/docs" if public_docs_enabled else None,
+        redoc_url="/redoc" if public_docs_enabled else None,
+        openapi_url="/openapi.json" if public_docs_enabled else None,
     )
 
     @app.exception_handler(RequestValidationError)
@@ -137,6 +146,7 @@ def create_app() -> FastAPI:
     if os.getenv("TELEGRAM_BOT_ENABLED", "") == "1":
         try:
             from api.telegram import router as telegram_router
+
             app.include_router(telegram_router)
         except Exception as e:
             _log.warning("Failed to load Telegram router: %s", e)
@@ -158,15 +168,14 @@ def create_app() -> FastAPI:
 
         # Start worker loop
         try:
-            _api_state._worker_loop_ref = asyncio.create_task(
-                _worker_loop(), name="worker_loop"
-            )
+            _api_state._worker_loop_ref = asyncio.create_task(_worker_loop(), name="worker_loop")
         except Exception as e:
             _log.error("Failed to start worker loop: %s", e)
 
     @app.on_event("shutdown")
     async def on_shutdown():
         import api._state as _api_state
+
         if _api_state._worker_loop_ref and not _api_state._worker_loop_ref.done():
             _api_state._worker_loop_ref.cancel()
             try:
@@ -185,7 +194,9 @@ TERMINAL_STATUSES = ("completed", "failed", "rolled_back")
 
 WORKER_TASK_TIMEOUT_SECONDS = int(os.getenv("WORKER_TASK_TIMEOUT_SECONDS", "600") or "600")
 WORKER_STALE_TASK_MINUTES = int(os.getenv("WORKER_STALE_TASK_MINUTES", "15") or "15")
-WORKER_AWAITING_TIMEOUT_MINUTES = int(os.getenv("WORKER_AWAITING_TIMEOUT_MINUTES", "1440") or "1440")
+WORKER_AWAITING_TIMEOUT_MINUTES = int(
+    os.getenv("WORKER_AWAITING_TIMEOUT_MINUTES", "1440") or "1440"
+)
 
 _last_fb_publish_check: float = 0.0
 _last_weekly_brief_check: float = 0.0
@@ -357,9 +368,7 @@ async def _maybe_run_marketing_weekly_scorecard() -> None:
     """Weekly scorecard DRAFT nudge (DTL facts; no HOLD/KILL)."""
     global _last_mb_weekly_scorecard_check
 
-    interval = int(
-        os.getenv("MARKETING_WEEKLY_SCORECARD_INTERVAL_SECONDS", "604800") or "0"
-    )
+    interval = int(os.getenv("MARKETING_WEEKLY_SCORECARD_INTERVAL_SECONDS", "604800") or "0")
     if interval <= 0:
         return
 
@@ -427,7 +436,7 @@ async def _worker_loop():
                 *[asyncio.to_thread(load_state, c, s) for (c, s) in sessions]
             )
 
-            for ((chat_id, source), state) in zip(sessions, states):
+            for (chat_id, source), state in zip(sessions, states):
                 try:
                     if not state:
                         continue
@@ -441,10 +450,16 @@ async def _worker_loop():
 
                         if active_id and task is None:
                             row = db_get_task(active_id)
-                            if row and row.get("chat_id") == chat_id and row.get("source") == source:
+                            if (
+                                row
+                                and row.get("chat_id") == chat_id
+                                and row.get("source") == source
+                            ):
                                 continue
                             try:
-                                await asyncio.to_thread(clear_active_task_and_advance, chat_id, source)
+                                await asyncio.to_thread(
+                                    clear_active_task_and_advance, chat_id, source
+                                )
                                 had_work = True
                             except Exception as e:
                                 _log.error("[worker_loop] failed to clear ghost: %s", e)
@@ -464,7 +479,11 @@ async def _worker_loop():
 
                         if task is None:
                             row = db_get_task(active_id)
-                            if row and row.get("chat_id") == chat_id and row.get("source") == source:
+                            if (
+                                row
+                                and row.get("chat_id") == chat_id
+                                and row.get("source") == source
+                            ):
                                 continue
                             try:
                                 next_task_id = await asyncio.to_thread(
@@ -494,7 +513,9 @@ async def _worker_loop():
                                                 await asyncio.to_thread(
                                                     update_operation_status,
                                                     OperationStatus.FAILED,
-                                                    chat_id, source, task_id=active_id,
+                                                    chat_id,
+                                                    source,
+                                                    task_id=active_id,
                                                 )
                                                 await asyncio.to_thread(
                                                     mark_task_completed, chat_id, active_id, source
@@ -511,7 +532,9 @@ async def _worker_loop():
                                             await asyncio.to_thread(
                                                 update_operation_status,
                                                 OperationStatus.FAILED,
-                                                chat_id, source, task_id=active_id,
+                                                chat_id,
+                                                source,
+                                                task_id=active_id,
                                             )
                                             await asyncio.to_thread(
                                                 mark_task_completed, chat_id, active_id, source
@@ -559,7 +582,9 @@ async def _worker_loop():
                                         await asyncio.to_thread(
                                             update_operation_status,
                                             OperationStatus.COMPLETED,
-                                            chat_id, source, task_id=next_task_id,
+                                            chat_id,
+                                            source,
+                                            task_id=next_task_id,
                                         )
                                         await asyncio.to_thread(
                                             mark_task_completed, chat_id, next_task_id, source
@@ -572,7 +597,9 @@ async def _worker_loop():
                                 await asyncio.to_thread(
                                     update_operation_status,
                                     OperationStatus.FAILED,
-                                    chat_id, source, task_id=next_task_id,
+                                    chat_id,
+                                    source,
+                                    task_id=next_task_id,
                                 )
                                 await asyncio.to_thread(
                                     mark_task_completed, chat_id, next_task_id, source
@@ -585,7 +612,9 @@ async def _worker_loop():
                                 await asyncio.to_thread(
                                     update_operation_status,
                                     OperationStatus.FAILED,
-                                    chat_id, source, task_id=next_task_id,
+                                    chat_id,
+                                    source,
+                                    task_id=next_task_id,
                                 )
                                 await asyncio.to_thread(
                                     mark_task_completed, chat_id, next_task_id, source

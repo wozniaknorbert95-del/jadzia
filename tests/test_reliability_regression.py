@@ -194,27 +194,27 @@ class TestClearActiveTaskAndAdvance:
 # ---------------------------------------------------------------------------
 
 class TestTelegramDedup:
-    """_is_duplicate_update should detect repeated update_ids within TTL."""
+    """_is_duplicate_update delegates to durable replay protection."""
 
     def test_first_call_returns_false(self):
-        from api.telegram import _is_duplicate_update, _processed_updates
-        uid = 999_000_000 + int(time.time() * 1000) % 1_000_000
-        _processed_updates.pop(uid, None)  # clean slate
-        assert _is_duplicate_update(uid) is False
+        from api.telegram import _is_duplicate_update
+
+        with patch("agent.db.db_claim_ingress_replay", return_value=True):
+            assert _is_duplicate_update(999_000_001) is False
 
     def test_second_call_returns_true(self):
-        from api.telegram import _is_duplicate_update, _processed_updates
-        uid = 999_100_000 + int(time.time() * 1000) % 1_000_000
-        _processed_updates.pop(uid, None)
-        _is_duplicate_update(uid)  # register
-        assert _is_duplicate_update(uid) is True
+        from api.telegram import _is_duplicate_update
 
-    def test_expired_entry_not_duplicate(self):
-        from api.telegram import _is_duplicate_update, _processed_updates, _DEDUP_TTL_SECONDS
-        uid = 999_200_000 + int(time.time() * 1000) % 1_000_000
-        # Manually insert an expired entry
-        _processed_updates[uid] = time.time() - _DEDUP_TTL_SECONDS - 10
-        assert _is_duplicate_update(uid) is False
+        with patch("agent.db.db_claim_ingress_replay", side_effect=[True, False]):
+            assert _is_duplicate_update(999_100_001) is False
+            assert _is_duplicate_update(999_100_001) is True
+
+    def test_claim_uses_configured_ttl(self):
+        from api.telegram import _DEDUP_TTL_SECONDS, _is_duplicate_update
+
+        with patch("agent.db.db_claim_ingress_replay", return_value=True) as claim:
+            _is_duplicate_update(999_200_001)
+        assert claim.call_args.kwargs["ttl_sec"] == _DEDUP_TTL_SECONDS
 
 
 # ---------------------------------------------------------------------------
