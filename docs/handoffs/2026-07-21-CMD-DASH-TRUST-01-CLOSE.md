@@ -1,9 +1,20 @@
 # Handoff — CMD-DASH-TRUST-01 (ops health + DA health)
 
 **Date:** 2026-07-21  
-**Branch:** `feat/cmd-dash-trust-01`  
-**Tasks closed:** `CMD-DASH-OPS-HEALTH-01` · `CMD-DASH-DEAD-HOP-01` · `CMD-DASH-VERIFY-01`  
-**standing_go_closeout:** `false` — deploy only with explicit GO (this session: user asked deploy)
+**Status:** **LIVE** @ tip **`f57dab3`** (PR #11 merged + VPS deploy)  
+**standing_go_closeout:** `false`
+
+## Deploy evidence
+
+```text
+PREV=3604f60 HEAD=f57dab3 tip_ok
+systemctl=active uvicorn=1
+da_health_local status=ok
+da_health_public 200
+worker_health healthy ssh=ok
+commander 200
+mkt-dash03_count=2 worker_health_in_app=1
+```
 
 ## Changes
 
@@ -13,18 +24,8 @@
 4. Verify script aligned + health probes
 5. Unit test `test_design_agent_health_200`
 
-## Deploy checklist
-
-```bash
-# VPS after merge to master
-cd /opt/jadzia && git pull --ff-only origin master
-# static UI only needs restart if code py changed — yes restart
-systemctl restart jadzia
-curl -sf http://127.0.0.1:8000/api/v1/design-agent/health
-curl -sf http://127.0.0.1:8000/worker/health | head
-# Commander hard-refresh: ?v=mkt-dash03
-```
-
 ## LEFT
 
 - `CMD-DASH-PARKS-LIVE-01` · `CMD-DASH-MB-PANEL-01` · `CMD-DASH-AGENTS-TRUTH-01` · `CMD-DASH-ORPHAN-SOT-01`
+
+Hard-refresh: `https://api.zzpackage.flexgrafik.nl/commander/?v=mkt-dash03`
