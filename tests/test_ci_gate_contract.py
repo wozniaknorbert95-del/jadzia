@@ -15,7 +15,10 @@ def test_ci_runs_full_suite_with_real_coverage_artifact() -> None:
     assert "--cov-report=xml:coverage.xml" in workflow
     assert "uses: actions/upload-artifact@v4" in workflow
     assert "path: coverage.xml" in workflow
-    assert "fail_ci_if_error: true" in workflow
+    assert "if-no-files-found: error" in workflow
+    # Codecov is optional (token via job env); secrets must not appear in if:.
+    assert "secrets.CODECOV_TOKEN !=" not in workflow
+    assert "env.CODECOV_TOKEN != ''" in workflow
 
 
 def test_ci_has_single_full_test_gate_owner() -> None:
