@@ -10,7 +10,7 @@ class UnsafeArchiveError(ValueError):
     """Raised when a tar member escapes the extraction directory."""
 
 
-def safe_extractall(archive: tarfile.TarFile, destination: Path) -> None:
+def extract_tar_safely(archive: tarfile.TarFile, destination: Path) -> None:
     """Extract regular files only when every resolved member stays in destination."""
     root = destination.resolve()
     members = archive.getmembers()
@@ -20,4 +20,5 @@ def safe_extractall(archive: tarfile.TarFile, destination: Path) -> None:
             raise UnsafeArchiveError(f"Archive member escapes destination: {member.name}")
         if member.issym() or member.islnk() or member.isdev():
             raise UnsafeArchiveError(f"Archive member type is forbidden: {member.name}")
-    archive.extractall(root, members=members)
+    # Members validated above; extractall is intentional after path/type checks.
+    archive.extractall(root, members=members)  # nosec B202

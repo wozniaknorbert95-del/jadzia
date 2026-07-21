@@ -26,7 +26,7 @@ import paramiko
 from .config import ExplorerConfig, get_config
 from .models import CommandResult, DownloadResult
 from agent.tools.ssh_host_policy import configure_host_key_policy, verify_host_key_fingerprint
-from agent.tools.safe_archive import safe_extractall
+from agent.tools.safe_archive import extract_tar_safely
 
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.DEBUG)
@@ -486,7 +486,7 @@ class SSHConnector:
             logger.info("Extracting to %s", local_path)
             try:
                 with tarfile.open(local_tar_path, "r:gz") as tar:
-                    safe_extractall(tar, local_path)
+                    extract_tar_safely(tar, local_path)
             except Exception:
                 local_size = local_tar_path.stat().st_size if local_tar_path.exists() else 0
                 logger.exception(

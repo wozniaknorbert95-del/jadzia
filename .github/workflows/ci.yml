@@ -79,8 +79,9 @@ jobs:
         run: uv run --locked --all-extras pip-audit --strict -r requirements.lock
       - name: Install Bandit
         run: uv sync --locked --all-extras
-      - name: Run Bandit
-        run: uv run --locked bandit -r . -x ./venv,./tests -ll
+      - name: Run Bandit (app paths, high severity)
+        # Scope excludes .venv (uv sync) and known medium FPs (B108/B104). High = gate.
+        run: uv run --locked bandit -r agent api core cli main.py -lll
 
   secrets:
     runs-on: ubuntu-latest

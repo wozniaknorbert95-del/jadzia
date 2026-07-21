@@ -8,7 +8,7 @@ from unittest.mock import Mock, patch
 
 import pytest
 
-from agent.tools.safe_archive import UnsafeArchiveError, safe_extractall
+from agent.tools.safe_archive import UnsafeArchiveError, extract_tar_safely
 from agent.tools.ssh_host_policy import (
     HostKeyVerificationError,
     configure_host_key_policy,
@@ -57,7 +57,7 @@ def test_host_key_pin_accepts_matching_key() -> None:
     verify_host_key_fingerprint(client, expected=f"SHA256:{expected}")
 
 
-def test_safe_extractall_rejects_path_traversal(tmp_path) -> None:
+def test_extract_tar_safely_rejects_path_traversal(tmp_path) -> None:
     archive_path = tmp_path / "unsafe.tar"
     with tarfile.open(archive_path, "w") as archive:
         member = tarfile.TarInfo("../../outside.txt")
@@ -66,7 +66,7 @@ def test_safe_extractall_rejects_path_traversal(tmp_path) -> None:
 
     with tarfile.open(archive_path, "r") as archive:
         with pytest.raises(UnsafeArchiveError, match="escapes"):
-            safe_extractall(archive, tmp_path / "output")
+            extract_tar_safely(archive, tmp_path / "output")
 
 
 def test_list_files_rejects_shell_injection_before_execution() -> None:
