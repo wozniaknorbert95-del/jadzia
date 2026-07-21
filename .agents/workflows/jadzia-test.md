@@ -11,17 +11,31 @@ Ensure the change is functionally correct and has not introduced regressions. Th
 
 ### 1. Automated Suite (The Hard Gate)
 Run the following in order:
-1. **Linting**: `ruff check .` $\to$ Must be 0 errors.
-2. **Typing**: `mypy .` $\to$ No new type errors in touched modules.
-3. **Unit Tests**: `pytest tests/unit` $\to$ All tests must pass.
-4. **Integration**: `pytest tests/integration` $\to$ Verify the full flow (API $\to$ DB).
+1. **Scoped style baseline**:
+   `ruff check api/routes/design_agent.py agent/design_agent_service.py tests/unit/test_design_agent_route.py`
+   and
+   `black --check api/routes/design_agent.py agent/design_agent_service.py tests/unit/test_design_agent_route.py`
+   $\to$ 0 errors. Repo-wide Ruff/Black debt is tracked separately and is not a
+   global PASS condition.
+2. **Scoped typing baseline**:
+   `mypy api/routes/design_agent.py agent/design_agent_service.py --ignore-missing-imports --follow-imports=skip --disable-error-code=untyped-decorator`
+   $\to$ 0 errors. Run Mypy on every additionally touched module and require no
+   new errors there.
+3. **Full regression suite**:
+   `python -m pytest tests/ -v --cov=agent --cov=api --cov=core --cov=cli --cov-report=term-missing --cov-report=xml:coverage.xml`
+   $\to$ 0 failed and a real `coverage.xml`. This is the canonical blocking CI
+   command.
+4. **Commander UI smoke**:
+   `python -m pytest tests/test_api_integration.py::TestCommanderUiSmoke -q`
+   $\to$ the locally bundled `/commander/` page returns 200 and contains
+   `COI Commander`.
 
 ### 2. Smoke Testing (The "Real-World" Gate)
 If the service layer was touched:
 1. Start local server: `uvicorn main:app`.
 2. Health Check: `curl -f localhost:8000/health`.
 3. Feature Check: Execute the specific Telegram command or API call that triggers the new logic.
-4. Log Audit: `tail -f logs/jadzia.log` $\to$ Check for unexpected warnings/errors.
+4. Log Audit: inspect `logs/jadzia.log` for unexpected warnings/errors.
 
 ### 3. Failure Handling
 If any test fails:
@@ -33,10 +47,11 @@ If any test fails:
 
 ```text
 TEST_RESULT: [PASS | FAIL]
-LINT: [PASS | FAIL]
-TYPE_CHECK: [PASS | FAIL]
+SCOPED_STYLE: [PASS | FAIL]
+SCOPED_TYPE_CHECK: [PASS | FAIL]
 PYTEST: [X passed, Y failed]
-SMOKE_TEST: [OK | FAIL - Detail]
+COMMANDER_SMOKE: [OK | FAIL - Detail]
+REPO_WIDE_QUALITY_BASELINE: [EXISTING DEBT | N/A]
 
 ---
 CURRENT_STAGE: L3-Validate

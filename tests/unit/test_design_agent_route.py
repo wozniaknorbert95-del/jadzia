@@ -18,7 +18,9 @@ _BUDGET_OK = {"budget_range": "300_600", "budget_explicit": "true"}
 
 @pytest.fixture(autouse=True)
 def _tier_matrix_env(monkeypatch: pytest.MonkeyPatch) -> None:
-    matrix = Path(__file__).resolve().parents[3] / "flexgrafik-inspire" / "brain" / "tier-matrix.json"
+    matrix = (
+        Path(__file__).resolve().parents[3] / "flexgrafik-inspire" / "brain" / "tier-matrix.json"
+    )
     if matrix.is_file():
         monkeypatch.setenv("DA_TIER_MATRIX_PATH", str(matrix))
 
@@ -74,9 +76,15 @@ def test_design_agent_generate_200_mocked(mock_proc: AsyncMock, client: TestClie
             ),
         ],
         recommended_products=[
-            DesignAgentProductItem(sku="MA-005", naam="Magneten", price_suggested=129.0, highlight=True),
-            DesignAgentProductItem(sku="CS-SET-PRO-ZZP", naam="Pro ZZP", price_suggested=199.0, highlight=True),
-            DesignAgentProductItem(sku="DF-004", naam="DTP", price_suggested=199.0, highlight=False),
+            DesignAgentProductItem(
+                sku="MA-005", naam="Magneten", price_suggested=129.0, highlight=True
+            ),
+            DesignAgentProductItem(
+                sku="CS-SET-PRO-ZZP", naam="Pro ZZP", price_suggested=199.0, highlight=True
+            ),
+            DesignAgentProductItem(
+                sku="DF-004", naam="DTP", price_suggested=199.0, highlight=False
+            ),
         ],
         wizard_deeplink="https://zzpackage.flexgrafik.nl/wizard/?voertuig=caddy&highlight=MA-005",
         cost_eur=0.22,
@@ -203,8 +211,7 @@ def test_design_agent_generate_400_svg_logo_rejected(client: TestClient) -> None
 def test_design_agent_generate_429_rate_limit(
     monkeypatch: pytest.MonkeyPatch, tmp_path: Path
 ) -> None:
-    from agent import design_agent_service
-    from agent import rate_store
+    from agent import design_agent_service, rate_store
 
     store = tmp_path / "rate.json"
     monkeypatch.setenv("DA_RATE_STORE_PATH", str(store))
@@ -219,8 +226,7 @@ def test_design_agent_generate_429_rate_limit(
 def test_design_agent_rate_limit_survives_restart(
     monkeypatch: pytest.MonkeyPatch, tmp_path: Path
 ) -> None:
-    from agent import design_agent_service
-    from agent import rate_store
+    from agent import design_agent_service, rate_store
 
     store = tmp_path / "rate.json"
     monkeypatch.setenv("DA_RATE_STORE_PATH", str(store))
@@ -236,8 +242,7 @@ def test_design_agent_rate_limit_survives_restart(
 def test_chat_hits_do_not_block_generate_rate_limit(
     monkeypatch: pytest.MonkeyPatch, tmp_path: Path
 ) -> None:
-    from agent import design_agent_service
-    from agent import rate_store
+    from agent import design_agent_service, rate_store
     from api.routes import design_agent_chat as chat_routes
 
     store = tmp_path / "rate.json"

@@ -42,9 +42,11 @@ def normalize_inbound_event(body: Dict[str, Any]) -> Dict[str, Any]:
         raise ValueError(f"unsupported event_type: {event_type!r}")
     source = (body.get("source_brain") or "vcms").strip().lower()
     if source not in SOURCE_BRAINS:
-        source = "vcms"
+        raise ValueError(f"unsupported source_brain: {source!r}")
     payload = body.get("payload") if isinstance(body.get("payload"), dict) else {}
-    corr = (body.get("correlation_id") or "").strip() or f"bb-{uuid.uuid4().hex[:12]}"
+    corr = (body.get("correlation_id") or "").strip()
+    if not corr:
+        corr = f"bb-{uuid.uuid4().hex[:12]}"
     return {
         "event_type": event_type,
         "source_brain": source,

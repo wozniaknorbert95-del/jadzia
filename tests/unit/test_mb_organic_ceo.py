@@ -95,6 +95,9 @@ def test_organic_writes_lift_facts(temp_db, monkeypatch):
     with patch(
         "agent.publishers.facebook.fetch_post_organic_metrics",
         side_effect=fake_fetch2,
+    ), patch(
+        "agent.publishers.facebook.check_token_health",
+        return_value={"ok": True, "configured": True, "has_read_insights": True},
     ):
         out = ingest_facebook_organic_posts(min_impressions=50)
 

@@ -6,6 +6,7 @@ When TELEGRAM_BOT_TOKEN is set, replies are sent to Telegram via sendMessage (di
 """
 
 import asyncio
+import json
 import os
 import time
 import logging
@@ -15,10 +16,15 @@ import httpx
 from fastapi import APIRouter, Header, HTTPException, Request
 from pydantic import BaseModel, ValidationError
 
-from agent.telegram_formatter import format_response_for_telegram, format_error_for_telegram, get_help_message
+from agent.telegram_formatter import (
+    format_response_for_telegram,
+    format_error_for_telegram,
+    get_help_message,
+)
 from agent.telegram_validator import (
     TelegramWebhookRequest,
     normalize_telegram_update,
+    validate_native_telegram_secret,
     validate_webhook_secret,
     validate_user_whitelist,
     get_jadzia_chat_id,
@@ -32,7 +38,7 @@ from api.telegram_client import (
     submit_input,
     do_rollback,
 )
-
+from api.ingress import TELEGRAM_BODY_MAX_BYTES, read_limited_body_async
 
 TELEGRAM_BOT_TOKEN = os.getenv("TELEGRAM_BOT_TOKEN", "").strip()
 TELEGRAM_API_BASE = "https://api.telegram.org"
@@ -41,30 +47,28 @@ router = APIRouter(prefix="/telegram", tags=["telegram"])
 logger = logging.getLogger(__name__)
 
 _DEDUP_TTL_SECONDS = 300
-_processed_updates: dict[int, float] = {}
 
 
 def _is_duplicate_update(update_id: int) -> bool:
-    now = time.time()
-    if len(_processed_updates) > 200:
-        expired = [uid for uid, ts in _processed_updates.items() if now - ts > _DEDUP_TTL_SECONDS]
-        for uid in expired:
-            _processed_updates.pop(uid, None)
-    if update_id in _processed_updates:
-        age = now - _processed_updates[update_id]
-        if age < _DEDUP_TTL_SECONDS:
-            return True
-    _processed_updates[update_id] = now
-    return False
+    """Claim native Telegram update IDs durably before side effects."""
+    from agent.db import db_claim_ingress_replay
+
+    return not db_claim_ingress_replay(
+        "telegram_update",
+        str(update_id),
+        ttl_sec=_DEDUP_TTL_SECONDS,
+    )
 
 
 def _get_task_id_for_chat(chat_id: str) -> Optional[str]:
     from agent.db import db_get_active_task, db_get_task
+
     try:
         task_id = db_get_active_task(chat_id, "telegram")
         if task_id and db_get_task(task_id) is not None:
             return task_id
         from agent.db import db_get_last_active_task
+
         last = db_get_last_active_task(chat_id, "telegram")
         return last["task_id"] if last else None
     except Exception as e:
@@ -87,7 +91,7 @@ def parse_telegram_command(message: str, callback_data: Optional[str] = None) ->
     if cmd_lower in ("/pomoc", "pomoc", "/help", "help"):
         return "pomoc", ""
     if cmd_only.startswith("/ticket") or cmd_only.startswith("/zadanie"):
-        payload = msg[len(cmd_token):].strip()
+        payload = msg[len(cmd_token) :].strip()
         return "ticket", payload
     if cmd_lower in ("/commander", "commander", "/jwt", "jwt"):
         return "commander", ""
@@ -140,7 +144,9 @@ async def _send_telegram_replies(
     if not TELEGRAM_BOT_TOKEN:
         return
     if not response.messages:
-        logger.debug("[Telegram] sendMessage skipped: response.messages is empty (chat_id=%s)", chat_id)
+        logger.debug(
+            "[Telegram] sendMessage skipped: response.messages is empty (chat_id=%s)", chat_id
+        )
         return
     url_base = f"{TELEGRAM_API_BASE}/bot{TELEGRAM_BOT_TOKEN}"
     try:
@@ -161,7 +167,9 @@ async def _send_telegram_replies(
                     payload["parse_mode"] = msg["parse_mode"]
                 if reply_markup and i == 0:
                     payload["reply_markup"] = reply_markup
-                logger.debug("[Telegram] sendMessage request: chat_id=%s text_len=%d", chat_id, len(text))
+                logger.debug(
+                    "[Telegram] sendMessage request: chat_id=%s text_len=%d", chat_id, len(text)
+                )
                 r = await client.post(f"{url_base}/sendMessage", json=payload)
                 if r.status_code >= 400:
                     try:
@@ -172,7 +180,10 @@ async def _send_telegram_replies(
                 r.raise_for_status()
                 sent += 1
             if sent == 0:
-                logger.debug("[Telegram] sendMessage skipped: all messages had empty text (chat_id=%s)", chat_id)
+                logger.debug(
+                    "[Telegram] sendMessage skipped: all messages had empty text (chat_id=%s)",
+                    chat_id,
+                )
     except Exception as e:
         logger.error("[Telegram] sendMessage error: %s", e)
 
@@ -184,11 +195,18 @@ async def send_awaiting_response_to_telegram(
     status: Optional[str] = None,
     awaiting_input: bool = True,
 ) -> None:
-    numeric_id = chat_id.removeprefix("telegram_") if str(chat_id).startswith("telegram_") else chat_id
+    numeric_id = (
+        chat_id.removeprefix("telegram_") if str(chat_id).startswith("telegram_") else chat_id
+    )
     logger.info("[Telegram push] sending to numeric_id=%s (original=%s)", numeric_id, chat_id)
     logger.debug(
         "[Telegram] send_awaiting_response_to_telegram called: chat_id=%r numeric_id=%r task_id=%r status=%r awaiting_input=%r response_len=%d",
-        chat_id, numeric_id, task_id, status, awaiting_input, len(response_text or ""),
+        chat_id,
+        numeric_id,
+        task_id,
+        status,
+        awaiting_input,
+        len(response_text or ""),
     )
     if not TELEGRAM_BOT_TOKEN:
         logger.warning("[Telegram push] skipped: TELEGRAM_BOT_TOKEN not set")
@@ -197,16 +215,29 @@ async def send_awaiting_response_to_telegram(
         logger.warning("[Telegram push] skipped: chat_id empty")
         return
     if not str(chat_id).startswith("telegram_"):
-        logger.warning("[Telegram push] skipped: chat_id does not start with telegram_ (chat_id=%r)", chat_id)
+        logger.warning(
+            "[Telegram push] skipped: chat_id does not start with telegram_ (chat_id=%r)", chat_id
+        )
         return
-    messages: List[dict] = format_response_for_telegram(response_text, awaiting_input=awaiting_input)
+    messages: List[dict] = format_response_for_telegram(
+        response_text, awaiting_input=awaiting_input
+    )
     if not messages:
-        logger.warning("[Telegram push] skipped: format_response_for_telegram returned empty messages (chat_id=%r)", chat_id)
+        logger.warning(
+            "[Telegram push] skipped: format_response_for_telegram returned empty messages (chat_id=%r)",
+            chat_id,
+        )
         return
-    reply_markup = build_inline_keyboard_approval(task_id) if (status == "diff_ready" and task_id) else None
+    reply_markup = (
+        build_inline_keyboard_approval(task_id) if (status == "diff_ready" and task_id) else None
+    )
     logger.info(
         "[Telegram push] sending %d message(s) (chat_id=%r numeric_id=%r task_id=%r status=%r)",
-        len(messages), chat_id, numeric_id, task_id, status,
+        len(messages),
+        chat_id,
+        numeric_id,
+        task_id,
+        status,
     )
     url_base = f"{TELEGRAM_API_BASE}/bot{TELEGRAM_BOT_TOKEN}"
     try:
@@ -220,30 +251,58 @@ async def send_awaiting_response_to_telegram(
                     payload["parse_mode"] = msg["parse_mode"]
                 if reply_markup and i == 0:
                     payload["reply_markup"] = reply_markup
-                logger.debug("[Telegram push] sendMessage request: chat_id=%s text_len=%d", numeric_id, len(text))
+                logger.debug(
+                    "[Telegram push] sendMessage request: chat_id=%s text_len=%d",
+                    numeric_id,
+                    len(text),
+                )
                 r = await client.post(f"{url_base}/sendMessage", json=payload)
                 if r.status_code >= 400:
                     try:
                         body = r.json()
                     except Exception:
                         body = r.text
-                    logger.error("[Telegram push] sendMessage failed status=%s chat_id=%r numeric_id=%r task_id=%r body=%r", r.status_code, chat_id, numeric_id, task_id, body)
+                    logger.error(
+                        "[Telegram push] sendMessage failed status=%s chat_id=%r numeric_id=%r task_id=%r body=%r",
+                        r.status_code,
+                        chat_id,
+                        numeric_id,
+                        task_id,
+                        body,
+                    )
                 r.raise_for_status()
     except Exception as e:
-        logger.error("[Telegram push] sendMessage exception chat_id=%r numeric_id=%r task_id=%r status=%r", chat_id, numeric_id, task_id, status, exc_info=True)
+        logger.error(
+            "[Telegram push] sendMessage exception chat_id=%r numeric_id=%r task_id=%r status=%r",
+            chat_id,
+            numeric_id,
+            task_id,
+            status,
+            exc_info=True,
+        )
 
 
 async def _handle_approval(
-    chat_id: str, task_id: str, approved: bool, jwt_token: str, base_url: str,
+    chat_id: str,
+    task_id: str,
+    approved: bool,
+    jwt_token: str,
+    base_url: str,
 ) -> TelegramWebhookResponse:
-    logger.info("[Telegram] approval: chat_id=%s task_id=%s approved=%s", chat_id, task_id, approved)
+    logger.info(
+        "[Telegram] approval: chat_id=%s task_id=%s approved=%s", chat_id, task_id, approved
+    )
     result = await submit_input(task_id, jwt_token, base_url, approval=approved)
     response_text = result.get("response", "") or ("Zatwierdzono." if approved else "Odrzucono.")
     awaiting = result.get("awaiting_input", False)
     status = result.get("status", "")
     messages = format_response_for_telegram(response_text, awaiting_input=awaiting)
-    reply_markup = build_inline_keyboard_approval(task_id) if (status == "diff_ready" and awaiting) else None
-    return TelegramWebhookResponse(success=True, messages=messages, awaiting_input=awaiting, reply_markup=reply_markup)
+    reply_markup = (
+        build_inline_keyboard_approval(task_id) if (status == "diff_ready" and awaiting) else None
+    )
+    return TelegramWebhookResponse(
+        success=True, messages=messages, awaiting_input=awaiting, reply_markup=reply_markup
+    )
 
 
 async def _handle_webhook_request(
@@ -267,7 +326,12 @@ async def _handle_webhook_request(
             error_type = "internal"
         return TelegramWebhookResponse(
             success=False,
-            messages=[{"text": format_error_for_telegram(error_type, user_id=request.user_id), "parse_mode": "MarkdownV2"}],
+            messages=[
+                {
+                    "text": format_error_for_telegram(error_type, user_id=request.user_id),
+                    "parse_mode": "MarkdownV2",
+                }
+            ],
             error={"type": error_type, "status_code": e.status_code, "detail": str(e.detail)},
         )
 
@@ -278,12 +342,19 @@ async def _handle_webhook_request(
     if not jwt_token:
         return TelegramWebhookResponse(
             success=False,
-            messages=[{"text": format_error_for_telegram("internal", operation_id="no_jwt"), "parse_mode": "MarkdownV2"}],
+            messages=[
+                {
+                    "text": format_error_for_telegram("internal", operation_id="no_jwt"),
+                    "parse_mode": "MarkdownV2",
+                }
+            ],
             error={"type": "internal", "message": "TELEGRAM_BOT_JWT_TOKEN or JWT_SECRET not set"},
         )
 
     command, payload = parse_telegram_command(request.message, request.callback_data)
-    logger.info("[Telegram] webhook command=%s chat_id=%s payload_len=%d", command, chat_id, len(payload))
+    logger.info(
+        "[Telegram] webhook command=%s chat_id=%s payload_len=%d", command, chat_id, len(payload)
+    )
 
     try:
         if command == "callback":
@@ -306,10 +377,15 @@ async def _handle_webhook_request(
                 return TelegramWebhookResponse(success=True, messages=msg)
             task_id, approval = parsed
             from agent.db import db_get_task
+
             if not db_get_task(task_id):
                 await asyncio.sleep(0.2)
                 if not db_get_task(task_id):
-                    logger.warning("[Telegram] approval: task not found task_id=%s chat_id=%s", task_id, chat_id)
+                    logger.warning(
+                        "[Telegram] approval: task not found task_id=%s chat_id=%s",
+                        task_id,
+                        chat_id,
+                    )
                     messages = format_response_for_telegram(
                         "Nie widzę już tego zadania (wygasło lub zostało usunięte).\nWyślij `/zadanie ...` ponownie.",
                         awaiting_input=False,
@@ -324,12 +400,15 @@ async def _handle_webhook_request(
                 task_id = _get_task_id_for_chat(chat_id)
             if not task_id:
                 from agent.db import db_get_awaiting_approval_task
+
                 awaiting_task = db_get_awaiting_approval_task(chat_id, "telegram")
                 if awaiting_task:
                     task_id = awaiting_task["task_id"]
             if not task_id:
                 logger.info("[Telegram] approval: no task found chat_id=%s", chat_id)
-                messages = format_response_for_telegram("Brak aktywnego zadania do zatwierdzenia. Użyj /zadanie.", awaiting_input=False)
+                messages = format_response_for_telegram(
+                    "Brak aktywnego zadania do zatwierdzenia. Użyj /zadanie.", awaiting_input=False
+                )
                 return TelegramWebhookResponse(success=True, messages=messages)
             approval = payload == "true"
             return await _handle_approval(chat_id, task_id, approval, jwt_token, base_url)
@@ -354,7 +433,12 @@ async def _handle_webhook_request(
             text = get_help_message()
             messages = format_response_for_telegram(text, awaiting_input=False)
             if not messages or not any(m.get("text") for m in messages):
-                messages = [{"text": "Pomoc: /zadanie, /status, /cofnij, /mb_eval, /pomoc", "parse_mode": None}]
+                messages = [
+                    {
+                        "text": "Pomoc: /zadanie, /status, /cofnij, /mb_eval, /pomoc",
+                        "parse_mode": None,
+                    }
+                ]
             return TelegramWebhookResponse(success=True, messages=messages)
 
         if command == "cofnij":
@@ -380,8 +464,14 @@ async def _handle_webhook_request(
             response_text = result.get("response", "") or f"Status: {result.get('status', '?')}"
             awaiting = result.get("awaiting_input", False)
             messages = format_response_for_telegram(response_text, awaiting_input=awaiting)
-            reply_markup = build_inline_keyboard_approval(task_id) if (result.get("status") == "diff_ready" and awaiting) else None
-            return TelegramWebhookResponse(success=True, messages=messages, awaiting_input=awaiting, reply_markup=reply_markup)
+            reply_markup = (
+                build_inline_keyboard_approval(task_id)
+                if (result.get("status") == "diff_ready" and awaiting)
+                else None
+            )
+            return TelegramWebhookResponse(
+                success=True, messages=messages, awaiting_input=awaiting, reply_markup=reply_markup
+            )
 
         if command == "commander":
             from agent.commander.session_login import mint_login_link
@@ -465,15 +555,27 @@ async def _handle_webhook_request(
         status_code = e.response.status_code if e.response is not None else 0
         logger.error("[Telegram] webhook HTTP error %s: %s", status_code, e)
         if status_code in (404, 409):
-            logger.warning("[Telegram] nie widzę tego zadania: HTTP %s chat_id=%s source=telegram", status_code, chat_id)
+            logger.warning(
+                "[Telegram] nie widzę tego zadania: HTTP %s chat_id=%s source=telegram",
+                status_code,
+                chat_id,
+            )
             messages = format_response_for_telegram(
                 "Nie widzę już tego zadania (wygasło lub zostało usunięte).\nWyślij `/zadanie ...` ponownie.",
                 awaiting_input=False,
             )
-            return TelegramWebhookResponse(success=False, messages=messages, error={"type": "task_gone", "message": str(e)})
+            return TelegramWebhookResponse(
+                success=False, messages=messages, error={"type": "task_gone", "message": str(e)}
+            )
         if status_code in (502, 503, 504):
-            messages = format_response_for_telegram("Serwer chwilowo niedostępny. Spróbuj ponownie za chwilę.", awaiting_input=False)
-            return TelegramWebhookResponse(success=False, messages=messages, error={"type": "transient", "status_code": status_code, "message": str(e)})
+            messages = format_response_for_telegram(
+                "Serwer chwilowo niedostępny. Spróbuj ponownie za chwilę.", awaiting_input=False
+            )
+            return TelegramWebhookResponse(
+                success=False,
+                messages=messages,
+                error={"type": "transient", "status_code": status_code, "message": str(e)},
+            )
         err_msg = format_error_for_telegram("internal", operation_id=chat_id)
         return TelegramWebhookResponse(
             success=False,
@@ -482,7 +584,10 @@ async def _handle_webhook_request(
         )
     except (httpx.TimeoutException, httpx.ConnectError) as e:
         logger.warning("[Telegram] webhook transient error: %s: %s", type(e).__name__, e)
-        messages = format_response_for_telegram("Połączenie z serwerem nie powiodło się. Spróbuj ponownie za chwilę.", awaiting_input=False)
+        messages = format_response_for_telegram(
+            "Połączenie z serwerem nie powiodło się. Spróbuj ponownie za chwilę.",
+            awaiting_input=False,
+        )
         return TelegramWebhookResponse(
             success=False,
             messages=messages,
@@ -502,15 +607,30 @@ async def _handle_webhook_request(
 async def telegram_webhook(
     raw_request: Request,
     x_webhook_secret: Optional[str] = Header(None),
+    x_telegram_bot_api_secret_token: Optional[str] = Header(
+        None,
+        alias="X-Telegram-Bot-Api-Secret-Token",
+    ),
 ):
     try:
-        body = await raw_request.json()
-    except Exception:
-        return TelegramWebhookResponse(success=False, messages=[], error={"type": "bad_request", "message": "Invalid JSON"})
+        body = json.loads(
+            await read_limited_body_async(raw_request, max_bytes=TELEGRAM_BODY_MAX_BYTES)
+        )
+    except HTTPException:
+        raise
+    except (TypeError, ValueError, json.JSONDecodeError):
+        return TelegramWebhookResponse(
+            success=False, messages=[], error={"type": "bad_request", "message": "Invalid JSON"}
+        )
     if not isinstance(body, dict):
-        return TelegramWebhookResponse(success=False, messages=[], error={"type": "bad_request", "message": "Body must be object"})
+        return TelegramWebhookResponse(
+            success=False,
+            messages=[],
+            error={"type": "bad_request", "message": "Body must be object"},
+        )
 
     if body.get("update_id") is not None:
+        validate_native_telegram_secret(x_telegram_bot_api_secret_token)
         update_id = body["update_id"]
         if isinstance(update_id, int) and _is_duplicate_update(update_id):
             logger.debug("[Telegram] dedup: skipping duplicate update_id=%s", update_id)
@@ -518,8 +638,14 @@ async def telegram_webhook(
         normalized = normalize_telegram_update(body)
         if normalized is None:
             return TelegramWebhookResponse(success=True, messages=[])
-        response = await _handle_webhook_request(normalized, x_webhook_secret, skip_webhook_secret=True)
-        callback_id = (body.get("callback_query") or {}).get("id") if isinstance(body.get("callback_query"), dict) else None
+        response = await _handle_webhook_request(
+            normalized, x_webhook_secret, skip_webhook_secret=True
+        )
+        callback_id = (
+            (body.get("callback_query") or {}).get("id")
+            if isinstance(body.get("callback_query"), dict)
+            else None
+        )
         await _send_telegram_replies(normalized.chat_id, response, callback_id)
         return response
 
@@ -535,19 +661,25 @@ async def telegram_webhook(
 @router.get("/health")
 async def telegram_health():
     from agent.telegram_validator import get_configuration_status
+
     config = get_configuration_status()
     jwt_ok = bool(get_bot_jwt_token())
     return {
         "status": "ok" if (config["is_fully_configured"] and jwt_ok) else "warning",
         "service": "telegram-webhook",
         "configuration": {**config, "jwt_configured": jwt_ok},
-        "message": "Ready" if (config["is_fully_configured"] and jwt_ok) else "Missing configuration (check .env)",
+        "message": (
+            "Ready"
+            if (config["is_fully_configured"] and jwt_ok)
+            else "Missing configuration (check .env)"
+        ),
     }
 
 
 @router.post("/test")
 async def telegram_test(message: str = "Test", user_id: str = "test_user"):
     from agent.telegram_formatter import format_response_for_telegram, escape_markdown_v2
+
     test_response = f"**Test**\n\nMessage: {escape_markdown_v2(message)}\nUser: `{user_id}`"
     messages = format_response_for_telegram(test_response.strip(), awaiting_input=False)
     return {"success": True, "messages": messages, "note": "Use /telegram/webhook for production."}

@@ -12,6 +12,7 @@ data/
 !agent/portal_qualification/data/*.json
 *.lock
 !requirements.lock
+!uv.lock
 *.log
 logs/
 .vscode/

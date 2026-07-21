@@ -51,7 +51,7 @@ if [ ! -x venv/bin/python ]; then
 fi
 sudo -u jadzia venv/bin/python -m pip install --upgrade pip -q
 if [ -f requirements.lock ]; then
-  sudo -u jadzia venv/bin/python -m pip install -r requirements.lock -q
+  sudo -u jadzia venv/bin/python -m pip install --require-hashes -r requirements.lock -q
 else
   sudo -u jadzia venv/bin/python -m pip install -r requirements.txt -q
 fi

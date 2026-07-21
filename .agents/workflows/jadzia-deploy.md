@@ -57,7 +57,7 @@ sudo -u jadzia sqlite3 /opt/jadzia/data/jadzia.db \
 cd /opt/jadzia && git fetch origin master && git pull --ff-only origin master
 
 # 3. Deps + restart (runtime only)
-sudo -u jadzia bash -lc 'cd /opt/jadzia && source venv/bin/activate && pip install -r requirements.txt -q'
+sudo -u jadzia bash -lc 'cd /opt/jadzia && source venv/bin/activate && if [ -f requirements.lock ]; then pip install --require-hashes -r requirements.lock -q; else pip install -r requirements.txt -q; fi'
 systemctl restart jadzia
 sleep 4
 curl -sf http://127.0.0.1:8000/health

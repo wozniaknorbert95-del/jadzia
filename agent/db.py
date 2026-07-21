@@ -29,7 +29,7 @@ def get_connection() -> sqlite3.Connection:
     Returns:
         sqlite3.Connection with row_factory set
     """
-    if not hasattr(_local, 'conn') or _local.conn is None:
+    if not hasattr(_local, "conn") or _local.conn is None:
         with _conn_lock:
             # Ensure data directory exists
             os.makedirs(os.path.dirname(DB_PATH), exist_ok=True)
@@ -102,12 +102,11 @@ def _init_schema(conn: sqlite3.Connection):
         cursor = conn.execute("PRAGMA table_info(tasks)")
         columns = [row[1] for row in cursor.fetchall()]
         if "test_mode" not in columns:
-            conn.execute(
-                "ALTER TABLE tasks ADD COLUMN test_mode INTEGER NOT NULL DEFAULT 0"
-            )
+            conn.execute("ALTER TABLE tasks ADD COLUMN test_mode INTEGER NOT NULL DEFAULT 0")
     except Exception as e:
         # Surface a clear error; caller will decide how to handle it.
         import logging
+
         logging.getLogger(__name__).error("[DB] Migration failed to ensure test_mode column: %s", e)
         raise
 
@@ -200,14 +199,11 @@ def _init_schema(conn: sqlite3.Connection):
         }
         for column_name, column_type in order_v2_columns.items():
             if column_name not in existing_order_columns:
-                conn.execute(
-                    f"ALTER TABLE orders ADD COLUMN {column_name} {column_type}"
-                )
+                conn.execute(f"ALTER TABLE orders ADD COLUMN {column_name} {column_type}")
     except Exception as e:
         import logging
-        logging.getLogger(__name__).error(
-            "[DB] INT-002 v2 migration failed: %s", e
-        )
+
+        logging.getLogger(__name__).error("[DB] INT-002 v2 migration failed: %s", e)
         raise
     conn.execute("""
         CREATE INDEX IF NOT EXISTS idx_orders_status
@@ -411,6 +407,30 @@ def _init_schema(conn: sqlite3.Connection):
     conn.execute("""
         CREATE INDEX IF NOT EXISTS idx_widget_chat_updated
         ON widget_chat_sessions(updated_at)
+    """)
+    # Public-ingress controls are durable so a process restart cannot reset
+    # rate/replay protections.
+    conn.execute("""
+        CREATE TABLE IF NOT EXISTS ingress_rate_hits (
+            bucket_hash TEXT NOT NULL,
+            hit_at REAL NOT NULL
+        )
+    """)
+    conn.execute("""
+        CREATE INDEX IF NOT EXISTS idx_ingress_rate_hits_bucket
+        ON ingress_rate_hits(bucket_hash, hit_at)
+    """)
+    conn.execute("""
+        CREATE TABLE IF NOT EXISTS ingress_replays (
+            namespace TEXT NOT NULL,
+            replay_key TEXT NOT NULL,
+            seen_at REAL NOT NULL,
+            PRIMARY KEY(namespace, replay_key)
+        )
+    """)
+    conn.execute("""
+        CREATE INDEX IF NOT EXISTS idx_ingress_replays_seen
+        ON ingress_replays(seen_at)
     """)
 
     _migrate_content_calendar_columns(conn)
@@ -637,13 +657,11 @@ def _migrate_widget_chat_created_at(conn: sqlite3.Connection) -> None:
     except sqlite3.OperationalError:
         pass
     # Backfill legacy rows: first durable clock we have is updated_at
-    conn.execute(
-        """
+    conn.execute("""
         UPDATE widget_chat_sessions
         SET created_at = updated_at
         WHERE created_at IS NULL OR created_at = ''
-        """
-    )
+        """)
     conn.execute("""
         CREATE INDEX IF NOT EXISTS idx_widget_chat_created
         ON widget_chat_sessions(created_at)
@@ -653,9 +671,7 @@ def _migrate_widget_chat_created_at(conn: sqlite3.Connection) -> None:
 def _migrate_leads_disposition(conn: sqlite3.Connection) -> None:
     """Add sales HITL disposition on leads (open|acked|closed|snoozed)."""
     try:
-        conn.execute(
-            "ALTER TABLE leads ADD COLUMN disposition TEXT NOT NULL DEFAULT 'open'"
-        )
+        conn.execute("ALTER TABLE leads ADD COLUMN disposition TEXT NOT NULL DEFAULT 'open'")
     except sqlite3.OperationalError:
         pass
 
@@ -672,9 +688,7 @@ def _migrate_content_calendar_columns(conn: sqlite3.Connection) -> None:
     )
     for column_name, column_type in new_columns:
         try:
-            conn.execute(
-                f"ALTER TABLE content_calendar ADD COLUMN {column_name} {column_type}"
-            )
+            conn.execute(f"ALTER TABLE content_calendar ADD COLUMN {column_name} {column_type}")
         except sqlite3.OperationalError:
             pass
 
@@ -737,21 +751,29 @@ def db_transaction_with_retry(max_retries: int = 3, retry_delay: float = 0.1):
                     return fn(conn)
             except sqlite3.OperationalError as e:
                 if "locked" in str(e).lower() and attempt < max_retries - 1:
-                    delay = retry_delay * (2 ** attempt)
+                    delay = retry_delay * (2**attempt)
                     import logging
-                    logging.getLogger(__name__).warning("[DB] database locked, retry %d/%d after %.2fs", attempt + 1, max_retries, delay)
+
+                    logging.getLogger(__name__).warning(
+                        "[DB] database locked, retry %d/%d after %.2fs",
+                        attempt + 1,
+                        max_retries,
+                        delay,
+                    )
                     _time.sleep(delay)
                     last_err = e
                     continue
                 raise
         if last_err:
             raise last_err
+
     return decorator
 
 
 # ============================================================================
 # SESSION OPERATIONS (chat_id is unique key; source kept for audit after cleanup_db)
 # ============================================================================
+
 
 def _sessions_pk_is_chat_id_only(conn: sqlite3.Connection) -> bool:
     """True if sessions has PRIMARY KEY (chat_id) only (post-cleanup schema)."""
@@ -763,21 +785,29 @@ def _sessions_pk_is_chat_id_only(conn: sqlite3.Connection) -> bool:
         return False
 
 
-def _exec_create_or_update_session(conn: sqlite3.Connection, chat_id: str, source: str = "http") -> None:
+def _exec_create_or_update_session(
+    conn: sqlite3.Connection, chat_id: str, source: str = "http"
+) -> None:
     """Execute session INSERT/UPDATE on given connection (no commit). For atomic batch use."""
     now = datetime.now(timezone.utc).isoformat()
     if _sessions_pk_is_chat_id_only(conn):
-        conn.execute("""
+        conn.execute(
+            """
             INSERT INTO sessions (chat_id, source, created_at, updated_at, task_queue)
             VALUES (?, ?, ?, ?, '[]')
             ON CONFLICT(chat_id) DO UPDATE SET updated_at = ?
-        """, (chat_id, source, now, now, now))
+        """,
+            (chat_id, source, now, now, now),
+        )
     else:
-        conn.execute("""
+        conn.execute(
+            """
             INSERT INTO sessions (chat_id, source, created_at, updated_at, task_queue)
             VALUES (?, ?, ?, ?, '[]')
             ON CONFLICT(chat_id, source) DO UPDATE SET updated_at = ?
-        """, (chat_id, source, now, now, now))
+        """,
+            (chat_id, source, now, now, now),
+        )
 
 
 def db_create_or_update_session(chat_id: str, source: str = "http") -> None:
@@ -819,11 +849,13 @@ def db_get_session(chat_id: str, source: str = "http") -> Optional[Dict]:
         "created_at": row["created_at"],
         "updated_at": row["updated_at"],
         "active_task_id": row["active_task_id"],
-        "task_queue": json.loads(row["task_queue"])
+        "task_queue": json.loads(row["task_queue"]),
     }
 
 
-def _exec_set_active_task(conn: sqlite3.Connection, chat_id: str, source: str, task_id: Optional[str]) -> None:
+def _exec_set_active_task(
+    conn: sqlite3.Connection, chat_id: str, source: str, task_id: Optional[str]
+) -> None:
     """Execute active_task update on given connection (no commit). For atomic batch use."""
     now = datetime.now(timezone.utc).isoformat()
     if _sessions_pk_is_chat_id_only(conn):
@@ -844,7 +876,9 @@ def db_set_active_task(chat_id: str, source: str, task_id: Optional[str]) -> Non
         _exec_set_active_task(conn, chat_id, source, task_id)
 
 
-def _exec_update_task_queue(conn: sqlite3.Connection, chat_id: str, source: str, task_queue: List[str]) -> None:
+def _exec_update_task_queue(
+    conn: sqlite3.Connection, chat_id: str, source: str, task_queue: List[str]
+) -> None:
     """Execute task_queue update on given connection (no commit). For atomic batch use."""
     now = datetime.now(timezone.utc).isoformat()
     if _sessions_pk_is_chat_id_only(conn):
@@ -869,10 +903,12 @@ def db_update_task_queue(chat_id: str, source: str, task_queue: List[str]) -> No
 # TASK OPERATIONS
 # ============================================================================
 
+
 def _exec_create_task(conn: sqlite3.Connection, task_data: Dict) -> None:
     """Execute INSERT for task on given connection (no commit). For atomic batch use."""
     now = datetime.now(timezone.utc).isoformat()
-    conn.execute("""
+    conn.execute(
+        """
         INSERT INTO tasks (
             task_id, chat_id, source, operation_id, status,
             user_input, dry_run, test_mode, webhook_url,
@@ -890,33 +926,47 @@ def _exec_create_task(conn: sqlite3.Connection, task_data: Dict) -> None:
             ?, ?, ?,
             ?, ?, ?
         )
-    """, (
-        task_data["task_id"],
-        task_data["chat_id"],
-        task_data.get("source", "http"),
-        task_data["operation_id"],
-        task_data["status"],
-        task_data.get("user_input"),
-        1 if task_data.get("dry_run") else 0,
-        1 if task_data.get("test_mode") else 0,
-        task_data.get("webhook_url"),
-        task_data.get("created_at", now),
-        now,
-        json.dumps(task_data.get("plan")) if task_data.get("plan") else None,
-        json.dumps(task_data.get("diffs")) if task_data.get("diffs") else None,
-        json.dumps(task_data.get("new_contents")) if task_data.get("new_contents") else None,
-        json.dumps(task_data.get("written_files")) if task_data.get("written_files") else None,
-        json.dumps(task_data.get("errors", [])),
-        json.dumps(task_data.get("pending_plan")) if task_data.get("pending_plan") else None,
-        json.dumps(task_data.get("validation_errors")) if task_data.get("validation_errors") else None,
-        task_data.get("retry_count", 0),
-        json.dumps(task_data.get("deploy_result")) if task_data.get("deploy_result") else None,
-        1 if task_data.get("awaiting_response") else 0,
-        task_data.get("awaiting_type"),
-        json.dumps(task_data.get("pending_plan_with_questions")) if task_data.get("pending_plan_with_questions") else None,
-        task_data.get("last_response"),
-        json.dumps(task_data.get("files_to_modify")) if task_data.get("files_to_modify") else None
-    ))
+    """,
+        (
+            task_data["task_id"],
+            task_data["chat_id"],
+            task_data.get("source", "http"),
+            task_data["operation_id"],
+            task_data["status"],
+            task_data.get("user_input"),
+            1 if task_data.get("dry_run") else 0,
+            1 if task_data.get("test_mode") else 0,
+            task_data.get("webhook_url"),
+            task_data.get("created_at", now),
+            now,
+            json.dumps(task_data.get("plan")) if task_data.get("plan") else None,
+            json.dumps(task_data.get("diffs")) if task_data.get("diffs") else None,
+            json.dumps(task_data.get("new_contents")) if task_data.get("new_contents") else None,
+            json.dumps(task_data.get("written_files")) if task_data.get("written_files") else None,
+            json.dumps(task_data.get("errors", [])),
+            json.dumps(task_data.get("pending_plan")) if task_data.get("pending_plan") else None,
+            (
+                json.dumps(task_data.get("validation_errors"))
+                if task_data.get("validation_errors")
+                else None
+            ),
+            task_data.get("retry_count", 0),
+            json.dumps(task_data.get("deploy_result")) if task_data.get("deploy_result") else None,
+            1 if task_data.get("awaiting_response") else 0,
+            task_data.get("awaiting_type"),
+            (
+                json.dumps(task_data.get("pending_plan_with_questions"))
+                if task_data.get("pending_plan_with_questions")
+                else None
+            ),
+            task_data.get("last_response"),
+            (
+                json.dumps(task_data.get("files_to_modify"))
+                if task_data.get("files_to_modify")
+                else None
+            ),
+        ),
+    )
 
 
 def _exec_update_task(conn: sqlite3.Connection, task_id: str, updates: Dict) -> None:
@@ -925,9 +975,18 @@ def _exec_update_task(conn: sqlite3.Connection, task_id: str, updates: Dict) -> 
     set_parts = ["updated_at = ?"]
     values = [now]
     for key, value in updates.items():
-        if key in ["plan", "diffs", "new_contents", "written_files", "errors",
-                   "pending_plan", "validation_errors", "deploy_result",
-                   "pending_plan_with_questions", "files_to_modify"]:
+        if key in [
+            "plan",
+            "diffs",
+            "new_contents",
+            "written_files",
+            "errors",
+            "pending_plan",
+            "validation_errors",
+            "deploy_result",
+            "pending_plan_with_questions",
+            "files_to_modify",
+        ]:
             set_parts.append(f"{key} = ?")
             values.append(json.dumps(value) if value is not None else None)
         elif key in ["dry_run", "test_mode", "awaiting_response"]:
@@ -983,11 +1042,14 @@ def db_get_task(task_id: str) -> Optional[Dict]:
 def db_get_tasks_for_session(chat_id: str, source: str = "http") -> List[Dict]:
     """Get all tasks for a session."""
     conn = get_connection()
-    rows = conn.execute("""
+    rows = conn.execute(
+        """
         SELECT * FROM tasks
         WHERE chat_id = ? AND source = ?
         ORDER BY created_at
-    """, (chat_id, source)).fetchall()
+    """,
+        (chat_id, source),
+    ).fetchall()
 
     return [_row_to_task_dict(row) for row in rows]
 
@@ -1008,11 +1070,14 @@ def db_get_awaiting_approval_task(chat_id: str, source: str = "http") -> Optiona
     (status='diff_ready' and awaiting_response=1). Used as fallback for Telegram "TAK" flow.
     """
     conn = get_connection()
-    row = conn.execute("""
+    row = conn.execute(
+        """
         SELECT * FROM tasks
         WHERE chat_id = ? AND source = ? AND status = 'diff_ready' AND awaiting_response = 1
         ORDER BY updated_at DESC LIMIT 1
-    """, (chat_id, source)).fetchone()
+    """,
+        (chat_id, source),
+    ).fetchone()
 
     if not row:
         return None
@@ -1027,12 +1092,15 @@ def db_get_last_active_task(chat_id: str, source: str = "http") -> Optional[Dict
     Used as fallback for Telegram approval when plan_approval is not yet diff_ready.
     """
     conn = get_connection()
-    row = conn.execute("""
+    row = conn.execute(
+        """
         SELECT * FROM tasks
         WHERE chat_id = ? AND source = ?
         AND status NOT IN ('completed', 'failed', 'rolled_back')
         ORDER BY updated_at DESC LIMIT 1
-    """, (chat_id, source)).fetchone()
+    """,
+        (chat_id, source),
+    ).fetchone()
 
     if not row:
         return None
@@ -1048,9 +1116,12 @@ def db_find_session_by_task_id(task_id: str) -> Optional[tuple]:
         (chat_id, source) tuple or None
     """
     conn = get_connection()
-    row = conn.execute("""
+    row = conn.execute(
+        """
         SELECT chat_id, source FROM tasks WHERE task_id = ?
-    """, (task_id,)).fetchone()
+    """,
+        (task_id,),
+    ).fetchone()
 
     if not row:
         return None
@@ -1064,9 +1135,16 @@ def _row_to_task_dict(row: sqlite3.Row) -> Dict:
 
     # Parse JSON columns
     json_columns = [
-        "plan", "diffs", "new_contents", "written_files", "errors",
-        "pending_plan", "validation_errors", "deploy_result",
-        "pending_plan_with_questions", "files_to_modify"
+        "plan",
+        "diffs",
+        "new_contents",
+        "written_files",
+        "errors",
+        "pending_plan",
+        "validation_errors",
+        "deploy_result",
+        "pending_plan_with_questions",
+        "files_to_modify",
     ]
 
     for col in json_columns:
@@ -1088,6 +1166,7 @@ def _row_to_task_dict(row: sqlite3.Row) -> Dict:
 # DELETE / CLEANUP
 # ============================================================================
 
+
 def db_delete_session(chat_id: str, source: str = "http") -> None:
     """
     Delete a session and all its tasks.
@@ -1108,16 +1187,20 @@ def db_list_sessions_updated_before(cutoff_iso: str) -> List[tuple]:
     Used by cleanup_old_sessions() for SQLite.
     """
     conn = get_connection()
-    rows = conn.execute("""
+    rows = conn.execute(
+        """
         SELECT chat_id, source FROM sessions
         WHERE updated_at < ?
-    """, (cutoff_iso,)).fetchall()
+    """,
+        (cutoff_iso,),
+    ).fetchall()
     return [(row["chat_id"], row["source"]) for row in rows]
 
 
 # ============================================================================
 # UTILITY FUNCTIONS
 # ============================================================================
+
 
 def db_list_all_sessions() -> List[tuple]:
     """
@@ -1198,20 +1281,14 @@ def db_get_dashboard_metrics() -> Dict[str, Any]:
     ).fetchall()
     by_status_raw = [{"status": row["status"], "count": row["cnt"]} for row in by_status_rows]
 
-    test_mode_tasks = conn.execute(
-        "SELECT COUNT(*) FROM tasks WHERE test_mode = 1"
-    ).fetchone()[0]
+    test_mode_tasks = conn.execute("SELECT COUNT(*) FROM tasks WHERE test_mode = 1").fetchone()[0]
 
-    production_tasks = conn.execute(
-        "SELECT COUNT(*) FROM tasks WHERE test_mode = 0"
-    ).fetchone()[0]
+    production_tasks = conn.execute("SELECT COUNT(*) FROM tasks WHERE test_mode = 0").fetchone()[0]
 
-    recent_rows = conn.execute(
-        """
+    recent_rows = conn.execute("""
         SELECT task_id, status, test_mode, dry_run, created_at, updated_at, completed_at
         FROM tasks ORDER BY created_at DESC LIMIT 20
-        """
-    ).fetchall()
+        """).fetchall()
     recent_tasks_raw = [
         {
             "task_id": row["task_id"],
@@ -1314,6 +1391,7 @@ def db_mark_tasks_failed(task_ids: List[str], reason: str) -> Dict[str, Any]:
 # ============================================================================
 # ORDER OPERATIONS (INT-002)
 # ============================================================================
+
 
 def db_upsert_order(order_data: Dict) -> Optional[str]:
     """
@@ -1480,6 +1558,7 @@ def db_upsert_order(order_data: Dict) -> Optional[str]:
         return internal_id
     except Exception as e:
         import logging
+
         logging.getLogger(__name__).error(
             "[DB] db_upsert_order failed order_id=%s: %s", order_id, e
         )
@@ -1496,9 +1575,7 @@ def _optional_bool_to_int(value: Any) -> Optional[int]:
 def db_get_order_by_wc_id(order_id: str) -> Optional[Dict]:
     """Get order by WooCommerce order_id."""
     conn = get_connection()
-    row = conn.execute(
-        "SELECT * FROM orders WHERE order_id = ?", (order_id,)
-    ).fetchone()
+    row = conn.execute("SELECT * FROM orders WHERE order_id = ?", (order_id,)).fetchone()
     if not row:
         return None
     return _row_to_order_dict(row)
@@ -1507,9 +1584,7 @@ def db_get_order_by_wc_id(order_id: str) -> Optional[Dict]:
 def db_get_order_by_internal_id(internal_id: int) -> Optional[Dict]:
     """Get order by internal autoincrement id."""
     conn = get_connection()
-    row = conn.execute(
-        "SELECT * FROM orders WHERE id = ?", (internal_id,)
-    ).fetchone()
+    row = conn.execute("SELECT * FROM orders WHERE id = ?", (internal_id,)).fetchone()
     if not row:
         return None
     return _row_to_order_dict(row)
@@ -1549,6 +1624,79 @@ def _row_to_order_dict(row: sqlite3.Row) -> Dict:
 # ============================================================================
 
 WIDGET_CHAT_SESSION_TTL_SEC = 24 * 3600
+
+
+def db_register_widget_chat_session(session_id: str) -> None:
+    """Persist a server-issued widget session before it can hold history."""
+    sid = (session_id or "").strip()
+    if not sid:
+        raise ValueError("missing widget session")
+    now = datetime.now(timezone.utc).isoformat()
+    with db_transaction() as conn:
+        conn.execute(
+            """
+            INSERT OR IGNORE INTO widget_chat_sessions
+            (session_id, history_json, created_at, updated_at)
+            VALUES (?, '[]', ?, ?)
+            """,
+            (sid, now, now),
+        )
+
+
+def db_widget_chat_session_is_active(
+    session_id: str,
+    ttl_sec: int = WIDGET_CHAT_SESSION_TTL_SEC,
+) -> bool:
+    """Return whether a known server-issued session remains within its TTL."""
+    sid = (session_id or "").strip()
+    if not sid:
+        return False
+    conn = get_connection()
+    row = conn.execute(
+        "SELECT updated_at FROM widget_chat_sessions WHERE session_id = ?",
+        (sid,),
+    ).fetchone()
+    if not row:
+        return False
+    if _widget_session_expired(row["updated_at"], ttl_sec):
+        db_delete_widget_chat_history(sid)
+        return False
+    return True
+
+
+def db_check_and_record_ingress_rate(bucket_hash: str, *, window_sec: int, limit: int) -> bool:
+    """Atomically record a request and return False when its bucket is exhausted."""
+    now = datetime.now(timezone.utc).timestamp()
+    cutoff = now - window_sec
+    with db_transaction() as conn:
+        conn.execute("DELETE FROM ingress_rate_hits WHERE hit_at < ?", (cutoff,))
+        count = conn.execute(
+            "SELECT COUNT(*) FROM ingress_rate_hits WHERE bucket_hash = ? AND hit_at >= ?",
+            (bucket_hash, cutoff),
+        ).fetchone()[0]
+        if count >= limit:
+            return False
+        conn.execute(
+            "INSERT INTO ingress_rate_hits (bucket_hash, hit_at) VALUES (?, ?)",
+            (bucket_hash, now),
+        )
+    return True
+
+
+def db_claim_ingress_replay(namespace: str, replay_key: str, *, ttl_sec: int) -> bool:
+    """Atomically claim a replay key; False means the event was already accepted."""
+    now = datetime.now(timezone.utc).timestamp()
+    cutoff = now - ttl_sec
+    with db_transaction() as conn:
+        conn.execute("DELETE FROM ingress_replays WHERE seen_at < ?", (cutoff,))
+        cursor = conn.execute(
+            """
+            INSERT OR IGNORE INTO ingress_replays (namespace, replay_key, seen_at)
+            VALUES (?, ?, ?)
+            """,
+            (namespace, replay_key, now),
+        )
+    return cursor.rowcount == 1
 
 
 def _widget_session_expired(updated_at: str, ttl_sec: int) -> bool:
@@ -1628,6 +1776,7 @@ def db_delete_widget_chat_history(session_id: str) -> None:
 # LEAD OPERATIONS (INT-004)
 # ============================================================================
 
+
 def db_create_lead(lead_data: Dict) -> tuple[Optional[str], str]:
     """
     Insert a lead if email is unique.
@@ -1646,9 +1795,7 @@ def db_create_lead(lead_data: Dict) -> tuple[Optional[str], str]:
 
     try:
         with db_transaction() as conn:
-            existing = conn.execute(
-                "SELECT id FROM leads WHERE email = ?", (email,)
-            ).fetchone()
+            existing = conn.execute("SELECT id FROM leads WHERE email = ?", (email,)).fetchone()
             if existing:
                 return str(existing["id"]), "duplicate"
 
@@ -1673,6 +1820,7 @@ def db_create_lead(lead_data: Dict) -> tuple[Optional[str], str]:
             return str(cursor.lastrowid), "success"
     except Exception as e:
         import logging
+
         logging.getLogger(__name__).error(
             "[DB] db_create_lead failed email=%s: %s", email[:3] + "***", e
         )
@@ -1682,9 +1830,7 @@ def db_create_lead(lead_data: Dict) -> tuple[Optional[str], str]:
 def db_get_lead_by_email(email: str) -> Optional[Dict]:
     """Get lead by email (normalized lowercase)."""
     conn = get_connection()
-    row = conn.execute(
-        "SELECT * FROM leads WHERE email = ?", (email.strip().lower(),)
-    ).fetchone()
+    row = conn.execute("SELECT * FROM leads WHERE email = ?", (email.strip().lower(),)).fetchone()
     if not row:
         return None
     return _row_to_lead_dict(row)
@@ -1693,9 +1839,7 @@ def db_get_lead_by_email(email: str) -> Optional[Dict]:
 def db_get_lead_by_id(lead_id: int) -> Optional[Dict]:
     """Get lead by internal id."""
     conn = get_connection()
-    row = conn.execute(
-        "SELECT * FROM leads WHERE id = ?", (lead_id,)
-    ).fetchone()
+    row = conn.execute("SELECT * FROM leads WHERE id = ?", (lead_id,)).fetchone()
     if not row:
         return None
     return _row_to_lead_dict(row)
@@ -1817,9 +1961,7 @@ def db_list_calendar_entries(
 def db_get_calendar_entry(entry_id: int) -> Optional[Dict]:
     """Get calendar entry by internal id."""
     conn = get_connection()
-    row = conn.execute(
-        "SELECT * FROM content_calendar WHERE id = ?", (entry_id,)
-    ).fetchone()
+    row = conn.execute("SELECT * FROM content_calendar WHERE id = ?", (entry_id,)).fetchone()
     if not row:
         return None
     return _row_to_calendar_dict(row)
@@ -1913,6 +2055,7 @@ def db_save_analytics_snapshot(snapshot: Dict) -> Optional[int]:
     except Exception as e:
         conn.rollback()
         import logging
+
         logging.getLogger(__name__).error("[DB] analytics snapshot save failed: %s", e)
         return None
 
@@ -1931,13 +2074,11 @@ def db_get_latest_analytics_snapshot(period: Optional[str] = None) -> Optional[D
             (period,),
         ).fetchone()
     else:
-        row = conn.execute(
-            """
+        row = conn.execute("""
             SELECT * FROM analytics_snapshots
             ORDER BY created_at DESC
             LIMIT 1
-            """
-        ).fetchone()
+            """).fetchone()
     return dict(row) if row else None
 
 
@@ -1959,6 +2100,7 @@ def db_list_analytics_snapshots(limit: int = 30) -> List[Dict]:
 # ============================================================================
 # Commander control plane (COI Commander)
 # ============================================================================
+
 
 def db_commander_insert_audit(row: Dict) -> Optional[int]:
     """Append-only audit log insert. Returns row id."""
@@ -2313,6 +2455,7 @@ def db_commander_get_agent_state(agent_id: str) -> Optional[Dict]:
 # Revenue classification audit (REV-R0-02)
 # ============================================================================
 
+
 def db_record_revenue_classification(
     entity_type: str,
     entity_key: str,
@@ -2399,8 +2542,7 @@ def db_get_revenue_classification(entity_type: str, entity_key: str) -> Optional
 def db_list_revenue_classifications() -> List[Dict]:
     """Return only the latest classification per entity."""
     conn = get_connection()
-    rows = conn.execute(
-        """
+    rows = conn.execute("""
         SELECT event.id, event.entity_type, event.entity_key, event.classification,
                event.reason_code, event.evidence_json, event.classified_at,
                event.classified_by
@@ -2411,8 +2553,7 @@ def db_list_revenue_classifications() -> List[Dict]:
             GROUP BY entity_type, entity_key
         ) AS latest ON latest.latest_id = event.id
         ORDER BY event.entity_type, event.entity_key
-        """
-    ).fetchall()
+        """).fetchall()
     result = []
     for row in rows:
         item = dict(row)
@@ -2500,9 +2641,18 @@ def db_update_calendar_entry_versioned(
 ) -> tuple[bool, Optional[int]]:
     """Optimistic lock update. Returns (success, new_version)."""
     allowed = {
-        "platform", "title", "body_nl", "scheduled_at", "status",
-        "source_order_id", "publish_result", "media_url", "fb_post_id",
-        "scheduled_publish_at", "content_type", "media_source",
+        "platform",
+        "title",
+        "body_nl",
+        "scheduled_at",
+        "status",
+        "source_order_id",
+        "publish_result",
+        "media_url",
+        "fb_post_id",
+        "scheduled_publish_at",
+        "content_type",
+        "media_source",
     }
     filtered = {k: v for k, v in updates.items() if k in allowed and v is not None}
     if not filtered:
@@ -2579,6 +2729,7 @@ def db_count_calendar_by_status(status: str) -> int:
 
 if __name__ == "__main__":
     import uuid
+
     # Test basic operations (use unique task_id so run is idempotent)
     test_task_id = "test_task_" + str(uuid.uuid4())[:8]
     print("Testing DB layer...")
@@ -2595,7 +2746,7 @@ if __name__ == "__main__":
         "operation_id": "op_001",
         "status": "planning",
         "user_input": "test input",
-        "dry_run": False
+        "dry_run": False,
     }
     db_create_task(task_data)
     print("[OK] Task created")
@@ -2656,6 +2807,7 @@ def db_insert_marketing_raw_ingest(row: Dict) -> Optional[int]:
     except Exception as e:
         conn.rollback()
         import logging
+
         logging.getLogger(__name__).error("[DB] marketing_raw_ingest insert failed: %s", e)
         return None
 
@@ -2730,6 +2882,7 @@ def db_upsert_marketing_fact(fact: Dict) -> Optional[int]:
     except Exception as e:
         conn.rollback()
         import logging
+
         logging.getLogger(__name__).error("[DB] marketing_facts upsert failed: %s", e)
         return None
 
@@ -2838,6 +2991,7 @@ def db_insert_quality_flag(flag: Dict) -> Optional[int]:
     except Exception as e:
         conn.rollback()
         import logging
+
         logging.getLogger(__name__).error("[DB] data_quality_flags insert failed: %s", e)
         return None
 
@@ -2913,6 +3067,7 @@ def db_upsert_order_margin_fact(row: Dict) -> bool:
     except Exception as e:
         conn.rollback()
         import logging
+
         logging.getLogger(__name__).error("[DB] order_margin_facts upsert failed: %s", e)
         return False
 
@@ -2955,9 +3110,7 @@ def db_list_orders_full(limit: int = 500) -> List[Dict]:
 def db_margin_coverage_stats() -> Dict[str, Any]:
     """Orders vs margin facts coverage for Data Health."""
     conn = get_connection()
-    total = int(
-        conn.execute("SELECT COUNT(*) AS n FROM orders").fetchone()["n"] or 0
-    )
+    total = int(conn.execute("SELECT COUNT(*) AS n FROM orders").fetchone()["n"] or 0)
     with_margin = int(
         conn.execute("SELECT COUNT(*) AS n FROM order_margin_facts").fetchone()["n"] or 0
     )
@@ -3006,6 +3159,7 @@ def db_insert_marketing_shadow(row: Dict) -> Optional[int]:
     except Exception as e:
         conn.rollback()
         import logging
+
         logging.getLogger(__name__).error("[DB] marketing_shadow_log insert failed: %s", e)
         return None
 
@@ -3058,6 +3212,7 @@ def db_update_marketing_shadow_hitl(
     except Exception as e:
         conn.rollback()
         import logging
+
         logging.getLogger(__name__).error("[DB] shadow hitl update failed: %s", e)
         return False
 
@@ -3090,6 +3245,7 @@ def db_merge_marketing_shadow_payload(
     except Exception as e:
         conn.rollback()
         import logging
+
         logging.getLogger(__name__).error("[DB] shadow payload merge failed: %s", e)
         return False
 
@@ -3140,6 +3296,7 @@ def db_upsert_marketing_shadow_eval(
         return True
     except Exception as e:
         import logging
+
         logging.getLogger(__name__).error(
             "[DB] shadow eval upsert failed action_id=%s: %s", action_id, e
         )
@@ -3244,6 +3401,7 @@ def db_insert_marketing_hypothesis(row: Dict) -> bool:
     except Exception as e:
         conn.rollback()
         import logging
+
         logging.getLogger(__name__).error("[DB] marketing_hypotheses insert failed: %s", e)
         return False
 
@@ -3300,6 +3458,7 @@ def db_enqueue_brain_event(event: Dict) -> Optional[int]:
     except Exception as e:
         conn.rollback()
         import logging
+
         logging.getLogger(__name__).error("[DB] brain_events enqueue failed: %s", e)
         return None
 

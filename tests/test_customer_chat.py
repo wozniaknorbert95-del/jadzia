@@ -4,6 +4,7 @@ Tests for Customer Chat Widget API.
 
 import os
 import tempfile
+import uuid
 
 import pytest
 from unittest.mock import patch, AsyncMock
@@ -56,7 +57,9 @@ def test_customer_chat_endpoint_success():
         assert data["reply"] == "This is a test reply."
         assert "lead" in data
         assert data["lead"]["score"] == 10
-        mock_process.assert_called_once_with(session_id="test-session-123", user_input="Hello, world!")
+        issued_session = data["session_id"]
+        assert uuid.UUID(issued_session).version == 4
+        mock_process.assert_called_once_with(session_id=issued_session, user_input="Hello, world!")
 
 async def test_customer_chat_caching():
     """
