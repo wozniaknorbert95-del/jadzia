@@ -1,16 +1,17 @@
 # Next task — post UX-POLISH LIVE
 
 **Date:** 2026-07-22  
-**Context tip:** `4aea17c` · `mkt-dash06` LIVE  
+**Context tip:** `04e278f` · UX `@4aea17c` · `mkt-dash06` LIVE  
 **Prior CLOSE:** `2026-07-22-CMD-DASH-UX-POLISH-01-DEPLOY-CLOSE.md`
 
-## Coherence verdict (post tip-sync)
+## Coherence verdict
 
 | Layer | Status |
 |-------|--------|
-| VPS tip / health / UI cache | `4aea17c` · ok · `mkt-dash06`×2 |
+| VPS HEAD | `04e278f` |
+| UI cache | `mkt-dash06`×2 |
 | Dogfood H1–H3 / Audyt | PASS |
-| Docs tip-sync on master+VPS | required for 100% (this commit) |
+| OPERATOR-TODAY / todo / CLOSE | tip-sync LIVE |
 
 ## Expert pick — jedna ścieżka
 

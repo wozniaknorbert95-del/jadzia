@@ -1,9 +1,9 @@
 {
   "project": "Jadzia-Core",
-  "last_updated": "2026-07-22 (tip-sync LIVE; next=OPS-FRESHNESS-01)",
+  "last_updated": "2026-07-22 (LIVE tip 04e278f; next=OPS-FRESHNESS-01)",
   "status": "active",
   "plan": "docs/handoffs/2026-07-22-NEXT-OPS-FRESHNESS-01.md",
-  "active_gate": "LIVE mkt-dash06 @ 4aea17c; next agent OPS-FRESHNESS-01; human OPS-FB-TOKEN-01",
+  "active_gate": "LIVE tip 04e278f mkt-dash06; next agent OPS-FRESHNESS-01; human OPS-FB-TOKEN-01",
   "active_plan": "docs/handoffs/2026-07-22-NEXT-OPS-FRESHNESS-01.md",
   "standing_go_closeout": false,
   "closeout_queue": [],

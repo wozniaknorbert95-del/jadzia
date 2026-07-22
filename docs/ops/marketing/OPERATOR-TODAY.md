@@ -1,14 +1,14 @@
 ---
 status: "[ACTIVE]"
 title: "Marketing OS — START TUTAJ (operator)"
-updated: "2026-07-22 (CMD-DASH-UX-POLISH LIVE @ 4aea17c mkt-dash06)"
+updated: "2026-07-22 (UX polish LIVE · tip-sync closed · next OPS-FRESHNESS-01)"
 ---
 
 # START TUTAJ — jedna ścieżka (ADHD)
 
 **Roadmapa:** [MKT-BRAIN-PRO.md](./MKT-BRAIN-PRO.md) — **~86%** overall · runtime **100%** · **MB_MODE=propose**  
 **Commander cockpit:** https://api.zzpackage.flexgrafik.nl/commander/?v=mkt-dash06  
-**Prod tip LIVE:** `4aea17c` · cache **`mkt-dash06`** (UX polish H1–H3)  
+**Prod SoT tip:** VPS `/opt/jadzia` `git rev-parse --short HEAD` · cache **`mkt-dash06`** · UX polish merge **`4aea17c`**  
 **Meta:** [META-CLICK-PATH.md](./META-CLICK-PATH.md) · Scorecard: [WEEKLY-SCORECARD.md](./WEEKLY-SCORECARD.md)
 
 | Co | Status |

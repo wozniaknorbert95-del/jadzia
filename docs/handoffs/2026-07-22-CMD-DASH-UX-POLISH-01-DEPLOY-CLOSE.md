@@ -1,9 +1,9 @@
 # Handoff CLOSE — CMD-DASH-UX-POLISH-01-DEPLOY
 
 **Date:** 2026-07-22  
-**Status:** **LIVE** @ tip **`4aea17c`** (PR [#15](https://github.com/wozniaknorbert95-del/jadzia/pull/15) MERGED + VPS)  
+**Status:** **LIVE** @ tip **`04e278f`** (UX deploy `4aea17c` + tip-sync docs)  
 **Cache:** `mkt-dash06`  
-**PREV_SHA (rollback):** `b4fcd22`  
+**PREV_SHA (rollback UX):** `b4fcd22`  
 **GO:** Dowódca „Go deply” → interpreted as `GO deploy 4aea17c`  
 **standing_go_closeout:** `false`
 
