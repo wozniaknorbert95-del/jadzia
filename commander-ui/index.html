@@ -13,7 +13,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" href="styles.css?v=mkt-dash03" />
+  <link rel="stylesheet" href="styles.css?v=mkt-dash04" />
 </head>
 <body>
   <a class="skip-link" href="#main">Przejdź do treści</a>
@@ -126,16 +126,10 @@
     <section id="view-marketing" class="view" aria-labelledby="marketing-title" hidden>
       <h2 id="marketing-title">Marketing — Organic HITL (Facebook)</h2>
       <p class="hint">Tu publikujesz <strong>organiczne</strong> posty/Reels (HITL). Paid Leads / Instant Form = Meta Ads Manager — nie ten ekran.</p>
-      <aside id="mkt-os-strip" class="mkt-os-strip panel" aria-label="Marketing OS — Program Close">
-        <p class="mkt-os-strip-title">Marketing OS</p>
-        <p class="hint mkt-os-status">MB propose · overall ~86% · agent observe · ten ekran = organic HITL</p>
-        <ol class="mkt-os-steps">
-          <li><strong>H-Meta</strong> — hold 7d €5 → optimize (Ads Manager)</li>
-          <li><strong>H-Purchase</strong> — Mollie GO → Test Events Purchase</li>
-          <li><strong>H-Insights</strong> — Graph <code>read_insights</code> → nowy token</li>
-          <li><strong>H-WA</strong> — lead → WA &lt;15 min</li>
-          <li><strong>H-F4x</strong> — distribution / blog / webhook — po triggerach</li>
-        </ol>
+      <aside id="mkt-decision-rail" class="exec-rail panel" aria-label="Marketing Brain — Decision Rail">
+        <p class="exec-rail-title">Marketing Brain — Decision Rail</p>
+        <p id="mkt-rail-summary" class="hint mkt-rail-summary" aria-live="polite">Ładowanie bramki MB…</p>
+        <div id="mkt-exec-chips" class="exec-rail-chips" role="list"></div>
         <p class="mkt-os-links hint">
           <a href="https://github.com/wozniaknorbert95-del/jadzia/blob/master/docs/ops/marketing/OPERATOR-TODAY.md" target="_blank" rel="noopener">START TUTAJ</a>
           ·
@@ -146,6 +140,12 @@
           <a href="https://business.facebook.com/" target="_blank" rel="noopener">Ads Manager</a>
         </p>
       </aside>
+      <details id="mkt-forensic" class="forensic-panel" aria-label="Marketing Brain — forensic">
+        <summary>Forensic — shadow · brain-bus · memory</summary>
+        <div id="mkt-forensic-body" class="forensic-body">
+          <p class="hint">Ładowanie…</p>
+        </div>
+      </details>
       <p id="marketing-status-strip" class="hint"></p>
       <p id="fb-health-strip" class="health-strip" aria-live="polite"></p>
       <section id="weekly-draft-panel" class="panel weekly-draft-panel" aria-label="Weekly scorecard draft">
@@ -295,6 +295,6 @@
   </dialog>
 
   <div id="toast" class="toast" role="status" aria-live="polite" hidden></div>
-  <script src="app.js?v=mkt-dash03"></script>
+  <script src="app.js?v=mkt-dash04"></script>
 </body>
 </html>

@@ -1,16 +1,16 @@
 {
   "project": "Jadzia-Core",
-  "last_updated": "2026-07-21 (CMD-DASH-TRUST-01 LIVE @f57dab3)",
+  "last_updated": "2026-07-22 (CMD-DASH-COMPLETE-01 Wave A — Decision Rail)",
   "status": "active",
   "plan": "docs/ops/COMMANDER-DASHBOARD-AUDIT-2026-07-21.md",
-  "active_gate": "production @f57dab3 TRUST pack LIVE; NEXT=CMD-DASH-PARKS-LIVE-01; standing_go_closeout=false",
-  "active_plan": "docs/handoffs/2026-07-21-CMD-DASH-TRUST-01-CLOSE.md",
+  "active_gate": "Wave A code ready; NEXT=merge+deploy then Wave B; standing_go_closeout=false",
+  "active_plan": "docs/handoffs/2026-07-22-CMD-DASH-COMPLETE-01-WAVE-A-HANDOFF.md",
   "standing_go_closeout": false,
   "closeout_queue": [],
   "closeout_expires": "2026-07-25",
-  "next_human": "Hard-refresh Commander (?v=mkt-dash03) — confirm Home Ops badges",
-  "next_agent": "CMD-DASH-PARKS-LIVE-01: parks strip ← propose-preflight + breakers",
-  "agent_rule": "1-1-1 remediation. Evidence-first. Deploy tylko ze zgodą (standing_go_closeout off). Nie sekrety. Nie kasuj Marketing parks. Hard STOP: VPS/Gate D/Mollie/fake PASS.",
+  "next_human": "Phone dogfood Marketing L0 after deploy; then Wave B GO",
+  "next_agent": "CMD-DASH-COMPLETE-01 Wave B: Home ops chip-rail + Agenci truth",
+  "agent_rule": "1-1-1. Evidence-first. Deploy tylko ze zgoda. Hard STOP: Gate D/Mollie/fake PASS/execute UI/6th Audyt tab.",
   "sprints": {
     "remediation": "completed",
     "coi_phase_a": "deploy_complete",
@@ -1582,34 +1582,44 @@
       "note": "DONE: GET /api/v1/design-agent/health public readiness + unit test."
     },
     {
-      "id": "CMD-DASH-PARKS-LIVE-01",
-      "sprint": "Commander Dashboard Audit 2026-07-21",
-      "task": "Replace static Marketing OS parks strip with propose-preflight + breakers read-only",
-      "status": "pending",
-      "priority": "high",
+      "id": "CMD-DASH-COMPLETE-01",
+      "sprint": "Commander Complete Cockpit 2026-07-21",
+      "task": "CEO Decision Cockpit v2 agency: DS-0 + Waves A–D (MB rail, agents, analytics, polish)",
+      "status": "in_progress",
+      "priority": "critical",
       "owner": "agent",
-      "checklist": "docs/ops/COMMANDER-DASHBOARD-AUDIT-2026-07-21.md",
-      "note": "Static H-Meta…H-F4x in index.html; APIs exist (401 without JWT)."
+      "checklist": "docs/handoffs/2026-07-22-CMD-DASH-COMPLETE-01-WAVE-A-HANDOFF.md",
+      "note": "Wave A DONE (DS-0+MB rail). LEFT: Wave B-D. D0.15 5 tabs. No execute UI."
+    },
+    {
+      "id": "CMD-DASH-PARKS-LIVE-01",
+      "sprint": "Commander Complete Cockpit 2026-07-21",
+      "task": "Replace static Marketing OS parks strip with propose-preflight + breakers read-only",
+      "status": "completed",
+      "priority": "critical",
+      "owner": "agent",
+      "checklist": "docs/handoffs/2026-07-22-CMD-DASH-COMPLETE-01-WAVE-A-HANDOFF.md",
+      "note": "DONE Wave A: live Decision Rail; H-Meta static removed; cache mkt-dash04."
     },
     {
       "id": "CMD-DASH-MB-PANEL-01",
-      "sprint": "Commander Dashboard Audit 2026-07-21",
-      "task": "Read-only Marketing Brain strip: breakers + brain-bus + shadow accuracy (no execute)",
-      "status": "pending",
-      "priority": "high",
+      "sprint": "Commander Complete Cockpit 2026-07-21",
+      "task": "Marketing Decision Rail L0+L2: accuracy/shadow/brain-bus/memory (read-only, no execute)",
+      "status": "completed",
+      "priority": "critical",
       "owner": "agent",
-      "checklist": "docs/ops/COMMANDER-DASHBOARD-AUDIT-2026-07-21.md",
-      "note": "Orphan APIs confirmed live. Hard STOP: no marketing/actions/execute button."
+      "checklist": "docs/handoffs/2026-07-22-CMD-DASH-COMPLETE-01-WAVE-A-HANDOFF.md",
+      "note": "DONE Wave A: sev-chip/exec-rail + forensic L2. Hard STOP execute held."
     },
     {
       "id": "CMD-DASH-AGENTS-TRUTH-01",
-      "sprint": "Commander Dashboard Audit 2026-07-21",
+      "sprint": "Commander Complete Cockpit 2026-07-21",
       "task": "Agents panel truth: next_expected_run + Agent OS hop (engineering or static PM card)",
       "status": "pending",
       "priority": "medium",
       "owner": "agent",
       "checklist": "docs/ops/COMMANDER-DASHBOARD-AUDIT-2026-07-21.md",
-      "note": "next_expected_run always null; engineering hop never renders."
+      "note": "Wave B. next_expected_run always null; engineering hop never renders."
     },
     {
       "id": "CMD-DASH-VERIFY-01",
@@ -1623,13 +1633,13 @@
     },
     {
       "id": "CMD-DASH-ORPHAN-SOT-01",
-      "sprint": "Commander Dashboard Audit 2026-07-21",
+      "sprint": "Commander Complete Cockpit 2026-07-21",
       "task": "Document intentional API-only surfaces (execute/graduation/feedback/bulk) in OPERATOR-TODAY",
       "status": "pending",
       "priority": "low",
       "owner": "agent",
       "checklist": "docs/ops/COMMANDER-DASHBOARD-AUDIT-2026-07-21.md",
-      "note": "Prevent accidental unsafe UI; keep execute on TG/HITL token path."
+      "note": "Wave D. Prevent accidental unsafe UI; keep execute on TG/HITL token path."
     }
   ]
 }

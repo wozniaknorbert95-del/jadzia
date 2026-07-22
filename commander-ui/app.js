@@ -461,12 +461,173 @@ function setWeeklyDraftMessage(text) {
   if (body) body.textContent = text;
 }
 
+function escHtml(s) {
+  return String(s ?? "")
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;");
+}
+
+function sevChip(label, value, sev) {
+  const cls = sev && sev !== "neutral" ? `sev-chip sev-chip--${sev}` : "sev-chip sev-chip--neutral";
+  return `<span class="${cls}" role="listitem"><span class="sev-chip__label">${escHtml(label)}</span><span class="sev-chip__value">${escHtml(value)}</span></span>`;
+}
+
+function preflightSev(verdict) {
+  if (verdict === "READY_FOR_GO") return { text: "GO", sev: "ok" };
+  if (verdict === "BLOCKED") return { text: "NO", sev: "critical" };
+  return { text: verdict || "—", sev: "warn" };
+}
+
+function breakersChip(breakers) {
+  if (!breakers) return { text: "—", sev: "neutral" };
+  const trips = breakers.trips || [];
+  const unexpected = trips.filter((t) => t.breaker_id !== "CB_SHADOW");
+  if (unexpected.length) {
+    return { text: `BLOCK ${unexpected.length}`, sev: "critical" };
+  }
+  if (breakers.allowed) return { text: "ALLOW", sev: "ok" };
+  if (trips.some((t) => t.breaker_id === "CB_SHADOW")) {
+    return { text: "SHADOW", sev: "info" };
+  }
+  return { text: "HOLD", sev: "warn" };
+}
+
+function accuracyChip(acc) {
+  if (!acc) return { text: "—", sev: "neutral" };
+  const pct = acc.accuracy == null ? "n/a" : `${Math.round(Number(acc.accuracy) * 100)}%`;
+  const n = acc.n_scored != null ? ` n=${acc.n_scored}` : "";
+  if (acc.gate_ready) return { text: `${pct}${n}`, sev: "ok" };
+  if (acc.n_scored === 0) return { text: `${pct}${n}`, sev: "warn" };
+  return { text: `${pct}${n}`, sev: "warn" };
+}
+
+function fbChip(fb) {
+  if (!fb) return { text: "—", sev: "neutral" };
+  if (fb.ok && fb.has_read_insights) return { text: "OK", sev: "ok" };
+  if (fb.ok && !fb.has_read_insights) return { text: "no insights", sev: "warn" };
+  if (fb.configured) return { text: "bad", sev: "critical" };
+  return { text: "unset", sev: "warn" };
+}
+
+function memoryChip(mem) {
+  if (!mem) return { text: "—", sev: "neutral" };
+  const src = mem.memory_source || mem.backend || "?";
+  const n = mem.count != null ? ` ${mem.count}` : "";
+  if (mem.ok === false) return { text: `${src}${n}`, sev: "critical" };
+  if (src === "chroma") return { text: `${src}${n}`, sev: "ok" };
+  return { text: `${src}${n}`, sev: "info" };
+}
+
+function renderMarketingDecisionRail({
+  preflight,
+  breakers,
+  accuracy,
+  shadow,
+  brainBus,
+  memory,
+  fbHealth,
+  heldCount,
+  sessionDead,
+}) {
+  const chipsEl = document.getElementById("mkt-exec-chips");
+  const summaryEl = document.getElementById("mkt-rail-summary");
+  const forensicEl = document.getElementById("mkt-forensic-body");
+  if (!chipsEl || !summaryEl || !forensicEl) return;
+
+  if (sessionDead) {
+    summaryEl.textContent = "Sesja wygasła — zaloguj, żeby zobaczyć bramkę MB (soft-fail).";
+    chipsEl.innerHTML = [
+      sevChip("Preflight", "—", "warn"),
+      sevChip("Breakers", "—", "warn"),
+      sevChip("Accuracy", "—", "warn"),
+      sevChip("FB", "—", "warn"),
+      sevChip("Held", "—", "warn"),
+      sevChip("Memory", "—", "warn"),
+    ].join("");
+    forensicEl.innerHTML = `<p class="hint">Brak JWT — forensic niedostępny.</p>`;
+    return;
+  }
+
+  const pf = preflightSev(preflight?.verdict);
+  const br = breakersChip(breakers);
+  const ac = accuracyChip(accuracy);
+  const fb = fbChip(fbHealth);
+  const mem = memoryChip(memory);
+  const heldSev = heldCount > 0 ? "warn" : "ok";
+  const mode = preflight?.mb_mode || shadow?.mb_mode || "—";
+
+  chipsEl.innerHTML = [
+    sevChip("Preflight", pf.text, pf.sev),
+    sevChip("Breakers", br.text, br.sev),
+    sevChip("Accuracy", ac.text, ac.sev),
+    sevChip("FB", fb.text, fb.sev),
+    sevChip("Held", String(heldCount ?? 0), heldSev),
+    sevChip("Memory", mem.text, mem.sev),
+  ].join("");
+
+  const gate = accuracy?.gate_ready ? "gate READY" : `gate ${accuracy?.gate_reason || "not ready"}`;
+  const fails = (preflight?.checks || []).filter((c) => !c.ok).map((c) => c.id);
+  const failNote = fails.length ? ` · fail: ${fails.slice(0, 4).join(", ")}` : "";
+  summaryEl.textContent =
+    `MB ${mode} · preflight ${preflight?.verdict || "—"} · ${gate}${failNote}` +
+    ` · execute = Telegram/API only (brak UI)`;
+
+  const shadowRows = (shadow?.shadow || []).slice(0, 8);
+  const events = (brainBus?.events || []).slice(0, 8);
+  const flags = brainBus?.ecosystem_flags || [];
+  const shadowHtml = shadowRows.length
+    ? `<ul class="forensic-list">${shadowRows.map((r) => {
+        const id = r.action_id || r.id || "?";
+        const sev = (r.payload && r.payload.severity) || r.severity || "";
+        const rule = r.heuristic_rule_id || "";
+        return `<li><code>${escHtml(id)}</code> ${escHtml(sev)} ${escHtml(rule)}</li>`;
+      }).join("")}</ul>`
+    : `<p class="hint">Brak wpisów shadow.</p>`;
+  const eventsHtml = events.length
+    ? `<ul class="forensic-list">${events.map((e) => {
+        const t = e.event_type || e.type || "?";
+        const ts = (e.created_at || e.ts || "").toString().slice(0, 19);
+        return `<li><code>${escHtml(t)}</code> ${escHtml(ts)}</li>`;
+      }).join("")}</ul>`
+    : `<p class="hint">Brak eventów brain-bus.</p>`;
+  const flagsHtml = flags.length
+    ? `<ul class="forensic-list">${flags.map((f) =>
+        `<li>${escHtml(f.flag_type || f.source || "?")} · ${escHtml(f.severity || "")}</li>`
+      ).join("")}</ul>`
+    : `<p class="hint">Brak ecosystem flags.</p>`;
+  const memLine = memory
+    ? `${memory.memory_source || "?"} · count=${memory.count ?? "—"} · chroma=${memory.chroma_installed ? "yes" : "no"}`
+    : "niedostępne";
+
+  forensicEl.innerHTML = `
+    <div class="forensic-section"><h4>Shadow (last ${shadowRows.length})</h4>${shadowHtml}</div>
+    <div class="forensic-section"><h4>Brain-bus events</h4>${eventsHtml}</div>
+    <div class="forensic-section"><h4>Ecosystem flags</h4>${flagsHtml}</div>
+    <div class="forensic-section"><h4>Memory</h4><p class="hint">${escHtml(memLine)}</p></div>
+  `;
+}
+
 async function loadMarketing() {
   const draftBody = document.getElementById("weekly-draft-body");
   if (draftBody) draftBody.textContent = "Ładowanie draftu…";
+  const railSummary = document.getElementById("mkt-rail-summary");
+  if (railSummary) railSummary.textContent = "Ładowanie bramki MB…";
 
   let calErr = null;
-  const [cal, agents, settings, fbHealth] = await Promise.all([
+  const [
+    cal,
+    agents,
+    settings,
+    fbHealth,
+    preflight,
+    breakers,
+    accuracy,
+    shadow,
+    brainBus,
+    memory,
+  ] = await Promise.all([
     api("/api/v1/content-calendar").catch((e) => {
       calErr = e;
       return { entries: [] };
@@ -474,10 +635,31 @@ async function loadMarketing() {
     api("/api/v1/agents").catch(() => ({ agents: [] })),
     api("/api/v1/commander/settings").catch(() => ({})),
     api("/api/v1/commander/marketing/fb-health").catch(() => null),
+    api("/api/v1/commander/marketing/propose-preflight").catch(() => null),
+    api("/api/v1/commander/marketing/breakers").catch(() => null),
+    api("/api/v1/commander/marketing/shadow/accuracy").catch(() => null),
+    api("/api/v1/commander/marketing/shadow?limit=12").catch(() => null),
+    api("/api/v1/commander/marketing/brain-bus?limit=12").catch(() => null),
+    api("/api/v1/commander/marketing/memory/status").catch(() => null),
   ]);
 
   const sessionDead = !getToken()
     || (calErr && String(calErr.message || "").includes("Sesja wygasła"));
+
+  const mktAgent = (agents.agents || []).find((a) => a.agent_id === "marketing");
+  const heldCount = mktAgent?.held_count || 0;
+
+  renderMarketingDecisionRail({
+    preflight,
+    breakers,
+    accuracy,
+    shadow,
+    brainBus,
+    memory,
+    fbHealth,
+    heldCount,
+    sessionDead,
+  });
 
   const folderUrl = settings.marketing_gdrive_folder_url;
   const folderHint = document.getElementById("gdrive-folder-hint");
@@ -555,7 +737,7 @@ async function loadMarketing() {
   document.getElementById("marketing-status-strip").textContent =
     `Następna: ${next ? formatSchedule(next.scheduled_publish_at || next.scheduled_at) : "—"} · Zaplanowane: ${approved.length} · Szkice: ${drafts.length} · Nieudane: ${failed.length} · Opublikowane: ${published.length}`;
 
-  const mkt = (agents.agents || []).find((a) => a.agent_id === "marketing");
+  const mkt = mktAgent;
   const held = document.getElementById("held-banner");
   if (mkt?.status === "PAUSED" || (mkt?.held_count || 0) > 0) {
     held.hidden = false;
