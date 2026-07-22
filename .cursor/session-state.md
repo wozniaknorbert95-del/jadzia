@@ -1,12 +1,12 @@
-﻿# Session state — 2026-07-22 Wave A CLOSE
+﻿# Session state — 2026-07-22 COMPLETE CLOSE
 
 ## Status
 
-- Tip LIVE: **`daf9c74`** · Commander `?v=mkt-dash04` · Decision Rail LIVE
-- Wave A: **CLOSED** (DS-0 + PARKS-LIVE + MB-PANEL)
+- Tip LIVE: **`9b30dec`** · Commander `?v=mkt-dash05`
+- `CMD-DASH-COMPLETE-01` Waves A–D: **CLOSED**
 - standing_go_closeout: **false**
 
 ## Next
 
-- Human: phone dogfood Marketing L0
-- Agent: Wave B (Home chip-rail + AGENTS-TRUTH)
+- Human: phone dogfood + Meta parks
+- Agent: observe / new TASK_ID only
