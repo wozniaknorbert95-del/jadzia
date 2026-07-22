@@ -1,4 +1,7 @@
-const API_BASE = window.location.origin;
+const _apiOverride = new URLSearchParams(window.location.search).get("api");
+const API_BASE = (_apiOverride && /^https:\/\/api\.zzpackage\.flexgrafik\.nl\/?$/.test(_apiOverride))
+  ? _apiOverride.replace(/\/$/, "")
+  : window.location.origin;
 const TOKEN_KEY = "coi_commander_jwt";
 let pendingUndoEntryId = null;
 let undoTimer = null;
@@ -321,6 +324,7 @@ async function loadHome() {
   const sshSev = opsHealth?.ssh_connection === "ok" ? "ok" : opsHealth ? "critical" : "neutral";
   const sqlSev = opsHealth?.sqlite_connection === true ? "ok" : opsHealth ? "critical" : "neutral";
   const loopSev = opsHealth?.worker_loop_alive === true ? "ok" : opsHealth ? "critical" : "neutral";
+  const freshSev = freshnessSev(workerFresh);
   const slaSev = slaBad > 0 ? "critical" : "ok";
   const gaSev = fresh === "fresh" || fresh === "ok" ? "ok" : fresh === "stale" ? "warn" : "neutral";
 
@@ -330,7 +334,8 @@ async function loadHome() {
       sevChip("SSH", opsHealth?.ssh_connection || "—", sshSev),
       sevChip("SQLite", opsHealth?.sqlite_connection === true ? "ok" : opsHealth ? "err" : "—", sqlSev),
       sevChip("Loop", opsHealth?.worker_loop_alive === true ? "alive" : opsHealth ? "down" : "—", loopSev),
-      sevChip("SLA", String(slaBad), slaSev),
+      sevChip("Freshness", workerFresh, freshSev),
+      sevChip("SLA", slaBad > 0 ? `bad: ${slaBad}` : "0", slaSev),
       sevChip("GA4", fresh, gaSev),
     ].join("");
   }
@@ -338,8 +343,18 @@ async function loadHome() {
     const up = typeof opsHealth?.uptime_seconds === "number"
       ? ` · up ${Math.round(opsHealth.uptime_seconds)}s`
       : "";
-    const staleNote = fresh === "stale" || workerFresh === "stale" ? " · dane nieaktualne" : "";
-    summaryEl.textContent = `Worker freshness: ${workerFresh}${up}${staleNote}`;
+    const worst = worstSev(opsSev, sshSev, sqlSev, loopSev, freshSev, slaSev, gaSev);
+    const attention = [];
+    if (freshSev === "critical" || freshSev === "warn") attention.push(`freshness ${workerFresh}`);
+    if (slaSev === "critical") attention.push(`SLA bad ${slaBad}`);
+    if (opsSev === "critical" || opsSev === "warn") attention.push(`ops ${opsHealth?.status || "—"}`);
+    if (sshSev === "critical") attention.push("SSH");
+    if (sqlSev === "critical") attention.push("SQLite");
+    if (loopSev === "critical") attention.push("loop");
+    if (gaSev === "warn" || gaSev === "critical") attention.push(`GA4 ${fresh}`);
+    summaryEl.textContent = worst === "ok" || worst === "neutral"
+      ? `Ops: OK${up}`
+      : `Ops: UWAGA — ${attention.slice(0, 3).join(" · ") || worst}${up}`;
   }
   document.getElementById("delegat-banner").hidden = !!settings.delegat_configured;
   bindSystemMapHops();
@@ -486,12 +501,44 @@ function escHtml(s) {
     .replace(/"/g, "&quot;");
 }
 
-function sevChip(label, value, sev) {
+function sevChip(label, value, sev, title) {
   const cls = sev && sev !== "neutral" ? `sev-chip sev-chip--${sev}` : "sev-chip sev-chip--neutral";
-  return `<span class="${cls}" role="listitem"><span class="sev-chip__label">${escHtml(label)}</span><span class="sev-chip__value">${escHtml(value)}</span></span>`;
+  const tip = title ? ` title="${escHtml(title)}"` : "";
+  return `<span class="${cls}" role="listitem"${tip}><span class="sev-chip__label">${escHtml(label)}</span><span class="sev-chip__value">${escHtml(value)}</span></span>`;
 }
 
-function preflightSev(verdict) {
+function sevRank(sev) {
+  if (sev === "critical") return 3;
+  if (sev === "warn") return 2;
+  if (sev === "info") return 1;
+  return 0;
+}
+
+function worstSev(...sevs) {
+  return sevs.reduce((acc, s) => (sevRank(s) > sevRank(acc) ? s : acc), "ok");
+}
+
+function freshnessSev(status) {
+  const s = String(status || "").toLowerCase();
+  if (s === "red" || s === "critical") return "critical";
+  if (s === "stale" || s === "amber" || s === "warn" || s === "yellow") return "warn";
+  if (s === "ok" || s === "fresh" || s === "green") return "ok";
+  return "neutral";
+}
+
+function isProposeMode(mode) {
+  const m = String(mode || "").toLowerCase();
+  return m === "propose" || m === "shadow";
+}
+
+function preflightSev(verdict, mbMode) {
+  if (isProposeMode(mbMode)) {
+    return {
+      text: "N/A",
+      sev: "info",
+      title: "gate cutover; runtime=propose (execute = Telegram/API only)",
+    };
+  }
   if (verdict === "READY_FOR_GO") return { text: "GO", sev: "ok" };
   if (verdict === "BLOCKED") return { text: "NO", sev: "critical" };
   return { text: verdict || "—", sev: "warn" };
@@ -567,16 +614,16 @@ function renderMarketingDecisionRail({
     return;
   }
 
-  const pf = preflightSev(preflight?.verdict);
+  const mode = preflight?.mb_mode || shadow?.mb_mode || "—";
+  const pf = preflightSev(preflight?.verdict, mode);
   const br = breakersChip(breakers);
   const ac = accuracyChip(accuracy);
   const fb = fbChip(fbHealth);
   const mem = memoryChip(memory);
   const heldSev = heldCount > 0 ? "warn" : "ok";
-  const mode = preflight?.mb_mode || shadow?.mb_mode || "—";
 
   chipsEl.innerHTML = [
-    sevChip("Preflight", pf.text, pf.sev),
+    sevChip("Preflight", pf.text, pf.sev, pf.title),
     sevChip("Breakers", br.text, br.sev),
     sevChip("Accuracy", ac.text, ac.sev),
     sevChip("FB", fb.text, fb.sev),
@@ -585,11 +632,18 @@ function renderMarketingDecisionRail({
   ].join("");
 
   const gate = accuracy?.gate_ready ? "gate READY" : `gate ${accuracy?.gate_reason || "not ready"}`;
-  const fails = (preflight?.checks || []).filter((c) => !c.ok).map((c) => c.id);
-  const failNote = fails.length ? ` · fail: ${fails.slice(0, 4).join(", ")}` : "";
-  summaryEl.textContent =
-    `MB ${mode} · preflight ${preflight?.verdict || "—"} · ${gate}${failNote}` +
-    ` · execute = Telegram/API only (brak UI)`;
+  if (isProposeMode(mode)) {
+    const cutover = preflight?.verdict || "—";
+    summaryEl.textContent =
+      `runtime: propose · cutover: ${cutover} (oczekiwane w propose) · ${gate}` +
+      ` · execute = Telegram/API only (brak UI)`;
+  } else {
+    const fails = (preflight?.checks || []).filter((c) => !c.ok).map((c) => c.id);
+    const failNote = fails.length ? ` · fail: ${fails.slice(0, 4).join(", ")}` : "";
+    summaryEl.textContent =
+      `MB ${mode} · preflight ${preflight?.verdict || "—"} · ${gate}${failNote}` +
+      ` · execute = Telegram/API only (brak UI)`;
+  }
 
   const shadowRows = (shadow?.shadow || []).slice(0, 8);
   const events = (brainBus?.events || []).slice(0, 8);
@@ -692,22 +746,10 @@ async function loadMarketing() {
     fbStrip.hidden = false;
     fbStrip.className = "health-strip fb-health-warn";
     fbStrip.textContent = "Facebook: sesja wygasła — zaloguj ponownie (nie sprawdzono tokenu)";
-  } else if (fbHealth) {
-    fbStrip.hidden = false;
-    fbStrip.className = "health-strip";
-    const hasInsights = !!fbHealth.has_read_insights;
-    if (fbHealth.ok && hasInsights) fbStrip.classList.add("fb-health-ok");
-    else if (fbHealth.ok && !hasInsights) fbStrip.classList.add("fb-health-warn");
-    else if (fbHealth.configured) fbStrip.classList.add("fb-health-bad");
-    else fbStrip.classList.add("fb-health-warn");
-    const expiry = fbHealth.days_left != null
-      ? ` · ważny jeszcze ${fbHealth.days_left} dni`
-      : "";
-    const insightsChip = hasInsights ? "insights: OK" : "insights: brak (read_insights)";
-    fbStrip.textContent =
-      `Facebook: ${fbHealth.message_pl || "—"} · ${insightsChip}${expiry}`;
   } else {
+    // M4: Decision Rail owns FB chip — avoid duplicate strip when rail is live
     fbStrip.hidden = true;
+    fbStrip.textContent = "";
   }
 
   try {
@@ -773,6 +815,7 @@ async function loadMarketing() {
         const statusCls = statusBadgeClass(e.status);
         const errMsg = e.status === "failed" ? humanizePublishError(e.publish_result) : "";
         const fbUrl = fbPostUrl(e.fb_post_id);
+        const smoke = /smoke|safe to delete|debug/i.test(`${e.title || ""} ${e.body_nl || ""}`);
         const actions = [];
         if (e.status === "draft") {
           actions.push(`<button type="button" data-approve="${e.entry_id}">Zaplanuj</button>`);
@@ -795,6 +838,7 @@ async function loadMarketing() {
         <strong>${e.title}</strong>
         <span class="badge ${statusCls}">${statusLabel}</span>
         <span class="badge">${typeLabel}</span>
+        ${smoke ? '<span class="badge" title="test/smoke entry">smoke</span>' : ""}
       </header>
       <p class="meta">Publikacja: ${sched}</p>
       <p lang="nl">${(e.body_nl || "").slice(0, 160)}${(e.body_nl || "").length > 160 ? "…" : ""}</p>
@@ -918,7 +962,7 @@ async function renderWeeklyDraft() {
     </ul>`;
 }
 
-function renderDataHealth(health) {
+function renderDataHealth(health, opts = {}) {
   const overallEl = document.getElementById("dtl-overall");
   const freshEl = document.getElementById("dtl-freshness");
   const marginEl = document.getElementById("dtl-margin");
@@ -930,10 +974,19 @@ function renderDataHealth(health) {
 
   const overall = health.overall_status || "—";
   const qs = health.quality_summary || {};
-  overallEl.innerHTML = `DTL overall: <span class="badge ${overall}">${overall}</span>
+  const overallLow = String(overall).toLowerCase();
+  const pipelineOk = overallLow === "ok" || overallLow === "green";
+  if (opts.factsStale && pipelineOk) {
+    overallEl.innerHTML = `DTL: <span class="badge amber">pipeline OK · facts STALE</span>
     · flags: ${qs.active_total ?? 0}
     · red/critical: ${qs.critical_or_red ?? 0}
     · info: ${qs.info ?? 0}`;
+  } else {
+    overallEl.innerHTML = `DTL overall: <span class="badge ${overall}">${overall}</span>
+    · flags: ${qs.active_total ?? 0}
+    · red/critical: ${qs.critical_or_red ?? 0}
+    · info: ${qs.info ?? 0}`;
+  }
 
   if (driversEl) {
     const drivers = health.drivers || [];
@@ -992,12 +1045,32 @@ function renderDataHealth(health) {
     : "<p class=\"state-empty\">Brak aktywnych flag jakości.</p>";
 }
 
-function kpiTile(label, value, delta, sev) {
+function humanizeOrganicReason(reason) {
+  const map = {
+    insights_scope_missing: "Brak insights",
+    no_published_posts: "Brak postów",
+    proxy_er: "Proxy ER",
+    ok: "OK",
+  };
+  const key = String(reason || "");
+  return map[key] || (key ? key.replace(/_/g, " ") : "—");
+}
+
+function factsStaleFromSnap(snap) {
+  const f = snap?.freshness || {};
+  return ["orders", "leads"].some((k) => {
+    const s = String(f[k]?.status || "").toLowerCase();
+    return s === "red" || s === "stale" || s === "critical";
+  });
+}
+
+function kpiTile(label, value, delta, sev, title) {
   const border = sev === "ok" ? "decision-card--ok"
     : sev === "warn" ? "decision-card--warn"
       : sev === "critical" ? "decision-card--critical"
         : "";
-  return `<article class="kpi-tile ${border}" role="listitem">
+  const tip = title ? ` title="${escHtml(title)}"` : "";
+  return `<article class="kpi-tile ${border}" role="listitem"${tip}>
     <span class="kpi-tile__value">${escHtml(value)}</span>
     <span class="kpi-tile__label">${escHtml(label)}</span>
     ${delta ? `<span class="kpi-tile__delta">${escHtml(delta)}</span>` : ""}
@@ -1042,12 +1115,19 @@ async function loadAnalytics() {
   const org = health?.facebook_organic || {};
   const margin = health?.margin_coverage || health?.margin || {};
   const marginPct = margin.coverage_pct ?? k.attribution_coverage_pct ?? "—";
+  const factsStale = factsStaleFromSnap(snap);
+  const orgRaw = org.reason || org.ingest_status || "";
+  const orgHuman = humanizeOrganicReason(orgRaw || "—");
+  const dtlValue = factsStale && (overall === "ok" || overall === "green")
+    ? "pipeline OK · facts STALE"
+    : (health?.overall_status || "—");
+  const dtlSev = factsStale ? "warn" : overallSev;
   if (kpiEl) {
     kpiEl.innerHTML = [
       kpiTile("Leads", _fmtDraftVal(k.leads), `open ${_fmtDraftVal(k.leads_open)}`, "info"),
       kpiTile("Margin cov.", `${_fmtDraftVal(marginPct)}${typeof marginPct === "number" ? "%" : ""}`, null, "info"),
-      kpiTile("Organic", org.reason || org.ingest_status || "—", org.has_read_insights ? "insights OK" : "no insights", org.has_read_insights ? "ok" : "warn"),
-      kpiTile("DTL", health?.overall_status || "—", null, overallSev),
+      kpiTile("Organic", orgHuman, org.has_read_insights ? "insights OK" : "no insights", org.has_read_insights ? "ok" : "warn", orgRaw || undefined),
+      kpiTile("DTL", dtlValue, null, dtlSev),
     ].join("");
   }
 
@@ -1063,7 +1143,7 @@ async function loadAnalytics() {
     </article>`).join("")
     : "<p class=\"state-empty\">Brak kafelków świeżości — spokój.</p>";
 
-  renderDataHealth(health || {});
+  renderDataHealth(health || {}, { factsStale });
 
   const orderRows = (orders.orders || []).slice(0, 10);
   ordersEl.innerHTML = orderRows.length
@@ -1151,11 +1231,20 @@ async function loadAgents() {
         ? formatSchedule(a.next_expected_run)
         : "—";
       const last = a.last_run_at ? formatSchedule(a.last_run_at) : "—";
+      const hasLast = !!a.last_run_at;
+      const hasNext = !!a.next_expected_run;
+      const statusLabel = a.status === "LIVE" && !hasLast ? "configured" : a.status;
+      const statusSev = statusLabel === "LIVE" ? "ok" : statusLabel === "configured" ? "info" : "warn";
+      const slaLabel = !hasLast && !hasNext ? "n/a" : (a.sla_ok ? "ok" : "breach");
+      const slaChipSev = slaLabel === "n/a" ? "neutral" : (a.sla_ok ? "ok" : "critical");
+      const cardSev = slaLabel === "n/a"
+        ? ""
+        : (a.sla_ok ? "decision-card--ok" : "decision-card--critical");
       return `
-    <article class="card decision-card ${a.sla_ok ? "decision-card--ok" : "decision-card--critical"}" role="listitem">
+    <article class="card decision-card ${cardSev}" role="listitem">
       <strong>${escHtml(a.label)}</strong>
-      <p>${sevChip("Status", a.status, a.status === "LIVE" ? "ok" : "warn")}
-         ${sevChip("SLA", a.sla_ok ? "ok" : "breach", a.sla_ok ? "ok" : "critical")}</p>
+      <p>${sevChip("Status", statusLabel, statusSev)}
+         ${sevChip("SLA", slaLabel, slaChipSev)}</p>
       <p class="hint">Last: ${escHtml(last)} · Next: ${escHtml(next)} · Held: ${a.held_count || 0}</p>
       <p class="links">
         ${a.agent_id === "design" ? '<a href="/api/v1/design-agent/health" target="_blank" rel="noopener noreferrer">INSPIRE health</a>' : ""}
@@ -1176,11 +1265,23 @@ async function loadAgents() {
   const analytics = byId.analytics;
   const design = byId.design;
 
+  function mapAgentChips(agent) {
+    const hasLast = !!agent?.last_run_at;
+    const hasNext = !!agent?.next_expected_run;
+    const statusLabel = agent?.status === "LIVE" && !hasLast ? "configured" : (agent?.status || "—");
+    const statusSev = statusLabel === "LIVE" ? "ok" : statusLabel === "configured" ? "info" : "warn";
+    const slaLabel = !agent || (!hasLast && !hasNext) ? "n/a" : (agent.sla_ok ? "ok" : "breach");
+    const slaSev = slaLabel === "n/a" ? "neutral" : (agent.sla_ok ? "ok" : "critical");
+    return { statusLabel, statusSev, slaLabel, slaSev };
+  }
+
   if (mapEl) {
+    const s = mapAgentChips(sales);
+    const o = mapAgentChips(ops);
     mapEl.innerHTML = [
       `<article class="card"><strong>AI Sprzedawca</strong>
-        <p>${sevChip("Agent", sales?.status || "—", sales?.status === "LIVE" ? "ok" : "warn")}
-           ${sevChip("SLA", sales?.sla_ok ? "ok" : "breach", sales?.sla_ok ? "ok" : "critical")}</p>
+        <p>${sevChip("Agent", s.statusLabel, s.statusSev)}
+           ${sevChip("SLA", s.slaLabel, s.slaSev)}</p>
         <p class="hint">Widget + sales CTA · next ${escHtml(sales?.next_expected_run ? formatSchedule(sales.next_expected_run) : "—")}</p></article>`,
       `<article class="card"><strong>AI Marketing / MB</strong>
         <p>${sevChip("Agent", mb?.status || "—", mb?.status === "LIVE" ? "ok" : "warn")}
@@ -1191,12 +1292,12 @@ async function loadAgents() {
         <p>${sevChip("Hop", "Agent OS", "info")}</p>
         <p class="links"><a href="https://os.flexgrafik.nl" target="_blank" rel="noopener">os.flexgrafik.nl</a> · Basic Auth</p></article>`,
       `<article class="card"><strong>AI Customer Success</strong>
-        <p>${sevChip("Ops", ops?.status || "—", ops?.status === "LIVE" ? "ok" : "warn")}
-           ${sevChip("SLA", ops?.sla_ok ? "ok" : "breach", ops?.sla_ok ? "ok" : "critical")}</p>
+        <p>${sevChip("Ops", o.statusLabel, o.statusSev)}
+           ${sevChip("SLA", o.slaLabel, o.slaSev)}</p>
         <p class="hint">CS follow-up na Start · next ${escHtml(ops?.next_expected_run ? formatSchedule(ops.next_expected_run) : "—")}</p></article>`,
       `<article class="card"><strong>AI Asystent / Design</strong>
-        <p>${sevChip("Analytics", analytics?.status || "—", analytics?.status === "LIVE" ? "ok" : "warn")}
-           ${sevChip("Design", design?.status || "—", design?.status === "LIVE" ? "ok" : "warn")}</p>
+        <p>${sevChip("Analytics", analytics?.status === "LIVE" && !analytics?.last_run_at ? "configured" : (analytics?.status || "—"), analytics?.status === "LIVE" && analytics?.last_run_at ? "ok" : "info")}
+           ${sevChip("Design", design?.status === "LIVE" && !design?.last_run_at ? "configured" : (design?.status || "—"), design?.status === "LIVE" && design?.last_run_at ? "ok" : "info")}</p>
         <p class="links"><a href="/api/v1/design-agent/health" target="_blank" rel="noopener">DA health</a></p></article>`,
     ].join("");
   }

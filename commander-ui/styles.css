@@ -40,7 +40,7 @@
   --radius: 3px;
   --radius-lg: 3px;
   --radius-terminal: 3px;
-  --touch: 40px;
+  --touch: 44px;
   --panel-terminal: rgba(255, 255, 255, 0.02);
   --border-terminal: rgba(255, 255, 255, 0.08);
 
@@ -544,6 +544,10 @@ button.ghost:hover:not(:disabled) {
   font-weight: 600;
   color: var(--text-strong);
   letter-spacing: 0.02em;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  max-width: 100%;
 }
 .kpi-tile__label {
   display: block;

@@ -1,4 +1,4 @@
-"""CMD-DASH Complete — static UI contracts Waves A–D (cache mkt-dash05)."""
+"""CMD-DASH Complete + UX Polish — static UI contracts (cache mkt-dash06)."""
 
 from pathlib import Path
 
@@ -8,8 +8,9 @@ JS = (ROOT / "commander-ui" / "app.js").read_text(encoding="utf-8")
 CSS = (ROOT / "commander-ui" / "styles.css").read_text(encoding="utf-8")
 
 
-def test_cache_bust_mkt_dash05():
-    assert HTML.count("mkt-dash05") >= 2
+def test_cache_bust_mkt_dash06():
+    assert HTML.count("mkt-dash06") >= 2
+    assert "mkt-dash05" not in HTML
     assert "mkt-dash04" not in HTML
 
 
@@ -45,3 +46,40 @@ def test_hard_stops():
     bottom = HTML[start:end]
     assert bottom.count('data-view="') == 5
     assert 'data-view="audit"' not in bottom
+
+
+def test_h1_ops_freshness_hierarchy():
+    assert "freshnessSev" in JS
+    assert "worstSev" in JS
+    assert 'sevChip("Freshness"' in JS
+    assert "Ops: OK" in JS
+    assert "Ops: UWAGA" in JS
+    assert "Worker freshness:" not in JS
+
+
+def test_h2_preflight_propose_not_panic():
+    assert "isProposeMode" in JS
+    assert 'text: "N/A"' in JS
+    assert "runtime: propose" in JS
+    assert "oczekiwane w propose" in JS
+
+
+def test_h3_touch_44px():
+    assert "--touch: 44px" in CSS
+    assert "--touch: 40px" not in CSS
+
+
+def test_m1_organic_humanize():
+    assert "humanizeOrganicReason" in JS
+    assert "Brak insights" in JS
+    assert "text-overflow: ellipsis" in CSS
+
+
+def test_m2_agents_configured_without_last():
+    assert 'statusLabel === "configured"' in JS or 'statusLabel = a.status === "LIVE" && !hasLast ? "configured"' in JS
+    assert '"n/a"' in JS
+
+
+def test_m3_dtl_facts_stale():
+    assert "factsStaleFromSnap" in JS
+    assert "pipeline OK · facts STALE" in JS

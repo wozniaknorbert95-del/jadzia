@@ -21,7 +21,7 @@ curl -sf "http://127.0.0.1:8000/api/v1/commander/marketing/data-health" \
   | python3 -c 'import sys,json;d=json.load(sys.stdin);print("overall",d.get("overall_status"));print("parks",[p.get("id") for p in (d.get("conscious_parks") or [])]);print("organic",d.get("facebook_organic"));print("drivers_n",len(d.get("drivers") or []))'
 
 echo "=== static ==="
-grep -c 'mkt-dash05' commander-ui/index.html || true
+grep -c 'mkt-dash06' commander-ui/index.html || true
 grep -c 'has_read_insights' commander-ui/app.js || true
 grep -c 'weekly-draft-panel' commander-ui/index.html || true
 grep -c 'dtl-parks' commander-ui/index.html || true
