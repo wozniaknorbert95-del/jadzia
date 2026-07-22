@@ -1,7 +1,7 @@
 # Handoff CLOSE — CMD-DASH-UX-POLISH-01-DEPLOY
 
 **Date:** 2026-07-22  
-**Status:** **LIVE** @ tip **`04e278f`** (UX deploy `4aea17c` + tip-sync docs)  
+**Status:** **LIVE** @ tip SoT VPS HEAD (tip-sync `e528768` · UX `4aea17c`)  
 **Cache:** `mkt-dash06`  
 **PREV_SHA (rollback UX):** `b4fcd22`  
 **GO:** Dowódca „Go deply” → interpreted as `GO deploy 4aea17c`  
