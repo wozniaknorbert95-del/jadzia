@@ -1,14 +1,14 @@
 ---
 status: "[ACTIVE]"
 title: "Marketing OS — START TUTAJ (operator)"
-updated: "2026-07-22 (UX polish LIVE · tip-sync closed · next OPS-FRESHNESS-01)"
+updated: "2026-07-22 (OPS-FRESHNESS LIVE @ c210578 mkt-dash07)"
 ---
 
 # START TUTAJ — jedna ścieżka (ADHD)
 
 **Roadmapa:** [MKT-BRAIN-PRO.md](./MKT-BRAIN-PRO.md) — **~86%** overall · runtime **100%** · **MB_MODE=propose**  
-**Commander cockpit:** https://api.zzpackage.flexgrafik.nl/commander/?v=mkt-dash06  
-**Prod SoT tip:** VPS `/opt/jadzia` `git rev-parse --short HEAD` · cache **`mkt-dash06`** · UX polish merge **`4aea17c`**  
+**Commander cockpit:** https://api.zzpackage.flexgrafik.nl/commander/?v=mkt-dash07  
+**Prod SoT tip:** VPS `/opt/jadzia` `git rev-parse --short HEAD` · cache **`mkt-dash07`** · freshness clocks LIVE (`c210578`)  
 **Meta:** [META-CLICK-PATH.md](./META-CLICK-PATH.md) · Scorecard: [WEEKLY-SCORECARD.md](./WEEKLY-SCORECARD.md)
 
 | Co | Status |
@@ -24,7 +24,7 @@ updated: "2026-07-22 (UX polish LIVE · tip-sync closed · next OPS-FRESHNESS-01
 
 ## Commander (hub decyzji)
 
-1. Hard refresh `?v=mkt-dash06`.
+1. Hard refresh `?v=mkt-dash07`.
 2. Zaloguj: TG `/commander` albo Sesja → JWT.
 3. **Start:** Ops Decision Rail (SSH/SQLite/Loop/SLA/GA4).
 4. **Marketing:** L0 Brain rail (GO/WARN/NO + accuracy) · weekly draft · organic HITL.
@@ -45,7 +45,7 @@ updated: "2026-07-22 (UX polish LIVE · tip-sync closed · next OPS-FRESHNESS-01
 | Objaw | Akcja |
 |-------|--------|
 | Draft „Sesja wygasła…” | Nowe `/commander` w TG lub świeży JWT |
-| Stary cache UI | Hard refresh `?v=mkt-dash06` |
+| Stary cache UI | Hard refresh `?v=mkt-dash07` |
 | FB amber + `insights: brak` | H-Insights: Graph scope → `set-fb-access-token` |
 | Preflight NO przy MB_MODE=propose | Oczekiwane (preflight = cutover evidence, nie flip) |
 

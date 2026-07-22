@@ -1,15 +1,15 @@
 {
   "project": "Jadzia-Core",
-  "last_updated": "2026-07-22 (OPS-FRESHNESS-01 code DONE; await GO deploy mkt-dash07)",
+  "last_updated": "2026-07-22 (OPS-FRESHNESS LIVE @ c210578 mkt-dash07)",
   "status": "active",
-  "plan": "docs/handoffs/2026-07-22-OPS-FRESHNESS-01-CLOSE.md",
-  "active_gate": "OPS-FRESHNESS-01 fixed clocks; merge+GO deploy mkt-dash07; human OPS-FB-TOKEN-01",
-  "active_plan": "docs/handoffs/2026-07-22-OPS-FRESHNESS-01-CLOSE.md",
+  "plan": "docs/handoffs/2026-07-22-OPS-FRESHNESS-01-DEPLOY-CLOSE.md",
+  "active_gate": "LIVE mkt-dash07 freshness OK; next human OPS-FB-TOKEN-01",
+  "active_plan": "docs/handoffs/2026-07-22-OPS-FRESHNESS-01-DEPLOY-CLOSE.md",
   "standing_go_closeout": false,
   "closeout_queue": [],
   "closeout_expires": "2026-07-25",
-  "next_human": "GO deploy OPS-FRESHNESS tip after merge · OPS-FB-TOKEN-01 refresh FB Page Token",
-  "next_agent": "OPS-FRESHNESS-01-DEPLOY after GO — or idle until merge",
+  "next_human": "OPS-FB-TOKEN-01 — refresh FB Page Token (+ optional read_insights)",
+  "next_agent": "Idle / new TASK_ID — freshness closed; optional OPS-SLA-AGENTS if prioritized",
   "agent_rule": "1-1-1. Evidence-first. Deploy tylko ze zgoda. Hard STOP: Gate D/Mollie/fake PASS/execute UI/6th Audyt tab.",
   "sprints": {
     "remediation": "completed",
@@ -1669,17 +1669,17 @@
       "priority": "critical",
       "owner": "agent",
       "checklist": "docs/handoffs/2026-07-22-OPS-FRESHNESS-01-CLOSE.md",
-      "note": "RCA: wrong clocks (entity updated_at + dowodca_last_active). Fix DTL/health clocks + mkt-dash07. Await GO deploy."
+      "note": "RCA wrong clocks; LIVE VPS c210578 mkt-dash07 · dogfood Freshness/ORDERS/LEADS/WORKER OK"
     },
     {
       "id": "OPS-FRESHNESS-01-DEPLOY",
       "sprint": "Ops trust post UX-POLISH",
       "task": "Merge + GO VPS deploy mkt-dash07 freshness clock fix + verify dogfood",
-      "status": "pending",
+      "status": "completed",
       "priority": "critical",
       "owner": "agent",
-      "checklist": "docs/handoffs/2026-07-22-OPS-FRESHNESS-01-CLOSE.md",
-      "note": "ready_for_human GO after PR merge"
+      "checklist": "docs/handoffs/2026-07-22-OPS-FRESHNESS-01-DEPLOY-CLOSE.md",
+      "note": "LIVE c210578 · DTL interval 3600 · VERIFY_OK · dogfood PASS"
     },
     {
       "id": "OPS-FB-TOKEN-01",

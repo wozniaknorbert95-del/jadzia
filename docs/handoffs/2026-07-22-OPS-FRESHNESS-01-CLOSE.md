@@ -3,7 +3,7 @@
 **Date:** 2026-07-22  
 **Branch:** `fix/ops-freshness-01`  
 **Cache:** `mkt-dash07`  
-**Deploy:** **NIE** — `standing_go_closeout=false` · park GO  
+**Deploy:** **LIVE** @ `c210578` — see `2026-07-22-OPS-FRESHNESS-01-DEPLOY-CLOSE.md`  
 **Prior tip LIVE:** `3f7800a` · `mkt-dash06`
 
 ## Root cause (evidence)
