@@ -3,7 +3,7 @@
 **Date:** 2026-07-22  
 **Repo:** jadzia-core  
 **Cache:** `mkt-dash06`  
-**Deploy:** **NIE** — `standing_go_closeout=false` · park `ready_for_human`
+**Deploy:** **LIVE** @ `4aea17c` — see `2026-07-22-CMD-DASH-UX-POLISH-01-DEPLOY-CLOSE.md`
 
 ## Decision
 
@@ -43,4 +43,4 @@ Jedna hierarchia severity (H1), propose ≠ incident (H2), touch=44 (H3) + M1–
 
 ## Next agent
 
-Observe until GO; optional post-deploy tip-sync docs only.
+Deploy DONE. See `2026-07-22-CMD-DASH-UX-POLISH-01-DEPLOY-CLOSE.md` + next TASK in that CLOSE / todo.

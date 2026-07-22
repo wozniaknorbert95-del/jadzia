@@ -1,23 +1,23 @@
 # Commander UX Re-audit — 2026-07-22 (CMD-DASH-UX-POLISH-01)
 
 **Base audit:** `docs/ops/COMMANDER-UX-AUDIT-2026-07-22.md` (FAIL)  
-**Code tip (local):** mkt-dash06 · `commander-ui/*`  
-**Prod tip UI (pre-GO):** still serves prior bundle until deploy  
+**Code tip:** mkt-dash06 · `commander-ui/*`  
+**Prod tip LIVE:** `4aea17c` · `?v=mkt-dash06` (deploy CLOSE 2026-07-22)  
 **Persona:** Dowódca · telefon · ≤90s · zero sprzecznych statusów  
 
 ## Verdict
 
-**Conditional Pass** — Critical = 0, High = 0 (w kodzie lokalnym + parity dogfood).
+**Conditional Pass → LIVE confirmed** — Critical = 0, High = 0 (repo + prod dogfood post-deploy).
 
 | Scorecard | Wynik |
 |-----------|--------|
-| H1 Ops hierarchy | FIXED |
-| H2 Preflight propose | FIXED |
-| H3 touch 44px | FIXED (measured **44px** mobile nav) |
-| M1–M4 | FIXED in source (M3: DTL already amber on live — qualifier armed) |
-| Deploy LIVE mkt-dash06 | **pending GO** (`ready_for_human`) |
+| H1 Ops hierarchy | FIXED · LIVE |
+| H2 Preflight propose | FIXED · LIVE |
+| H3 touch 44px | FIXED · LIVE (nav **44px**) |
+| M1–M4 | FIXED · LIVE (M3 amber qualifier armed) |
+| Deploy LIVE mkt-dash06 | **DONE** @ `4aea17c` |
 
-**Czy finalny dashboard na prod?** Jeszcze nie — czeka na GO + hard refresh `?v=mkt-dash06`.  
+**Czy finalny dashboard na prod?** Tak — tip `4aea17c` · hard refresh `?v=mkt-dash06`.  
 **Czy finalny w repo?** Tak — High=0, agencja Conditional Pass.
 
 ## Method note
@@ -64,8 +64,5 @@ Bez GO nie można serwować nowego bundle z prod tip. Re-audit H1/H2/H3: **parit
 
 ## Next human
 
-```text
-GO deploy mkt-dash06:
-  VPS /opt/jadzia pull tip → restart jadzia → deployment/mkt-dash01-verify.sh
-  Hard refresh https://api.zzpackage.flexgrafik.nl/commander/?v=mkt-dash06
-```
+Deploy CLOSED. Parks HITL: H-Meta / H-Insights (FB token + `read_insights`) / Mollie.  
+Optional: phone 60s dogfood. Low L1/L2 = non-blocking backlog.

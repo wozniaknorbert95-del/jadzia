@@ -1,15 +1,15 @@
 {
   "project": "Jadzia-Core",
-  "last_updated": "2026-07-22 (CMD-DASH-UX-POLISH-01 Conditional Pass mkt-dash06 pending GO)",
+  "last_updated": "2026-07-22 (tip-sync LIVE; next=OPS-FRESHNESS-01)",
   "status": "active",
-  "plan": "docs/ops/COMMANDER-UX-AUDIT-2026-07-22-REAUDIT.md",
-  "active_gate": "UX-POLISH mkt-dash06 ready_for_human GO; standing_go_closeout=false",
-  "active_plan": "docs/handoffs/2026-07-22-CMD-DASH-UX-POLISH-01-CLOSE.md",
+  "plan": "docs/handoffs/2026-07-22-NEXT-OPS-FRESHNESS-01.md",
+  "active_gate": "LIVE mkt-dash06 @ 4aea17c; next agent OPS-FRESHNESS-01; human OPS-FB-TOKEN-01",
+  "active_plan": "docs/handoffs/2026-07-22-NEXT-OPS-FRESHNESS-01.md",
   "standing_go_closeout": false,
   "closeout_queue": [],
   "closeout_expires": "2026-07-25",
-  "next_human": "GO deploy mkt-dash06 + hard refresh + phone 60s dogfood",
-  "next_agent": "observe until GO; tip-sync after deploy",
+  "next_human": "OPS-FB-TOKEN-01 — refresh FB Page Token (+ optional read_insights); Meta parks HITL",
+  "next_agent": "OPS-FRESHNESS-01 — diagnose/fix ORDERS+LEADS+WORKER freshness RED",
   "agent_rule": "1-1-1. Evidence-first. Deploy tylko ze zgoda. Hard STOP: Gate D/Mollie/fake PASS/execute UI/6th Audyt tab.",
   "sprints": {
     "remediation": "completed",
@@ -1649,7 +1649,37 @@
       "priority": "critical",
       "owner": "agent",
       "checklist": "docs/handoffs/2026-07-22-CMD-DASH-UX-POLISH-01-CLOSE.md",
-      "note": "Conditional Pass High=0; deploy ready_for_human GO"
+      "note": "Conditional Pass High=0; LIVE via DEPLOY @ 4aea17c mkt-dash06"
+    },
+    {
+      "id": "CMD-DASH-UX-POLISH-01-DEPLOY",
+      "sprint": "Commander UX Polish 2026-07-22",
+      "task": "Merge PR #15 + GO VPS deploy mkt-dash06 + verify + dogfood + tip-sync",
+      "status": "completed",
+      "priority": "critical",
+      "owner": "agent",
+      "checklist": "docs/handoffs/2026-07-22-CMD-DASH-UX-POLISH-01-DEPLOY-CLOSE.md",
+      "note": "LIVE VPS 4aea17c · VERIFY_OK · dogfood H1/H2/touch44/Audyt PASS · tip-sync done"
+    },
+    {
+      "id": "OPS-FRESHNESS-01",
+      "sprint": "Ops trust post UX-POLISH",
+      "task": "Diagnose/fix ORDERS+LEADS+WORKER freshness RED on Ops Decision Rail",
+      "status": "pending",
+      "priority": "critical",
+      "owner": "agent",
+      "checklist": "docs/handoffs/2026-07-22-NEXT-OPS-FRESHNESS-01.md",
+      "note": "Dogfood 2026-07-22: Ops UWAGA freshness red; GA4 ok; orders/leads ~4d; worker ~2d"
+    },
+    {
+      "id": "OPS-FB-TOKEN-01",
+      "sprint": "Ops trust post UX-POLISH",
+      "task": "HITL: refresh expired FB Page Token (+ optional Graph read_insights)",
+      "status": "ready_for_human",
+      "priority": "critical",
+      "owner": "human",
+      "checklist": "docs/handoffs/2026-07-22-NEXT-OPS-FRESHNESS-01.md",
+      "note": "Start CRITICAL card: Token Facebook wygasł — secrets/Graph; agent no autonomous"
     }
   ]
 }

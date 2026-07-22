@@ -4,10 +4,10 @@ Session continuity for `/vibe-init`: read the **last 2** handoffs from this fold
 
 ## Start here — 2026-07-22
 
-1. [`2026-07-22-CMD-DASH-UX-POLISH-01-CLOSE.md`](2026-07-22-CMD-DASH-UX-POLISH-01-CLOSE.md) — **UX polish** Conditional Pass `mkt-dash06` **pending GO**
-2. [`docs/ops/COMMANDER-UX-AUDIT-2026-07-22-REAUDIT.md`](../ops/COMMANDER-UX-AUDIT-2026-07-22-REAUDIT.md)
-3. [`2026-07-22-CMD-DASH-COMPLETE-01-CLOSE.md`](2026-07-22-CMD-DASH-COMPLETE-01-CLOSE.md) — COMPLETE A–D LIVE `@9b30dec` `mkt-dash05`
-4. [`2026-07-21-CMD-DASH-TRUST-01-CLOSE.md`](2026-07-21-CMD-DASH-TRUST-01-CLOSE.md)
+1. [`2026-07-22-NEXT-OPS-FRESHNESS-01.md`](2026-07-22-NEXT-OPS-FRESHNESS-01.md) — **NEXT** agent + human parks
+2. [`2026-07-22-CMD-DASH-UX-POLISH-01-DEPLOY-CLOSE.md`](2026-07-22-CMD-DASH-UX-POLISH-01-DEPLOY-CLOSE.md) — **LIVE** `@4aea17c` `mkt-dash06`
+3. [`2026-07-22-CMD-DASH-UX-POLISH-01-DEPLOY.md`](2026-07-22-CMD-DASH-UX-POLISH-01-DEPLOY.md) — deploy plan (executed)
+4. [`2026-07-22-CMD-DASH-UX-POLISH-01-CLOSE.md`](2026-07-22-CMD-DASH-UX-POLISH-01-CLOSE.md) — UX polish Conditional Pass
 
 ## Program + audit SoT
 
