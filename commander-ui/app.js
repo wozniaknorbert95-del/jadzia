@@ -314,7 +314,13 @@ async function loadHome() {
   ]);
   const slaBad = (agents.agents || []).filter((a) => !a.sla_ok).length;
   const fresh = snap?.freshness?.ga4?.status || "—";
-  const workerFresh = snap?.freshness?.worker?.status || "—";
+  // Pipeline freshness = worst of DTL/health clocks (not Dowódca session activity).
+  const pipelineFresh = worstFreshStatus(
+    snap?.freshness?.ga4?.status,
+    snap?.freshness?.orders?.status,
+    snap?.freshness?.leads?.status,
+    snap?.freshness?.worker?.status,
+  );
 
   const opsSev = !opsHealth
     ? "warn"
@@ -324,7 +330,7 @@ async function loadHome() {
   const sshSev = opsHealth?.ssh_connection === "ok" ? "ok" : opsHealth ? "critical" : "neutral";
   const sqlSev = opsHealth?.sqlite_connection === true ? "ok" : opsHealth ? "critical" : "neutral";
   const loopSev = opsHealth?.worker_loop_alive === true ? "ok" : opsHealth ? "critical" : "neutral";
-  const freshSev = freshnessSev(workerFresh);
+  const freshSev = freshnessSev(pipelineFresh);
   const slaSev = slaBad > 0 ? "critical" : "ok";
   const gaSev = fresh === "fresh" || fresh === "ok" ? "ok" : fresh === "stale" ? "warn" : "neutral";
 
@@ -334,7 +340,7 @@ async function loadHome() {
       sevChip("SSH", opsHealth?.ssh_connection || "—", sshSev),
       sevChip("SQLite", opsHealth?.sqlite_connection === true ? "ok" : opsHealth ? "err" : "—", sqlSev),
       sevChip("Loop", opsHealth?.worker_loop_alive === true ? "alive" : opsHealth ? "down" : "—", loopSev),
-      sevChip("Freshness", workerFresh, freshSev),
+      sevChip("Freshness", pipelineFresh, freshSev),
       sevChip("SLA", slaBad > 0 ? `bad: ${slaBad}` : "0", slaSev),
       sevChip("GA4", fresh, gaSev),
     ].join("");
@@ -345,7 +351,7 @@ async function loadHome() {
       : "";
     const worst = worstSev(opsSev, sshSev, sqlSev, loopSev, freshSev, slaSev, gaSev);
     const attention = [];
-    if (freshSev === "critical" || freshSev === "warn") attention.push(`freshness ${workerFresh}`);
+    if (freshSev === "critical" || freshSev === "warn") attention.push(`freshness ${pipelineFresh}`);
     if (slaSev === "critical") attention.push(`SLA bad ${slaBad}`);
     if (opsSev === "critical" || opsSev === "warn") attention.push(`ops ${opsHealth?.status || "—"}`);
     if (sshSev === "critical") attention.push("SSH");
@@ -524,6 +530,22 @@ function freshnessSev(status) {
   if (s === "stale" || s === "amber" || s === "warn" || s === "yellow") return "warn";
   if (s === "ok" || s === "fresh" || s === "green") return "ok";
   return "neutral";
+}
+
+function worstFreshStatus(...statuses) {
+  const rank = { red: 3, critical: 3, stale: 3, amber: 2, warn: 2, yellow: 2, ok: 1, fresh: 1, green: 1 };
+  let worst = "—";
+  let worstRank = 0;
+  for (const raw of statuses) {
+    if (!raw || raw === "—") continue;
+    const s = String(raw).toLowerCase();
+    const r = rank[s] || 0;
+    if (r > worstRank) {
+      worstRank = r;
+      worst = s;
+    }
+  }
+  return worst;
 }
 
 function isProposeMode(mode) {

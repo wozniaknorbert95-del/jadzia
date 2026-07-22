@@ -1,4 +1,4 @@
-"""CMD-DASH Complete + UX Polish — static UI contracts (cache mkt-dash06)."""
+"""CMD-DASH Complete + UX Polish — static UI contracts (cache mkt-dash07)."""
 
 from pathlib import Path
 
@@ -8,8 +8,9 @@ JS = (ROOT / "commander-ui" / "app.js").read_text(encoding="utf-8")
 CSS = (ROOT / "commander-ui" / "styles.css").read_text(encoding="utf-8")
 
 
-def test_cache_bust_mkt_dash06():
-    assert HTML.count("mkt-dash06") >= 2
+def test_cache_bust_mkt_dash07():
+    assert HTML.count("mkt-dash07") >= 2
+    assert "mkt-dash06" not in HTML
     assert "mkt-dash05" not in HTML
     assert "mkt-dash04" not in HTML
 
@@ -51,10 +52,13 @@ def test_hard_stops():
 def test_h1_ops_freshness_hierarchy():
     assert "freshnessSev" in JS
     assert "worstSev" in JS
+    assert "worstFreshStatus" in JS
+    assert "pipelineFresh" in JS
     assert 'sevChip("Freshness"' in JS
     assert "Ops: OK" in JS
     assert "Ops: UWAGA" in JS
     assert "Worker freshness:" not in JS
+    assert "dowodca_last_active" not in JS
 
 
 def test_h2_preflight_propose_not_panic():
