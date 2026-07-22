@@ -46,6 +46,15 @@ def _sla_ok(last_run_at: Optional[str], interval_s: int) -> bool:
     return age <= interval_s * 2
 
 
+def _next_expected_run(last_run_at: Optional[str], interval_s: int) -> Optional[str]:
+    """ISO-8601 UTC for last_run + interval; None if unknown."""
+    dt = _parse_ts(last_run_at)
+    if not dt or not interval_s or interval_s <= 0:
+        return None
+    nxt = datetime.fromtimestamp(dt.timestamp() + int(interval_s), tz=timezone.utc)
+    return nxt.replace(microsecond=0).isoformat().replace("+00:00", "Z")
+
+
 def list_agents() -> List[Dict]:
     _ensure_defaults()
     states = {r["agent_id"]: r for r in db_commander_list_agent_states()}
@@ -66,7 +75,7 @@ def list_agents() -> List[Dict]:
             "expected_interval_seconds": interval,
             "sla_ok": _sla_ok(last_run, interval),
             "held_count": held,
-            "next_expected_run": None,
+            "next_expected_run": _next_expected_run(last_run, interval),
         })
     return out
 

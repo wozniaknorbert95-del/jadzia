@@ -276,10 +276,12 @@ function bindSystemMapHops() {
 async function loadHome() {
   const prioEl = document.getElementById("priorities");
   const queueEl = document.getElementById("queue-list");
-  const healthEl = document.getElementById("health-strip");
+  const chipsEl = document.getElementById("home-ops-chips");
+  const summaryEl = document.getElementById("home-ops-summary");
   prioEl.innerHTML = homeSkeleton(2);
   queueEl.innerHTML = homeSkeleton(2);
-  healthEl.textContent = "Ładowanie statusu systemu…";
+  if (summaryEl) summaryEl.textContent = "Ładowanie ops…";
+  if (chipsEl) chipsEl.innerHTML = "";
 
   let prio;
   let queue;
@@ -293,7 +295,7 @@ async function loadHome() {
   } catch (e) {
     prioEl.innerHTML = `<p class="state-error">Nie udało się pobrać priorytetów. <button type="button" class="primary" id="home-retry">Spróbuj ponownie</button></p>`;
     queueEl.innerHTML = `<p class="state-error">Nie udało się pobrać kolejki.</p>`;
-    healthEl.textContent = "Status częściowy — odśwież po naprawie sesji.";
+    if (summaryEl) summaryEl.textContent = "Status częściowy — odśwież po naprawie sesji.";
     const retry = document.getElementById("home-retry");
     if (retry) retry.onclick = () => loadHome().catch((err) => toast(err.message, "err"));
     throw e;
@@ -310,20 +312,35 @@ async function loadHome() {
   const slaBad = (agents.agents || []).filter((a) => !a.sla_ok).length;
   const fresh = snap?.freshness?.ga4?.status || "—";
   const workerFresh = snap?.freshness?.worker?.status || "—";
-  const staleNote = fresh === "stale" || workerFresh === "stale" ? " · Dane nieaktualne" : "";
-  const opsParts = [];
-  if (opsHealth) {
-    const st = opsHealth.status || "—";
-    const ssh = opsHealth.ssh_connection || "—";
-    const sql = opsHealth.sqlite_connection === true ? "ok" : opsHealth.sqlite_connection === false ? "err" : "—";
-    const loop = opsHealth.worker_loop_alive === true ? "alive" : opsHealth.worker_loop_alive === false ? "down" : "—";
-    const up = typeof opsHealth.uptime_seconds === "number" ? `${Math.round(opsHealth.uptime_seconds)}s` : "—";
-    opsParts.push(`Ops: ${st}`, `SSH: ${ssh}`, `SQLite: ${sql}`, `Loop: ${loop}`, `Up: ${up}`);
-  } else {
-    opsParts.push("Ops: unavailable");
+
+  const opsSev = !opsHealth
+    ? "warn"
+    : opsHealth.status === "healthy" && opsHealth.ssh_connection === "ok" && opsHealth.worker_loop_alive
+      ? "ok"
+      : "critical";
+  const sshSev = opsHealth?.ssh_connection === "ok" ? "ok" : opsHealth ? "critical" : "neutral";
+  const sqlSev = opsHealth?.sqlite_connection === true ? "ok" : opsHealth ? "critical" : "neutral";
+  const loopSev = opsHealth?.worker_loop_alive === true ? "ok" : opsHealth ? "critical" : "neutral";
+  const slaSev = slaBad > 0 ? "critical" : "ok";
+  const gaSev = fresh === "fresh" || fresh === "ok" ? "ok" : fresh === "stale" ? "warn" : "neutral";
+
+  if (chipsEl) {
+    chipsEl.innerHTML = [
+      sevChip("Ops", opsHealth?.status || "—", opsSev),
+      sevChip("SSH", opsHealth?.ssh_connection || "—", sshSev),
+      sevChip("SQLite", opsHealth?.sqlite_connection === true ? "ok" : opsHealth ? "err" : "—", sqlSev),
+      sevChip("Loop", opsHealth?.worker_loop_alive === true ? "alive" : opsHealth ? "down" : "—", loopSev),
+      sevChip("SLA", String(slaBad), slaSev),
+      sevChip("GA4", fresh, gaSev),
+    ].join("");
   }
-  healthEl.textContent =
-    `${opsParts.join(" · ")} · SLA breach: ${slaBad} · GA4: ${fresh} · Freshness: ${workerFresh}${staleNote}`;
+  if (summaryEl) {
+    const up = typeof opsHealth?.uptime_seconds === "number"
+      ? ` · up ${Math.round(opsHealth.uptime_seconds)}s`
+      : "";
+    const staleNote = fresh === "stale" || workerFresh === "stale" ? " · dane nieaktualne" : "";
+    summaryEl.textContent = `Worker freshness: ${workerFresh}${up}${staleNote}`;
+  }
   document.getElementById("delegat-banner").hidden = !!settings.delegat_configured;
   bindSystemMapHops();
 }
@@ -975,36 +992,71 @@ function renderDataHealth(health) {
     : "<p class=\"state-empty\">Brak aktywnych flag jakości.</p>";
 }
 
+function kpiTile(label, value, delta, sev) {
+  const border = sev === "ok" ? "decision-card--ok"
+    : sev === "warn" ? "decision-card--warn"
+      : sev === "critical" ? "decision-card--critical"
+        : "";
+  return `<article class="kpi-tile ${border}" role="listitem">
+    <span class="kpi-tile__value">${escHtml(value)}</span>
+    <span class="kpi-tile__label">${escHtml(label)}</span>
+    ${delta ? `<span class="kpi-tile__delta">${escHtml(delta)}</span>` : ""}
+  </article>`;
+}
+
 async function loadAnalytics() {
   const tiles = document.getElementById("analytics-tiles");
+  const kpiEl = document.getElementById("analytics-kpi-tiles");
   const ordersEl = document.getElementById("orders-list");
   const leadsEl = document.getElementById("leads-list");
   tiles.innerHTML = "<p class=\"hint\">Ładowanie analityki…</p>";
+  if (kpiEl) kpiEl.innerHTML = "<p class=\"hint\">…</p>";
   let snap;
   let orders;
   let leads;
   let health;
+  let draft;
   try {
-    [snap, orders, leads, health] = await Promise.all([
+    [snap, orders, leads, health, draft] = await Promise.all([
       api("/api/v1/commander/analytics/snapshot"),
       api("/api/v1/orders"),
       api("/api/v1/leads"),
       api("/api/v1/commander/marketing/data-health"),
+      api("/api/v1/commander/marketing/weekly-draft").catch(() => null),
     ]);
   } catch (e) {
     tiles.innerHTML = `<p class="state-error">Nie udało się pobrać analityki. <button type="button" id="analytics-retry">Spróbuj ponownie</button></p>`;
     ordersEl.innerHTML = "";
     leadsEl.innerHTML = "";
+    if (kpiEl) kpiEl.innerHTML = "";
     const retry = document.getElementById("analytics-retry");
     if (retry) retry.onclick = () => loadAnalytics().catch((err) => toast(err.message));
     throw e;
   }
+
+  const k = draft?.kpis || {};
+  const overall = (health?.overall_status || "—").toLowerCase();
+  const overallSev = overall === "green" || overall === "ok" ? "ok"
+    : overall === "red" || overall === "critical" ? "critical"
+      : overall === "amber" || overall === "yellow" ? "warn" : "neutral";
+  const org = health?.facebook_organic || {};
+  const margin = health?.margin_coverage || health?.margin || {};
+  const marginPct = margin.coverage_pct ?? k.attribution_coverage_pct ?? "—";
+  if (kpiEl) {
+    kpiEl.innerHTML = [
+      kpiTile("Leads", _fmtDraftVal(k.leads), `open ${_fmtDraftVal(k.leads_open)}`, "info"),
+      kpiTile("Margin cov.", `${_fmtDraftVal(marginPct)}${typeof marginPct === "number" ? "%" : ""}`, null, "info"),
+      kpiTile("Organic", org.reason || org.ingest_status || "—", org.has_read_insights ? "insights OK" : "no insights", org.has_read_insights ? "ok" : "warn"),
+      kpiTile("DTL", health?.overall_status || "—", null, overallSev),
+    ].join("");
+  }
+
   const f = snap.freshness || {};
   const entries = Object.entries(f);
   tiles.innerHTML = entries.length
-    ? entries.map(([k, v]) => `
+    ? entries.map(([key, v]) => `
     <article class="card">
-      <strong>${k.toUpperCase()}</strong>
+      <strong>${key.toUpperCase()}</strong>
       <p>Ostatnia sync: ${v.last_sync_at || "—"}</p>
       <span class="badge stale-${v.status} ${v.status}">${v.status === "stale" ? "nieaktualne" : v.status}</span>
       ${v.staleness_seconds != null ? `<small>${v.staleness_seconds}s temu</small>` : ""}
@@ -1013,17 +1065,25 @@ async function loadAnalytics() {
 
   renderDataHealth(health || {});
 
-  ordersEl.innerHTML =
-    (orders.orders || []).slice(0, 10).map((o) =>
-      `<div>#${o.order_id} · ${o.status} · €${o.total_gross}</div>`).join("")
-    || "<p class=\"state-empty\">Brak zamówień.</p>";
-  leadsEl.innerHTML =
-    (leads.leads || []).slice(0, 10).map((l) =>
-      `<div>${l.email} · score ${l.game_score ?? "—"} · ${l.disposition || "open"}
-        <button type="button" data-lead-list-disp="${l.id}" data-disp="acked">Potwierdź</button>
-        <button type="button" data-lead-list-disp="${l.id}" data-disp="closed">Zamknij</button>
-      </div>`).join("")
-    || "<p class=\"state-empty\">Brak leadów.</p>";
+  const orderRows = (orders.orders || []).slice(0, 10);
+  ordersEl.innerHTML = orderRows.length
+    ? orderRows.map((o) =>
+      `<tr><td>#${escHtml(o.order_id)}</td><td><span class="badge">${escHtml(o.status)}</span></td><td>€${escHtml(o.total_gross)}</td></tr>`).join("")
+    : "<tr><td colspan=\"3\" class=\"hint\">Brak zamówień.</td></tr>";
+
+  const leadRows = (leads.leads || []).slice(0, 10);
+  leadsEl.innerHTML = leadRows.length
+    ? leadRows.map((l) =>
+      `<tr>
+        <td>${escHtml(l.email)}</td>
+        <td>${escHtml(l.game_score ?? "—")}</td>
+        <td><span class="badge">${escHtml(l.disposition || "open")}</span></td>
+        <td>
+          <button type="button" data-lead-list-disp="${escHtml(l.id)}" data-disp="acked">Potwierdź</button>
+          <button type="button" data-lead-list-disp="${escHtml(l.id)}" data-disp="closed">Zamknij</button>
+        </td>
+      </tr>`).join("")
+    : "<tr><td colspan=\"4\" class=\"hint\">Brak leadów.</td></tr>";
   document.querySelectorAll("[data-lead-list-disp]").forEach((btn) => {
     btn.onclick = async () => {
       try {
@@ -1061,41 +1121,85 @@ document.getElementById("weekly-draft-refresh")?.addEventListener("click", async
 });
 
 async function loadAgents() {
+  const listEl = document.getElementById("agents-list");
+  const mapEl = document.getElementById("ai-os-map");
+  listEl.innerHTML = "<p class=\"hint\">Ładowanie agentów…</p>";
+  if (mapEl) mapEl.innerHTML = "";
   let data;
+  let accuracy;
+  let breakers;
   try {
-    data = await api("/api/v1/agents");
+    [data, accuracy, breakers] = await Promise.all([
+      api("/api/v1/agents"),
+      api("/api/v1/commander/marketing/shadow/accuracy").catch(() => null),
+      api("/api/v1/commander/marketing/breakers").catch(() => null),
+    ]);
   } catch (e) {
-    document.getElementById("agents-list").innerHTML =
+    listEl.innerHTML =
       `<p class="state-error">Nie udało się pobrać agentów. <button type="button" id="agents-retry">Spróbuj ponownie</button></p>`;
-    document.getElementById("phase-c-cards").innerHTML = "";
+    if (mapEl) mapEl.innerHTML = "";
     const retry = document.getElementById("agents-retry");
     if (retry) retry.onclick = () => loadAgents().catch((err) => toast(err.message));
     throw e;
   }
   const agents = data.agents || [];
-  document.getElementById("agents-list").innerHTML = agents.length
-    ? agents.map((a) => `
-    <article class="card" role="listitem">
-      <strong>${a.label}</strong>
-      <p>Status: ${a.status} · SLA: <span class="badge ${a.sla_ok ? "ok" : "red"}">${a.sla_ok ? "ok" : "breach"}</span></p>
-      <p>Held: ${a.held_count || 0}</p>
+  const byId = Object.fromEntries(agents.map((a) => [a.agent_id, a]));
+
+  listEl.innerHTML = agents.length
+    ? agents.map((a) => {
+      const next = a.next_expected_run
+        ? formatSchedule(a.next_expected_run)
+        : "—";
+      const last = a.last_run_at ? formatSchedule(a.last_run_at) : "—";
+      return `
+    <article class="card decision-card ${a.sla_ok ? "decision-card--ok" : "decision-card--critical"}" role="listitem">
+      <strong>${escHtml(a.label)}</strong>
+      <p>${sevChip("Status", a.status, a.status === "LIVE" ? "ok" : "warn")}
+         ${sevChip("SLA", a.sla_ok ? "ok" : "breach", a.sla_ok ? "ok" : "critical")}</p>
+      <p class="hint">Last: ${escHtml(last)} · Next: ${escHtml(next)} · Held: ${a.held_count || 0}</p>
       <p class="links">
-        ${a.agent_id === "design" ? '<a href="/api/v1/design-agent/health" target="_blank" rel="noopener noreferrer">INSPIRE</a>' : ""}
-        ${a.agent_id === "engineering" ? '<a href="https://os.flexgrafik.nl" target="_blank" rel="noopener noreferrer">Agent OS (AI PM)</a>' : ""}
-        ${a.agent_id === "marketing" ? "<span class=\"hint\">AI Marketing</span>" : ""}
+        ${a.agent_id === "design" ? '<a href="/api/v1/design-agent/health" target="_blank" rel="noopener noreferrer">INSPIRE health</a>' : ""}
+        ${a.agent_id === "marketing" ? "<span class=\"hint\">organic HITL</span>" : ""}
       </p>
       ${a.status === "LIVE"
-        ? `<button type="button" data-pause="${a.agent_id}">Pauza</button>`
-        : `<button type="button" data-resume="${a.agent_id}">Wznów</button>`}
-    </article>`).join("")
+        ? `<button type="button" data-pause="${escHtml(a.agent_id)}">Pauza</button>`
+        : `<button type="button" data-resume="${escHtml(a.agent_id)}">Wznów</button>`}
+    </article>`;
+    }).join("")
     : "<p class=\"state-empty\">Brak agentów w rejestrze.</p>";
 
-  document.getElementById("phase-c-cards").innerHTML = `
-    <article class="card"><strong>AI Sprzedawca</strong><p>LIVE — widget + sales_cta</p></article>
-    <article class="card"><strong>AI Marketing</strong><p>LIVE — kolejka publikacji</p></article>
-    <article class="card"><strong>AI Project Manager</strong><p>LIVE — hop Agent OS</p></article>
-    <article class="card"><strong>AI Customer Success</strong><p>LIVE — spawn API + kolejka HITL (COI-CS-02)</p></article>
-    <article class="card"><strong>AI Asystent Zarządu</strong><p>LIVE — brief HITL</p></article>`;
+  const mb = byId.marketing_brain || byId.marketing;
+  const accPct = accuracy?.accuracy == null ? "n/a" : `${Math.round(Number(accuracy.accuracy) * 100)}%`;
+  const br = breakersChip(breakers);
+  const sales = byId.sales;
+  const ops = byId.operations;
+  const analytics = byId.analytics;
+  const design = byId.design;
+
+  if (mapEl) {
+    mapEl.innerHTML = [
+      `<article class="card"><strong>AI Sprzedawca</strong>
+        <p>${sevChip("Agent", sales?.status || "—", sales?.status === "LIVE" ? "ok" : "warn")}
+           ${sevChip("SLA", sales?.sla_ok ? "ok" : "breach", sales?.sla_ok ? "ok" : "critical")}</p>
+        <p class="hint">Widget + sales CTA · next ${escHtml(sales?.next_expected_run ? formatSchedule(sales.next_expected_run) : "—")}</p></article>`,
+      `<article class="card"><strong>AI Marketing / MB</strong>
+        <p>${sevChip("Agent", mb?.status || "—", mb?.status === "LIVE" ? "ok" : "warn")}
+           ${sevChip("Accuracy", accPct, accuracy?.gate_ready ? "ok" : "warn")}
+           ${sevChip("Breakers", br.text, br.sev)}</p>
+        <p class="hint">Organic HITL w Commander · execute = TG/API only</p></article>`,
+      `<article class="card"><strong>AI Project Manager</strong>
+        <p>${sevChip("Hop", "Agent OS", "info")}</p>
+        <p class="links"><a href="https://os.flexgrafik.nl" target="_blank" rel="noopener">os.flexgrafik.nl</a> · Basic Auth</p></article>`,
+      `<article class="card"><strong>AI Customer Success</strong>
+        <p>${sevChip("Ops", ops?.status || "—", ops?.status === "LIVE" ? "ok" : "warn")}
+           ${sevChip("SLA", ops?.sla_ok ? "ok" : "breach", ops?.sla_ok ? "ok" : "critical")}</p>
+        <p class="hint">CS follow-up na Start · next ${escHtml(ops?.next_expected_run ? formatSchedule(ops.next_expected_run) : "—")}</p></article>`,
+      `<article class="card"><strong>AI Asystent / Design</strong>
+        <p>${sevChip("Analytics", analytics?.status || "—", analytics?.status === "LIVE" ? "ok" : "warn")}
+           ${sevChip("Design", design?.status || "—", design?.status === "LIVE" ? "ok" : "warn")}</p>
+        <p class="links"><a href="/api/v1/design-agent/health" target="_blank" rel="noopener">DA health</a></p></article>`,
+    ].join("");
+  }
 
   document.querySelectorAll("[data-pause]").forEach((btn) => {
     btn.onclick = async () => {
@@ -1112,13 +1216,30 @@ async function loadAgents() {
   });
 }
 
+function renderRolesList(map) {
+  const el = document.getElementById("roles-list");
+  if (!el) return;
+  const entries = Object.entries(map || {});
+  el.innerHTML = entries.length
+    ? entries.map(([uid, role]) => `<li><code>${escHtml(uid)}</code> · ${escHtml(role)}</li>`).join("")
+    : "<li class=\"hint\">Brak przypisanych ról.</li>";
+}
+
 async function loadAudit() {
+  const banner = document.getElementById("audit-verify-banner");
   try {
     const data = await api("/api/v1/commander/audit-log?limit=30");
     document.getElementById("audit-list").innerHTML = (data.entries || []).length
-      ? (data.entries || []).map((e) =>
-        `<div><code>${e.ts}</code> · ${e.action} · ${e.actor_id} (${e.actor_role})</div>`).join("")
+      ? (data.entries || []).map((e) => {
+        const hash = (e.hash || e.entry_hash || "").toString();
+        const short = hash ? hash.slice(0, 10) : "—";
+        return `<div><code>${escHtml((e.ts || "").toString().slice(0, 19))}</code> · ${escHtml(e.action)} · ${escHtml(e.actor_id)} (${escHtml(e.actor_role)}) · <code>${escHtml(short)}</code></div>`;
+      }).join("")
       : "<p class=\"state-empty\">Brak wpisów audytu.</p>";
+    if (banner && !banner.classList.contains("audit-banner--ok") && !banner.classList.contains("audit-banner--fail")) {
+      banner.className = "audit-banner audit-banner--info";
+      banner.textContent = "Naciśnij „Weryfikuj łańcuch” aby potwierdzić hash-chain.";
+    }
   } catch (e) {
     document.getElementById("audit-list").innerHTML =
       `<p class="state-error">Nie udało się pobrać audytu. <button type="button" id="audit-retry">Spróbuj ponownie</button></p>`;
@@ -1134,7 +1255,7 @@ async function loadSettings() {
   document.getElementById("delegat-tg").value = s.delegat_telegram_chat_id || "";
   document.getElementById("daily-budget").value = s.daily_action_budget || 200;
   roleMap = s.commander_roles || {};
-  document.getElementById("roles-list").textContent = JSON.stringify(roleMap, null, 2);
+  renderRolesList(roleMap);
   document.getElementById("delegat-banner").hidden = !!s.delegat_configured;
 }
 
@@ -1285,7 +1406,7 @@ document.getElementById("role-add").onclick = () => {
   const role = document.getElementById("role-pick").value;
   if (!uid) return;
   roleMap[uid] = role;
-  document.getElementById("roles-list").textContent = JSON.stringify(roleMap, null, 2);
+  renderRolesList(roleMap);
   toast(`Rola ${role} → ${uid}`);
 };
 
@@ -1303,11 +1424,51 @@ document.getElementById("undo-btn").onclick = async () => {
   }
 };
 
+function setMoreSheetOpen(open) {
+  const sheet = document.getElementById("more-sheet");
+  if (!sheet) return;
+  sheet.hidden = !open;
+  sheet.classList.toggle("is-open", !!open);
+}
+
+document.getElementById("open-more-sheet")?.addEventListener("click", () => setMoreSheetOpen(true));
+document.getElementById("more-sheet-close")?.addEventListener("click", () => setMoreSheetOpen(false));
+document.getElementById("more-to-audit")?.addEventListener("click", async () => {
+  setMoreSheetOpen(false);
+  showView("audit");
+  try {
+    await refresh();
+  } catch (e) {
+    toast(e.message);
+  }
+});
+
 document.getElementById("audit-verify").onclick = async () => {
+  const banner = document.getElementById("audit-verify-banner");
+  const raw = document.getElementById("audit-verify-result");
   try {
     const r = await api("/api/v1/commander/audit-log/verify");
-    document.getElementById("audit-verify-result").textContent = JSON.stringify(r, null, 2);
+    if (raw) raw.textContent = JSON.stringify(r, null, 2);
+    const ok = r.ok === true || r.valid === true || r.status === "ok" || r.passed === true;
+    const fail = r.ok === false || r.valid === false || r.status === "fail" || r.passed === false;
+    if (banner) {
+      if (ok) {
+        banner.className = "audit-banner audit-banner--ok";
+        banner.textContent = `PASS — łańcuch OK${r.entries_checked != null ? ` · ${r.entries_checked} entries` : ""}`;
+      } else if (fail) {
+        banner.className = "audit-banner audit-banner--fail";
+        banner.textContent = `FAIL — ${r.error || r.reason || "hash mismatch / broken chain"}`;
+      } else {
+        banner.className = "audit-banner audit-banner--info";
+        banner.textContent = `Verify done — zobacz forensic JSON`;
+      }
+    }
+    toast(ok ? "Audyt PASS" : fail ? "Audyt FAIL" : "Verify OK");
   } catch (e) {
+    if (banner) {
+      banner.className = "audit-banner audit-banner--fail";
+      banner.textContent = `FAIL — ${e.message || "verify error"}`;
+    }
     toast(e.message);
   }
 };

@@ -1,15 +1,15 @@
 {
   "project": "Jadzia-Core",
-  "last_updated": "2026-07-22 (Wave A LIVE @ daf9c74 mkt-dash04)",
+  "last_updated": "2026-07-22 (CMD-DASH-COMPLETE B-D shipping)",
   "status": "active",
   "plan": "docs/ops/COMMANDER-DASHBOARD-AUDIT-2026-07-21.md",
-  "active_gate": "prod @daf9c74 Wave A LIVE; NEXT=Wave B AGENTS-TRUTH; standing_go_closeout=false",
+  "active_gate": "BCD PR shipping; standing_go_closeout=false",
   "active_plan": "docs/handoffs/2026-07-22-CMD-DASH-COMPLETE-01-WAVE-A-HANDOFF.md",
   "standing_go_closeout": false,
   "closeout_queue": [],
   "closeout_expires": "2026-07-25",
-  "next_human": "Phone dogfood Marketing L0 (?v=mkt-dash04); then Wave B GO",
-  "next_agent": "CMD-DASH-COMPLETE-01 Wave B: Home ops chip-rail + Agenci truth",
+  "next_human": "Phone dogfood mkt-dash05",
+  "next_agent": "browser dogfood after deploy",
   "agent_rule": "1-1-1. Evidence-first. Deploy tylko ze zgoda. Hard STOP: Gate D/Mollie/fake PASS/execute UI/6th Audyt tab.",
   "sprints": {
     "remediation": "completed",
@@ -1585,11 +1585,11 @@
       "id": "CMD-DASH-COMPLETE-01",
       "sprint": "Commander Complete Cockpit 2026-07-21",
       "task": "CEO Decision Cockpit v2 agency: DS-0 + Waves A–D (MB rail, agents, analytics, polish)",
-      "status": "in_progress",
+      "status": "completed",
       "priority": "critical",
       "owner": "agent",
-      "checklist": "docs/handoffs/2026-07-22-CMD-DASH-COMPLETE-01-WAVE-A-HANDOFF.md",
-      "note": "Wave A DONE (DS-0+MB rail). LEFT: Wave B-D. D0.15 5 tabs. No execute UI."
+      "checklist": "docs/handoffs/2026-07-22-CMD-DASH-COMPLETE-01-CLOSE.md",
+      "note": "COMPLETE Waves A-D LIVE pending tip"
     },
     {
       "id": "CMD-DASH-PARKS-LIVE-01",
@@ -1615,11 +1615,11 @@
       "id": "CMD-DASH-AGENTS-TRUTH-01",
       "sprint": "Commander Complete Cockpit 2026-07-21",
       "task": "Agents panel truth: next_expected_run + Agent OS hop (engineering or static PM card)",
-      "status": "pending",
+      "status": "completed",
       "priority": "medium",
       "owner": "agent",
       "checklist": "docs/ops/COMMANDER-DASHBOARD-AUDIT-2026-07-21.md",
-      "note": "Wave B. next_expected_run always null; engineering hop never renders."
+      "note": "DONE Wave B-D cockpit mkt-dash05"
     },
     {
       "id": "CMD-DASH-VERIFY-01",
@@ -1635,11 +1635,11 @@
       "id": "CMD-DASH-ORPHAN-SOT-01",
       "sprint": "Commander Complete Cockpit 2026-07-21",
       "task": "Document intentional API-only surfaces (execute/graduation/feedback/bulk) in OPERATOR-TODAY",
-      "status": "pending",
+      "status": "completed",
       "priority": "low",
       "owner": "agent",
       "checklist": "docs/ops/COMMANDER-DASHBOARD-AUDIT-2026-07-21.md",
-      "note": "Wave D. Prevent accidental unsafe UI; keep execute on TG/HITL token path."
+      "note": "DONE Wave B-D cockpit mkt-dash05"
     }
   ]
 }
