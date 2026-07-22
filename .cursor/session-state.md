@@ -1,13 +1,12 @@
-﻿# Session state — 2026-07-22 Wave A
+﻿# Session state — 2026-07-22 Wave A CLOSE
 
 ## Status
 
-- Task: `CMD-DASH-COMPLETE-01` Wave A (DS-0 + Marketing Decision Rail)
-- Cache: **`mkt-dash04`**
-- Branch: `feat/cmd-dash-complete-wave-a`
-- standing_go_closeout: **false** (explicit session GO for deploy when CI green)
+- Tip LIVE: **`daf9c74`** · Commander `?v=mkt-dash04` · Decision Rail LIVE
+- Wave A: **CLOSED** (DS-0 + PARKS-LIVE + MB-PANEL)
+- standing_go_closeout: **false**
 
 ## Next
 
-- Merge + deploy → phone dogfood Marketing L0
+- Human: phone dogfood Marketing L0
 - Agent: Wave B (Home chip-rail + AGENTS-TRUTH)
