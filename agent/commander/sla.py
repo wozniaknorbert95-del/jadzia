@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import json
 from datetime import datetime, timezone
 from typing import Dict, Optional
 
@@ -55,3 +56,41 @@ def freshness_status(source: str, last_sync_at: Optional[str]) -> Dict:
         "status": status,
         "last_sync_at": last_sync_at,
     }
+
+
+def dtl_ingest_fetched_at(source: str) -> Optional[str]:
+    """Clock for pipeline freshness = last DTL raw ingest fetch (not business event time)."""
+    from agent.db import db_get_latest_marketing_raw_ingest
+
+    latest = db_get_latest_marketing_raw_ingest(source)
+    if not latest:
+        return None
+    return latest.get("fetched_at")
+
+
+def worker_heartbeat_at() -> Optional[str]:
+    """
+    Worker freshness clock = last successful commander health probe.
+
+    Must NOT use dowodca_last_active_at (HITL session / escalation N6).
+    Fallback: newest DTL ingest among ga4/orders/leads.
+    """
+    from agent.db import db_commander_get_setting
+
+    row = db_commander_get_setting("health:last_ok")
+    if row:
+        try:
+            value = json.loads(row["value_json"])
+            if value:
+                return str(value)
+        except (json.JSONDecodeError, TypeError, KeyError):
+            pass
+
+    times: list[str] = []
+    for source in ("ga4", "orders", "leads"):
+        fetched = dtl_ingest_fetched_at(source)
+        if fetched:
+            times.append(fetched)
+    if not times:
+        return None
+    return max(times, key=lambda t: _parse_ts(t) or datetime.min.replace(tzinfo=timezone.utc))

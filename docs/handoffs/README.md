@@ -4,9 +4,9 @@ Session continuity for `/vibe-init`: read the **last 2** handoffs from this fold
 
 ## Start here — 2026-07-22
 
-1. [`2026-07-22-NEXT-OPS-FRESHNESS-01.md`](2026-07-22-NEXT-OPS-FRESHNESS-01.md) — **NEXT** agent + human parks
-2. [`2026-07-22-CMD-DASH-UX-POLISH-01-DEPLOY-CLOSE.md`](2026-07-22-CMD-DASH-UX-POLISH-01-DEPLOY-CLOSE.md) — **LIVE** `@4aea17c` `mkt-dash06`
-3. [`2026-07-22-CMD-DASH-UX-POLISH-01-DEPLOY.md`](2026-07-22-CMD-DASH-UX-POLISH-01-DEPLOY.md) — deploy plan (executed)
+1. [`2026-07-22-OPS-FRESHNESS-01-CLOSE.md`](2026-07-22-OPS-FRESHNESS-01-CLOSE.md) — **NEXT** merge+GO deploy `mkt-dash07`
+2. [`2026-07-22-NEXT-OPS-FRESHNESS-01.md`](2026-07-22-NEXT-OPS-FRESHNESS-01.md) — RCA brief (executed)
+3. [`2026-07-22-CMD-DASH-UX-POLISH-01-DEPLOY-CLOSE.md`](2026-07-22-CMD-DASH-UX-POLISH-01-DEPLOY-CLOSE.md) — LIVE UX polish
 4. [`2026-07-22-CMD-DASH-UX-POLISH-01-CLOSE.md`](2026-07-22-CMD-DASH-UX-POLISH-01-CLOSE.md) — UX polish Conditional Pass
 
 ## Program + audit SoT

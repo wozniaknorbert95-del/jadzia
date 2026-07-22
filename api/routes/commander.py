@@ -20,7 +20,11 @@ from agent.commander.graduation import graduation_status, record_feedback
 from agent.commander.publish import bulk_approve_guardrail, publish_calendar_entry, unpublish_calendar_entry
 from agent.commander.queue import build_priorities_today, build_queue
 from agent.commander.settings import get_settings, update_settings
-from agent.commander.sla import freshness_status
+from agent.commander.sla import (
+    dtl_ingest_fetched_at,
+    freshness_status,
+    worker_heartbeat_at,
+)
 from agent.commander.tickets import create_ticket_from_telegram, get_ticket
 from agent.db import db_list_analytics_snapshots, db_list_leads, db_list_orders
 
@@ -166,7 +170,7 @@ async def get_orders(
     _auth=Depends(require_scope("commander:read")),
 ) -> dict:
     orders = db_list_orders(limit=limit)
-    fresh = freshness_status("orders", orders[0]["updated_at"] if orders else None)
+    fresh = freshness_status("orders", dtl_ingest_fetched_at("orders"))
     return {"orders": orders, "total": len(orders), "freshness": fresh}
 
 
@@ -180,7 +184,7 @@ async def get_leads(
     _auth=Depends(require_scope("commander:read")),
 ) -> dict:
     leads = db_list_leads(limit=limit)
-    fresh = freshness_status("leads", leads[0]["updated_at"] if leads else None)
+    fresh = freshness_status("leads", dtl_ingest_fetched_at("leads"))
     return {"leads": leads, "total": len(leads), "freshness": fresh}
 
 
@@ -272,18 +276,16 @@ async def get_commander_analytics_snapshot(
     _auth=Depends(require_scope("commander:read")),
 ) -> dict:
     rows = db_list_analytics_snapshots(limit=1)
-    orders = db_list_orders(limit=1)
-    leads = db_list_leads(limit=1)
     generated_at = None
     sources: Dict[str, Any] = {}
     if rows:
         generated_at = rows[0].get("generated_at")
         sources = json.loads(rows[0].get("sources_json") or "{}")
-    orders_at = orders[0].get("updated_at") if orders else None
-    leads_at = leads[0].get("updated_at") if leads else None
-    from agent.commander.settings import get_settings
-
-    worker_at = get_settings().get("dowodca_last_active_at")
+    # Pipeline clocks: DTL ingest / health probe — NOT business event updated_at
+    # and NOT dowodca_last_active_at (HITL session for escalation N6).
+    orders_at = dtl_ingest_fetched_at("orders")
+    leads_at = dtl_ingest_fetched_at("leads")
+    worker_at = worker_heartbeat_at()
     freshness = {
         "ga4": freshness_status("ga4", generated_at),
         "orders": freshness_status("orders", orders_at),
