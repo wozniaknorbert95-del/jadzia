@@ -1,15 +1,15 @@
 {
   "project": "Jadzia-Core",
-  "last_updated": "2026-07-22 (OPS-AGENT-SLA-01 DEPLOY_READY mkt-dash08; AWAIT GO)",
+  "last_updated": "2026-07-22 (OPS-AGENT-SLA LIVE @ 6e4a637 mkt-dash08)",
   "status": "active",
-  "plan": "docs/handoffs/2026-07-22-OPS-AGENT-SLA-01-DEPLOY-READY.md",
-  "active_gate": "OPS-AGENT-SLA-01 DEPLOY_READY; AWAIT GO commit+deploy",
-  "active_plan": "docs/handoffs/2026-07-22-OPS-AGENT-SLA-01-DEPLOY-READY.md",
+  "plan": "docs/handoffs/2026-07-22-OPS-AGENT-SLA-01-DEPLOY-CLOSE.md",
+  "active_gate": "LIVE mkt-dash08 SLA honesty; FB token deferred post-dashboard",
+  "active_plan": "docs/handoffs/2026-07-22-OPS-AGENT-SLA-01-DEPLOY-CLOSE.md",
   "standing_go_closeout": false,
   "closeout_queue": [],
   "closeout_expires": "2026-07-25",
-  "next_human": "GO: commit+deploy OPS-AGENT-SLA-01 (mkt-dash08) · Deferred: OPS-FB-TOKEN-01 after dashboard complete",
-  "next_agent": "OPS-AGENT-SLA-01-DEPLOY — blocked on explicit GO",
+  "next_human": "Deferred: OPS-FB-TOKEN-01 after dashboard complete · Meta HOLD / Mollie parks",
+  "next_agent": "CMD-DASH-L1L2 (Low polish) — non-blocking · or observe",
   "agent_rule": "1-1-1. Evidence-first. Deploy tylko ze zgoda. Hard STOP: Gate D/Mollie/fake PASS/execute UI/6th Audyt tab. FB token = deferred.",
   "sprints": {
     "remediation": "completed",
@@ -1695,21 +1695,21 @@
       "id": "OPS-AGENT-SLA-01",
       "sprint": "Ops trust post UX-POLISH",
       "task": "Diagnose/fix Ops SLA bad 5 (agents sla_ok=false) after freshness LIVE",
-      "status": "deploy_ready",
+      "status": "completed",
       "priority": "critical",
-      "owner": "human",
-      "checklist": "docs/handoffs/2026-07-22-OPS-AGENT-SLA-01-DEPLOY-READY.md",
-      "note": "DEPLOY_READY mkt-dash08 · 26 PASS · AWAIT GO commit+deploy"
+      "owner": "agent",
+      "checklist": "docs/handoffs/2026-07-22-OPS-AGENT-SLA-01-DEPLOY-CLOSE.md",
+      "note": "LIVE @ 6e4a637 mkt-dash08 · sla_bad 0 · Ops OK dogfood"
     },
     {
       "id": "OPS-AGENT-SLA-01-DEPLOY",
       "sprint": "Ops trust post UX-POLISH",
       "task": "Commit+deploy SLA honesty + dogfood Start chip (mkt-dash08)",
-      "status": "pending",
+      "status": "completed",
       "priority": "critical",
       "owner": "agent",
-      "checklist": "docs/handoffs/2026-07-22-OPS-AGENT-SLA-01-DEPLOY-READY.md",
-      "note": "Blocked on Dowódca GO — pack ready"
+      "checklist": "docs/handoffs/2026-07-22-OPS-AGENT-SLA-01-DEPLOY-CLOSE.md",
+      "note": "VERIFY_OK · dogfood Ops OK · SLA 0"
     }
   ]
 }

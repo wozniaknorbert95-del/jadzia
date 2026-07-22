@@ -1,11 +1,8 @@
 # DEPLOY-READY — OPS-AGENT-SLA-01
 
 **Date:** 2026-07-22  
-**Status:** **DEPLOY_READY** · AWAIT GO (commit → push/PR → VPS)  
-**Cache:** `mkt-dash08`  
-**Base LIVE:** tip `058d568` · runtime freshness `@c210578` · UI still `mkt-dash07`  
-**standing_go_closeout:** `false`  
-**Prior CLOSE (code):** `2026-07-22-OPS-AGENT-SLA-01-CLOSE.md`
+**Status:** **DEPLOYED LIVE** — superseded by `2026-07-22-OPS-AGENT-SLA-01-DEPLOY-CLOSE.md`  
+**Tip LIVE:** `6e4a637` · cache `mkt-dash08`
 
 ## Verdict
 
