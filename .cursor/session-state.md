@@ -1,12 +1,13 @@
-﻿# MKT-BRAIN-PRO — session state 2026-07-19
+﻿# Session state — 2026-07-22 Wave A
 
 ## Status
 
-- Tip LIVE: **`3c2fc6e`** · **MB_MODE=propose** · overall **~86%**
-- Program Close: **DONE** (insights READY + weekly draft LIVE)
-- Handoff: `docs/handoffs/2026-07-19-MKT-BRAIN-PRO-PROGRAM-CLOSE.md`
+- Task: `CMD-DASH-COMPLETE-01` Wave A (DS-0 + Marketing Decision Rail)
+- Cache: **`mkt-dash04`**
+- Branch: `feat/cmd-dash-complete-wave-a`
+- standing_go_closeout: **false** (explicit session GO for deploy when CI green)
 
 ## Next
 
-- Human: H-Meta · H-Purchase · H-Insights · H-WA · H-F4x
-- Agent: **observe-only**
+- Merge + deploy → phone dogfood Marketing L0
+- Agent: Wave B (Home chip-rail + AGENTS-TRUTH)
