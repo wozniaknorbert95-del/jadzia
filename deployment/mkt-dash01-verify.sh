@@ -21,7 +21,7 @@ curl -sf "http://127.0.0.1:8000/api/v1/commander/marketing/data-health" \
   | python3 -c 'import sys,json;d=json.load(sys.stdin);print("overall",d.get("overall_status"));print("parks",[p.get("id") for p in (d.get("conscious_parks") or [])]);print("organic",d.get("facebook_organic"));print("drivers_n",len(d.get("drivers") or []))'
 
 echo "=== static ==="
-grep -c 'mkt-dash07' commander-ui/index.html || true
+grep -c 'mkt-dash08' commander-ui/index.html || true
 grep -c 'has_read_insights' commander-ui/app.js || true
 grep -c 'weekly-draft-panel' commander-ui/index.html || true
 grep -c 'dtl-parks' commander-ui/index.html || true
@@ -54,7 +54,7 @@ curl -sf "http://127.0.0.1:8000/api/v1/commander/marketing/breakers" \
   | python3 -c 'import sys,json;d=json.load(sys.stdin);print("allowed",d.get("allowed"),"trips",[t.get("breaker_id") for t in (d.get("trips") or [])])'
 curl -sf "http://127.0.0.1:8000/api/v1/agents" \
   -H "Authorization: Bearer ${TOKEN}" \
-  | python3 -c 'import sys,json;d=json.load(sys.stdin);a=(d.get("agents") or [{}])[0];print("agent0",a.get("agent_id"),"next",a.get("next_expected_run"),"sla",a.get("sla_ok"))'
+  | python3 -c 'import sys,json;d=json.load(sys.stdin);agents=d.get("agents") or [];bad=[a.get("agent_id") for a in agents if a.get("sla_ok") is False];na=[a.get("agent_id") for a in agents if a.get("sla_ok") is None];print("sla_bad",len(bad),bad);print("sla_na",na);print("clocks",[(a.get("agent_id"),a.get("clock_source"),a.get("sla_ok")) for a in agents])'
 echo "=== design-agent health ==="
 curl -sf "http://127.0.0.1:8000/api/v1/design-agent/health" \
   | python3 -c 'import sys,json;d=json.load(sys.stdin);print("status",d.get("status"),"service",d.get("service"))'

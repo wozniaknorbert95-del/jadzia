@@ -1,4 +1,4 @@
-"""CMD-DASH Complete + UX Polish — static UI contracts (cache mkt-dash07)."""
+"""CMD-DASH Complete + UX Polish — static UI contracts (cache mkt-dash08)."""
 
 from pathlib import Path
 
@@ -8,8 +8,9 @@ JS = (ROOT / "commander-ui" / "app.js").read_text(encoding="utf-8")
 CSS = (ROOT / "commander-ui" / "styles.css").read_text(encoding="utf-8")
 
 
-def test_cache_bust_mkt_dash07():
-    assert HTML.count("mkt-dash07") >= 2
+def test_cache_bust_mkt_dash08():
+    assert HTML.count("mkt-dash08") >= 2
+    assert "mkt-dash07" not in HTML
     assert "mkt-dash06" not in HTML
     assert "mkt-dash05" not in HTML
     assert "mkt-dash04" not in HTML
@@ -82,6 +83,7 @@ def test_m1_organic_humanize():
 def test_m2_agents_configured_without_last():
     assert 'statusLabel === "configured"' in JS or 'statusLabel = a.status === "LIVE" && !hasLast ? "configured"' in JS
     assert '"n/a"' in JS
+    assert "a.sla_ok === false" in JS
 
 
 def test_m3_dtl_facts_stale():

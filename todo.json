@@ -1,16 +1,16 @@
 {
   "project": "Jadzia-Core",
-  "last_updated": "2026-07-22 (OPS-FRESHNESS LIVE @ c210578 mkt-dash07)",
+  "last_updated": "2026-07-22 (OPS-AGENT-SLA-01 DEPLOY_READY mkt-dash08; AWAIT GO)",
   "status": "active",
-  "plan": "docs/handoffs/2026-07-22-OPS-FRESHNESS-01-DEPLOY-CLOSE.md",
-  "active_gate": "LIVE mkt-dash07 freshness OK; next human OPS-FB-TOKEN-01",
-  "active_plan": "docs/handoffs/2026-07-22-OPS-FRESHNESS-01-DEPLOY-CLOSE.md",
+  "plan": "docs/handoffs/2026-07-22-OPS-AGENT-SLA-01-DEPLOY-READY.md",
+  "active_gate": "OPS-AGENT-SLA-01 DEPLOY_READY; AWAIT GO commit+deploy",
+  "active_plan": "docs/handoffs/2026-07-22-OPS-AGENT-SLA-01-DEPLOY-READY.md",
   "standing_go_closeout": false,
   "closeout_queue": [],
   "closeout_expires": "2026-07-25",
-  "next_human": "OPS-FB-TOKEN-01 — refresh FB Page Token (+ optional read_insights)",
-  "next_agent": "Idle / new TASK_ID — freshness closed; optional OPS-SLA-AGENTS if prioritized",
-  "agent_rule": "1-1-1. Evidence-first. Deploy tylko ze zgoda. Hard STOP: Gate D/Mollie/fake PASS/execute UI/6th Audyt tab.",
+  "next_human": "GO: commit+deploy OPS-AGENT-SLA-01 (mkt-dash08) · Deferred: OPS-FB-TOKEN-01 after dashboard complete",
+  "next_agent": "OPS-AGENT-SLA-01-DEPLOY — blocked on explicit GO",
+  "agent_rule": "1-1-1. Evidence-first. Deploy tylko ze zgoda. Hard STOP: Gate D/Mollie/fake PASS/execute UI/6th Audyt tab. FB token = deferred.",
   "sprints": {
     "remediation": "completed",
     "coi_phase_a": "deploy_complete",
@@ -1685,11 +1685,31 @@
       "id": "OPS-FB-TOKEN-01",
       "sprint": "Ops trust post UX-POLISH",
       "task": "HITL: refresh expired FB Page Token (+ optional Graph read_insights)",
-      "status": "ready_for_human",
+      "status": "deferred",
+      "priority": "high",
+      "owner": "human",
+      "checklist": "docs/handoffs/2026-07-22-NEXT-OPS-AGENT-SLA-01.md",
+      "note": "DEFERRED until dashboard complete (Dowódca 2026-07-22). CRITICAL card remains in queue."
+    },
+    {
+      "id": "OPS-AGENT-SLA-01",
+      "sprint": "Ops trust post UX-POLISH",
+      "task": "Diagnose/fix Ops SLA bad 5 (agents sla_ok=false) after freshness LIVE",
+      "status": "deploy_ready",
       "priority": "critical",
       "owner": "human",
-      "checklist": "docs/handoffs/2026-07-22-NEXT-OPS-FRESHNESS-01.md",
-      "note": "Start CRITICAL card: Token Facebook wygasł — secrets/Graph; agent no autonomous"
+      "checklist": "docs/handoffs/2026-07-22-OPS-AGENT-SLA-01-DEPLOY-READY.md",
+      "note": "DEPLOY_READY mkt-dash08 · 26 PASS · AWAIT GO commit+deploy"
+    },
+    {
+      "id": "OPS-AGENT-SLA-01-DEPLOY",
+      "sprint": "Ops trust post UX-POLISH",
+      "task": "Commit+deploy SLA honesty + dogfood Start chip (mkt-dash08)",
+      "status": "pending",
+      "priority": "critical",
+      "owner": "agent",
+      "checklist": "docs/handoffs/2026-07-22-OPS-AGENT-SLA-01-DEPLOY-READY.md",
+      "note": "Blocked on Dowódca GO — pack ready"
     }
   ]
 }

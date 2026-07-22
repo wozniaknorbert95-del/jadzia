@@ -135,4 +135,5 @@ def check_sla_escalations() -> int:
 def _silent_agents() -> list:
     from agent.commander.agents_registry import list_agents
 
-    return [a for a in list_agents() if not a.get("sla_ok")]
+    # None = untracked (HITL/on-demand) — not a silent-agent escalation.
+    return [a for a in list_agents() if a.get("sla_ok") is False]

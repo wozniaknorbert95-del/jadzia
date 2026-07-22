@@ -312,7 +312,8 @@ async function loadHome() {
       .then((r) => (r.ok ? r.json() : null))
       .catch(() => null),
   ]);
-  const slaBad = (agents.agents || []).filter((a) => !a.sla_ok).length;
+  // Only explicit breach (false). null/undefined = untracked n/a — not Start noise.
+  const slaBad = (agents.agents || []).filter((a) => a.sla_ok === false).length;
   const fresh = snap?.freshness?.ga4?.status || "—";
   // Pipeline freshness = worst of DTL/health clocks (not Dowódca session activity).
   const pipelineFresh = worstFreshStatus(
@@ -1254,10 +1255,9 @@ async function loadAgents() {
         : "—";
       const last = a.last_run_at ? formatSchedule(a.last_run_at) : "—";
       const hasLast = !!a.last_run_at;
-      const hasNext = !!a.next_expected_run;
       const statusLabel = a.status === "LIVE" && !hasLast ? "configured" : a.status;
       const statusSev = statusLabel === "LIVE" ? "ok" : statusLabel === "configured" ? "info" : "warn";
-      const slaLabel = !hasLast && !hasNext ? "n/a" : (a.sla_ok ? "ok" : "breach");
+      const slaLabel = a.sla_ok == null ? "n/a" : (a.sla_ok ? "ok" : "breach");
       const slaChipSev = slaLabel === "n/a" ? "neutral" : (a.sla_ok ? "ok" : "critical");
       const cardSev = slaLabel === "n/a"
         ? ""
@@ -1289,10 +1289,9 @@ async function loadAgents() {
 
   function mapAgentChips(agent) {
     const hasLast = !!agent?.last_run_at;
-    const hasNext = !!agent?.next_expected_run;
     const statusLabel = agent?.status === "LIVE" && !hasLast ? "configured" : (agent?.status || "—");
     const statusSev = statusLabel === "LIVE" ? "ok" : statusLabel === "configured" ? "info" : "warn";
-    const slaLabel = !agent || (!hasLast && !hasNext) ? "n/a" : (agent.sla_ok ? "ok" : "breach");
+    const slaLabel = !agent || agent.sla_ok == null ? "n/a" : (agent.sla_ok ? "ok" : "breach");
     const slaSev = slaLabel === "n/a" ? "neutral" : (agent.sla_ok ? "ok" : "critical");
     return { statusLabel, statusSev, slaLabel, slaSev };
   }

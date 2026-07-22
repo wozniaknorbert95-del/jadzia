@@ -31,3 +31,7 @@ Portfolio*/
 # Local dogfood/recovery helpers — never ship
 deployment/_mint_*.py
 deployment/_recover_*.py
+# Local test noise
+.coverage
+coverage.xml
+htmlcov/

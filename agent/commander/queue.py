@@ -225,7 +225,7 @@ def build_queue(severity_filter: Optional[str] = None) -> List[Dict]:
     from agent.commander.agents_registry import list_agents
 
     for agent in list_agents():
-        if not agent.get("sla_ok") and agent.get("last_error"):
+        if agent.get("sla_ok") is False and agent.get("last_error"):
             qtype = "agent_error"
             items.append(
                 _queue_item(
