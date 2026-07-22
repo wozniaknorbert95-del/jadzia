@@ -13,7 +13,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" href="styles.css?v=mkt-dash04" />
+  <link rel="stylesheet" href="styles.css?v=mkt-dash05" />
 </head>
 <body>
   <a class="skip-link" href="#main">Przejdź do treści</a>
@@ -68,6 +68,11 @@
 
   <main id="main" class="main" tabindex="-1">
     <section id="view-home" class="view active" aria-labelledby="home-title">
+      <aside id="home-ops-rail" class="exec-rail panel" aria-label="Ops Decision Rail">
+        <p class="exec-rail-title">Ops — Decision Rail</p>
+        <p id="home-ops-summary" class="hint mkt-rail-summary" aria-live="polite">Ładowanie ops…</p>
+        <div id="home-ops-chips" class="exec-rail-chips" role="list"></div>
+      </aside>
       <header class="home-hero">
         <p class="home-eyebrow">COI Commander · Start</p>
         <h2 id="home-title">Dziś — 3 priorytety</h2>
@@ -90,7 +95,6 @@
           <button type="submit" class="primary" id="cs-spawn-btn">Utwórz follow-up CS</button>
         </div>
       </form>
-      <div id="health-strip" class="health-strip" aria-live="polite"></div>
       <section class="system-map" aria-labelledby="system-map-title">
         <h3 id="system-map-title">Mapa systemu</h3>
         <p class="hint">Osobne systemy — otwieraj z hubu (ADR D0.6 / D0.19). Basic Auth u właściciela hosta (OS/VCMS). Sesja JWT w Commanderze zostaje.</p>
@@ -195,6 +199,11 @@
 
     <section id="view-analytics" class="view" aria-labelledby="analytics-title" hidden>
       <h2 id="analytics-title">Analityka i przychody</h2>
+      <aside id="analytics-kpi-rail" class="exec-rail panel" aria-label="KPI scoreboard">
+        <p class="exec-rail-title">KPI — Scoreboard</p>
+        <div id="analytics-kpi-tiles" class="kpi-grid" role="list"></div>
+      </aside>
+      <h3>Freshness</h3>
       <div id="analytics-tiles" class="card-grid"></div>
 
       <h3>Data Health (DTL)</h3>
@@ -215,28 +224,48 @@
       </div>
 
       <h3>Zamówienia</h3>
-      <div id="orders-list" class="list"></div>
+      <div class="table-wrap">
+        <table id="orders-table" class="data-table" aria-label="Zamówienia">
+          <thead><tr><th>ID</th><th>Status</th><th>Kwota</th></tr></thead>
+          <tbody id="orders-list"></tbody>
+        </table>
+      </div>
       <h3>Leady</h3>
-      <div id="leads-list" class="list"></div>
+      <div class="table-wrap">
+        <table id="leads-table" class="data-table" aria-label="Leady">
+          <thead><tr><th>Email</th><th>Score</th><th>Status</th><th>Akcja</th></tr></thead>
+          <tbody id="leads-list"></tbody>
+        </table>
+      </div>
     </section>
 
     <section id="view-agents" class="view" aria-labelledby="agents-title" hidden>
-      <h2 id="agents-title">Rejestr agentów (5 ról AI OS)</h2>
+      <h2 id="agents-title">Rejestr agentów</h2>
       <div id="agents-list" class="card-grid"></div>
-      <h3>Role zaliczeniowe / luki</h3>
-      <div id="phase-c-cards" class="card-grid"></div>
+      <h3>AI OS — mapa ról (live)</h3>
+      <p class="hint">Status z API / hopów — bez fake „phase-c LIVE”. Execute MB = Telegram/API only.</p>
+      <div id="ai-os-map" class="card-grid"></div>
     </section>
 
     <section id="view-audit" class="view" aria-labelledby="audit-title" hidden>
       <h2 id="audit-title">Audyt (hash-chain)</h2>
-      <button type="button" id="audit-verify">Weryfikuj łańcuch</button>
-      <pre id="audit-verify-result" class="audit-pre"></pre>
+      <p class="hint">Secondary (D0.15) — wejście z Ustawień / Więcej.</p>
+      <div id="audit-verify-banner" class="audit-banner" aria-live="polite">Naciśnij „Weryfikuj łańcuch”.</div>
+      <button type="button" id="audit-verify" class="primary">Weryfikuj łańcuch</button>
       <div id="audit-list" class="list" aria-live="polite"></div>
+      <details class="forensic-panel" id="audit-forensic">
+        <summary>Forensic — raw verify JSON</summary>
+        <pre id="audit-verify-result" class="audit-pre forensic-body"></pre>
+      </details>
     </section>
 
     <section id="view-settings" class="view" aria-labelledby="settings-title" hidden>
       <h2 id="settings-title">Ustawienia</h2>
-      <p class="hint"><button type="button" class="linkish" data-view="audit" id="settings-to-audit">Otwórz Audyt (secondary)</button></p>
+      <p class="hint">
+        <button type="button" class="linkish" data-view="audit" id="settings-to-audit">Otwórz Audyt (secondary)</button>
+        ·
+        <button type="button" class="linkish" id="open-more-sheet">Więcej (Audyt + mapa)</button>
+      </p>
       <form id="settings-form" class="form">
         <label for="delegat-email">Email Delegata (eskalacja 24h)</label>
         <input id="delegat-email" type="email" />
@@ -252,7 +281,8 @@
           <option value="viewer">Viewer</option>
         </select>
         <button type="button" id="role-add">Dodaj rolę</button>
-        <pre id="roles-list" class="audit-pre"></pre>
+        <h3>Role</h3>
+        <ul id="roles-list" class="roles-list hint"></ul>
         <label for="ui-lang">Język UI</label>
         <select id="ui-lang"><option value="pl">Polski</option></select>
         <h3>Mapa systemu (URL, read-only)</h3>
@@ -283,6 +313,14 @@
     <button type="button" data-view="settings" class="nav-btn">Ustawienia</button>
   </nav>
 
+  <div id="more-sheet" class="more-sheet" hidden role="dialog" aria-label="Więcej">
+    <p class="exec-rail-title">Więcej</p>
+    <button type="button" class="more-sheet-btn" data-view="audit" id="more-to-audit">Audyt (secondary)</button>
+    <a class="more-sheet-btn" href="https://os.flexgrafik.nl" target="_blank" rel="noopener">Agent OS</a>
+    <a class="more-sheet-btn" href="https://cmd.flexgrafik.nl" target="_blank" rel="noopener">VCMS</a>
+    <button type="button" id="more-sheet-close" class="secondary">Zamknij</button>
+  </div>
+
   <dialog id="confirm-dialog" aria-labelledby="confirm-title">
     <h2 id="confirm-title">Potwierdź akcję</h2>
     <p id="confirm-body"></p>
@@ -295,6 +333,6 @@
   </dialog>
 
   <div id="toast" class="toast" role="status" aria-live="polite" hidden></div>
-  <script src="app.js?v=mkt-dash04"></script>
+  <script src="app.js?v=mkt-dash05"></script>
 </body>
 </html>

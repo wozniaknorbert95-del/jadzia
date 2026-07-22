@@ -902,6 +902,70 @@ dialog {
   display: none;
 }
 
+.kpi-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+  gap: 0.5rem;
+  margin: 0 0 0.35rem;
+}
+.table-wrap {
+  overflow-x: auto;
+  margin: 0 0 1rem;
+  border: 1px solid var(--border-terminal);
+}
+.data-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 12px;
+}
+.data-table th,
+.data-table td {
+  text-align: left;
+  padding: 0.45rem 0.55rem;
+  border-bottom: 1px solid var(--border-terminal);
+  vertical-align: middle;
+}
+.data-table th {
+  color: var(--muted);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  font-size: 10px;
+  font-weight: 600;
+}
+.data-table .badge { margin-right: 0.25rem; }
+.roles-list {
+  list-style: none;
+  margin: 0 0 1rem;
+  padding: 0;
+}
+.roles-list li {
+  padding: 0.35rem 0;
+  border-bottom: 1px solid var(--border-terminal);
+  font-family: var(--font-mono);
+  font-size: 12px;
+}
+.audit-banner {
+  margin: 0.5rem 0 0.75rem;
+  padding: 0.55rem 0.75rem;
+  border-left: 2px solid var(--border-strong);
+  font-size: 13px;
+}
+.audit-banner--ok {
+  border-left-color: var(--ok);
+  background: color-mix(in srgb, var(--ok) 8%, transparent);
+  color: var(--ok);
+}
+.audit-banner--fail {
+  border-left-color: var(--critical);
+  background: color-mix(in srgb, var(--critical) 10%, transparent);
+  color: var(--critical);
+}
+.audit-banner--info {
+  border-left-color: var(--accent);
+  color: var(--muted);
+}
+
+/* More sheet — secondary overflow (Audyt + mapa); not a 6th primary tab */
 .more-sheet {
   position: fixed;
   left: 0;
@@ -911,13 +975,26 @@ dialog {
   background: var(--bg-elevated);
   border-top: 1px solid var(--border-strong);
   padding: 1rem;
-  display: flex;
+  display: none;
   flex-direction: column;
   gap: 0.5rem;
   font-family: var(--font-mono);
 }
-
 .more-sheet[hidden] { display: none !important; }
+.more-sheet.is-open {
+  display: flex !important;
+}
+@media (min-width: 601px) {
+  .more-sheet.is-open {
+    left: 50%;
+    right: auto;
+    bottom: 1.5rem;
+    transform: translateX(-50%);
+    width: min(420px, calc(100vw - 2rem));
+    border: 1px solid var(--border-strong);
+    border-radius: var(--radius-terminal);
+  }
+}
 
 .more-sheet-btn, #more-sheet-close {
   min-height: var(--touch);
@@ -971,5 +1048,5 @@ dialog {
   .nav-btn, button { min-height: var(--touch); }
 }
 @media (min-width: 601px) {
-  .bottom-nav, .more-sheet { display: none !important; }
+  .bottom-nav { display: none !important; }
 }

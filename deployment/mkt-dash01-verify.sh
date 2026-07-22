@@ -21,11 +21,16 @@ curl -sf "http://127.0.0.1:8000/api/v1/commander/marketing/data-health" \
   | python3 -c 'import sys,json;d=json.load(sys.stdin);print("overall",d.get("overall_status"));print("parks",[p.get("id") for p in (d.get("conscious_parks") or [])]);print("organic",d.get("facebook_organic"));print("drivers_n",len(d.get("drivers") or []))'
 
 echo "=== static ==="
-grep -c 'mkt-dash04' commander-ui/index.html || true
+grep -c 'mkt-dash05' commander-ui/index.html || true
 grep -c 'has_read_insights' commander-ui/app.js || true
 grep -c 'weekly-draft-panel' commander-ui/index.html || true
 grep -c 'dtl-parks' commander-ui/index.html || true
 grep -c 'mkt-decision-rail' commander-ui/index.html || true
+grep -c 'home-ops-rail' commander-ui/index.html || true
+grep -c 'ai-os-map' commander-ui/index.html || true
+grep -c 'analytics-kpi-tiles' commander-ui/index.html || true
+grep -c 'more-sheet' commander-ui/index.html || true
+grep -c 'phase-c-cards' commander-ui/index.html || true
 grep -c 'sev-chip' commander-ui/styles.css || true
 grep -c 'propose-preflight' commander-ui/app.js || true
 grep -c 'actions/execute' commander-ui/app.js || true
@@ -47,6 +52,9 @@ curl -sf "http://127.0.0.1:8000/api/v1/commander/marketing/shadow/accuracy" \
 curl -sf "http://127.0.0.1:8000/api/v1/commander/marketing/breakers" \
   -H "Authorization: Bearer ${TOKEN}" \
   | python3 -c 'import sys,json;d=json.load(sys.stdin);print("allowed",d.get("allowed"),"trips",[t.get("breaker_id") for t in (d.get("trips") or [])])'
+curl -sf "http://127.0.0.1:8000/api/v1/agents" \
+  -H "Authorization: Bearer ${TOKEN}" \
+  | python3 -c 'import sys,json;d=json.load(sys.stdin);a=(d.get("agents") or [{}])[0];print("agent0",a.get("agent_id"),"next",a.get("next_expected_run"),"sla",a.get("sla_ok"))'
 echo "=== design-agent health ==="
 curl -sf "http://127.0.0.1:8000/api/v1/design-agent/health" \
   | python3 -c 'import sys,json;d=json.load(sys.stdin);print("status",d.get("status"),"service",d.get("service"))'
