@@ -1,13 +1,14 @@
 ---
 status: "[ACTIVE]"
 title: "Marketing OS — START TUTAJ (operator)"
-updated: "2026-07-22 (CMD-DASH-COMPLETE cockpit mkt-dash05)"
+updated: "2026-07-22 (CMD-DASH-UX-POLISH mkt-dash06 — pending GO)"
 ---
 
 # START TUTAJ — jedna ścieżka (ADHD)
 
 **Roadmapa:** [MKT-BRAIN-PRO.md](./MKT-BRAIN-PRO.md) — **~86%** overall · runtime **100%** · **MB_MODE=propose**  
-**Commander cockpit:** https://api.zzpackage.flexgrafik.nl/commander/?v=mkt-dash05  
+**Commander cockpit:** https://api.zzpackage.flexgrafik.nl/commander/?v=mkt-dash06  
+_(prod tip still mkt-dash05 until GO deploy UX-POLISH)_  
 **Meta:** [META-CLICK-PATH.md](./META-CLICK-PATH.md) · Scorecard: [WEEKLY-SCORECARD.md](./WEEKLY-SCORECARD.md)
 
 | Co | Status |
@@ -23,7 +24,7 @@ updated: "2026-07-22 (CMD-DASH-COMPLETE cockpit mkt-dash05)"
 
 ## Commander (hub decyzji)
 
-1. Hard refresh `?v=mkt-dash05`.
+1. Hard refresh `?v=mkt-dash06` (po GO).
 2. Zaloguj: TG `/commander` albo Sesja → JWT.
 3. **Start:** Ops Decision Rail (SSH/SQLite/Loop/SLA/GA4).
 4. **Marketing:** L0 Brain rail (GO/WARN/NO + accuracy) · weekly draft · organic HITL.
@@ -44,7 +45,7 @@ updated: "2026-07-22 (CMD-DASH-COMPLETE cockpit mkt-dash05)"
 | Objaw | Akcja |
 |-------|--------|
 | Draft „Sesja wygasła…” | Nowe `/commander` w TG lub świeży JWT |
-| Stary cache UI | Hard refresh `?v=mkt-dash05` |
+| Stary cache UI | Hard refresh `?v=mkt-dash06` |
 | FB amber + `insights: brak` | H-Insights: Graph scope → `set-fb-access-token` |
 | Preflight NO przy MB_MODE=propose | Oczekiwane (preflight = cutover evidence, nie flip) |
 
