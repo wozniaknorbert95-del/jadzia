@@ -9,12 +9,12 @@ updated: "2026-07-25 (META-FREE-90 8/10 · S5/S9 HITL leftover)"
 **Priorytet teraz:** [FREE-META-90.md](./FREE-META-90.md) — **8/10** · do gate ≥9: **S5 Away** lub **S9 IG** (~15 min). Kampanie HOLD.  
 **Roadmapa:** [MKT-BRAIN-PRO.md](./MKT-BRAIN-PRO.md) — **~86%** overall · runtime **100%** · **MB_MODE=propose**  
 **Commander cockpit:** https://api.zzpackage.flexgrafik.nl/commander/?v=mkt-dash08  
-**Prod SoT tip:** VPS `/opt/jadzia` `git rev-parse --short HEAD` · cache **`mkt-dash08`** · FB Page + `read_insights` + **`pages_read_user_content` LIVE** · SLA `@6e4a637`  
+**Prod SoT tip:** VPS `/opt/jadzia` **`d004900`** · cache **`mkt-dash08`** · FB Page + `read_insights` + **`pages_read_user_content` LIVE** · SLA `@6e4a637`  
 **Meta:** [FREE-META-90.md](./FREE-META-90.md) · [META-CLICK-PATH.md](./META-CLICK-PATH.md) (po gate) · [WEEKLY-SCORECARD.md](./WEEKLY-SCORECARD.md)
 
 | Co | Status |
 |----|--------|
-| **FREE-META-90** | **8/10** — F1–F3 LIVE · leftover S5/S9 HITL · kampanie HOLD |
+| **FREE-META-90** | **8/10** @ tip **`d004900`** · leftover S5/S9 HITL · kampanie HOLD |
 | **#1 Meta lean** | **HOLD** — €5 · **po** FREE-META ≥9/10 |
 | Runtime F0→F4b | **100%** LIVE |
 | Weekly scorecard draft | **LIVE** · Organic ER baseline numeric |

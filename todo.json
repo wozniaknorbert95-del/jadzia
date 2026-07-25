@@ -1,15 +1,15 @@
 {
   "project": "Jadzia-Core",
-  "last_updated": "2026-07-25 (META-FREE-90 8/10 · S5/S9 HITL)",
+  "last_updated": "2026-07-25 (META-FREE-90 tip d004900 LIVE · 8/10)",
   "status": "active",
   "plan": "docs/ops/marketing/FREE-META-90.md",
-  "active_gate": "META-FREE-90 ≥9/10 (now 8/10; S5 or S9 HITL)",
+  "active_gate": "META-FREE-90 ≥9/10 (now 8/10 @ d004900; S5 or S9 HITL)",
   "active_plan": "docs/handoffs/2026-07-25-META-FREE-90-CLOSE.md",
   "standing_go_closeout": false,
   "closeout_queue": [],
   "closeout_expires": "2026-08-01",
   "next_human": "FREE-META S5 Away+menu OR S9 IG dual (~15m) → gate ≥9 · Ads HOLD · Mollie park",
-  "next_agent": "tip-sync commit F1 code when GO · observe",
+  "next_agent": "observe · optional Commander dogfood ER UI",
   "agent_rule": "1-1-1. Evidence-first. Deploy tylko ze zgoda. Hard STOP: Gate D/Mollie/fake PASS/execute UI/6th Audyt tab. No Ads create without explicit GO.",
   "sprints": {
     "remediation": "completed",

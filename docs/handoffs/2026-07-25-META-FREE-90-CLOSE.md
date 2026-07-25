@@ -1,9 +1,21 @@
 # Handoff — META-FREE-90 (PARTIAL GATE)
 
 **Date:** 2026-07-25  
-**Status:** **8/10 LIVE** — agent F0–F3 + S6/S10 done · **S5+S9 ready_for_human**  
+**Status:** **8/10 LIVE** @ tip **`d004900`** — agent F0–F3 + S6/S10 done · **S5+S9 ready_for_human**  
 **standing_go_closeout:** `false`  
 **Kampanie Ads:** HOLD (do ≥9/10 + osobne GO)
+
+## Deploy VERIFY
+
+| Check | Result |
+|-------|--------|
+| git tip VPS | `d004900` |
+| `jadzia` | active |
+| fb-health | PAGE · `has_read_insights` · `has_pages_read_user_content` · Token OK |
+| live post metrics | ok · impressions 239 · insights_ok |
+| `organic_er_baseline_30d` | numeric 0.0 |
+| redact | REDACT_OK |
+| parks | `l0_purchase`, `ads_api_create` only |
 
 ## Score
 

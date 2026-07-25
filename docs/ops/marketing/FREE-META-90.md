@@ -1,13 +1,14 @@
 ---
 status: "[ACTIVE]"
 title: "FREE-META-90 — darmowy potencjał Meta ≥90%"
-updated: "2026-07-25 (F1–F3 LIVE · score 8/10 · S5/S9 HITL)"
+updated: "2026-07-25 (tip d004900 LIVE · score 8/10 · S5/S9 HITL)"
 gate: "META-FREE-90"
 ---
 
 # FREE-META-90 — scorecard (SoT)
 
-**Cel:** darmowy potencjał Meta ≥ **9/10 PASS**. Kampanie Ads dopiero po gate + GO.
+**Cel:** darmowy potencjał Meta ≥ **9/10 PASS**. Kampanie Ads dopiero po gate + GO.  
+**Prod tip:** VPS **`d004900`** (VERIFY_OK 2026-07-25).
 
 **Źródła:** [FB-AUTOMATION-PLAYBOOK.md](./FB-AUTOMATION-PLAYBOOK.md) · [CHANNEL-MATRIX.md](./CHANNEL-MATRIX.md) · [SPEED-TO-LEAD.md](./SPEED-TO-LEAD.md) · [FB-TOKEN-ROTATION.md](../FB-TOKEN-ROTATION.md)
 
