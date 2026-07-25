@@ -5,6 +5,7 @@ from __future__ import annotations
 import json
 import logging
 import os
+import re
 from datetime import datetime, timezone
 from typing import Any, Dict, Optional
 
@@ -14,6 +15,28 @@ logger = logging.getLogger(__name__)
 
 FACEBOOK_API_VERSION = "v25.0"
 FACEBOOK_BASE = f"https://graph.facebook.com/{FACEBOOK_API_VERSION}"
+
+# Graph v25+: legacy post_impressions* deprecated — use media view metrics.
+# Note: post_media_view_unique is INVALID on v25 (breaks multi-metric calls).
+_POST_INSIGHT_METRICS = (
+    "post_media_view,"
+    "post_total_media_view_unique,"
+    "post_clicks"
+)
+
+
+def _redact_secrets(text: str) -> str:
+    """Strip access_token query values from log-safe strings."""
+    if not text:
+        return text
+    out = re.sub(
+        r"(access_token=)([^&\s\"']+)",
+        r"\1REDACTED",
+        str(text),
+        flags=re.IGNORECASE,
+    )
+    out = re.sub(r"EAA[A-Za-z0-9]+", "REDACTED_TOKEN", out)
+    return out
 
 
 def is_facebook_configured() -> bool:
@@ -70,10 +93,13 @@ def publish_post(message: str, scheduled_publish_time: Optional[int] = None) -> 
         response = getattr(exc, "response", None)
         if response is not None:
             details = response.text
-        logger.error("[FacebookPublisher] Publish failed: %s", exc)
+        logger.error(
+            "[FacebookPublisher] Publish failed: %s",
+            _redact_secrets(str(exc)),
+        )
         return {
             "status": "error",
-            "error": str(exc),
+            "error": _redact_secrets(str(exc)),
             "details": details,
         }
 
@@ -116,10 +142,13 @@ def publish_video(
         response = getattr(exc, "response", None)
         if response is not None:
             details = response.text
-        logger.error("[FacebookPublisher] Video publish failed: %s", exc)
+        logger.error(
+            "[FacebookPublisher] Video publish failed: %s",
+            _redact_secrets(str(exc)),
+        )
         return {
             "status": "error",
-            "error": str(exc),
+            "error": _redact_secrets(str(exc)),
             "details": details,
         }
 
@@ -162,10 +191,13 @@ def publish_photo(
         response = getattr(exc, "response", None)
         if response is not None:
             details = response.text
-        logger.error("[FacebookPublisher] Photo publish failed: %s", exc)
+        logger.error(
+            "[FacebookPublisher] Photo publish failed: %s",
+            _redact_secrets(str(exc)),
+        )
         return {
             "status": "error",
-            "error": str(exc),
+            "error": _redact_secrets(str(exc)),
             "details": details,
         }
 
@@ -187,8 +219,12 @@ def check_post_status(post_id: str) -> dict:
         resp.raise_for_status()
         return {"status": "success", "data": resp.json()}
     except requests.RequestException as exc:
-        logger.error("[FacebookPublisher] Status check failed post_id=%s: %s", post_id, exc)
-        return {"status": "error", "error": str(exc)}
+        logger.error(
+            "[FacebookPublisher] Status check failed post_id=%s: %s",
+            post_id,
+            _redact_secrets(str(exc)),
+        )
+        return {"status": "error", "error": _redact_secrets(str(exc))}
 
 
 def parse_publish_error(result: Dict[str, Any]) -> str:
@@ -238,6 +274,7 @@ def check_token_health() -> Dict[str, Any]:
             "configured": False,
             "scopes": [],
             "has_read_insights": False,
+            "has_pages_read_user_content": False,
             "message_pl": "Facebook nie skonfigurowany (FB_PAGE_ID / FB_ACCESS_TOKEN)",
         }
 
@@ -251,12 +288,16 @@ def check_token_health() -> Dict[str, Any]:
         resp.raise_for_status()
         data = (resp.json() or {}).get("data") or {}
     except requests.RequestException as exc:
-        logger.warning("[FacebookPublisher] Token health check failed: %s", exc)
+        logger.warning(
+            "[FacebookPublisher] Token health check failed: %s",
+            _redact_secrets(str(exc)),
+        )
         return {
             "ok": False,
             "configured": True,
             "scopes": [],
             "has_read_insights": False,
+            "has_pages_read_user_content": False,
             "message_pl": "Nie udało się sprawdzić tokenu Facebook",
         }
 
@@ -272,6 +313,7 @@ def check_token_health() -> Dict[str, Any]:
                 scopes.append(str(item["scope"]))
     scopes = sorted(set(scopes))
     has_read_insights = "read_insights" in scopes
+    has_pages_read_user_content = "pages_read_user_content" in scopes
 
     days_left: Optional[int] = None
     if expires_at:
@@ -297,6 +339,11 @@ def check_token_health() -> Dict[str, Any]:
             "Token OK (Page) — brak scope read_insights "
             "(organic insights degrade; dodaj w Graph Explorer)"
         )
+    elif ok and not has_pages_read_user_content:
+        message_pl = (
+            "Token OK (Page) — brak scope pages_read_user_content "
+            "(organic engagement/ER; dodaj w Graph Explorer)"
+        )
 
     return {
         "ok": ok,
@@ -306,6 +353,7 @@ def check_token_health() -> Dict[str, Any]:
         "days_left": days_left,
         "scopes": scopes,
         "has_read_insights": has_read_insights,
+        "has_pages_read_user_content": has_pages_read_user_content,
         "message_pl": message_pl,
         "page_id": os.getenv("FB_PAGE_ID"),
     }
@@ -314,7 +362,7 @@ def check_token_health() -> Dict[str, Any]:
 def fetch_post_organic_metrics(post_id: str) -> Dict[str, Any]:
     """
     Read organic engagement for a Page post (no Ads API).
-    Uses post summary fields; optionally post insights when permitted.
+    Engagement needs pages_read_user_content; impressions via v25 media_view metrics.
     """
     _, access_token = _get_config()
     pid = (post_id or "").strip()
@@ -366,14 +414,52 @@ def fetch_post_organic_metrics(post_id: str) -> Dict[str, Any]:
             }
         )
     except requests.RequestException as exc:
-        logger.warning("[FacebookPublisher] organic metrics failed post=%s: %s", pid, exc)
-        return {"ok": False, "post_id": pid, "error": str(exc)}
+        body = ""
+        response = getattr(exc, "response", None)
+        if response is not None:
+            body = (response.text or "").lower()
+        if response is not None and response.status_code in (400, 403) and (
+            "does not exist" in body
+            or "unsupported get request" in body
+            or "cannot be loaded" in body
+        ):
+            out["ok"] = False
+            out["error"] = "post_unavailable"
+            out["insights_reason"] = "post_unavailable"
+            logger.info(
+                "[FacebookPublisher] organic metrics skipped post=%s reason=post_unavailable",
+                pid,
+            )
+            return out
+        if response is not None and response.status_code in (400, 403) and (
+            "pages_read_user_content" in body
+            or "page public content access" in body
+        ):
+            out["ok"] = False
+            out["error"] = "pages_read_user_content_missing"
+            out["insights_reason"] = "user_content_scope_missing"
+            logger.warning(
+                "[FacebookPublisher] organic engagement blocked post=%s "
+                "reason=pages_read_user_content",
+                pid,
+            )
+            return out
+        logger.warning(
+            "[FacebookPublisher] organic metrics failed post=%s: %s",
+            pid,
+            _redact_secrets(str(exc)),
+        )
+        return {
+            "ok": False,
+            "post_id": pid,
+            "error": _redact_secrets(str(exc)),
+        }
 
     try:
         ins = requests.get(
             f"{FACEBOOK_BASE}/{pid}/insights",
             params={
-                "metric": "post_impressions,post_engaged_users,post_clicks",
+                "metric": _POST_INSIGHT_METRICS,
                 "access_token": access_token,
             },
             timeout=20,
@@ -383,10 +469,21 @@ def fetch_post_organic_metrics(post_id: str) -> Dict[str, Any]:
                 name = row.get("name")
                 values = row.get("values") or []
                 val = values[-1].get("value") if values else None
-                if name == "post_impressions" and val is not None:
-                    out["impressions"] = int(val)
+                if name == "post_media_view" and val is not None:
+                    try:
+                        iv = int(val)
+                    except (TypeError, ValueError):
+                        continue
+                    if out["impressions"] is None or int(out["impressions"] or 0) <= 0:
+                        out["impressions"] = iv
+                elif name == "post_total_media_view_unique" and val is not None:
+                    try:
+                        iv = int(val)
+                    except (TypeError, ValueError):
+                        continue
+                    if iv > 0:
+                        out["impressions"] = iv
                 elif name == "post_clicks" and val is not None:
-                    # may be int or dict by type
                     if isinstance(val, dict):
                         out["link_clicks"] = int(
                             val.get("link clicks")
@@ -396,8 +493,11 @@ def fetch_post_organic_metrics(post_id: str) -> Dict[str, Any]:
                         )
                     else:
                         out["link_clicks"] = int(val)
-            out["insights_ok"] = True
-            out["insights_reason"] = "ok"
+            if out["impressions"] is not None:
+                out["insights_ok"] = True
+                out["insights_reason"] = "ok"
+            else:
+                out["insights_reason"] = "insights_empty"
         else:
             body = (ins.text or "").lower()
             if ins.status_code in (400, 403) and (
@@ -407,6 +507,8 @@ def fetch_post_organic_metrics(post_id: str) -> Dict[str, Any]:
                 or "(#200)" in body
             ):
                 out["insights_reason"] = "insights_scope_missing"
+            elif ins.status_code == 400 and "valid insights metric" in body:
+                out["insights_reason"] = "insights_metric_invalid"
             else:
                 out["insights_reason"] = f"insights_http_{ins.status_code}"
             logger.info(
@@ -417,7 +519,11 @@ def fetch_post_organic_metrics(post_id: str) -> Dict[str, Any]:
             )
     except requests.RequestException as exc:
         out["insights_reason"] = "insights_request_error"
-        logger.info("[FacebookPublisher] insights skipped post=%s: %s", pid, exc)
+        logger.info(
+            "[FacebookPublisher] insights skipped post=%s: %s",
+            pid,
+            _redact_secrets(str(exc)),
+        )
 
     return out
 
@@ -435,8 +541,16 @@ def delete_post(post_id: str) -> dict:
         )
         resp.raise_for_status()
         data = resp.json()
-        logger.info("[FacebookPublisher] Deleted post_id=%s success=%s", post_id, data.get("success"))
+        logger.info(
+            "[FacebookPublisher] Deleted post_id=%s success=%s",
+            post_id,
+            data.get("success"),
+        )
         return {"status": "success", "data": data}
     except requests.RequestException as exc:
-        logger.error("[FacebookPublisher] Delete failed post_id=%s: %s", post_id, exc)
-        return {"status": "error", "error": str(exc)}
+        logger.error(
+            "[FacebookPublisher] Delete failed post_id=%s: %s",
+            post_id,
+            _redact_secrets(str(exc)),
+        )
+        return {"status": "error", "error": _redact_secrets(str(exc))}

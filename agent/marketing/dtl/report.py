@@ -109,14 +109,18 @@ def build_data_health_report() -> Dict[str, Any]:
         org_payload = {}
     org_reason = org_payload.get("reason")
     has_insights = org_payload.get("has_read_insights")
+    has_user_content = org_payload.get("has_pages_read_user_content")
     try:
         from agent.publishers.facebook import check_token_health, is_facebook_configured
 
         if is_facebook_configured():
             th = check_token_health()
             has_insights = bool(th.get("has_read_insights"))
+            has_user_content = th.get("has_pages_read_user_content")
             if not has_insights:
                 org_reason = org_reason or "insights_scope_missing"
+            if has_user_content is False:
+                org_reason = org_reason or "user_content_scope_missing"
     except Exception:
         pass
 
@@ -143,6 +147,21 @@ def build_data_health_report() -> Dict[str, Any]:
                 ),
             }
         )
+    if (
+        has_user_content is False
+        or org_reason == "user_content_scope_missing"
+    ):
+        conscious_parks.append(
+            {
+                "id": "fb_pages_read_user_content",
+                "status": "READY_FOR_HUMAN",
+                "reason": (
+                    "Page token missing pages_read_user_content — "
+                    "organic engagement blocked (Graph #10); "
+                    "add scope in Graph Explorer (see FB-TOKEN-ROTATION.md)"
+                ),
+            }
+        )
 
     return {
         "generated_at": _utc_now(),
@@ -160,6 +179,7 @@ def build_data_health_report() -> Dict[str, Any]:
         "facebook_organic": {
             "reason": org_reason,
             "has_read_insights": has_insights,
+            "has_pages_read_user_content": has_user_content,
             "ingest_status": (org_latest or {}).get("status"),
         },
         "margin_coverage": margin,

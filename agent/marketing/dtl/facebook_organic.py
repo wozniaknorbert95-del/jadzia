@@ -56,6 +56,8 @@ def ingest_facebook_organic_posts(
 
     health = check_token_health()
     has_insights_scope = bool(health.get("has_read_insights"))
+    # Explicit False = known missing scope; None/missing key = try fetch (compat).
+    has_user_content = health.get("has_pages_read_user_content")
 
     entries = db_list_calendar_entries(status="published", platform="facebook", limit=limit)
     post_ids: List[str] = []
@@ -81,6 +83,34 @@ def ingest_facebook_organic_posts(
             "reason": "no_published_posts",
             "ingest_id": ingest_id,
             "posts": 0,
+            "facts_written": 0,
+            "as_of": as_of,
+        }
+
+    if has_user_content is False:
+        ingest_id = db_insert_marketing_raw_ingest(
+            {
+                "source": "facebook_organic",
+                "fetched_at": as_of,
+                "checksum": payload_checksum(
+                    {"reason": "user_content_scope_missing", "post_ids": post_ids}
+                ),
+                "payload": {
+                    "reason": "user_content_scope_missing",
+                    "post_ids": post_ids,
+                    "has_read_insights": has_insights_scope,
+                    "has_pages_read_user_content": False,
+                },
+                "window_label": WINDOW,
+                "status": "degraded",
+            }
+        )
+        return {
+            "source": "facebook_organic",
+            "status": "degraded",
+            "reason": "user_content_scope_missing",
+            "ingest_id": ingest_id,
+            "posts": len(post_ids),
             "facts_written": 0,
             "as_of": as_of,
         }
@@ -153,6 +183,7 @@ def ingest_facebook_organic_posts(
         "min_impressions": min_impressions,
         "reason": degrade_reason,
         "has_read_insights": has_insights_scope,
+        "has_pages_read_user_content": bool(has_user_content),
     }
     ingest_id = db_insert_marketing_raw_ingest(
         {

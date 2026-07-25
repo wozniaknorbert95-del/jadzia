@@ -54,7 +54,7 @@ def test_organic_insights_scope_missing(temp_db, monkeypatch):
     monkeypatch.setenv("FB_ACCESS_TOKEN", "tok")
     with patch(
         "agent.publishers.facebook.check_token_health",
-        return_value={"has_read_insights": False, "ok": True},
+        return_value={"has_read_insights": False, "has_pages_read_user_content": True, "ok": True},
     ), patch(
         "agent.marketing.dtl.facebook_organic.db_list_calendar_entries",
         return_value=[{"fb_post_id": "p1"}],

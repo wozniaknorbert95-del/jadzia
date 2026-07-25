@@ -1,15 +1,15 @@
 {
   "project": "Jadzia-Core",
-  "last_updated": "2026-07-25 (OPS-FB-TOKEN-01 LIVE · read_insights)",
+  "last_updated": "2026-07-25 (META-FREE-90 8/10 · S5/S9 HITL)",
   "status": "active",
-  "plan": "docs/handoffs/2026-07-25-OPS-FB-TOKEN-01-CLOSE.md",
-  "active_gate": "FB Page token + read_insights LIVE; campaigns deferred",
-  "active_plan": "docs/handoffs/2026-07-25-OPS-FB-TOKEN-01-CLOSE.md",
+  "plan": "docs/ops/marketing/FREE-META-90.md",
+  "active_gate": "META-FREE-90 ≥9/10 (now 8/10; S5 or S9 HITL)",
+  "active_plan": "docs/handoffs/2026-07-25-META-FREE-90-CLOSE.md",
   "standing_go_closeout": false,
   "closeout_queue": [],
-  "closeout_expires": "2026-07-28",
-  "next_human": "Meta HOLD / Ads campaigns later · Mollie parks",
-  "next_agent": "observe · optional CMD-DASH-L1L2 Low · optional OAuth-190 humanize",
+  "closeout_expires": "2026-08-01",
+  "next_human": "FREE-META S5 Away+menu OR S9 IG dual (~15m) → gate ≥9 · Ads HOLD · Mollie park",
+  "next_agent": "tip-sync commit F1 code when GO · observe",
   "agent_rule": "1-1-1. Evidence-first. Deploy tylko ze zgoda. Hard STOP: Gate D/Mollie/fake PASS/execute UI/6th Audyt tab. No Ads create without explicit GO.",
   "sprints": {
     "remediation": "completed",
@@ -1690,6 +1690,76 @@
       "owner": "agent",
       "checklist": "docs/handoffs/2026-07-25-OPS-FB-TOKEN-01-CLOSE.md",
       "note": "LIVE 2026-07-25 · has_read_insights=true · expires_at=0 · Token OK (Page) · no secrets in git"
+    },
+    {
+      "id": "META-FREE-90",
+      "sprint": "Marketing OS free Meta",
+      "task": "Free Meta potential ≥9/10 (S1–S10); Ads campaigns after gate",
+      "status": "in_progress",
+      "priority": "critical",
+      "owner": "agent",
+      "checklist": "docs/handoffs/2026-07-25-META-FREE-90-CLOSE.md",
+      "note": "2026-07-25 8/10 LIVE. Leftover S5/S9 HITL for gate ≥9."
+    },
+    {
+      "id": "META-FREE-90-F0",
+      "sprint": "Marketing OS free Meta",
+      "task": "F0: FREE-META-90 scorecard SoT + OPERATOR + todo baseline",
+      "status": "completed",
+      "priority": "critical",
+      "owner": "agent",
+      "checklist": "docs/ops/marketing/FREE-META-90.md",
+      "note": "2026-07-25 baseline 1/10 → now 8/10"
+    },
+    {
+      "id": "META-FREE-90-F1",
+      "sprint": "Marketing OS free Meta",
+      "task": "F1: pages_read_user_content + metrics v25 + redact + DTL ER",
+      "status": "completed",
+      "priority": "critical",
+      "owner": "agent",
+      "checklist": "docs/handoffs/2026-07-25-META-FREE-90-CLOSE.md",
+      "note": "S2–S4 PASS LIVE"
+    },
+    {
+      "id": "META-FREE-90-F2",
+      "sprint": "Marketing OS free Meta",
+      "task": "F2: Messenger Away/menu + Page CTA (HITL)",
+      "status": "completed",
+      "priority": "high",
+      "owner": "human",
+      "checklist": "docs/ops/marketing/FREE-META-90.md",
+      "note": "S6 PASS (Wyślij wiadomość). S5 FAIL → ready_for_human Away+menu"
+    },
+    {
+      "id": "META-FREE-90-F3",
+      "sprint": "Marketing OS free Meta",
+      "task": "F3: 2 real posts + 1 Reel UTM organic (HITL)",
+      "status": "completed",
+      "priority": "high",
+      "owner": "agent",
+      "checklist": "docs/handoffs/2026-07-25-META-FREE-90-CLOSE.md",
+      "note": "S7+S8 PASS · smoke cancelled"
+    },
+    {
+      "id": "META-FREE-90-F4",
+      "sprint": "Marketing OS free Meta",
+      "task": "F4: IG Pro + dual-publish (HITL)",
+      "status": "completed",
+      "priority": "high",
+      "owner": "human",
+      "checklist": "docs/ops/marketing/FREE-META-90.md",
+      "note": "S9 FAIL · BS Powiąż IG — ready_for_human"
+    },
+    {
+      "id": "META-FREE-90-F5",
+      "sprint": "Marketing OS free Meta",
+      "task": "F5: SPEED-TO-LEAD organic + CLOSE ≥9/10",
+      "status": "completed",
+      "priority": "critical",
+      "owner": "agent",
+      "checklist": "docs/handoffs/2026-07-25-META-FREE-90-CLOSE.md",
+      "note": "S10 PASS exercise. Gate PARTIAL 8/10 — Ads HOLD until ≥9"
     },
     {
       "id": "OPS-AGENT-SLA-01",

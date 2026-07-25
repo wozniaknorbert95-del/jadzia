@@ -1,26 +1,28 @@
 ---
 status: "[ACTIVE]"
 title: "Marketing OS — START TUTAJ (operator)"
-updated: "2026-07-25 (OPS-FB-TOKEN LIVE · read_insights · mkt-dash08)"
+updated: "2026-07-25 (META-FREE-90 8/10 · S5/S9 HITL leftover)"
 ---
 
 # START TUTAJ — jedna ścieżka (ADHD)
 
+**Priorytet teraz:** [FREE-META-90.md](./FREE-META-90.md) — **8/10** · do gate ≥9: **S5 Away** lub **S9 IG** (~15 min). Kampanie HOLD.  
 **Roadmapa:** [MKT-BRAIN-PRO.md](./MKT-BRAIN-PRO.md) — **~86%** overall · runtime **100%** · **MB_MODE=propose**  
 **Commander cockpit:** https://api.zzpackage.flexgrafik.nl/commander/?v=mkt-dash08  
-**Prod SoT tip:** VPS `/opt/jadzia` `git rev-parse --short HEAD` · cache **`mkt-dash08`** · FB Page token + **`read_insights` LIVE** · SLA honesty `@6e4a637`  
-**Meta:** [META-CLICK-PATH.md](./META-CLICK-PATH.md) · Scorecard: [WEEKLY-SCORECARD.md](./WEEKLY-SCORECARD.md)
+**Prod SoT tip:** VPS `/opt/jadzia` `git rev-parse --short HEAD` · cache **`mkt-dash08`** · FB Page + `read_insights` + **`pages_read_user_content` LIVE** · SLA `@6e4a637`  
+**Meta:** [FREE-META-90.md](./FREE-META-90.md) · [META-CLICK-PATH.md](./META-CLICK-PATH.md) (po gate) · [WEEKLY-SCORECARD.md](./WEEKLY-SCORECARD.md)
 
 | Co | Status |
 |----|--------|
-| **#1 Meta lean** | **HOLD** — €5; 7d bez edycji |
+| **FREE-META-90** | **8/10** — F1–F3 LIVE · leftover S5/S9 HITL · kampanie HOLD |
+| **#1 Meta lean** | **HOLD** — €5 · **po** FREE-META ≥9/10 |
 | Runtime F0→F4b | **100%** LIVE |
-| Weekly scorecard draft | **LIVE** w Commander → Marketing |
+| Weekly scorecard draft | **LIVE** · Organic ER baseline numeric |
 | Decision Rail (MB) | **LIVE** — preflight/breakers/accuracy (read-only) |
-| Insights agent-half | **LIVE** — Page token + `read_insights` (OPS-FB-TOKEN-01) |
+| Insights + user_content | **LIVE** (META-FREE F1) |
 | L0 InitiateCheckout | PASS |
-| L0 Purchase | ready_for_human (Mollie) |
-| Agent | **observe-only** |
+| L0 Purchase | ready_for_human (Mollie) · poza mianownikiem 90% |
+| Agent | observe + tip-sync F1 code when GO |
 
 ## Commander (hub decyzji)
 
@@ -51,11 +53,12 @@ updated: "2026-07-25 (OPS-FB-TOKEN LIVE · read_insights · mkt-dash08)"
 
 ## Twoje parks (HITL — poza Commanderem)
 
-1. **H-Meta** — hold 7d → optimize ([META-CLICK-PATH](./META-CLICK-PATH.md)) — Ads Manager
-2. **H-Purchase** — Mollie GO → Test Events Purchase
-3. **H-Insights** — **DONE 2026-07-25** (Page + `read_insights`)
-4. **H-WA** — Lead → WA &lt;15 min ([SPEED-TO-LEAD](./SPEED-TO-LEAD.md))
-5. **H-F4x** — distribution / blog / lead webhook — po triggerach
+1. **H-FREE-META** — F2–F5 checklist w [FREE-META-90](./FREE-META-90.md) (Messenger/CTA/cadence/IG/STL)
+2. **H-Meta** — hold 7d → optimize ([META-CLICK-PATH](./META-CLICK-PATH.md)) — **dopiero po** FREE-META ≥9/10
+3. **H-Purchase** — Mollie GO → Test Events Purchase (poza 90%)
+4. **H-Insights** — **DONE 2026-07-25** (Page + `read_insights`); F1 = `pages_read_user_content`
+5. **H-WA** — Lead → WA &lt;15 min ([SPEED-TO-LEAD](./SPEED-TO-LEAD.md)) · też S10 organic
+6. **H-F4x** — distribution / blog / lead webhook — po triggerach
 
 ## Operator (Telegram)
 
