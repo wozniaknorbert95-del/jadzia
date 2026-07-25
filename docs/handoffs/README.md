@@ -2,12 +2,12 @@
 
 Session continuity for `/vibe-init`: read the **last 2** handoffs from this folder.
 
-## Start here — 2026-07-22
+## Start here — 2026-07-25
 
-1. [`2026-07-22-OPS-AGENT-SLA-01-DEPLOY-CLOSE.md`](2026-07-22-OPS-AGENT-SLA-01-DEPLOY-CLOSE.md) — **LIVE** `@6e4a637` `mkt-dash08`
-2. [`2026-07-22-OPS-AGENT-SLA-01-CLOSE.md`](2026-07-22-OPS-AGENT-SLA-01-CLOSE.md) — RCA + code
+1. [`2026-07-25-OPS-FB-TOKEN-01-CLOSE.md`](2026-07-25-OPS-FB-TOKEN-01-CLOSE.md) — **LIVE** FB `read_insights`
+2. [`2026-07-22-OPS-AGENT-SLA-01-DEPLOY-CLOSE.md`](2026-07-22-OPS-AGENT-SLA-01-DEPLOY-CLOSE.md) — SLA `@6e4a637`
 3. [`2026-07-22-OPS-FRESHNESS-01-DEPLOY-CLOSE.md`](2026-07-22-OPS-FRESHNESS-01-DEPLOY-CLOSE.md) — freshness `@c210578`
-4. [`2026-07-22-SESSION-HANDOFF.md`](2026-07-22-SESSION-HANDOFF.md) — earlier same-day chain
+4. [`docs/ops/FB-TOKEN-ROTATION.md`](../ops/FB-TOKEN-ROTATION.md) — runbook
 
 ## Program + audit SoT
 

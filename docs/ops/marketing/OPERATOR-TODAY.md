@@ -1,14 +1,14 @@
 ---
 status: "[ACTIVE]"
 title: "Marketing OS — START TUTAJ (operator)"
-updated: "2026-07-22 (OPS-AGENT-SLA LIVE @ 6e4a637 mkt-dash08)"
+updated: "2026-07-25 (OPS-FB-TOKEN LIVE · read_insights · mkt-dash08)"
 ---
 
 # START TUTAJ — jedna ścieżka (ADHD)
 
 **Roadmapa:** [MKT-BRAIN-PRO.md](./MKT-BRAIN-PRO.md) — **~86%** overall · runtime **100%** · **MB_MODE=propose**  
 **Commander cockpit:** https://api.zzpackage.flexgrafik.nl/commander/?v=mkt-dash08  
-**Prod SoT tip:** VPS `/opt/jadzia` `git rev-parse --short HEAD` · cache **`mkt-dash08`** · SLA honesty LIVE (`6e4a637`) · freshness `@c210578`  
+**Prod SoT tip:** VPS `/opt/jadzia` `git rev-parse --short HEAD` · cache **`mkt-dash08`** · FB Page token + **`read_insights` LIVE** · SLA honesty `@6e4a637`  
 **Meta:** [META-CLICK-PATH.md](./META-CLICK-PATH.md) · Scorecard: [WEEKLY-SCORECARD.md](./WEEKLY-SCORECARD.md)
 
 | Co | Status |
@@ -17,7 +17,7 @@ updated: "2026-07-22 (OPS-AGENT-SLA LIVE @ 6e4a637 mkt-dash08)"
 | Runtime F0→F4b | **100%** LIVE |
 | Weekly scorecard draft | **LIVE** w Commander → Marketing |
 | Decision Rail (MB) | **LIVE** — preflight/breakers/accuracy (read-only) |
-| Insights agent-half | **READY** — Graph `read_insights` = HITL |
+| Insights agent-half | **LIVE** — Page token + `read_insights` (OPS-FB-TOKEN-01) |
 | L0 InitiateCheckout | PASS |
 | L0 Purchase | ready_for_human (Mollie) |
 | Agent | **observe-only** |
@@ -46,14 +46,14 @@ updated: "2026-07-22 (OPS-AGENT-SLA LIVE @ 6e4a637 mkt-dash08)"
 |-------|--------|
 | Draft „Sesja wygasła…” | Nowe `/commander` w TG lub świeży JWT |
 | Stary cache UI | Hard refresh `?v=mkt-dash08` |
-| FB amber + `insights: brak` | H-Insights: Graph scope → `set-fb-access-token` |
+| FB amber + `insights: brak` | Rare after OPS-FB-TOKEN-01 — rotate via [FB-TOKEN-ROTATION.md](../FB-TOKEN-ROTATION.md) |
 | Preflight NO przy MB_MODE=propose | Oczekiwane (preflight = cutover evidence, nie flip) |
 
 ## Twoje parks (HITL — poza Commanderem)
 
 1. **H-Meta** — hold 7d → optimize ([META-CLICK-PATH](./META-CLICK-PATH.md)) — Ads Manager
 2. **H-Purchase** — Mollie GO → Test Events Purchase
-3. **H-Insights** — Graph `read_insights` → nowy token → `set-fb-access-token`
+3. **H-Insights** — **DONE 2026-07-25** (Page + `read_insights`)
 4. **H-WA** — Lead → WA &lt;15 min ([SPEED-TO-LEAD](./SPEED-TO-LEAD.md))
 5. **H-F4x** — distribution / blog / lead webhook — po triggerach
 

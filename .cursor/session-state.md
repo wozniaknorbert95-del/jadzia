@@ -1,17 +1,18 @@
-﻿# Session state — 2026-07-22
+﻿# Session state — 2026-07-25
 
 ## Status
 
-- Tip LIVE: **`6e4a637`** · Commander `?v=mkt-dash08`
-- Runtime ancestry: freshness `@c210578` · SLA honesty `@6e4a637`
-- OPS-AGENT-SLA-01: **LIVE** — Start SLA **0** · Ops OK
+- Tip code LIVE: **`58ffd1d`** · Commander `?v=mkt-dash08`
+- **OPS-FB-TOKEN-01:** **LIVE** — Page token · `has_read_insights=true` · `expires_at=0`
+- OPS-AGENT-SLA-01: LIVE (ancestor)
 - standing_go_closeout: **false**
 
 ## Deferred
 
-- **OPS-FB-TOKEN-01** — after dashboard complete
+- Ads campaigns / Meta HOLD — later (not this ticket)
+- Mollie / L0 Purchase — human
 
 ## Next
 
-- Observe dashboard / optional `CMD-DASH-L1L2`
-- Human Meta parks (HOLD / Mollie)
+- Observe organic + DTL facebook_organic
+- Optional Low: OAuth-190 humanize vs „wygasł”
