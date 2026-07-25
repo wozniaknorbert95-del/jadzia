@@ -227,11 +227,26 @@ def test_design_agent_generate_429_rate_limit(
     store = tmp_path / "rate.json"
     monkeypatch.setenv("DA_RATE_STORE_PATH", str(store))
     rate_store.clear_store()
-    monkeypatch.setattr(design_agent_service, "_RATE_LIMIT", 1)
+    monkeypatch.setattr(design_agent_service, "_generate_rate_limit", lambda: 1)
     design_agent_service._check_rate_limit("127.0.0.1", "rate-test-session")
     with pytest.raises(Exception) as exc:
         design_agent_service._check_rate_limit("127.0.0.1", "rate-test-session")
     assert exc.value.status_code == 429
+
+
+def test_generate_rate_limit_env_default_and_min(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    from agent import design_agent_service
+
+    monkeypatch.delenv("DA_GENERATE_RATE_LIMIT", raising=False)
+    assert design_agent_service._generate_rate_limit() == 5
+    monkeypatch.setenv("DA_GENERATE_RATE_LIMIT", "1")
+    assert design_agent_service._generate_rate_limit() == 2
+    monkeypatch.setenv("DA_GENERATE_RATE_LIMIT", "8")
+    assert design_agent_service._generate_rate_limit() == 8
+    monkeypatch.setenv("DA_GENERATE_RATE_LIMIT", "nope")
+    assert design_agent_service._generate_rate_limit() == 5
 
 
 def test_design_agent_rate_limit_survives_restart(
@@ -242,7 +257,7 @@ def test_design_agent_rate_limit_survives_restart(
     store = tmp_path / "rate.json"
     monkeypatch.setenv("DA_RATE_STORE_PATH", str(store))
     rate_store.clear_store()
-    monkeypatch.setattr(design_agent_service, "_RATE_LIMIT", 1)
+    monkeypatch.setattr(design_agent_service, "_generate_rate_limit", lambda: 1)
     design_agent_service._check_rate_limit("127.0.0.1", "persist-session")
     rate_store.reset_memory_cache()
     with pytest.raises(Exception) as exc:

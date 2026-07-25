@@ -20,8 +20,17 @@ from core.models import (
 
 logger = logging.getLogger(__name__)
 
-_RATE_LIMIT = 2
 _RATE_WINDOW_SEC = 3600
+
+
+def _generate_rate_limit() -> int:
+    """Hits per hour for POST /generate. Env DA_GENERATE_RATE_LIMIT (default 5, min 2)."""
+    raw = (os.getenv("DA_GENERATE_RATE_LIMIT") or "5").strip()
+    try:
+        return max(2, int(raw))
+    except ValueError:
+        return 5
+
 
 _GENERATE_REQUIRED = (
     "bedrijfsnaam",
@@ -158,7 +167,7 @@ def _check_rate_limit(client_ip: str, session_id: str | None = None) -> None:
         check_and_record(
             bucket,
             window_sec=_RATE_WINDOW_SEC,
-            limit=_RATE_LIMIT,
+            limit=_generate_rate_limit(),
         )
     except ValueError as exc:
         if str(exc) == "RATE_LIMIT":
