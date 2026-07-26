@@ -3,16 +3,17 @@
 **Date:** 2026-07-26  
 **Status:** **SUCCESS** — META-FREE-90 gate **9/10 PASS** committed; working tree clean after tip-sync commits  
 **standing_go_closeout:** `false`  
-**Branch:** `master` · **ahead origin/master by 2** · tip **`598e674`**
+**Branch:** `master` · **ahead origin/master by 3** · tip **`9c55008`**
 
 ## VERIFY
 
 | Check | Result |
 |-------|--------|
-| Local HEAD | `598e674` |
-| Dirty | clean (after 2 commits) |
-| META-FREE SoT | 9/10 PASS @ docs tip `4528409` |
-| design-agent logo fix | committed `598e674` · unit tests 6 passed |
+| Local HEAD | `9c55008` |
+| Dirty | clean |
+| META-FREE SoT | 9/10 PASS (`4528409`) |
+| design-agent logo fix | `598e674` · unit tests 6 passed |
+| Session close docs | `9c55008` |
 | VPS tip | **not** redeployed this session — prod still prior tip until GO |
 | Kampanie | HOLD until Dowódca **„final”** |
 | Hard STOP | Ads / Mollie / secrets / autonomous deploy — held |
