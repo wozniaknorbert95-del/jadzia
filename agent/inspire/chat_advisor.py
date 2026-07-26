@@ -59,6 +59,12 @@ class ChatTurnResult:
     quick_reply_field: str = ""
     opening_source: str = "legacy"
     lead_id: Optional[str] = None
+    reply: str = ""
+    locale: str = "nl-NL"
+
+    def __post_init__(self) -> None:
+        if not self.reply:
+            self.reply = self.reply_nl
 
 
 def _chat_engine() -> str:
@@ -69,25 +75,35 @@ def _use_orchestrator() -> bool:
     return _chat_engine() != "legacy"
 
 
-def get_chat_opening(session_id: str | None = None) -> ChatTurnResult:
+def get_chat_opening(
+    session_id: str | None = None,
+    *,
+    locale: str | None = None,
+) -> ChatTurnResult:
     if _use_orchestrator():
         from agent.inspire import chat_orchestrator_bridge
 
-        return chat_orchestrator_bridge.get_opening(session_id)
-    session = get_or_create_session(session_id)
-    from engine.v4.intake.intake_copy import get_opening_nl
+        return chat_orchestrator_bridge.get_opening(session_id, locale=locale)
+    from agent.inspire.chat_locale import normalize_locale
 
+    loc = normalize_locale(locale)
+    session = get_or_create_session(session_id)
     try:
         _ensure_inspire_path()
-        opening = get_opening_nl()
+        from engine.v4.intake.intake_copy import get_opening, get_stap_labels
+
+        opening = get_opening(loc)
+        stap_label = get_stap_labels(loc).get(1, "Bedrijf")
     except Exception:
         opening = (
             "Mooi — ik pak dit aan zoals een professionele voertuig-reclame studio dat zou doen. "
             "Daarna maak ik twee richtingen: Standard en Premium."
         )
+        stap_label = "Bedrijf"
     return ChatTurnResult(
         session_id=session.session_id,
         reply_nl=opening,
+        reply=opening,
         brief_partial=dict(session.brief_partial),
         phase=1,
         ready_to_generate=False,
@@ -95,8 +111,9 @@ def get_chat_opening(session_id: str | None = None) -> ChatTurnResult:
         missing_fields=_missing_fields(session.brief_partial),
         logo_reupload_required=logo_reupload_required(session.brief_partial),
         stap=1,
-        stap_label="Bedrijf",
+        stap_label=stap_label,
         opening_source="brain",
+        locale=loc,
     )
 
 
@@ -551,6 +568,7 @@ def process_chat_turn(
     field_updates: dict[str, Any] | None = None,
     quick_reply_id: str | None = None,
     quick_reply_field: str | None = None,
+    locale: str | None = None,
 ) -> ChatTurnResult:
     if _use_orchestrator():
         from agent.inspire import chat_orchestrator_bridge
@@ -563,6 +581,7 @@ def process_chat_turn(
             quick_reply_id=quick_reply_id,
             quick_reply_field=quick_reply_field,
             logo_filename=logo_filename,
+            locale=locale,
             brand_colors=colors or None,
         )
         return _attach_inspire_lead(

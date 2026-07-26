@@ -10,6 +10,7 @@ from typing import Any
 
 from agent.inspire import chat_session_store
 from agent.inspire.chat_advisor import ChatSession, ChatTurnResult, logo_reupload_required
+from agent.inspire.chat_locale import error_message, normalize_locale
 from agent.inspire.tier_resolver import resolve_tier_skus
 
 logger = logging.getLogger(__name__)
@@ -27,7 +28,7 @@ def _ensure_inspire_path() -> Path:
 def _orch_imports():
     _ensure_inspire_path()
     from engine.v4.intake import chat_bridge
-    from engine.v4.intake.intake_copy import get_stap_labels_nl
+    from engine.v4.intake.intake_copy import get_stap_labels
     from engine.v4.intake.orchestrator import (
         IntakePhase,
         IntakeState,
@@ -35,10 +36,10 @@ def _orch_imports():
         process_intake_turn,
     )
 
-    return chat_bridge, get_stap_labels_nl, IntakePhase, IntakeState, process_intake_opening, process_intake_turn
+    return chat_bridge, get_stap_labels, IntakePhase, IntakeState, process_intake_opening, process_intake_turn
 
 
-def _load_state(session_id: str) -> tuple[IntakeState | None, dict[str, Any] | None]:
+def _load_state(session_id: str) -> tuple[Any | None, dict[str, Any] | None]:
     chat_bridge, _, IntakePhase, IntakeState, _, _ = _orch_imports()
     raw = chat_session_store.load_session(session_id)
     if not raw:
@@ -49,13 +50,14 @@ def _load_state(session_id: str) -> tuple[IntakeState | None, dict[str, Any] | N
     return state, raw
 
 
-def _save_state(state: IntakeState, flat: dict[str, Any], brief_confirmed: bool) -> None:
+def _save_state(state: Any, flat: dict[str, Any], brief_confirmed: bool) -> None:
     chat_bridge, _, _, _, _, _ = _orch_imports()
     payload = chat_bridge.serialize_intake_state(state)
     payload["session_id"] = state.session_id
     payload["brief_partial"] = flat
     payload["phase_int"] = chat_bridge.stap_from_phase(state.phase.value)
     payload["brief_confirmed"] = brief_confirmed
+    payload["locale"] = normalize_locale((state.brief_draft or {}).get("locale"))
     chat_session_store.save_session(state.session_id, payload)
 
 
@@ -91,20 +93,23 @@ def _build_field_updates(
 
 
 def _result_from_turn(
-    state: IntakeState,
-    turn,
+    state: Any,
+    turn: Any,
     flat: dict[str, Any],
     brief_confirmed: bool,
 ) -> ChatTurnResult:
-    chat_bridge, get_stap_labels_nl, _, _, _, _ = _orch_imports()
+    chat_bridge, get_stap_labels, _, _, _, _ = _orch_imports()
+    loc = normalize_locale((state.brief_draft or {}).get("locale"))
     stap = chat_bridge.stap_from_phase(turn.phase)
-    labels = get_stap_labels_nl()
+    labels = get_stap_labels(loc)
     ready, missing = chat_bridge.compute_ready_pre_confirm(flat)
     if flat.get("_tier_resolve_failed"):
         ready = False
+    reply = getattr(turn, "reply", None) or turn.reply_nl
     return ChatTurnResult(
         session_id=state.session_id,
-        reply_nl=turn.reply_nl,
+        reply_nl=reply,
+        reply=reply,
         brief_partial=flat,
         phase=stap,
         ready_to_generate=ready and stap >= 7,
@@ -116,13 +121,16 @@ def _result_from_turn(
         quick_replies=turn.buttons,
         quick_reply_field=turn.quick_reply_field or "",
         opening_source="brain",
+        locale=loc,
     )
 
 
-def get_opening(session_id: str | None = None) -> ChatTurnResult:
+def get_opening(session_id: str | None = None, *, locale: str | None = None) -> ChatTurnResult:
     chat_bridge, _, IntakePhase, IntakeState, process_intake_opening, _ = _orch_imports()
     sid = session_id or str(uuid.uuid4())
+    loc = normalize_locale(locale)
     state = IntakeState(session_id=sid, phase=IntakePhase.OPENING)
+    state.brief_draft["locale"] = loc
     turn = process_intake_opening(state)
     flat = chat_bridge.flat_brief_from_draft(state.brief_draft)
     _resolve_tier_skus_flat(flat)
@@ -139,21 +147,33 @@ def process_turn(
     quick_reply_field: str | None = None,
     logo_filename: str | None = None,
     brand_colors: list[str] | None = None,
+    locale: str | None = None,
 ) -> ChatTurnResult:
     chat_bridge, _, IntakePhase, IntakeState, _, process_intake_turn = _orch_imports()
     updates = _build_field_updates(field_updates, quick_reply_id, quick_reply_field)
+    loc = normalize_locale(locale)
 
     if session_id:
         state, raw = _load_state(session_id)
         if state is None:
             sid = session_id
             state = IntakeState(session_id=sid, phase=IntakePhase.OPENING)
+            state.brief_draft["locale"] = loc
             brief_confirmed = False
         else:
             brief_confirmed = bool((raw or {}).get("brief_confirmed"))
+            if locale:
+                state.brief_draft["locale"] = loc
+            else:
+                loc = normalize_locale(
+                    (state.brief_draft or {}).get("locale")
+                    or (raw or {}).get("locale")
+                )
+                state.brief_draft["locale"] = loc
     else:
         sid = str(uuid.uuid4())
         state = IntakeState(session_id=sid, phase=IntakePhase.OPENING)
+        state.brief_draft["locale"] = loc
         brief_confirmed = False
 
     if logo_filename:
@@ -162,21 +182,26 @@ def process_turn(
         chat_bridge.apply_brand_colors(state.brief_draft, brand_colors)
 
     if not message.strip() and not updates and not logo_filename and not brand_colors:
-        raise ValueError("Bericht mag niet leeg zijn.")
+        raise ValueError(error_message("empty_message", loc))
 
     # Logo upload already applied via apply_logo_upload — never parse UI
-    # boilerplate ("Ik heb mijn logo geüpload.") into missing brief fields.
+    # boilerplate into missing brief fields.
     intake_message = "" if logo_filename else message.strip()
 
     turn = process_intake_turn(
         state,
         message=intake_message,
         field_updates=updates,
+        locale=loc,
     )
-    if logo_filename and turn.reply_nl:
-        ack = "Logo ontvangen."
-        if ack.lower() not in turn.reply_nl.lower():
-            turn.reply_nl = f"{ack}\n\n{turn.reply_nl}"
+    reply = getattr(turn, "reply", None) or turn.reply_nl
+    if logo_filename and reply:
+        ack = error_message("logo_received", loc)
+        if ack.lower() not in reply.lower():
+            reply = f"{ack}\n\n{reply}"
+            turn.reply_nl = reply
+            if hasattr(turn, "reply"):
+                turn.reply = reply
     flat = chat_bridge.flat_brief_from_draft(state.brief_draft)
     _resolve_tier_skus_flat(flat)
     _save_state(state, flat, brief_confirmed)

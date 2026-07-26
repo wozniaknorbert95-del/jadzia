@@ -37,6 +37,7 @@ class IntakeMessageRequest(BaseModel):
     session_id: str | None = None
     message: str = ""
     field_updates: dict[str, Any] | None = None
+    locale: str | None = None
 
 
 class BriefConfirmRequest(BaseModel):
@@ -65,6 +66,7 @@ async def intake_message(
         session_id=body.session_id,
         message=body.message,
         field_updates=body.field_updates,
+        locale=body.locale,
     )
 
 

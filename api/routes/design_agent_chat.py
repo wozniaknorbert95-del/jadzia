@@ -5,7 +5,6 @@ from __future__ import annotations
 from fastapi import APIRouter, File, Form, Header, HTTPException, Request, UploadFile
 
 from agent.design_agent_service import _verify_api_key
-from agent.rate_store import check_and_record
 from agent.inspire.chat_advisor import (
     compute_ready,
     get_chat_opening,
@@ -14,6 +13,8 @@ from agent.inspire.chat_advisor import (
     missing_fields,
     process_chat_turn,
 )
+from agent.inspire.chat_locale import error_message, normalize_locale
+from agent.rate_store import check_and_record
 from core.models import (
     DesignAgentChatRequest,
     DesignAgentChatResponse,
@@ -40,7 +41,12 @@ def _rate_bucket(client_ip: str, session_id: str | None) -> str:
     return f"ip:{client_ip}"
 
 
-def _check_chat_rate_limit(client_ip: str, session_id: str | None = None) -> None:
+def _check_chat_rate_limit(
+    client_ip: str,
+    session_id: str | None = None,
+    *,
+    locale: str | None = None,
+) -> None:
     limit = _chat_rate_limit()
     bucket = _rate_bucket(client_ip, session_id)
     try:
@@ -53,15 +59,20 @@ def _check_chat_rate_limit(client_ip: str, session_id: str | None = None) -> Non
         if str(exc) == "RATE_LIMIT":
             raise HTTPException(
                 status_code=429,
-                detail="Te veel chatberichten. Probeer het over een uur opnieuw.",
+                detail=error_message("rate_limit_chat", locale),
             ) from exc
         raise
 
 
 def _to_response(result) -> DesignAgentChatResponse:
+    reply = getattr(result, "reply", None) or result.reply_nl
+    loc = getattr(result, "locale", None) or normalize_locale(
+        (result.brief_partial or {}).get("locale")
+    )
     return DesignAgentChatResponse(
         session_id=result.session_id,
-        reply_nl=result.reply_nl,
+        reply=reply,
+        reply_nl=result.reply_nl or reply,
         brief_partial=result.brief_partial,
         phase=result.phase,
         ready_to_generate=result.ready_to_generate,
@@ -74,6 +85,7 @@ def _to_response(result) -> DesignAgentChatResponse:
         quick_reply_field=result.quick_reply_field,
         opening_source=result.opening_source,
         lead_id=getattr(result, "lead_id", None),
+        locale=loc,
     )
 
 
@@ -81,14 +93,15 @@ def _to_response(result) -> DesignAgentChatResponse:
 async def design_agent_chat_opening(
     request: Request,
     session_id: str | None = None,
+    locale: str | None = None,
     x_fg_design_agent_key: str | None = Header(None, alias="X-FG-Design-Agent-Key"),
 ) -> DesignAgentChatResponse:
     """Deterministic brain opening — no LLM, no 'Hoi'."""
     _verify_api_key(x_fg_design_agent_key)
     client_ip = request.client.host if request.client else "unknown"
-    _check_chat_rate_limit(client_ip, session_id)
+    _check_chat_rate_limit(client_ip, session_id, locale=locale)
     try:
-        result = get_chat_opening(session_id)
+        result = get_chat_opening(session_id, locale=locale)
     except RuntimeError as exc:
         raise HTTPException(status_code=503, detail=str(exc)) from exc
     return _to_response(result)
@@ -103,13 +116,14 @@ async def design_agent_chat(
     """GPT marketing advisor chat turn (JSON body)."""
     _verify_api_key(x_fg_design_agent_key)
     client_ip = request.client.host if request.client else "unknown"
-    _check_chat_rate_limit(client_ip, request_body.session_id)
+    loc = request_body.locale
+    _check_chat_rate_limit(client_ip, request_body.session_id, locale=loc)
     if (
         not request_body.message.strip()
         and not request_body.field_updates
         and not request_body.quick_reply_id
     ):
-        raise HTTPException(status_code=400, detail="Bericht mag niet leeg zijn.")
+        raise HTTPException(status_code=400, detail=error_message("empty_message", loc))
     try:
         result = process_chat_turn(
             session_id=request_body.session_id,
@@ -117,6 +131,7 @@ async def design_agent_chat(
             field_updates=request_body.field_updates,
             quick_reply_id=request_body.quick_reply_id,
             quick_reply_field=request_body.quick_reply_field,
+            locale=loc,
         )
     except ValueError as exc:
         raise HTTPException(status_code=400, detail=str(exc)) from exc
@@ -133,13 +148,15 @@ async def design_agent_chat_multipart(
     brand_colors: str = Form("[]"),
     quick_reply_id: str = Form(""),
     quick_reply_field: str = Form(""),
+    locale: str = Form(""),
     logo: UploadFile | None = File(None),
     x_fg_design_agent_key: str | None = Header(None, alias="X-FG-Design-Agent-Key"),
 ) -> DesignAgentChatResponse:
     """Chat turn with optional logo upload (multipart)."""
     _verify_api_key(x_fg_design_agent_key)
     client_ip = request.client.host if request.client else "unknown"
-    _check_chat_rate_limit(client_ip, session_id or None)
+    loc = locale or None
+    _check_chat_rate_limit(client_ip, session_id or None, locale=loc)
     logo_name = logo.filename if logo and logo.filename else None
     try:
         result = process_chat_turn(
@@ -149,6 +166,7 @@ async def design_agent_chat_multipart(
             brand_colors=brand_colors,
             quick_reply_id=quick_reply_id or None,
             quick_reply_field=quick_reply_field or None,
+            locale=loc,
         )
     except ValueError as exc:
         raise HTTPException(status_code=400, detail=str(exc)) from exc
@@ -163,13 +181,17 @@ async def design_agent_chat_multipart(
 )
 async def design_agent_chat_session(
     session_id: str,
+    locale: str | None = None,
     x_fg_design_agent_key: str | None = Header(None, alias="X-FG-Design-Agent-Key"),
 ) -> DesignAgentChatSessionResponse:
     """Return accumulated brief for a chat session."""
     _verify_api_key(x_fg_design_agent_key)
     session = get_session(session_id)
     if not session:
-        raise HTTPException(status_code=404, detail="Sessie niet gevonden of verlopen.")
+        raise HTTPException(
+            status_code=404,
+            detail=error_message("session_not_found", locale),
+        )
     brief = dict(session.brief_partial)
     last_reply = ""
     for msg in reversed(session.messages):
@@ -178,6 +200,7 @@ async def design_agent_chat_session(
             break
     tail = session.messages[-5:] if session.messages else []
     stap = int(brief.get("_stap") or session.phase)
+    loc = normalize_locale(locale or brief.get("locale"))
     return DesignAgentChatSessionResponse(
         session_id=session.session_id,
         brief_partial=brief,
@@ -188,8 +211,10 @@ async def design_agent_chat_session(
         missing_fields=missing_fields(brief),
         logo_reupload_required=logo_reupload_required(brief),
         last_reply_nl=last_reply,
+        last_reply=last_reply,
         messages_tail=tail,
         stap=stap,
         stap_label="",
         quick_replies=[],
+        locale=loc,
     )

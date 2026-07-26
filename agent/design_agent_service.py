@@ -161,7 +161,12 @@ def _log_generation_cost(brief_id: str, vehicle: str, cost_eur: float) -> None:
         )
 
 
-def _check_rate_limit(client_ip: str, session_id: str | None = None) -> None:
+def _check_rate_limit(
+    client_ip: str,
+    session_id: str | None = None,
+    *,
+    locale: str | None = None,
+) -> None:
     # Cost lock: always IP bucket (session reset must not unlock another paid generate).
     _ = session_id  # kept for call-site compatibility / future audit
     bucket = f"generate:ip:{client_ip or 'unknown'}"
@@ -173,11 +178,12 @@ def _check_rate_limit(client_ip: str, session_id: str | None = None) -> None:
         )
     except ValueError as exc:
         if str(exc) == "RATE_LIMIT":
+            from agent.inspire.chat_locale import error_message
+
             raise _api_error(
                 429,
                 "RATE_LIMIT",
-                "Je hebt al 2 mock-ups gegenereerd vanaf dit netwerk. "
-                "Wacht een uur of neem contact op via flexgrafik.nl.",
+                error_message("rate_limit_generate", locale),
             ) from exc
         raise
 
@@ -264,9 +270,10 @@ async def process_design_agent_generate(
     client_ip: str,
     api_key: str | None,
     session_id: str | None = None,
+    locale: str | None = None,
 ) -> DesignAgentGenerateResponse:
     _verify_api_key(api_key)
-    _check_rate_limit(client_ip, session_id)
+    _check_rate_limit(client_ip, session_id, locale=locale)
 
     if not _parse_bool_form(brief_confirmed):
         raise _api_error(400, "BRIEF_INCOMPLETE", "Bevestig je briefing eerst.")

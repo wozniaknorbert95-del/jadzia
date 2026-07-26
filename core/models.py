@@ -672,10 +672,12 @@ class DesignAgentChatRequest(BaseModel):
     field_updates: dict | None = None
     quick_reply_id: str | None = None
     quick_reply_field: str | None = None
+    locale: str | None = None
 
 
 class DesignAgentChatResponse(BaseModel):
     session_id: str
+    reply: str = ""
     reply_nl: str
     brief_partial: dict = {}
     phase: int = 1
@@ -689,6 +691,7 @@ class DesignAgentChatResponse(BaseModel):
     quick_reply_field: str = ""
     opening_source: str = "brain"
     lead_id: Optional[str] = None
+    locale: str = "nl-NL"
 
 
 class DesignAgentChatSessionResponse(BaseModel):
@@ -701,7 +704,9 @@ class DesignAgentChatSessionResponse(BaseModel):
     missing_fields: list[str] = []
     logo_reupload_required: bool = False
     last_reply_nl: str = ""
+    last_reply: str = ""
     messages_tail: list[dict] = []
     stap: int = 1
     stap_label: str = ""
     quick_replies: list[dict] = []
+    locale: str = "nl-NL"

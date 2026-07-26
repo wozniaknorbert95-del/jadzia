@@ -52,6 +52,7 @@ async def design_agent_generate(
     mockup_a_sku: str = Form(""),
     brief_confirmed: str = Form("false"),
     session_id: str = Form(""),
+    locale: str = Form(""),
     logo: UploadFile = File(...),
     x_fg_design_agent_key: str | None = Header(None, alias="X-FG-Design-Agent-Key"),
 ) -> DesignAgentGenerateResponse:
@@ -82,4 +83,5 @@ async def design_agent_generate(
         client_ip=client_ip,
         api_key=x_fg_design_agent_key,
         session_id=session_id or None,
+        locale=locale or None,
     )

@@ -46,9 +46,24 @@ VERBODEN:
 
 OUTPUT JSON schema:
 {
-  "reply_nl": "jouw antwoord in het Nederlands",
+  "reply_nl": "jouw antwoord in de taal van de sessie (locale)",
+  "reply": "zelfde tekst als reply_nl",
   "phase": 1-7,
   "brief_updates": { ... },
   "brief_confirmed": false
 }
 """
+
+
+def system_prompt_for_locale(locale: str | None = None) -> str:
+    """Legacy LLM path — inject session locale into system prompt."""
+    from agent.inspire.chat_locale import normalize_locale
+
+    loc = normalize_locale(locale)
+    lang = {"nl-NL": "Dutch (nl-NL)", "pl-PL": "Polish (pl-PL)", "en-GB": "English (en-GB)"}.get(
+        loc, "Dutch (nl-NL)"
+    )
+    return (
+        SYSTEM_PROMPT
+        + f"\n\nSESSION LOCALE: {loc}. Write reply_nl and reply entirely in {lang}."
+    )
