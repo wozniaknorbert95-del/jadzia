@@ -128,3 +128,33 @@ def test_at_chat_03_budget_before_summary(client: TestClient) -> None:
     assert last["stap"] >= 7
     assert last["brief_partial"].get("budget_range") == "300_600"
     assert last["brief_partial"].get("_budget_explicit") is True
+
+
+def test_logo_turn_does_not_pollute_bedrijfsnaam_or_vehicle(client: TestClient) -> None:
+    """Wave1 — multipart logo + UI boilerplate must not fill brief text fields."""
+    opening = client.get("/api/v1/design-agent/chat/opening").json()
+    sid = opening["session_id"]
+    client.post(
+        "/api/v1/design-agent/chat",
+        json={"session_id": sid, "message": "Schilder Janssen"},
+    )
+    png = b"\x89PNG\r\n\x1a\n" + b"\x00" * 32
+    resp = client.post(
+        "/api/v1/design-agent/chat/turn",
+        data={
+            "session_id": sid,
+            "message": "Ik heb mijn logo geüpload.",
+            "brand_colors": '["#003366","#FFFFFF"]',
+        },
+        files={"logo": ("logo-janssen.png", png, "image/png")},
+    )
+    assert resp.status_code == 200
+    body = resp.json()
+    brief = body["brief_partial"]
+    assert brief.get("bedrijfsnaam") == "Schilder Janssen"
+    vehicle = str(brief.get("vehicle") or "")
+    assert "logo geupload" not in vehicle.lower()
+    assert "logo geüpload" not in vehicle.lower()
+    assert "ik heb mijn logo" not in vehicle.lower()
+    assert brief.get("logo_file") == "logo-janssen.png" or brief.get("logo_status") == "uploaded_png"
+    assert "Logo ontvangen" in body["reply_nl"] or "logo" in body["reply_nl"].lower()

@@ -164,11 +164,19 @@ def process_turn(
     if not message.strip() and not updates and not logo_filename and not brand_colors:
         raise ValueError("Bericht mag niet leeg zijn.")
 
+    # Logo upload already applied via apply_logo_upload — never parse UI
+    # boilerplate ("Ik heb mijn logo geüpload.") into missing brief fields.
+    intake_message = "" if logo_filename else message.strip()
+
     turn = process_intake_turn(
         state,
-        message=message.strip(),
+        message=intake_message,
         field_updates=updates,
     )
+    if logo_filename and turn.reply_nl:
+        ack = "Logo ontvangen."
+        if ack.lower() not in turn.reply_nl.lower():
+            turn.reply_nl = f"{ack}\n\n{turn.reply_nl}"
     flat = chat_bridge.flat_brief_from_draft(state.brief_draft)
     _resolve_tier_skus_flat(flat)
     _save_state(state, flat, brief_confirmed)
