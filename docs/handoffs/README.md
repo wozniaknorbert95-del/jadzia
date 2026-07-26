@@ -2,12 +2,12 @@
 
 Session continuity for `/vibe-init`: read the **last 2** handoffs from this folder.
 
-## Start here — 2026-07-25
+## Start here — 2026-07-26
 
-1. [`2026-07-25-OPS-FB-TOKEN-01-CLOSE.md`](2026-07-25-OPS-FB-TOKEN-01-CLOSE.md) — **LIVE** FB `read_insights`
-2. [`2026-07-22-OPS-AGENT-SLA-01-DEPLOY-CLOSE.md`](2026-07-22-OPS-AGENT-SLA-01-DEPLOY-CLOSE.md) — SLA `@6e4a637`
-3. [`2026-07-22-OPS-FRESHNESS-01-DEPLOY-CLOSE.md`](2026-07-22-OPS-FRESHNESS-01-DEPLOY-CLOSE.md) — freshness `@c210578`
-4. [`docs/ops/FB-TOKEN-ROTATION.md`](../ops/FB-TOKEN-ROTATION.md) — runbook
+1. [`2026-07-26-SESSION-CLOSE-META-FREE-GIT.md`](2026-07-26-SESSION-CLOSE-META-FREE-GIT.md) — **META-FREE 9/10 PASS** · tip `598e674` · kampanie HOLD
+2. [`2026-07-25-META-FREE-90-CLOSE.md`](2026-07-25-META-FREE-90-CLOSE.md) — gate CLOSE scorecard
+3. [`2026-07-25-OPS-FB-TOKEN-01-CLOSE.md`](2026-07-25-OPS-FB-TOKEN-01-CLOSE.md) — FB `read_insights`
+4. [`docs/ops/marketing/OPERATOR-TODAY.md`](../ops/marketing/OPERATOR-TODAY.md) — operator start
 
 ## Program + audit SoT
 
@@ -18,10 +18,9 @@ Session continuity for `/vibe-init`: read the **last 2** handoffs from this fold
 
 ## Marketing (hot)
 
+- [`2026-07-25-META-FREE-90-HANDOFF.md`](2026-07-25-META-FREE-90-HANDOFF.md)
 - [`2026-07-19-META-PACK-01-READY.md`](2026-07-19-META-PACK-01-READY.md)
-- [`2026-07-19-MKT-BRAIN-PRO-PLAN-HANDOFF.md`](2026-07-19-MKT-BRAIN-PRO-PLAN-HANDOFF.md)
 - [`2026-07-19-MKT-BRAIN-PRO-PROGRAM-CLOSE.md`](2026-07-19-MKT-BRAIN-PRO-PROGRAM-CLOSE.md)
-- [`2026-07-19-SESSION-CLOSE-MKT-DASH.md`](2026-07-19-SESSION-CLOSE-MKT-DASH.md)
 
 ## Archive
 
