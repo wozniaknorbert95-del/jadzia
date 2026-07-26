@@ -1,15 +1,15 @@
 {
   "project": "Jadzia-Core",
-  "last_updated": "2026-07-25 (META-FREE-90 tip d004900 LIVE · 8/10)",
+  "last_updated": "2026-07-25 (META-FREE-90 GATE 9/10 PASS @ 92da711)",
   "status": "active",
   "plan": "docs/ops/marketing/FREE-META-90.md",
-  "active_gate": "META-FREE-90 ≥9/10 (now 8/10 @ d004900; S5 or S9 HITL)",
+  "active_gate": "META-FREE-90 PASS 9/10 — kampanie HOLD until Dowódca final",
   "active_plan": "docs/handoffs/2026-07-25-META-FREE-90-CLOSE.md",
   "standing_go_closeout": false,
   "closeout_queue": [],
   "closeout_expires": "2026-08-01",
-  "next_human": "FREE-META S5 Away+menu OR S9 IG dual (~15m) → gate ≥9 · Ads HOLD · Mollie park",
-  "next_agent": "observe · optional Commander dogfood ER UI",
+  "next_human": "Kampanie dopiero po „final” · opcjonalnie Low S9 IG · Mollie park",
+  "next_agent": "STOP META-FREE gate; META-CLICK-PATH tylko po final",
   "agent_rule": "1-1-1. Evidence-first. Deploy tylko ze zgoda. Hard STOP: Gate D/Mollie/fake PASS/execute UI/6th Audyt tab. No Ads create without explicit GO.",
   "sprints": {
     "remediation": "completed",
@@ -1695,11 +1695,11 @@
       "id": "META-FREE-90",
       "sprint": "Marketing OS free Meta",
       "task": "Free Meta potential ≥9/10 (S1–S10); Ads campaigns after gate",
-      "status": "in_progress",
+      "status": "completed",
       "priority": "critical",
       "owner": "agent",
       "checklist": "docs/handoffs/2026-07-25-META-FREE-90-CLOSE.md",
-      "note": "2026-07-25 8/10 LIVE. Leftover S5/S9 HITL for gate ≥9."
+      "note": "2026-07-25 GATE PASS 9/10. S5 Away+IR ON. S9 Low leftover. Ads HOLD until final."
     },
     {
       "id": "META-FREE-90-F0",
@@ -1709,7 +1709,7 @@
       "priority": "critical",
       "owner": "agent",
       "checklist": "docs/ops/marketing/FREE-META-90.md",
-      "note": "2026-07-25 baseline 1/10 → now 8/10"
+      "note": "2026-07-25 baseline 1/10 → gate 9/10 PASS"
     },
     {
       "id": "META-FREE-90-F1",
@@ -1729,7 +1729,7 @@
       "priority": "high",
       "owner": "human",
       "checklist": "docs/ops/marketing/FREE-META-90.md",
-      "note": "S6 PASS (Wyślij wiadomość). S5 FAIL → ready_for_human Away+menu"
+      "note": "S5+S6 PASS 2026-07-25. Away+Instant Reply Wł. · NL CTAs Wizard/Offerte/WA"
     },
     {
       "id": "META-FREE-90-F3",
@@ -1759,7 +1759,7 @@
       "priority": "critical",
       "owner": "agent",
       "checklist": "docs/handoffs/2026-07-25-META-FREE-90-CLOSE.md",
-      "note": "S10 PASS exercise. Gate PARTIAL 8/10 — Ads HOLD until ≥9"
+      "note": "S10 PASS. Gate CLOSE 9/10 2026-07-25 — Ads HOLD until final"
     },
     {
       "id": "OPS-AGENT-SLA-01",

@@ -1,63 +1,67 @@
-# Handoff — META-FREE-90 (PARTIAL GATE)
+# Handoff — META-FREE-90 (GATE ≥9/10 CLOSE)
 
 **Date:** 2026-07-25  
-**Status:** **8/10 LIVE** @ tip **`d004900`** — agent F0–F3 + S6/S10 done · **S5+S9 ready_for_human**  
+**Status:** **SUCCESS** — **9/10 LIVE** @ tip **`92da711`** (feature `d004900`)  
 **standing_go_closeout:** `false`  
-**Kampanie Ads:** HOLD (do ≥9/10 + osobne GO)
+**Kampanie Ads:** HOLD until Dowódca **„final”** (`META-CLICK-PATH`)  
+**Session:** S5 Away + Instant Reply ON (HITL Zapisz)
 
-## Deploy VERIFY
+## VERIFY
 
 | Check | Result |
 |-------|--------|
-| git tip VPS | `d004900` |
-| `jadzia` | active |
-| fb-health | PAGE · `has_read_insights` · `has_pages_read_user_content` · Token OK |
-| live post metrics | ok · impressions 239 · insights_ok |
-| `organic_er_baseline_30d` | numeric 0.0 |
-| redact | REDACT_OK |
+| Local / VPS tip | `92da711` |
+| `jadzia` | active (prior VERIFY) |
+| fb-health | PAGE · `has_read_insights=true` · `has_pages_read_user_content=true` · `Token OK (Page)` · scopes: posts/engagement/user_content/show_list/profile/read_insights (**no** `pages_messaging`) |
 | parks | `l0_purchase`, `ads_api_create` only |
+| Hard STOP | Ads create / Mollie / secrets — held |
 
-## Score
+## Scorecard
 
-| PASS | FAIL (HITL) |
+| PASS | FAIL / park |
 |------|-------------|
-| S1 S2 S3 S4 S6 S7 S8 S10 | S5 Messenger Away/menu · S9 IG Pro dual |
+| S1–S8, S10 | **S9** IG dual (Low leftover) |
 
-## Co zrobione (evidence, no secrets)
+**Gate ≥9/10:** **PASS (9/10)**.
 
-### F0
-- SoT [FREE-META-90.md](../ops/marketing/FREE-META-90.md) · OPERATOR · todo
+## S5 evidence (BS Page FlexGrafik · asset `491325420727745`)
 
-### F1 (LIVE VPS)
-- App permission `pages_read_user_content` → Ready for testing  
-- OAuth rerequest + `set-fb-access-token.py` → PAGE `expires_at=0`  
-- `fb-health`: `has_pages_read_user_content=true` · `has_read_insights=true` · `Token OK (Page)`  
-- Metrics Graph v25: `post_media_view` + `post_total_media_view_unique` + `post_clicks`  
-- Redact `access_token` in publisher logs  
-- DTL: `organic_er_baseline_30d` numeric (0.0) · conscious park `fb_pages_read_user_content` gone when scope present  
-- Code files on VPS: `facebook.py`, `facebook_organic.py`, `report.py` (deployed via scp; tip-sync commit recommended)
+| Automation | Status | id |
+|------------|--------|-----|
+| Wiadomość o nieobecności (Away) | **Wł.** | `1271421616051451` |
+| Automatyczna odpowiedź (Instant Reply) | **Wł.** | `1271432256050387` |
 
-### F2 (partial)
-- **S6 PASS:** Page FlexGrafik shows **Wyślij wiadomość**  
-- **S5 FAIL:** Automated responses UI not set (needs Dowódca ~10 min)
+- Dowódca: HITL **Zapisz zmiany** confirmed 2026-07-25.  
+- NL CTAs (menu Tor A): Wizard · Offerte · WhatsApp `+31 6 87286151`.  
+- Graph `persistent_menu`: **park** — token scopes lack `pages_messaging`; BS Automations has **no** menu template (search „menu” → empty). Instant Reply + Away = free-Meta Messenger stack.
 
-### F3
-- Cancelled smoke drafts (12 entries)  
-- Published 2 NL business posts with Wizard `utm_medium=organic`  
-- Published 1 video (Drive) with `utm_content=reel_a` · calendar entry 26  
+## LEFT (Low · poza gate)
 
-### F4
-- IG not linked (BS CTA **Powiąż z kontem na Instagramie**) → park
+1. **S9** — BS Powiąż Instagram + 1 dual-publish  
+2. Graph `persistent_menu` — tylko po OAuth `pages_messaging` + GO  
+3. Kampanie — dopiero **„final”**  
+4. Mollie L0 Purchase — park  
+5. Optional: Instant Reply copy polish if UI still shows PL default after Lexical race (Away ON is gate signal)
 
-### F5
-- S10 exercise note: 2026-07-25T06:15Z — proces SPEED-TO-LEAD przećwiczony dokumentacyjnie (brak live organic lead w sesji); przy następnym DM/komentarzu: WA/Messenger &lt;15 min wg [SPEED-TO-LEAD.md](../ops/marketing/SPEED-TO-LEAD.md)
+## RISKS / DON'T
 
-## Hard STOP held
+- Nie Ads create/edit bez GO  
+- Nie Mollie LIVE / fake Purchase  
+- Nie loguj raw `access_token`  
+- Nie traktuj S9 FAIL jako blocker gate (już ≥9)  
+- Deploy VPS tylko ze świeżym GO
 
-No Ads create · no Mollie · no secrets in git
+## NEXT
 
-## NEXT (1-1-1)
+```text
+STOP META-FREE-90 gate.
+Kampanie: czekaj na Dowódca „final” → META-CLICK-PATH.
+Opcjonalnie Low: S9 IG dual.
+```
 
-1. **Dowódca:** S5 Away+menu **albo** S9 IG → score ≥9/10  
-2. Agent: tip-sync commit kodu F1 gdy GO · re-dogfood Commander ER  
-3. Potem dopiero kampanie (`META-CLICK-PATH`)
+## V-FILES
+
+- `docs/ops/marketing/FREE-META-90.md`
+- `docs/handoffs/2026-07-25-META-FREE-90-CLOSE.md`
+- `docs/ops/marketing/OPERATOR-TODAY.md`
+- `todo.json`
