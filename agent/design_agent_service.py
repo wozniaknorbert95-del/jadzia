@@ -24,12 +24,15 @@ _RATE_WINDOW_SEC = 3600
 
 
 def _generate_rate_limit() -> int:
-    """Hits per hour for POST /generate. Env DA_GENERATE_RATE_LIMIT (default 5, min 2)."""
-    raw = (os.getenv("DA_GENERATE_RATE_LIMIT") or "5").strip()
+    """Hits per hour for POST /generate. Env DA_GENERATE_RATE_LIMIT (default 1, min 1).
+
+    Demo/cost lock: 1 hit = one Standard + Premium pair (2 PNG) per IP per window.
+    """
+    raw = (os.getenv("DA_GENERATE_RATE_LIMIT") or "1").strip()
     try:
-        return max(2, int(raw))
+        return max(1, int(raw))
     except ValueError:
-        return 5
+        return 1
 
 
 _GENERATE_REQUIRED = (
@@ -159,10 +162,9 @@ def _log_generation_cost(brief_id: str, vehicle: str, cost_eur: float) -> None:
 
 
 def _check_rate_limit(client_ip: str, session_id: str | None = None) -> None:
-    if session_id and session_id.strip():
-        bucket = f"generate:session:{session_id.strip()}"
-    else:
-        bucket = f"generate:ip:{client_ip}"
+    # Cost lock: always IP bucket (session reset must not unlock another paid generate).
+    _ = session_id  # kept for call-site compatibility / future audit
+    bucket = f"generate:ip:{client_ip or 'unknown'}"
     try:
         check_and_record(
             bucket,
@@ -174,7 +176,8 @@ def _check_rate_limit(client_ip: str, session_id: str | None = None) -> None:
             raise _api_error(
                 429,
                 "RATE_LIMIT",
-                "Te veel verzoeken. Probeer het over een uur opnieuw.",
+                "Je hebt al 2 mock-ups gegenereerd vanaf dit netwerk. "
+                "Wacht een uur of neem contact op via flexgrafik.nl.",
             ) from exc
         raise
 

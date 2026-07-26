@@ -240,13 +240,31 @@ def test_generate_rate_limit_env_default_and_min(
     from agent import design_agent_service
 
     monkeypatch.delenv("DA_GENERATE_RATE_LIMIT", raising=False)
-    assert design_agent_service._generate_rate_limit() == 5
+    assert design_agent_service._generate_rate_limit() == 1
     monkeypatch.setenv("DA_GENERATE_RATE_LIMIT", "1")
-    assert design_agent_service._generate_rate_limit() == 2
+    assert design_agent_service._generate_rate_limit() == 1
     monkeypatch.setenv("DA_GENERATE_RATE_LIMIT", "8")
     assert design_agent_service._generate_rate_limit() == 8
+    monkeypatch.setenv("DA_GENERATE_RATE_LIMIT", "0")
+    assert design_agent_service._generate_rate_limit() == 1
     monkeypatch.setenv("DA_GENERATE_RATE_LIMIT", "nope")
-    assert design_agent_service._generate_rate_limit() == 5
+    assert design_agent_service._generate_rate_limit() == 1
+
+
+def test_generate_rate_limit_is_per_ip_not_session(
+    monkeypatch: pytest.MonkeyPatch, tmp_path: Path
+) -> None:
+    """New chat session must not unlock a second paid generate for same IP."""
+    from agent import design_agent_service, rate_store
+
+    store = tmp_path / "rate.json"
+    monkeypatch.setenv("DA_RATE_STORE_PATH", str(store))
+    rate_store.clear_store()
+    monkeypatch.setattr(design_agent_service, "_generate_rate_limit", lambda: 1)
+    design_agent_service._check_rate_limit("203.0.113.9", "session-a")
+    with pytest.raises(Exception) as exc:
+        design_agent_service._check_rate_limit("203.0.113.9", "session-b")
+    assert exc.value.status_code == 429
 
 
 def test_design_agent_rate_limit_survives_restart(
