@@ -444,11 +444,39 @@ def _init_schema(conn: sqlite3.Connection):
     _migrate_commander_feedback_confidence(conn)
     _migrate_leads_disposition(conn)
     _migrate_widget_chat_created_at(conn)
+    _init_inspire_offerte_schema(conn)
     _init_marketing_dtl_schema(conn)
     _init_marketing_f1_schema(conn)
     _init_marketing_governance_schema(conn)
 
     conn.commit()
+
+
+def _init_inspire_offerte_schema(conn: sqlite3.Connection) -> None:
+    """INSPIRE offerte concierge requests (v4.2)."""
+    conn.execute("""
+        CREATE TABLE IF NOT EXISTS inspire_offerte_requests (
+            id TEXT PRIMARY KEY,
+            session_id TEXT NOT NULL,
+            email TEXT NOT NULL,
+            telefoon TEXT NOT NULL,
+            variant TEXT NOT NULL,
+            sku TEXT NOT NULL,
+            payload_json TEXT NOT NULL,
+            status TEXT NOT NULL DEFAULT 'new',
+            notify_team TEXT NOT NULL DEFAULT 'pending',
+            notify_client TEXT NOT NULL DEFAULT 'pending',
+            created_at TEXT NOT NULL
+        )
+    """)
+    conn.execute("""
+        CREATE INDEX IF NOT EXISTS idx_inspire_offerte_session
+        ON inspire_offerte_requests(session_id, created_at DESC)
+    """)
+    conn.execute("""
+        CREATE INDEX IF NOT EXISTS idx_inspire_offerte_email
+        ON inspire_offerte_requests(email, created_at DESC)
+    """)
 
 
 def _init_marketing_dtl_schema(conn: sqlite3.Connection) -> None:
@@ -688,6 +716,7 @@ def _migrate_content_calendar_columns(conn: sqlite3.Connection) -> None:
         ("publish_result", "TEXT"),
         ("media_url", "TEXT"),
         ("fb_post_id", "TEXT"),
+        ("tiktok_post_id", "TEXT"),
         ("scheduled_publish_at", "TEXT"),
         ("content_type", "TEXT DEFAULT 'text'"),
         ("media_source", "TEXT"),
@@ -1983,6 +2012,7 @@ def db_update_calendar_entry(entry_id: int, updates: Dict) -> bool:
         "publish_result",
         "media_url",
         "fb_post_id",
+        "tiktok_post_id",
         "scheduled_publish_at",
         "content_type",
         "media_source",
@@ -2656,6 +2686,7 @@ def db_update_calendar_entry_versioned(
         "publish_result",
         "media_url",
         "fb_post_id",
+        "tiktok_post_id",
         "scheduled_publish_at",
         "content_type",
         "media_source",
@@ -3559,3 +3590,63 @@ def db_rolling_net_margin_pct(limit: int = 50) -> Optional[float]:
     if not row or not row["n"]:
         return None
     return float(row["avg_pct"])
+
+
+def db_offerte_insert(row: dict) -> None:
+    conn = get_connection()
+    conn.execute(
+        """
+        INSERT INTO inspire_offerte_requests (
+            id, session_id, email, telefoon, variant, sku,
+            payload_json, status, notify_team, notify_client, created_at
+        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+        """,
+        (
+            row["id"],
+            row["session_id"],
+            row["email"],
+            row["telefoon"],
+            row["variant"],
+            row["sku"],
+            row["payload_json"],
+            row.get("status", "new"),
+            row.get("notify_team", "pending"),
+            row.get("notify_client", "pending"),
+            row["created_at"],
+        ),
+    )
+    conn.commit()
+
+
+def db_offerte_find_recent(session_id: str, sku: str, *, within_sec: int = 3600) -> dict | None:
+    conn = get_connection()
+    row = conn.execute(
+        """
+        SELECT id, session_id, email, telefoon, variant, sku, created_at
+        FROM inspire_offerte_requests
+        WHERE session_id = ? AND sku = ?
+          AND datetime(created_at) >= datetime('now', ?)
+        ORDER BY created_at DESC
+        LIMIT 1
+        """,
+        (session_id, sku, f"-{within_sec} seconds"),
+    ).fetchone()
+    return dict(row) if row else None
+
+
+def db_offerte_update_notify(
+    offerte_id: str,
+    *,
+    notify_team: str,
+    notify_client: str,
+) -> None:
+    conn = get_connection()
+    conn.execute(
+        """
+        UPDATE inspire_offerte_requests
+        SET notify_team = ?, notify_client = ?
+        WHERE id = ?
+        """,
+        (notify_team, notify_client, offerte_id),
+    )
+    conn.commit()

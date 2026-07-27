@@ -95,6 +95,7 @@ def create_app() -> FastAPI:
     from api.routes.sessions import router as sessions_router
     from api.routes.design_agent import router as design_agent_router
     from api.routes.design_agent_chat import router as design_agent_chat_router
+    from api.routes.design_agent_offerte import router as design_agent_offerte_router
     from api.routes.design_agent_v4 import router as design_agent_v4_router
     from api.routes.commander import router as commander_router
     from api.routes.brain_bus import router as brain_bus_router
@@ -112,6 +113,7 @@ def create_app() -> FastAPI:
     app.include_router(sessions_router)
     app.include_router(design_agent_router)
     app.include_router(design_agent_chat_router)
+    app.include_router(design_agent_offerte_router)
     app.include_router(design_agent_v4_router)
     app.include_router(commander_router)
     app.include_router(brain_bus_router)

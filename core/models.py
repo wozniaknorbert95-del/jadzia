@@ -710,3 +710,35 @@ class DesignAgentChatSessionResponse(BaseModel):
     stap_label: str = ""
     quick_replies: list[dict] = []
     locale: str = "nl-NL"
+
+
+class DesignAgentOfferteContact(BaseModel):
+    email: str
+    telefoon: str
+    consent_offerte: bool = False
+    consent_marketing: bool = False
+
+
+class DesignAgentOfferteSelection(BaseModel):
+    variant: str
+    sku: str
+    product_naam: str = ""
+    price_from_eur: float | int | None = None
+    mockup_url: str = ""
+
+
+class DesignAgentOfferteRequest(BaseModel):
+    session_id: str
+    locale: str | None = None
+    contact: DesignAgentOfferteContact
+    selection: DesignAgentOfferteSelection
+    brief_partial: dict = {}
+    generate_meta: dict = {}
+
+
+class DesignAgentOfferteResponse(BaseModel):
+    ok: bool = True
+    offerte_request_id: str
+    message_nl: str = ""
+    notify_team: str | None = None
+    notify_client: str | None = None
