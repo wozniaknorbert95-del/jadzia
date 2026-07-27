@@ -137,6 +137,11 @@ FORMAT WYJŚCIA (JSON):
 
 
 def _send_telegram_alert_sync(message: str) -> None:
+    from agent.telegram_autopush import telegram_autopush_enabled
+
+    if not telegram_autopush_enabled():
+        logger.info("[CustomerAgent] TG autopush skipped (TELEGRAM_AUTOPUSH_ENABLED=0)")
+        return
     bot_token = os.getenv("TELEGRAM_BOT_TOKEN")
     admin_id = os.getenv("TELEGRAM_ADMIN_CHAT_ID")
     if not bot_token or not admin_id:

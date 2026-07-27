@@ -329,8 +329,11 @@ async def _maybe_run_marketing_brain() -> None:
 
     def _run() -> None:
         from agent.marketing import run_marketing_brain_cycle
+        from agent.telegram_autopush import telegram_autopush_enabled
 
-        summary = run_marketing_brain_cycle(send_telegram=True)
+        summary = run_marketing_brain_cycle(
+            send_telegram=telegram_autopush_enabled()
+        )
         _log.info(
             "[worker_loop] mb cycle ok=%s records=%s tg=%s",
             summary.get("ok"),

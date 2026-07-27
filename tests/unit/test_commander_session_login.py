@@ -87,6 +87,37 @@ def test_parse_commander_command():
     assert parse_telegram_command("/commander@MyBot", None) == ("commander", "")
 
 
+@pytest.mark.asyncio
+async def test_commander_reply_is_plain_text_with_url_button(temp_db, monkeypatch):
+    """MarkdownV2 must not wrap the login URL (breaks ?code= links)."""
+    from agent.telegram_validator import TelegramWebhookRequest
+    from api.telegram import _handle_webhook_request
+
+    monkeypatch.delenv("ALLOWED_TELEGRAM_USERS", raising=False)
+    monkeypatch.setattr("agent.telegram_validator.ALLOWED_TELEGRAM_USERS", set())
+    monkeypatch.setenv("JWT_SECRET", _TEST_JWT_SECRET)
+    monkeypatch.setenv("JADZIA_PUBLIC_URL", "https://api.example")
+
+    req = TelegramWebhookRequest(
+        message="/commander",
+        chat_id="99",
+        user_id="99",
+        message_id=1,
+    )
+    resp = await _handle_webhook_request(req, None, skip_webhook_secret=True)
+    assert resp.success is True
+    assert resp.messages
+    msg = resp.messages[0]
+    assert msg.get("parse_mode") in (None, "")
+    text = msg.get("text") or ""
+    assert "https://api.example/commander/?code=" in text
+    assert "\\" not in text.split("code=", 1)[1][:20]  # code segment not MD-escaped
+    assert resp.reply_markup is not None
+    btn = resp.reply_markup["inline_keyboard"][0][0]
+    assert btn["text"] == "Otwórz Commander"
+    assert btn["url"].startswith("https://api.example/commander/?code=")
+
+
 def test_auth_exchange_http(temp_db):
     from fastapi.testclient import TestClient
 

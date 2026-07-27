@@ -489,13 +489,27 @@ async def _handle_webhook_request(
                     awaiting_input=False,
                 )
                 return TelegramWebhookResponse(success=True, messages=messages)
-            messages = format_response_for_telegram(
-                "COI Commander — logowanie mobilne (jednorazowy link, 15 min):\n"
-                f"{login['url']}\n"
-                "Po otwarciu: Home → Ack leadów. Nie udostępniaj linku.",
-                awaiting_input=False,
+            # Plain text — MarkdownV2 escaping breaks ?code= URLs / sendMessage.
+            ttl = login.get("ttl_minutes") or 15
+            messages = [
+                {
+                    "text": (
+                        "COI Commander — logowanie (jednorazowy link, "
+                        f"{ttl} min):\n"
+                        f"{login['url']}\n"
+                        "Nie udostępniaj linku."
+                    ),
+                    "parse_mode": None,
+                }
+            ]
+            reply_markup = {
+                "inline_keyboard": [
+                    [{"text": "Otwórz Commander", "url": login["url"]}]
+                ]
+            }
+            return TelegramWebhookResponse(
+                success=True, messages=messages, reply_markup=reply_markup
             )
-            return TelegramWebhookResponse(success=True, messages=messages)
 
         if command == "ticket":
             description = payload if payload else request.message.strip()

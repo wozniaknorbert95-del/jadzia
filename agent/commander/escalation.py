@@ -21,6 +21,12 @@ INACTIVE_HOURS = 24
 
 def _send_telegram(msg: str, chat_id: Optional[str] = None) -> None:
     try:
+        from agent.telegram_autopush import telegram_autopush_enabled
+
+        if not telegram_autopush_enabled():
+            logger.info("[CommanderEscalation] TG autopush skipped")
+            return
+
         import httpx
         from threading import Thread
 

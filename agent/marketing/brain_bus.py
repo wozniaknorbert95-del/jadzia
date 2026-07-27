@@ -73,6 +73,11 @@ def ingest_brain_bus_event(body: Dict[str, Any]) -> Dict[str, Any]:
 
 def _send_bus_telegram(message: str) -> bool:
     """Best-effort Telegram alert (same chat resolution as MB proposals)."""
+    from agent.telegram_autopush import telegram_autopush_enabled
+
+    if not telegram_autopush_enabled():
+        logger.info("[brain_bus] telegram skipped (TELEGRAM_AUTOPUSH_ENABLED=0)")
+        return False
     bot_token = os.getenv("TELEGRAM_BOT_TOKEN", "").strip()
     admin_id = os.getenv("TELEGRAM_ADMIN_CHAT_ID", "").strip()
     if not admin_id:

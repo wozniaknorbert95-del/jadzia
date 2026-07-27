@@ -51,7 +51,7 @@ def run_marketing_brain_cycle(*, send_telegram: bool = True) -> Dict[str, Any]:
                         rec.get("mb_mode") or "shadow",
                     ):
                         sent += 1
-        events = process_brain_events(limit=50)
+        events = process_brain_events(limit=50, send_telegram=send_telegram)
         _touch_mb_heartbeat(True)
         summary = {
             "ok": True,

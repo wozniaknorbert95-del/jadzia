@@ -89,6 +89,11 @@ def send_mb_proposal_telegram(
     mb_mode: str,
 ) -> bool:
     """Send proposal with inline buttons to TELEGRAM_ADMIN_CHAT_ID."""
+    from agent.telegram_autopush import telegram_autopush_enabled
+
+    if not telegram_autopush_enabled():
+        logger.info("[mb.telegram] proposal skipped (TELEGRAM_AUTOPUSH_ENABLED=0)")
+        return False
     bot_token = os.getenv("TELEGRAM_BOT_TOKEN", "").strip()
     admin_id = os.getenv("TELEGRAM_ADMIN_CHAT_ID", "").strip()
     if not admin_id:
@@ -247,6 +252,11 @@ def _telegram_admin_chat() -> Tuple[str, str]:
 def send_eval_pack_telegram(*, limit: int = 10, window_days: int = 7) -> Dict[str, Any]:
     """Push stratified eval cards with score buttons (Telegram-first pack)."""
     from agent.marketing.shadow_eval import build_eval_pack, format_eval_card
+    from agent.telegram_autopush import telegram_autopush_enabled
+
+    if not telegram_autopush_enabled():
+        logger.info("[mb.telegram] eval pack skipped (TELEGRAM_AUTOPUSH_ENABLED=0)")
+        return {"ok": True, "sent": 0, "skipped": True, "reason": "autopush_disabled"}
 
     bot_token, admin_id = _telegram_admin_chat()
     if not bot_token or not admin_id:

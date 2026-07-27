@@ -167,6 +167,11 @@ def send_weekly_scorecard_telegram(draft: Optional[Dict[str, Any]] = None) -> Di
     import httpx
 
     from agent.marketing.telegram_proposals import _telegram_admin_chat
+    from agent.telegram_autopush import telegram_autopush_enabled
+
+    if not telegram_autopush_enabled():
+        logger.info("[mb.weekly] telegram skipped (TELEGRAM_AUTOPUSH_ENABLED=0)")
+        return {"ok": True, "sent": 0, "skipped": True, "reason": "autopush_disabled"}
 
     payload = draft or build_weekly_scorecard_draft()
     bot_token, admin_id = _telegram_admin_chat()
