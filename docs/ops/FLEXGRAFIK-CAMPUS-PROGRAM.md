@@ -10,7 +10,10 @@ runtime_changes_allowed: false
 budget_freeze_until: "2026-08-06"
 com_ai_50_from: "2026-08-02"
 founder_override: "2026-07-27 — Campus W1 priority; MKT-ASSET-00 parked_by_founder"
-active_gate_pointer: "VF-CAMPUS-W1"
+active_gate_pointer: "VF-CAMPUS-W2"
+w2_status: "completed"
+proposed_next_gate: "VF-CAMPUS-W3"
+proposed_next_gate_active: false
 ---
 
 # FlexGrafik Virtual Campus — Program (v2)
