@@ -1,15 +1,15 @@
 {
   "project": "Jadzia-Core",
-  "last_updated": "2026-07-27 (deploy 4cf66fe LIVE · budget freeze do 2026-08-06 · €0 paid)",
+  "last_updated": "2026-07-27 (session close · next MKT-ASSET-00 materials)",
   "status": "active",
-  "plan": "docs/handoffs/2026-07-27-DEPLOY-FREEZE-CLOSE.md",
-  "active_gate": "FREE-TIKTOK S6–S7 — token HITL + E2E (organic €0, post-deploy)",
-  "active_plan": "docs/ops/marketing/FREE-TIKTOK.md",
+  "plan": "docs/handoffs/2026-07-27-SESSION-CLOSE-ASSET-NEXT.md",
+  "active_gate": "MKT-ASSET-00 — materials inventory + repo scout → MKT/YYYY-WW/",
+  "active_plan": "docs/ops/marketing/ASSET-MATERIALS-PREP.md",
   "standing_go_closeout": false,
   "closeout_queue": [],
   "closeout_expires": "2026-08-01",
-  "next_human": "€0 paid do 2026-08-06. TT Developer token → VPS. Asset MKT/WW. FB organic Commander. Meta paid dopiero po freeze.",
-  "next_agent": "Support TT E2E after token. Organic cadence. Zero Ads. Prod tip 4cf66fe.",
+  "next_human": "Dostarcz real bus media (foto/wideo) lub wskaż GDrive. €0 paid do 2026-08-06.",
+  "next_agent": "@vibe-init MKT-ASSET-00: inventory + repo scout per ASSET-MATERIALS-PREP. No paid Meta.",
   "budget_freeze_until": "2026-08-06",
   "budget_freeze_note": "Dowódca 2026-07-27: zero ad spend 10 dni",
   "agent_rule": "1-1-1. Evidence-first. Deploy tylko ze zgoda. Hard STOP: Gate D/Mollie/fake PASS/execute UI/6th Audyt tab. No Ads create without explicit GO.",
@@ -1742,6 +1742,16 @@
       "owner": "agent",
       "checklist": "docs/handoffs/2026-07-27-DEPLOY-FREEZE-CLOSE.md",
       "note": "2026-07-27 LIVE tip 4cf66fe. Health degraded SSH pre-existing. output/secrets dirs restored."
+    },
+    {
+      "id": "MKT-ASSET-00",
+      "sprint": "Marketing OS — Asset Factory",
+      "task": "Materials inventory + repo scout → MKT/YYYY-WW/ (master + tt_hook + NOTES)",
+      "status": "pending",
+      "priority": "critical",
+      "owner": "agent",
+      "checklist": "docs/ops/marketing/ASSET-MATERIALS-PREP.md",
+      "note": "2026-07-27 NEXT session. Outcome A/B/C. Freeze organic only. Campus: Marketing→Produkcja treści."
     },
     {
       "id": "META-FREE-90-F0",

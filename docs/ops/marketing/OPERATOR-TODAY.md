@@ -1,7 +1,7 @@
 ---
 status: "[ACTIVE]"
 title: "Marketing OS — START TUTAJ (operator)"
-updated: "2026-07-27 (budget freeze · deploy · organic only)"
+updated: "2026-07-27 (freeze · deploy DONE · next = asset materials)"
 budget_freeze_until: "2026-08-06"
 ---
 
@@ -9,7 +9,8 @@ budget_freeze_until: "2026-08-06"
 
 > **BUDGET FREEZE do 2026-08-06:** **€0 paid Meta.** Nie publish kampanii. Nie €10/d.
 
-**Priorytet teraz:** **Deploy VPS** (`4cf66fe+` TT-PUB) + **organic free** (FB Commander + TT E2E HITL).  
+**Priorytet następnej sesji:** [ASSET-MATERIALS-PREP](./ASSET-MATERIALS-PREP.md) — zbiór materiałów / repo scout → `MKT/YYYY-WW/`.  
+**Teraz (freeze):** organic **€0** · FB Commander + TT po materiałach + token.
 **GTM SoT:** [GTM-1PAGER.md](./GTM-1PAGER.md) · paid Meta **PARK** → [META-FINAL-CHECKLIST](./META-FINAL-CHECKLIST.md) po freeze.  
 **Meta organic:** [FREE-META-90.md](./FREE-META-90.md) — **CLOSED 9/10** · Commander HITL **ACTIVE**.  
 **TikTok:** [FREE-TIKTOK.md](./FREE-TIKTOK.md) — deploy kod → token VPS → E2E.  
@@ -30,11 +31,11 @@ budget_freeze_until: "2026-08-06"
 
 ## Twoje parks (HITL — poza Commanderem)
 
-1. **H-Deploy** — VPS tip sync + health (agent GO)
-2. **H-FREE-META** — organic utrzymanie ([FREE-META-90](./FREE-META-90.md))
-3. **H-FREE-TIKTOK** — token Developer + E2E po deploy ([FREE-TIKTOK](./FREE-TIKTOK.md))
+1. **H-Asset-Materials** — **NEXT** inventory / repo scout ([ASSET-MATERIALS-PREP](./ASSET-MATERIALS-PREP.md))
+2. **H-FREE-META** — organic po WW ([FREE-META-90](./FREE-META-90.md))
+3. **H-FREE-TIKTOK** — token + E2E po WW ([FREE-TIKTOK](./FREE-TIKTOK.md))
 4. **H-Meta paid** — **PARK do 2026-08-06** ([META-FINAL-CHECKLIST](./META-FINAL-CHECKLIST.md))
-5. **H-GTM** — **DONE** ([GTM-1PAGER](./GTM-1PAGER.md))
+5. **H-Deploy** — **DONE** `@4cf66fe`
 6. **H-Purchase** — Mollie GO (poza freeze scope)
 7. **H-WA** — Lead → WA &lt;15 min (organic leads)
 

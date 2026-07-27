@@ -13,6 +13,8 @@ Cel: **koszt produkcji / kanał → 0** przy kolejnych surfaces.
 
 1 dzień zdjęciowy / 2 tygodnie (lub reuse mastera jeśli świeży &lt;30d).
 
+**Next session prep:** [ASSET-MATERIALS-PREP.md](./ASSET-MATERIALS-PREP.md) — inventory · repo scout · WW v0.
+
 ## Output obowiązkowy (`MKT/YYYY-WW/`)
 
 | Plik | Format | Użycie |

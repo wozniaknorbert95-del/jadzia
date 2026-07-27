@@ -31,6 +31,7 @@ North Star: `CPA_wizard` < 40% marży brutto ZZPackage. Bez Purchase w pikselu �
 | Publish kampanii (pełny paste / 3 kreacje) | [FB-FIRST-CAMPAIGN.md](./FB-FIRST-CAMPAIGN.md) |
 | L0 przed € | [L0-INSTRUMENTATION.md](./L0-INSTRUMENTATION.md) |
 | PON decyzja scale/kill | [WEEKLY-SCORECARD.md](./WEEKLY-SCORECARD.md) · [UNIT-ECONOMICS.md](./UNIT-ECONOMICS.md) |
+| Asset materials (next) | [ASSET-MATERIALS-PREP.md](./ASSET-MATERIALS-PREP.md) |
 | Shoot / cuts / UTM | [ASSET-FACTORY.md](./ASSET-FACTORY.md) · [CHANNEL-MATRIX.md](./CHANNEL-MATRIX.md) |
 | TikTok gate + organic | [FREE-TIKTOK.md](./FREE-TIKTOK.md) · [TIKTOK-ORGANIC.md](./TIKTOK-ORGANIC.md) |
 | Meta free (CLOSED) | [FREE-META-90.md](./FREE-META-90.md) |

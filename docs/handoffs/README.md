@@ -4,8 +4,8 @@ Session continuity for `/vibe-init`: read the **last 2** handoffs from this fold
 
 ## Start here — 2026-07-27
 
-1. [`2026-07-27-DEPLOY-FREEZE-CLOSE.md`](2026-07-27-DEPLOY-FREEZE-CLOSE.md) — **deploy LIVE** · budget freeze · €0 paid
-2. [`2026-07-27-GTM-1PAGER-CLOSE.md`](2026-07-27-GTM-1PAGER-CLOSE.md) — GTM v2 LOCKED
+1. [`2026-07-27-SESSION-CLOSE-ASSET-NEXT.md`](2026-07-27-SESSION-CLOSE-ASSET-NEXT.md) — **NEXT = MKT-ASSET-00** materials/repo
+2. [`2026-07-27-DEPLOY-FREEZE-CLOSE.md`](2026-07-27-DEPLOY-FREEZE-CLOSE.md) — deploy LIVE · freeze
 2. [`2026-07-27-SESSION-CLOSE-GTM-NEXT.md`](2026-07-27-SESSION-CLOSE-GTM-NEXT.md) — poprzedni wątek (TT-PUB 5/7 parked)
 2. [`2026-07-26-FREE-TIKTOK-PLAN.md`](2026-07-26-FREE-TIKTOK-PLAN.md) — TT system plan (after GTM)
 3. [`docs/ops/marketing/OPERATOR-TODAY.md`](../ops/marketing/OPERATOR-TODAY.md) — operator start
