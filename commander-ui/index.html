@@ -13,9 +13,9 @@
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" href="styles.css?v=vhq-w01b" />
+  <link rel="stylesheet" href="styles.css?v=vhq-w02b" />
 </head>
-<body>
+<body data-vhq-w2="1">
   <a class="skip-link" href="#main">Przejdź do treści</a>
   <div id="delegat-banner" class="banner warning-banner" hidden role="alert">
     Brak Delegata — skonfiguruj email w Ustawieniach (eskalacja 24h).
@@ -67,27 +67,34 @@
   </div>
 
   <main id="main" class="main" tabindex="-1">
-    <section id="view-home" class="view active" aria-labelledby="home-title">
-      <aside id="home-ops-rail" class="exec-rail panel" aria-label="Ops Decision Rail">
-        <p class="exec-rail-title">Ops — Decision Rail</p>
-        <p id="home-ops-summary" class="hint mkt-rail-summary" aria-live="polite">Ładowanie ops…</p>
-        <div id="home-ops-chips" class="exec-rail-chips" role="list"></div>
-      </aside>
+    <section id="view-home" class="view active view-home--console" aria-labelledby="home-title">
       <header class="home-hero">
-        <p class="home-eyebrow">Mission Control · FlexGrafik Campus</p>
-        <h2 id="home-title">Dziś — 3 priorytety</h2>
-        <p class="home-sub">Mission Control — company-wide priorities, alerts, approvals and system health. One action: confirm → snooze → close. System map + Truth Cards below — hops without code merge (D0.19).</p>
+        <p class="home-eyebrow">Operations Console · Commander engine</p>
+        <h2 id="home-title">Operations Console</h2>
+        <p class="home-sub">Non-dominant fallback: auth, secondary tools, system map and Truth Cards appendix. Primary dashboard = Virtual HQ → Mission Control. Functions preserved — not deleted.</p>
       </header>
       <section class="vhq-entry panel" id="vhq-entry" aria-labelledby="vhq-entry-title">
         <h3 id="vhq-entry-title">Virtual HQ</h3>
-        <p class="hint">Explore departments, priorities, approvals and operational status.</p>
+        <p class="hint">Primary operational dashboard. Re-enter Mission Control anytime.</p>
         <button type="button" id="vhq-enter" class="primary">Enter Virtual HQ</button>
       </section>
-      <h3 class="home-section-title">Priorytety</h3>
-      <div id="priorities" class="card-grid" role="list" aria-live="polite"></div>
-      <h3 class="home-section-title">Kolejka (CRITICAL + ACTION)</h3>
-      <div id="queue-list" class="queue" role="list" aria-live="polite"></div>
-      <form id="cs-followup-form" class="composer panel" aria-labelledby="cs-followup-title">
+      <div id="vhq-home-slot-ops" class="vhq-home-slot" data-vhq-slot="ops">
+        <aside id="home-ops-rail" class="exec-rail panel" aria-label="Ops Decision Rail">
+          <p class="exec-rail-title">Ops — Decision Rail</p>
+          <p id="home-ops-summary" class="hint mkt-rail-summary" aria-live="polite">Ładowanie ops…</p>
+          <div id="home-ops-chips" class="exec-rail-chips" role="list"></div>
+        </aside>
+      </div>
+      <div id="vhq-home-slot-priorities" class="vhq-home-slot" data-vhq-slot="priorities">
+        <h3 class="home-section-title" id="priorities-heading">Priorytety</h3>
+        <div id="priorities" class="card-grid" role="list" aria-live="polite"></div>
+      </div>
+      <div id="vhq-home-slot-queue" class="vhq-home-slot" data-vhq-slot="queue">
+        <h3 class="home-section-title" id="queue-heading">Kolejka (CRITICAL + ACTION)</h3>
+        <div id="queue-list" class="queue" role="list" aria-live="polite"></div>
+      </div>
+      <div id="vhq-home-slot-cs" class="vhq-home-slot" data-vhq-slot="cs">
+        <form id="cs-followup-form" class="composer panel" aria-labelledby="cs-followup-title">
         <h3 id="cs-followup-title">Customer Success — follow-up</h3>
         <p class="hint">Ręczny post-sale ticket (COI-CS-02). Bez auto-maila do klienta.</p>
         <label for="cs-order-id">Numer zamówienia</label>
@@ -100,6 +107,7 @@
           <button type="submit" class="primary" id="cs-spawn-btn">Utwórz follow-up CS</button>
         </div>
       </form>
+      </div>
       <section class="system-map" aria-labelledby="system-map-title">
         <h3 id="system-map-title">Mapa systemu · Campus</h3>
         <p class="hint">Piętro · pokój · cel. Status jawny (LIVE tylko z dowodem). W2 = Trust hops. Osobne systemy — Basic Auth u właściciela hosta (OS/VCMS). Sesja JWT w Commanderze zostaje (D0.6 / D0.19).</p>
@@ -168,7 +176,7 @@
       </section>
 
       <section class="truth-cards" id="truth-cards-pilot" aria-labelledby="truth-cards-title">
-        <h3 id="truth-cards-title">Truth Cards · pilot W3</h3>
+        <h3 id="truth-cards-title">Truth Cards · Console appendix</h3>
         <p class="hint">Read-only. Status + Evidence only. KPI bez świeżego SoT = <code>insufficient_data</code> — nigdy fake 0. Bez 6. taba (D0.15).</p>
         <div class="truth-card-grid">
 
@@ -469,39 +477,48 @@
     <div class="vhq-shell__chrome">
       <header class="vhq-shell__header">
         <div class="vhq-shell__brand">
-          <p class="vhq-shell__eyebrow">Experience layer · above Commander</p>
+          <p class="vhq-shell__eyebrow">Primary dashboard · Commander = engine</p>
           <h2 id="vhq-title">FlexGrafik Virtual HQ</h2>
           <p id="vhq-location" class="vhq-shell__location" aria-live="polite">HQ › P3 › Mission Control</p>
         </div>
         <div class="vhq-shell__actions">
-          <label class="vhq-teleport-label" for="vhq-teleport">Teleport</label>
-          <select id="vhq-teleport" class="vhq-teleport" aria-label="Teleport to room">
-            <option value="">Select room…</option>
-            <option value="mission-control">P3 · Mission Control</option>
-            <option value="approval-vault">P3 · Approval Vault</option>
-            <option value="ai-agent-health">P3 · Agent Operations</option>
-            <option value="boardroom">P3 · Boardroom</option>
-            <option value="analytics-finance">P2 · Finance / Analytics</option>
-            <option value="compliance-audit">P2 · Compliance / Audit</option>
-            <option value="knowledge-library">P2 · Knowledge</option>
-            <option value="data-ai-lab">P2 · Data &amp; AI Lab</option>
-            <option value="vcms-os-zone">P2 · VCMS / Agent OS</option>
-            <option value="sales-room">P1 · Sales Room</option>
-            <option value="wizard-quote">P1 · Wizard / Quote</option>
-            <option value="marketing-studio">P1 · Marketing Studio</option>
-            <option value="reception">P1 · Reception</option>
-            <option value="client-support">P1 · Client Support</option>
-            <option value="design-studio">P1 · Design Studio</option>
-            <option value="order-desk">P0 · Order Desk</option>
-            <option value="production-control">P0 · Production Control</option>
-            <option value="preflight-quality">P0 · Preflight / Quality</option>
-            <option value="dispatch-returns">P0 · Dispatch / Returns</option>
-            <option value="supplier-dock">MAG · Supplier Dock</option>
-            <option value="asset-warehouse">MAG · Asset Warehouse</option>
-            <option value="partner-production-network">MAG · Partner Network</option>
-          </select>
-          <button type="button" id="vhq-to-mc" class="secondary">Mission Control</button>
-          <button type="button" id="vhq-close" class="secondary" aria-label="Close Virtual HQ">Close</button>
+          <div class="vhq-actions-primary" role="group" aria-label="Session and console">
+            <button type="button" id="vhq-to-console" class="secondary">Operations Console</button>
+            <button type="button" id="vhq-sign-in" class="primary">Sign in</button>
+          </div>
+          <details class="vhq-nav-drawer" id="vhq-nav-drawer">
+            <summary class="vhq-nav-drawer__summary">Navigate HQ</summary>
+            <div class="vhq-nav-drawer__body">
+              <label class="vhq-teleport-label" for="vhq-teleport">Teleport</label>
+              <select id="vhq-teleport" class="vhq-teleport" aria-label="Teleport to room">
+                <option value="">Select room…</option>
+                <option value="mission-control">P3 · Mission Control</option>
+                <option value="approval-vault">P3 · Approval Vault</option>
+                <option value="ai-agent-health">P3 · Agent Operations</option>
+                <option value="boardroom">P3 · Boardroom</option>
+                <option value="analytics-finance">P2 · Finance / Analytics</option>
+                <option value="compliance-audit">P2 · Compliance / Audit</option>
+                <option value="knowledge-library">P2 · Knowledge</option>
+                <option value="data-ai-lab">P2 · Data &amp; AI Lab</option>
+                <option value="vcms-os-zone">P2 · VCMS / Agent OS</option>
+                <option value="sales-room">P1 · Sales Room</option>
+                <option value="wizard-quote">P1 · Wizard / Quote</option>
+                <option value="marketing-studio">P1 · Marketing Studio</option>
+                <option value="reception">P1 · Reception</option>
+                <option value="client-support">P1 · Client Support</option>
+                <option value="design-studio">P1 · Design Studio</option>
+                <option value="order-desk">P0 · Order Desk</option>
+                <option value="production-control">P0 · Production Control</option>
+                <option value="preflight-quality">P0 · Preflight / Quality</option>
+                <option value="dispatch-returns">P0 · Dispatch / Returns</option>
+                <option value="supplier-dock">MAG · Supplier Dock</option>
+                <option value="asset-warehouse">MAG · Asset Warehouse</option>
+                <option value="partner-production-network">MAG · Partner Network</option>
+              </select>
+              <button type="button" id="vhq-to-mc" class="secondary">Mission Control</button>
+              <button type="button" id="vhq-close" class="secondary" aria-label="Close Virtual HQ">Close</button>
+            </div>
+          </details>
         </div>
       </header>
       <nav class="vhq-floors" id="vhq-floors" aria-label="Floor navigation" role="tablist">
@@ -513,12 +530,67 @@
       </nav>
     </div>
     <div class="vhq-shell__body">
+      <section id="vhq-command" class="vhq-command" hidden aria-labelledby="vhq-brief-title">
+        <p id="vhq-session-banner" class="vhq-session-banner" role="status" aria-live="polite"></p>
+        <aside id="vhq-critical-risk" class="vhq-critical-risk" aria-label="Persistent critical risk">
+          <p class="vhq-critical-risk__status">DEGRADED · SSH connection error · evidence EV-W2-011</p>
+          <p class="hint">INC-SSH-RECOVERY-00 · static verified Campus evidence. Not a live session health probe — worker health refresh needs JWT / Agent Operations.</p>
+          <button type="button" class="secondary" data-vhq-room="ai-agent-health" id="vhq-risk-agent-ops">Open Agent Operations</button>
+        </aside>
+        <header class="vhq-brief-head">
+          <h3 id="vhq-brief-title">Director Brief</h3>
+          <p class="hint">What needs my decision today? Priorities are display-only. Queue dispositions remain the canonical action surface.</p>
+        </header>
+        <div id="vhq-mount-ops" class="vhq-mount" data-vhq-mount="ops"></div>
+        <div class="vhq-brief-block">
+          <h4 class="vhq-brief-label">Top priorities</h4>
+          <div id="vhq-mount-priorities" class="vhq-mount" data-vhq-mount="priorities"></div>
+        </div>
+        <div class="vhq-brief-block">
+          <h4 class="vhq-brief-label">Critical / Action queue</h4>
+          <div id="vhq-mount-queue" class="vhq-mount" data-vhq-mount="queue"></div>
+        </div>
+        <section class="vhq-vault-strip" aria-labelledby="vhq-vault-title">
+          <h4 id="vhq-vault-title">Approval Vault</h4>
+          <p class="hint">[PARTIAL] · EV-W2-009 · No invented pending count. Real path only.</p>
+          <button type="button" id="vhq-open-audit" class="secondary">Open Audyt</button>
+        </section>
+        <section class="vhq-pulse" aria-labelledby="vhq-pulse-title">
+          <h4 id="vhq-pulse-title">Department Pulse</h4>
+          <div id="vhq-pulse-grid" class="vhq-pulse-grid" role="list"></div>
+        </section>
+        <section class="vhq-flow" aria-labelledby="vhq-flow-title">
+          <h4 id="vhq-flow-title">Operations Flow</h4>
+          <ol class="vhq-flow-line" id="vhq-flow-line">
+            <li data-status="LIVE"><span class="vhq-flow-name">Sales</span> <span class="vhq-flow-badge">LIVE</span> <span class="ev">EV-W2-007</span></li>
+            <li class="vhq-flow-arrow" aria-hidden="true">→</li>
+            <li data-status="LIVE"><span class="vhq-flow-name">Wizard</span> <span class="vhq-flow-badge">LIVE</span> <span class="ev">EV-W2-005</span></li>
+            <li class="vhq-flow-arrow" aria-hidden="true">→</li>
+            <li data-status="PARKED"><span class="vhq-flow-name">Order Desk</span> <span class="vhq-flow-badge">PARKED</span> <span class="ev">EV-W2-010</span></li>
+          </ol>
+          <p class="hint">Break visible: Order operational desk is not implemented — do not pretend execution exists.</p>
+        </section>
+        <section class="vhq-director-actions" aria-label="Director actions">
+          <h4>Director actions</h4>
+          <div class="vhq-director-actions__row">
+            <button type="button" class="secondary" data-vhq-jump="priorities">Focus priorities</button>
+            <button type="button" class="secondary" data-vhq-jump="queue">Focus queue</button>
+            <button type="button" class="secondary" id="vhq-action-audit">Open Audyt</button>
+            <button type="button" class="secondary" data-vhq-room="ai-agent-health">Agent Operations</button>
+            <a class="buttonish primary" href="https://zzpackage.flexgrafik.nl/wizard/" target="_blank" rel="noopener noreferrer">Open Wizard</a>
+          </div>
+        </section>
+      </section>
+      <section id="vhq-work" class="vhq-work" hidden aria-label="Room work view">
+        <div id="vhq-mount-work-queue" class="vhq-mount" data-vhq-mount="queue"></div>
+        <div id="vhq-mount-work-cs" class="vhq-mount" data-vhq-mount="cs"></div>
+      </section>
       <div class="vhq-building" id="vhq-building" aria-label="Virtual HQ building map">
         <!-- floors filled / enhanced by CSS; room buttons are the interactive map -->
         <section class="vhq-floor-band" data-floor="P3" aria-labelledby="vhq-floor-p3">
           <h3 id="vhq-floor-p3" class="vhq-floor-band__title">P3 — Director</h3>
           <div class="vhq-room-grid">
-            <button type="button" class="vhq-room vhq-room--mvp vhq-room--focal" data-room="mission-control" data-status="LIVE"><span class="vhq-room__name">Mission Control</span><span class="vhq-room__badge" data-status="LIVE">[LIVE]</span></button>
+            <button type="button" class="vhq-room vhq-room--mvp" data-room="mission-control" data-status="LIVE"><span class="vhq-room__name">Mission Control</span><span class="vhq-room__badge" data-status="LIVE">[LIVE]</span></button>
             <button type="button" class="vhq-room vhq-room--mvp" data-room="approval-vault" data-status="PARTIAL"><span class="vhq-room__name">Approval Vault</span><span class="vhq-room__badge" data-status="PARTIAL">[PARTIAL]</span></button>
             <button type="button" class="vhq-room vhq-room--mvp" data-room="ai-agent-health" data-status="DEGRADED"><span class="vhq-room__name">Agent Operations</span><span class="vhq-room__badge" data-status="DEGRADED">[DEGRADED]</span></button>
             <button type="button" class="vhq-room" data-room="boardroom" data-status="PARTIAL"><span class="vhq-room__name">Boardroom</span><span class="vhq-room__badge" data-status="PARTIAL">[PARTIAL]</span></button>
@@ -575,10 +647,10 @@
         <div class="vhq-panel__actions" id="vhq-panel-actions"></div>
       </aside>
     </div>
-    <p class="vhq-shell__hint hint">Esc / Close → Enter Virtual HQ · No walking · No 3D · Status = icon + text · Cache vhq-w01b</p>
+    <p class="vhq-shell__hint hint">Esc / Close → Operations Console · Sign in never blocked · No 3D · Cache vhq-w02b</p>
   </div>
 
   <div id="toast" class="toast" role="status" aria-live="polite" hidden></div>
-  <script src="app.js?v=vhq-w01b"></script>
+  <script src="app.js?v=vhq-w02b"></script>
 </body>
 </html>
