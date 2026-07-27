@@ -1,6 +1,6 @@
 {
   "project": "Jadzia-Core",
-  "last_updated": "2026-07-27 (VF-VHQ-W3-ROOMS-COMMERCIAL CLOSE · Founder-approved Commercial Rooms · HITL next)",
+  "last_updated": "2026-07-27 (VF-VHQ-W3.1-PRIMARY-SHELL CLOSE · Founder-approved Primary Shell · HITL commit→deploy)",
   "status": "active",
   "plan": "docs/ops/FLEXGRAFIK-VIRTUAL-HQ-PROGRAM.md",
   "active_gate": "",
@@ -23,10 +23,15 @@
     "vhq_w2_preclose": "docs/handoffs/2026-07-27-VF-VHQ-W2-MISSION-CONTROL-PRECLOSE.md",
     "vhq_w2_polish_preclose": "docs/handoffs/2026-07-27-VF-VHQ-W2-DIRECTOR-POLISH-PRECLOSE.md",
     "vhq_w2_close": "docs/handoffs/2026-07-27-VF-VHQ-W2-MISSION-CONTROL-CLOSE.md",
-    "vhq_w3": "completed · cache vhq-w03b · Founder CLOSE 2026-07-27 · uncommitted local",
+    "vhq_w3": "completed · cache vhq-w03b · Founder CLOSE 2026-07-27 · tip b237fd5",
     "vhq_w3_preclose": "docs/handoffs/2026-07-27-VF-VHQ-W3-ROOMS-COMMERCIAL-PRECLOSE.md",
     "vhq_w3_dogfood_truth": "docs/handoffs/2026-07-27-VF-VHQ-W3-FOUNDER-DOGFOOD-TRUTH.md",
     "vhq_w3_close": "docs/handoffs/2026-07-27-VF-VHQ-W3-ROOMS-COMMERCIAL-CLOSE.md",
+    "vhq_w31": "completed · cache vhq-w31b · Founder CLOSE 2026-07-27 · uncommitted local",
+    "vhq_w31_preclose": "docs/handoffs/2026-07-27-VF-VHQ-W3.1-PRIMARY-SHELL-PRECLOSE.md",
+    "vhq_w31_dogfood": "docs/handoffs/2026-07-27-VF-VHQ-W3.1-FINAL-REDOGFOOD.md",
+    "vhq_w31_legacy_fix": "docs/handoffs/2026-07-27-VF-VHQ-W3.1-LEGACY-ROLLBACK-FIX.md",
+    "vhq_w31_close": "docs/handoffs/2026-07-27-VF-VHQ-W3.1-PRIMARY-SHELL-CLOSE.md",
     "mvp_rooms": ["mission-control", "approval-vault", "ai-agent-health", "sales-room", "wizard-quote", "marketing-studio"],
     "mvp_room_labels": {
       "ai-agent-health": "Agent Operations",
@@ -66,6 +71,20 @@
       "paid_ads_parked_to_2026_08_06",
       "single_canonical_queue_list"
     ],
+    "preserved_w31": [
+      "primary_shell_view_hq_not_dialog",
+      "start_tab_mission_control",
+      "operations_console_secondary_route",
+      "five_tabs_unchanged",
+      "single_canonical_queue_list",
+      "esc_ladder_room_mc_console",
+      "url_history_push_replace_popstate",
+      "legacy_rollback_vhq_shell_legacy",
+      "legacy_portal_shell_to_body",
+      "sign_in_console_jwt_focus",
+      "honest_evidence_status_model",
+      "cache_vhq_w31b"
+    ],
     "vhq_w2_residuals": [
       "priorities_queue_need_session",
       "agent_os_vcms_post_auth_verification",
@@ -82,6 +101,14 @@
       "order_desk_parked_ev_w2_010",
       "ssh_degraded_inc_ssh_recovery_00"
     ],
+    "vhq_w31_residuals": [
+      "ssh_degraded_inc_ssh_recovery_00",
+      "finance_analytics_unverified_ev_w2_008",
+      "marketing_unverified_ev_w3_001",
+      "orders_production_parked_ev_w2_010",
+      "agent_os_vcms_partial",
+      "primary_hq_requires_founder_prod_dogfood_after_deploy"
+    ],
     "founder_d1_d7": {
       "D1": "auto-open HQ→MC with Sign in / Operations Console escape — no auth lockout",
       "D2": "Operations Console legacy path",
@@ -91,18 +118,18 @@
       "D6": "W2 local on W1 commits — no separate W1 deploy",
       "D7": "W2 activated"
     },
-    "proposed_next_gate": "VF-VHQ-W4-ROOMS-OPERATIONS",
+    "proposed_next_gate": "DEPLOY-VHQ-PRIMARY-SHELL",
     "proposed_next_gate_active": false,
-    "proposed_next": "HITL: commit W3 (exclude MKT) → optional deploy GO for tip with vhq-w03b. Do not auto-start W4."
+    "proposed_next": "HITL: COMMIT W3.1 ONLY (exclude MKT) → DEPLOY-VHQ-PRIMARY-SHELL → production dogfood. W4 stays parked until after prod dogfood + explicit GO."
   },
   "standing_go_closeout": false,
   "closeout_queue": [],
   "closeout_expires": "2026-08-01",
-  "next_human": "Approve W3-only commit staging list (exclude MKT). Then optional deploy GO. W4 stays parked until explicit GO.",
-  "next_agent": "WAIT Founder. No commit/deploy/W4 unless explicit GO. Do not touch MKT dirty files. Preserve Marketing UNVERIFIED EV-W3-001.",
+  "next_human": "COMMIT W3.1 ONLY (staging list in CLOSE) → then GO DEPLOY-VHQ-PRIMARY-SHELL → production dogfood. W4 parked until after prod dogfood.",
+  "next_agent": "WAIT Founder. No commit/deploy/W4 unless explicit GO. Do not touch MKT dirty files. Preserve primary shell + legacy rollback + Marketing UNVERIFIED EV-W3-001.",
   "budget_freeze_until": "2026-08-06",
   "budget_freeze_note": "Dowódca 2026-07-27: zero ad spend 10 dni — MKT work PARKED by Founder override",
-  "agent_rule": "1-1-1. VHQ W3 CLOSED. Preserve Sales/Wizard LIVE Work Views + Marketing UNVERIFIED EV-W3-001. No fake LIVE campaign. No 6th tab. No 3D. No Ads/Mollie. Deploy tylko ze zgoda. W4 only with GO.",
+  "agent_rule": "1-1-1. VHQ W3.1 CLOSED. Preserve Primary Shell (#view-hq) + legacy ?vhq_shell=legacy portal rollback. Sales/Wizard LIVE + Marketing UNVERIFIED EV-W3-001. No fake LIVE campaign. No 6th tab. No 3D. No Ads/Mollie. Deploy tylko ze zgoda. W4 only after prod dogfood + GO.",
   "sprints": {
     "remediation": "completed",
     "coi_phase_a": "deploy_complete",
@@ -2045,19 +2072,36 @@
       "note": "2026-07-27 CLOSED under Founder GO. Cache vhq-w03b. Preserve Sales LIVE EV-W2-007 · Wizard LIVE EV-W2-005 · Marketing UNVERIFIED — campaign state not verified · EV-W3-001. W4 remains parked / not auto-activated."
     },
     {
+      "id": "VF-VHQ-W3.1-PRIMARY-SHELL",
+      "sprint": "FlexGrafik Virtual HQ",
+      "task": "Migrate Virtual HQ from modal overlay to primary application shell; Start→MC; Esc ladder; URL history; legacy rollback",
+      "status": "completed",
+      "priority": "critical",
+      "owner": "agent",
+      "depends_on": ["VF-VHQ-W3-ROOMS-COMMERCIAL"],
+      "runtime_changes_allowed": true,
+      "risk_class": "UI architecture",
+      "allowed_paths": ["commander-ui/**", "docs/handoffs/**", "todo.json"],
+      "stop_conditions": ["no 6th tab", "no W4 auto", "no Ads/Mollie", "no MKT dirty commit", "deploy needs GO", "legacy rollback must work"],
+      "evidence_required": "primary + legacy final re-dogfood PASS; portal rollback visible; Esc ladder; Sign in JWT",
+      "dod": "HQ is primary #view-hq view; Console secondary; 5 tabs; single queue; Esc room→MC→Console; history; ?vhq_shell=legacy portal rollback usable; Sign in→JWT",
+      "checklist": "docs/handoffs/2026-07-27-VF-VHQ-W3.1-PRIMARY-SHELL-CLOSE.md",
+      "note": "2026-07-27 CLOSED under Founder GO after primary+legacy final re-dogfood. Cache vhq-w31b. Uncommitted local. W4 remains parked. Next: COMMIT W3.1 ONLY → DEPLOY-VHQ-PRIMARY-SHELL → prod dogfood."
+    },
+    {
       "id": "VF-VHQ-W4-ROOMS-OPERATIONS",
       "sprint": "FlexGrafik Virtual HQ",
       "task": "Ops floor shells: Order/Production/Preflight/Dispatch honest PARKED/PLANNED; LIVE only with SoT",
       "status": "parked",
       "priority": "high",
       "owner": "agent",
-      "depends_on": ["VF-VHQ-W2-MISSION-CONTROL"],
+      "depends_on": ["VF-VHQ-W3.1-PRIMARY-SHELL", "DEPLOY-VHQ-PRIMARY-SHELL"],
       "runtime_changes_allowed": true,
       "risk_class": "UI (+ data if Order SoT exists)",
-      "stop_conditions": ["no fake Order Desk LIVE", "no invent production dashboard"],
+      "stop_conditions": ["no fake Order Desk LIVE", "no invent production dashboard", "no auto-start before prod dogfood"],
       "evidence_required": "EV-W2-010 preserved until desk SoT; shells labeled PARKED/PLANNED",
       "dod": "Ops rooms visible and honest; no fabricated KPIs",
-      "note": "Parked. Order LIVE requires separate SoT gate."
+      "note": "Parked. Activate only after COMMIT→DEPLOY-VHQ-PRIMARY-SHELL→production dogfood + explicit GO."
     },
     {
       "id": "VF-VHQ-W5-OPERATIONS-BUS",
