@@ -1,0 +1,66 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1100 720" role="img" aria-labelledby="title desc">
+  <title id="title">FlexGrafik Virtual HQ — MVP building blueprint (docs-only)</title>
+  <desc id="desc">2D floor bands P3 to MAG with room status labels. Mission Control is the focal entry. No 3D. Status uses text not colour alone.</desc>
+  <rect width="1100" height="720" fill="#0e1218"/>
+  <text x="32" y="36" fill="#e8eef5" font-family="Segoe UI,Arial,sans-serif" font-size="20" font-weight="600">FlexGrafik Virtual HQ — 2D blueprint (DESIGN-00)</text>
+  <text x="32" y="58" fill="#8b9bb0" font-family="Segoe UI,Arial,sans-serif" font-size="12">Default entry to Mission Control · Teleport / Search always · 3D HARD-PARKED · Campus W4 PARKED</text>
+
+  <rect x="780" y="18" width="140" height="28" rx="6" fill="#1a2330" stroke="#5b8def"/>
+  <text x="798" y="37" fill="#cfe0ff" font-family="Segoe UI,Arial,sans-serif" font-size="12">Teleport Ctrl+K</text>
+  <rect x="930" y="18" width="140" height="28" rx="6" fill="#1a2330" stroke="#5b8def"/>
+  <text x="968" y="37" fill="#cfe0ff" font-family="Segoe UI,Arial,sans-serif" font-size="12">Search</text>
+
+  <rect x="24" y="78" width="1052" height="118" rx="10" fill="#152033" stroke="#5b8def" stroke-width="2"/>
+  <text x="40" y="100" fill="#8ec5ff" font-family="Segoe UI,Arial,sans-serif" font-size="14" font-weight="600">P3 — DIRECTOR FLOOR</text>
+  <rect x="40" y="112" width="150" height="70" rx="6" fill="#1b2838" stroke="#6a7d94"/>
+  <text x="52" y="138" fill="#d7e0ea" font-family="Segoe UI,Arial,sans-serif" font-size="12">Boardroom</text>
+  <text x="52" y="158" fill="#9aa8b8" font-family="Segoe UI,Arial,sans-serif" font-size="11">[PARTIAL] strategy</text>
+  <rect x="210" y="108" width="340" height="78" rx="8" fill="#1e3a5f" stroke="#7eb6ff" stroke-width="3"/>
+  <text x="228" y="138" fill="#ffffff" font-family="Segoe UI,Arial,sans-serif" font-size="16" font-weight="700">MISSION CONTROL * ENTRY</text>
+  <text x="228" y="160" fill="#b8d4ff" font-family="Segoe UI,Arial,sans-serif" font-size="12">[LIVE] EV-W2-001 · command table</text>
+  <rect x="570" y="112" width="230" height="70" rx="6" fill="#1b2838" stroke="#c9a227"/>
+  <text x="584" y="138" fill="#d7e0ea" font-family="Segoe UI,Arial,sans-serif" font-size="12">Approval Vault (MVP)</text>
+  <text x="584" y="158" fill="#e6c75a" font-family="Segoe UI,Arial,sans-serif" font-size="11">[PARTIAL] pending decisions</text>
+  <rect x="820" y="112" width="236" height="70" rx="6" fill="#1b2838" stroke="#e0a050"/>
+  <text x="834" y="138" fill="#d7e0ea" font-family="Segoe UI,Arial,sans-serif" font-size="12">Agent Operations (MVP)</text>
+  <text x="834" y="158" fill="#f0b060" font-family="Segoe UI,Arial,sans-serif" font-size="11">[DEGRADED] System Health / AI Health</text>
+
+  <rect x="24" y="210" width="1052" height="100" rx="10" fill="#12241c" stroke="#3d9b6e"/>
+  <text x="40" y="232" fill="#9BE1B0" font-family="Segoe UI,Arial,sans-serif" font-size="14" font-weight="600">P2 — INTELLIGENCE &amp; GOVERNANCE</text>
+  <text x="40" y="262" fill="#c5d0dc" font-family="Segoe UI,Arial,sans-serif" font-size="12">Finance/Analytics [UNVERIFIED] · Compliance/Audit [PARTIAL] · Knowledge [UNVERIFIED]</text>
+  <text x="40" y="284" fill="#c5d0dc" font-family="Segoe UI,Arial,sans-serif" font-size="12">Data &amp; AI Lab [PARTIAL] · VCMS / Agent OS zone [PARTIAL]</text>
+
+  <rect x="24" y="324" width="1052" height="118" rx="10" fill="#241c12" stroke="#c9a227"/>
+  <text x="40" y="346" fill="#F0D08A" font-family="Segoe UI,Arial,sans-serif" font-size="14" font-weight="600">P1 — COMMERCIAL</text>
+  <rect x="40" y="358" width="120" height="64" rx="6" fill="#2a2216" stroke="#6a7d94" stroke-dasharray="4 3"/>
+  <text x="50" y="384" fill="#d7e0ea" font-family="Segoe UI,Arial,sans-serif" font-size="11">Reception</text>
+  <text x="50" y="402" fill="#9aa8b8" font-family="Segoe UI,Arial,sans-serif" font-size="10">[PLANNED]</text>
+  <rect x="175" y="356" width="160" height="68" rx="6" fill="#2f3d28" stroke="#7eb67a" stroke-width="2"/>
+  <text x="188" y="382" fill="#e8ffe8" font-family="Segoe UI,Arial,sans-serif" font-size="12" font-weight="600">Sales Room MVP</text>
+  <text x="188" y="402" fill="#b8e0b0" font-family="Segoe UI,Arial,sans-serif" font-size="11">[LIVE] queue</text>
+  <rect x="350" y="356" width="180" height="68" rx="6" fill="#2f3d28" stroke="#7eb67a" stroke-width="2"/>
+  <text x="362" y="382" fill="#e8ffe8" font-family="Segoe UI,Arial,sans-serif" font-size="12" font-weight="600">Wizard / Quote MVP</text>
+  <text x="362" y="402" fill="#b8e0b0" font-family="Segoe UI,Arial,sans-serif" font-size="11">[LIVE] EV-W2-005</text>
+  <rect x="545" y="358" width="150" height="64" rx="6" fill="#2a2216" stroke="#8a7a40"/>
+  <text x="556" y="384" fill="#d7e0ea" font-family="Segoe UI,Arial,sans-serif" font-size="11">Marketing Studio</text>
+  <text x="556" y="402" fill="#e6c75a" font-family="Segoe UI,Arial,sans-serif" font-size="10">[UNVERIFIED]</text>
+  <rect x="710" y="358" width="150" height="64" rx="6" fill="#2a2216" stroke="#6a7d94" stroke-dasharray="4 3"/>
+  <text x="722" y="384" fill="#d7e0ea" font-family="Segoe UI,Arial,sans-serif" font-size="11">Client Support</text>
+  <text x="722" y="402" fill="#9aa8b8" font-family="Segoe UI,Arial,sans-serif" font-size="10">[PLANNED]</text>
+  <rect x="875" y="358" width="180" height="64" rx="6" fill="#2a2216" stroke="#6a7d94" stroke-dasharray="4 3"/>
+  <text x="888" y="384" fill="#d7e0ea" font-family="Segoe UI,Arial,sans-serif" font-size="11">Design Studio</text>
+  <text x="888" y="402" fill="#9aa8b8" font-family="Segoe UI,Arial,sans-serif" font-size="10">[PLANNED]</text>
+
+  <rect x="24" y="456" width="1052" height="100" rx="10" fill="#241616" stroke="#c07070"/>
+  <text x="40" y="478" fill="#F0AFA5" font-family="Segoe UI,Arial,sans-serif" font-size="14" font-weight="600">P0 — OPERATIONS</text>
+  <text x="40" y="508" fill="#d7e0ea" font-family="Segoe UI,Arial,sans-serif" font-size="12">Order Desk [PARKED] lock · Production Control [PARKED] · Preflight/Quality [PLANNED] · Dispatch/Returns [PARKED]</text>
+  <text x="40" y="530" fill="#9aa8b8" font-family="Segoe UI,Arial,sans-serif" font-size="11">Parked rooms look intentionally unavailable — not broken. Sheet explains why + dependency.</text>
+
+  <rect x="24" y="570" width="1052" height="88" rx="10" fill="#1a1d22" stroke="#7a8494"/>
+  <text x="40" y="592" fill="#C9D1D9" font-family="Segoe UI,Arial,sans-serif" font-size="14" font-weight="600">MAG — NETWORK</text>
+  <text x="40" y="620" fill="#d7e0ea" font-family="Segoe UI,Arial,sans-serif" font-size="12">Supplier Dock [PARKED] · Asset Warehouse [PLANNED] · Partner Production Network [PLANNED]</text>
+  <text x="40" y="640" fill="#9aa8b8" font-family="Segoe UI,Arial,sans-serif" font-size="11">Breadcrumb: HQ / floor / room · No walking · No avatars · No 3D</text>
+
+  <text x="32" y="690" fill="#8b9bb0" font-family="Segoe UI,Arial,sans-serif" font-size="11">Ops Bus: Sales [LIVE] to Wizard [LIVE] to Order [PARKED] break · Marketing/Finance = honest pins only</text>
+  <text x="32" y="708" fill="#5b6b7c" font-family="Segoe UI,Arial,sans-serif" font-size="10">docs-only SVG · VF-VHQ-DESIGN-00 · Talk and Buy inspiration only (no copy)</text>
+</svg>
