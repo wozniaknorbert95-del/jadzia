@@ -1627,7 +1627,7 @@ const VHQ_ROOMS = {
     sotHref: "#queue-list",
     limitation: "No invented CRM pipeline. JWT session required for live tickets.",
     mvp: true,
-    action: { type: "goto-home", target: "#queue-list", label: "Open Sales queue" },
+    action: { type: "focus-queue", label: "Focus Sales queue" },
   },
   "wizard-quote": {
     label: "Wizard / Quote Room",
@@ -1658,10 +1658,11 @@ const VHQ_ROOMS = {
     evidence: "EV-W3-001",
     lastVerified: "2026-07-27T15:13:35Z",
     owner: "Marketing/Ops",
-    sotLabel: "Marketing tab (observe)",
+    sotLabel: "Campaign SoT outside VHQ scope",
     sotHref: null,
-    limitation: "Campaign state not verified. No Ads execute from VHQ.",
-    mvp: false,
+    limitation:
+      "UNVERIFIED — campaign state not verified (EV-W3-001). Campaign SoT requires MKT / Ads Manager verification and is outside current Virtual HQ scope. Paid Ads PARKED until 2026-08-06. No Ads execute from VHQ.",
+    mvp: true,
     action: { type: "view", target: "marketing", label: "Open Marketing tab (observe)" },
   },
   "client-support": {
@@ -1850,6 +1851,7 @@ function vhqShowFloorBrowse(floor) {
   if (actions) actions.innerHTML = "";
   vhqSetMode("world");
   vhqRestoreAllSlots();
+  vhqShowWorkPanel(null);
 }
 
 /** Floor filter only — never auto-opens a room. */
@@ -2086,20 +2088,54 @@ function vhqOpenOperationsConsole(opts = {}) {
   if (enter) enter.focus();
 }
 
+function vhqShowWorkPanel(roomId) {
+  document.querySelectorAll(".vhq-work-panel").forEach((panel) => {
+    const match = panel.getAttribute("data-vhq-work") === roomId;
+    panel.hidden = !match;
+  });
+}
+
+function vhqUpdateWorkSessionBanner() {
+  const banner = document.getElementById("vhq-work-session-banner");
+  if (!banner) return;
+  const hasToken = typeof getToken === "function" && !!getToken();
+  if (!hasToken) {
+    banner.hidden = false;
+    banner.dataset.state = "nosession";
+    banner.textContent =
+      "Session required — Sign in / Open Operations Console to load Sales queue. No fake leads.";
+    return;
+  }
+  banner.hidden = true;
+  banner.textContent = "";
+  banner.removeAttribute("data-state");
+}
+
 function vhqApplyRoomChrome(roomId) {
   const room = VHQ_ROOMS[roomId];
   if (roomId === "mission-control") {
     vhqSetMode("command");
+    vhqShowWorkPanel(null);
     vhqMountSlotsForRoom("mission-control");
     vhqRenderPulse();
     vhqUpdateSessionBanner();
   } else if (roomId === "sales-room") {
     vhqSetMode("work");
+    vhqShowWorkPanel("sales-room");
     vhqMountSlotsForRoom("sales-room");
-    vhqUpdateSessionBanner();
+    vhqUpdateWorkSessionBanner();
+  } else if (roomId === "wizard-quote") {
+    vhqSetMode("work");
+    vhqRestoreAllSlots();
+    vhqShowWorkPanel("wizard-quote");
+  } else if (roomId === "marketing-studio") {
+    vhqSetMode("work");
+    vhqRestoreAllSlots();
+    vhqShowWorkPanel("marketing-studio");
   } else {
     vhqSetMode("world");
     vhqRestoreAllSlots();
+    vhqShowWorkPanel(null);
   }
   // keep panel filled for non-command rooms; for MC still useful as compact status
   if (!room) return;
@@ -2235,6 +2271,14 @@ function vhqRunAction(action) {
     showView(action.target);
     return;
   }
+  if (action.type === "focus-queue") {
+    if (vhqCurrentRoom !== "sales-room") {
+      vhqRenderRoom("sales-room");
+    }
+    const el = document.getElementById("queue-list");
+    if (el) el.scrollIntoView({ behavior: "smooth", block: "start" });
+    return;
+  }
   if (action.type === "goto-home") {
     vhqClose();
     showView("home");
@@ -2266,6 +2310,12 @@ function bindVhqShell() {
   });
   document.getElementById("vhq-action-audit")?.addEventListener("click", () => {
     vhqRunAction({ type: "view", target: "audit" });
+  });
+  document.getElementById("vhq-sales-focus-queue")?.addEventListener("click", () => {
+    vhqRunAction({ type: "focus-queue" });
+  });
+  document.getElementById("vhq-marketing-observe")?.addEventListener("click", () => {
+    vhqRunAction({ type: "view", target: "marketing" });
   });
   document.querySelectorAll("[data-vhq-jump]").forEach((btn) => {
     btn.addEventListener("click", () => {

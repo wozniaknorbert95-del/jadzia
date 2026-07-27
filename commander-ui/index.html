@@ -13,9 +13,9 @@
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" href="styles.css?v=vhq-w02b" />
+  <link rel="stylesheet" href="styles.css?v=vhq-w03b" />
 </head>
-<body data-vhq-w2="1">
+<body data-vhq-w2="1" data-vhq-w3="1">
   <a class="skip-link" href="#main">Przejdź do treści</a>
   <div id="delegat-banner" class="banner warning-banner" hidden role="alert">
     Brak Delegata — skonfiguruj email w Ustawieniach (eskalacja 24h).
@@ -157,10 +157,10 @@
             <span class="hop-meta">P0 · Orders &amp; Production · PARKED — operational desk not implemented</span>
             <span class="hop-state">PARKED · no desk</span>
           </div>
-          <div class="map-link map-status is-no-campaign" role="status" tabindex="-1" data-room-id="marketing-studio" data-floor="P1" data-campus-state="NO_ACTIVE_CAMPAIGN" aria-label="P1 Marketing Studio. No active campaign. No active-work link.">
+          <div class="map-link map-status is-unverified" role="status" tabindex="-1" data-room-id="marketing-studio" data-floor="P1" data-campus-state="UNVERIFIED" aria-label="P1 Marketing Studio. UNVERIFIED — campaign state not verified. EV-W3-001. No active-work claim.">
             <span class="hop-label">Marketing Studio</span>
-            <span class="hop-meta">P1 · Marketing Studio · NO ACTIVE CAMPAIGN</span>
-            <span class="hop-state">NO ACTIVE CAMPAIGN · execution out of scope</span>
+            <span class="hop-meta">P1 · Marketing Studio · UNVERIFIED — campaign state not verified</span>
+            <span class="hop-state">UNVERIFIED · EV-W3-001 · campaign SoT outside VHQ scope</span>
           </div>
           <div class="map-link map-status" role="status" tabindex="-1" data-room-id="compliance" data-floor="P3" data-campus-state="PARTIAL" aria-label="P3 Compliance and Approvals. PARTIAL. Settings to Audit path verified. Audit-chain data needs authenticated session.">
             <span class="hop-label">Compliance / Approvals</span>
@@ -219,14 +219,14 @@
             </header>
             <p class="truth-card__status">UNVERIFIED — campaign state not verified · <span class="ev">EV-W3-001</span></p>
             <p class="truth-card__action"><span class="k">Primary action:</span> <span class="muted">Observe only — no execution in Campus sessions</span></p>
-            <p class="truth-card__sot"><span class="k">SoT:</span> No live campaign SoT in Campus scope — verifying active-campaign state requires MKT materials / Ads Manager (excluded by Founder override)</p>
+            <p class="truth-card__sot"><span class="k">SoT:</span> Campaign SoT requires MKT / Ads Manager verification and is outside current Virtual HQ scope.</p>
             <ul class="truth-card__kpi" aria-label="KPI Marketing">
               <li><span class="k">Campaign state:</span> insufficient_data</li>
               <li><span class="k">wizard_starts (UTM):</span> insufficient_data</li>
               <li><span class="k">KPI-CPA-WIZARD:</span> PARKED (freeze · €0 paid) · not a measured value</li>
             </ul>
             <p class="truth-card__meta"><span class="k">Owner:</span> Marketing/Ops · <span class="k">last_verified:</span> 2026-07-27T15:13:35Z</p>
-            <p class="truth-card__limit"><span class="k">Limitation:</span> EV-W3-001 = W3 pre-close finding only (campaign not probed). Map label NO ACTIVE CAMPAIGN is not campaign proof. No MKT scope in this wave. Never EV-W2-010 for campaign claim.</p>
+            <p class="truth-card__limit"><span class="k">Limitation:</span> EV-W3-001 — do not invent campaign LIVE or campaign-absence claims. Paid Ads PARKED to 2026-08-06. No Ads execute from VHQ.</p>
           </article>
 
           <article class="truth-card" data-room-id="orders-production" data-truth-status="PARKED">
@@ -432,7 +432,7 @@
           <li>P3 System Health/DA LIVE · technical readiness probe · EV-W2-006 — NOT a Production desk: /api/v1/design-agent/health</li>
           <li>P1 Sales queue LIVE · EV-W2-007: #queue-list on Start</li>
           <li>P3 Compliance PARTIAL · path EV-W2-009 · chain data needs session (Ustawienia → Audyt)</li>
-          <li>P2 Analytics UNVERIFIED finance · Analityka path OK · P0 Orders PARKED · P1 Marketing NO ACTIVE CAMPAIGN · MAG Supplier PARKED</li>
+          <li>P2 Analytics UNVERIFIED finance · Analityka path OK · P0 Orders PARKED · P1 Marketing UNVERIFIED — campaign state not verified (EV-W3-001) · MAG Supplier PARKED</li>
           <li>W3 Truth Cards pilot (Home): Mission Control · Wizard · Marketing Studio · Order Desk · Finance — read-only · campus-w03</li>
         </ul>
         <button type="submit">Zapisz</button>
@@ -582,8 +582,73 @@
         </section>
       </section>
       <section id="vhq-work" class="vhq-work" hidden aria-label="Room work view">
-        <div id="vhq-mount-work-queue" class="vhq-mount" data-vhq-mount="queue"></div>
-        <div id="vhq-mount-work-cs" class="vhq-mount" data-vhq-mount="cs"></div>
+        <article id="vhq-work-sales" class="vhq-work-panel" hidden data-vhq-work="sales-room" aria-labelledby="vhq-work-sales-title">
+          <header class="vhq-work-head">
+            <p class="vhq-work-eyebrow">Sales Room · [LIVE] · EV-W2-007</p>
+            <h3 id="vhq-work-sales-title">Which lead needs a human push now?</h3>
+            <p class="hint">Disposition Ack / Snooze / Close on the real queue. No invented CRM pipeline.</p>
+          </header>
+          <p id="vhq-work-session-banner" class="vhq-session-banner" role="status" aria-live="polite" hidden></p>
+          <div class="vhq-handoff-strip" aria-label="Commercial handoff">
+            <span data-status="LIVE">Sales LIVE</span>
+            <span class="vhq-flow-arrow" aria-hidden="true">→</span>
+            <span data-status="LIVE">Wizard LIVE</span>
+            <span class="vhq-flow-arrow" aria-hidden="true">→</span>
+            <span data-status="PARKED">Order Desk PARKED</span>
+          </div>
+          <div class="vhq-work-actions">
+            <button type="button" class="secondary" id="vhq-sales-focus-queue">Focus queue</button>
+            <button type="button" class="primary" id="vhq-sales-open-wizard" data-vhq-room="wizard-quote">Open Wizard / Quote Room</button>
+          </div>
+          <div id="vhq-mount-work-queue" class="vhq-mount" data-vhq-mount="queue"></div>
+          <div id="vhq-mount-work-cs" class="vhq-mount" data-vhq-mount="cs"></div>
+          <p class="hint">SoT: Commander queue #queue-list · Primary = disposition L1 in place.</p>
+        </article>
+        <article id="vhq-work-wizard" class="vhq-work-panel" hidden data-vhq-work="wizard-quote" aria-labelledby="vhq-work-wizard-title">
+          <header class="vhq-work-head">
+            <p class="vhq-work-eyebrow">Wizard / Quote · [LIVE] · EV-W2-005</p>
+            <h3 id="vhq-work-wizard-title">Is the cash machine reachable and healthy?</h3>
+            <p class="hint">Wizard SPA Stap 1–9. No fake conversion % or revenue.</p>
+          </header>
+          <dl class="vhq-work-meta">
+            <div><dt>Status</dt><dd>[LIVE] · Wizard SPA Stap 1–9</dd></div>
+            <div><dt>SoT</dt><dd><a href="https://zzpackage.flexgrafik.nl/wizard/" target="_blank" rel="noopener noreferrer">https://zzpackage.flexgrafik.nl/wizard/</a></dd></div>
+            <div><dt>Evidence</dt><dd>EV-W2-005 · last_verified 2026-07-27T14:22:45Z</dd></div>
+            <div><dt>KPI</dt><dd>wizard_starts → <strong>insufficient_data</strong> (no fresh GA4/INT-009 snapshot)</dd></div>
+          </dl>
+          <div class="vhq-work-actions vhq-work-actions--primary">
+            <a class="buttonish primary vhq-cta-wizard" href="https://zzpackage.flexgrafik.nl/wizard/" target="_blank" rel="noopener noreferrer">Open Wizard</a>
+            <button type="button" class="secondary" id="vhq-wizard-order-parked" data-vhq-room="order-desk">Order Desk handoff [PARKED]</button>
+            <button type="button" class="secondary" data-vhq-room="sales-room">Back to Sales</button>
+          </div>
+          <aside class="vhq-work-child" aria-label="Future handoff">
+            <p><strong>Future handoff → Order Desk [PARKED]</strong></p>
+            <p class="hint">Order operational desk is not implemented (EV-W2-010). Do not pretend execution exists.</p>
+            <p class="hint">Limitation: Mollie LIVE / Purchase = L4 separate Founder GO — not from this room.</p>
+          </aside>
+        </article>
+        <article id="vhq-work-marketing" class="vhq-work-panel" hidden data-vhq-work="marketing-studio" aria-labelledby="vhq-work-marketing-title">
+          <header class="vhq-work-head">
+            <p class="vhq-work-eyebrow">Marketing Studio · honest pin</p>
+            <h3 id="vhq-work-marketing-title">What organic work is ready — and what must stay parked?</h3>
+          </header>
+          <div class="vhq-honesty-banners">
+            <p class="vhq-honesty-banner" data-status="UNVERIFIED" role="status">UNVERIFIED — campaign state not verified · EV-W3-001</p>
+            <p class="vhq-honesty-banner" data-status="PARKED" role="status">[PARKED] Paid Ads frozen until 2026-08-06 · €0 spend · no Ads execute from VHQ</p>
+          </div>
+          <dl class="vhq-work-meta">
+            <div><dt>Status</dt><dd>UNVERIFIED — campaign state not verified</dd></div>
+            <div><dt>Evidence</dt><dd>EV-W3-001</dd></div>
+            <div><dt>Explanation</dt><dd>Campaign SoT requires MKT / Ads Manager verification and is outside current Virtual HQ scope.</dd></div>
+            <div><dt>Campaign KPIs</dt><dd>insufficient_data</dd></div>
+            <div><dt>Primary action</dt><dd>Observe Marketing tab only — no publish / Ads from HQ</dd></div>
+          </dl>
+          <div class="vhq-work-actions">
+            <button type="button" class="primary" id="vhq-marketing-observe">Open Marketing tab (observe)</button>
+            <button type="button" class="secondary" data-vhq-room="mission-control">Back to Mission Control</button>
+          </div>
+          <p class="hint">Hard STOP: no Ads Manager, no paid spend, no fake campaign LIVE, no MKT file edits from this room.</p>
+        </article>
       </section>
       <div class="vhq-building" id="vhq-building" aria-label="Virtual HQ building map">
         <!-- floors filled / enhanced by CSS; room buttons are the interactive map -->
@@ -612,7 +677,7 @@
             <button type="button" class="vhq-room" data-room="reception" data-status="PLANNED"><span class="vhq-room__name">Reception</span><span class="vhq-room__badge" data-status="PLANNED">[PLANNED]</span></button>
             <button type="button" class="vhq-room vhq-room--mvp" data-room="sales-room" data-status="LIVE"><span class="vhq-room__name">Sales Room</span><span class="vhq-room__badge" data-status="LIVE">[LIVE]</span></button>
             <button type="button" class="vhq-room vhq-room--mvp" data-room="wizard-quote" data-status="LIVE"><span class="vhq-room__name">Wizard / Quote</span><span class="vhq-room__badge" data-status="LIVE">[LIVE]</span></button>
-            <button type="button" class="vhq-room" data-room="marketing-studio" data-status="UNVERIFIED"><span class="vhq-room__name">Marketing Studio</span><span class="vhq-room__badge" data-status="UNVERIFIED">[UNVERIFIED]</span></button>
+            <button type="button" class="vhq-room vhq-room--mvp" data-room="marketing-studio" data-status="UNVERIFIED"><span class="vhq-room__name">Marketing Studio</span><span class="vhq-room__badge" data-status="UNVERIFIED">[UNVERIFIED]</span></button>
             <button type="button" class="vhq-room" data-room="client-support" data-status="PLANNED"><span class="vhq-room__name">Client Support</span><span class="vhq-room__badge" data-status="PLANNED">[PLANNED]</span></button>
             <button type="button" class="vhq-room" data-room="design-studio" data-status="PLANNED"><span class="vhq-room__name">Design Studio</span><span class="vhq-room__badge" data-status="PLANNED">[PLANNED]</span></button>
           </div>
@@ -647,10 +712,10 @@
         <div class="vhq-panel__actions" id="vhq-panel-actions"></div>
       </aside>
     </div>
-    <p class="vhq-shell__hint hint">Esc / Close → Operations Console · Sign in never blocked · No 3D · Cache vhq-w02b</p>
+    <p class="vhq-shell__hint hint">Esc / Close → Operations Console · Sign in never blocked · No 3D · Cache vhq-w03b</p>
   </div>
 
   <div id="toast" class="toast" role="status" aria-live="polite" hidden></div>
-  <script src="app.js?v=vhq-w02b"></script>
+  <script src="app.js?v=vhq-w03b"></script>
 </body>
 </html>
