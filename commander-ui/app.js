@@ -264,7 +264,8 @@ function showUndoBar(entryId) {
 
 function bindSystemMapHops() {
   const root = document.getElementById("system-map-links");
-  if (!root || root.dataset.hopsBound === "1") return;
+  if (!root) return;
+  if (root.dataset.hopsBound === "1") return;
   root.dataset.hopsBound = "1";
   root.querySelectorAll("a.map-link").forEach((link) => {
     link.addEventListener("click", () => {
@@ -1473,9 +1474,11 @@ bindNavButtons("#main-nav .nav-btn");
 bindNavButtons("#bottom-nav .nav-btn");
 bindSystemMapHops();
 
-/* ===== VF-VHQ-W1-SHELL (minimal shell state; no new APIs) ===== */
+/* ===== VF-VHQ-W1-SHELL + W3.2 Room Manifest (sole SoT) ===== */
+/** @type {Record<string, object>} */
 const VHQ_ROOMS = {
   "mission-control": {
+    id: "mission-control",
     label: "Mission Control",
     floor: "P3",
     purpose: "Company-wide priorities, alerts, approvals and system health",
@@ -1486,10 +1489,27 @@ const VHQ_ROOMS = {
     sotLabel: "Commander Home priorities / queue",
     sotHref: "#priorities",
     limitation: "Queue payload needs Commander session JWT.",
-    mvp: true,
     action: { type: "goto-home", target: "#priorities", label: "Open priorities / queue" },
+    mvp: true,
+    pulse: true,
+    truthPilot: true,
+    floorCard: true,
+    mapHop: {
+      href: null,
+      interactive: false,
+      label: "Mission Control",
+      meta: "P3 · Mission Control · priorities, alerts, approvals, system health",
+    },
+    kpi: [
+      { id: "KPI-CEO-COLD-OPEN", value: "insufficient_data", note: "no timed dogfood in this window" },
+      {
+        id: "Worker health",
+        value: "DEGRADED · ssh_connection=error · EV-W2-011 · INC-SSH-RECOVERY-00",
+      },
+    ],
   },
   "approval-vault": {
+    id: "approval-vault",
     label: "Approval Vault",
     floor: "P3",
     purpose: "Pending human approvals and audit trail",
@@ -1501,12 +1521,21 @@ const VHQ_ROOMS = {
     sotHref: null,
     limitation:
       "Path Settings→Audyt verified PARTIAL; hash-chain detail needs authenticated session. No autonomous finance.",
-    mvp: true,
     action: { type: "view", target: "audit", label: "Open Audyt" },
-    extraHtml:
-      '<p class="hint">L0–L4 policy applies. L3/L4 require explicit Founder GO. No Mollie/Ads from this room.</p>',
+    mvp: true,
+    pulse: false,
+    truthPilot: false,
+    floorCard: true,
+    briefVault: true,
+    links: [
+      {
+        text: "L0–L4 policy applies. L3/L4 require explicit Founder GO. No Mollie/Ads from this room.",
+        href: null,
+      },
+    ],
   },
   "ai-agent-health": {
+    id: "ai-agent-health",
     label: "Agent Operations",
     floor: "P3",
     purpose: "Agent / worker health overview (System Health / AI Health sub-area)",
@@ -1516,20 +1545,31 @@ const VHQ_ROOMS = {
     owner: "Ops/COI",
     sotLabel: "Worker health · Design Agent health · Agent OS · VCMS",
     sotHref: null,
-    limitation:
-      "SSH DEGRADED is pre-existing (INC-SSH-RECOVERY-00). OS/VCMS post-auth remain PARTIAL.",
-    mvp: true,
+    limitation: "SSH DEGRADED is pre-existing (INC-SSH-RECOVERY-00). OS/VCMS post-auth remain PARTIAL.",
     action: { type: "view", target: "agents", label: "Open Agenci tab" },
-    extraHtml:
-      "<p><strong>Sub-area: System Health / AI Health</strong></p>" +
-      "<ul>" +
-      "<li>[DEGRADED] Worker SSH · ssh_connection=error · EV-W2-011 · INC-SSH-RECOVERY-00</li>" +
-      '<li>[LIVE] Design Agent technical probe · EV-W2-006 — NOT a Production desk · <a href="/api/v1/design-agent/health" target="_blank" rel="noopener noreferrer">/api/v1/design-agent/health</a></li>' +
-      '<li>[PARTIAL] Agent OS · <a href="https://os.flexgrafik.nl" target="_blank" rel="noopener noreferrer">os.flexgrafik.nl</a></li>' +
-      '<li>[PARTIAL] VCMS · <a href="https://cmd.flexgrafik.nl" target="_blank" rel="noopener noreferrer">cmd.flexgrafik.nl</a></li>' +
-      "</ul>",
+    mvp: true,
+    pulse: true,
+    truthPilot: false,
+    floorCard: true,
+    criticalPin: true,
+    criticalDetail:
+      "INC-SSH-RECOVERY-00 · static verified Campus evidence. Not a live session health probe — worker health refresh needs JWT / Agent Operations.",
+    links: [
+      { text: "Sub-area: System Health / AI Health", href: null },
+      {
+        text: "[DEGRADED] Worker SSH · ssh_connection=error · EV-W2-011 · INC-SSH-RECOVERY-00",
+        href: null,
+      },
+      {
+        text: "[LIVE] Design Agent technical probe · EV-W2-006 — NOT a Production desk",
+        href: "/api/v1/design-agent/health",
+      },
+      { text: "[PARTIAL] Agent OS", href: "https://os.flexgrafik.nl" },
+      { text: "[PARTIAL] VCMS", href: "https://cmd.flexgrafik.nl" },
+    ],
   },
   boardroom: {
+    id: "boardroom",
     label: "Boardroom",
     floor: "P3",
     purpose: "Strategy alignment to master-plan / scorecard",
@@ -1541,22 +1581,39 @@ const VHQ_ROOMS = {
     sotHref: null,
     limitation: "Docs LIVE; no interactive board UI in W1.",
     mvp: false,
+    pulse: false,
+    truthPilot: false,
+    floorCard: true,
   },
   "analytics-finance": {
+    id: "analytics-finance",
+    aliases: ["analytics", "finance-analytics"],
     label: "Finance / Analytics",
     floor: "P2",
-    purpose: "Revenue / margin visibility via existing Analityka tab",
+    purpose: "Revenue / margin visibility via existing Analityka tab — not a Finance Room agent",
     status: "UNVERIFIED",
     evidence: "EV-W2-008",
     lastVerified: "2026-07-27T14:24:00Z",
     owner: "Finance/Ops",
-    sotLabel: "Commander Analityka tab",
+    sotLabel: "Existing Analytics surface (Commander tab Analityka) — Finance data UNVERIFIED",
     sotHref: null,
-    limitation: "Finance data UNVERIFIED. No numeric KPI in VHQ. Mollie/Purchase = L4 separate GO.",
-    mvp: false,
+    limitation: "Path-only evidence EV-W2-008. Purchase/Mollie PARK. No fake revenue numbers.",
     action: { type: "view", target: "analytics", label: "Open Analityka tab" },
+    mvp: false,
+    pulse: true,
+    truthPilot: true,
+    floorCard: true,
+    mapHop: {
+      href: null,
+      interactive: false,
+      label: "Analytics",
+      meta: "P2 · Analytics · Finance data UNVERIFIED — use tab Analityka (existing)",
+    },
+    kpi: [{ id: "Finance KPI", value: "insufficient_data", note: "no finance KPI without authenticated freshness" }],
   },
   "compliance-audit": {
+    id: "compliance-audit",
+    aliases: ["compliance"],
     label: "Compliance / Audit",
     floor: "P2",
     purpose: "Hard STOP list, parks, audit chain",
@@ -1567,10 +1624,21 @@ const VHQ_ROOMS = {
     sotLabel: "Audyt / parks",
     sotHref: null,
     limitation: "Path OK; chain body needs session.",
-    mvp: false,
     action: { type: "view", target: "audit", label: "Open Audyt" },
+    mvp: false,
+    pulse: true,
+    truthPilot: false,
+    floorCard: true,
+    mapHop: {
+      href: null,
+      interactive: false,
+      label: "Compliance / Approvals",
+      meta: "P3 · Compliance / Approvals · Ustawienia → Audyt path verified",
+      mapFloor: "P3",
+    },
   },
   "knowledge-library": {
+    id: "knowledge-library",
     label: "Knowledge Library",
     floor: "P2",
     purpose: "Canonical docs index",
@@ -1581,14 +1649,24 @@ const VHQ_ROOMS = {
     sotLabel: "VCMS docs (Basic Auth)",
     sotHref: "https://cmd.flexgrafik.nl/docs/",
     limitation: "Docs body unseen in W2 window (Basic Auth).",
-    mvp: false,
     action: {
       type: "external",
       href: "https://cmd.flexgrafik.nl/docs/",
       label: "Open Knowledge docs hop",
     },
+    mvp: false,
+    pulse: false,
+    truthPilot: false,
+    floorCard: true,
+    mapHop: {
+      href: "https://cmd.flexgrafik.nl/docs/",
+      interactive: true,
+      label: "Knowledge",
+      meta: "P2 · Knowledge · ecosystem docs",
+    },
   },
   "data-ai-lab": {
+    id: "data-ai-lab",
     label: "Data & AI Lab",
     floor: "P2",
     purpose: "MB propose / experiments — no Ads execute",
@@ -1599,10 +1677,14 @@ const VHQ_ROOMS = {
     sotLabel: "Marketing Decision Rail",
     sotHref: null,
     limitation: "Propose-only. Campaign state UNVERIFIED. No Ads from VHQ.",
-    mvp: false,
     action: { type: "view", target: "marketing", label: "Open Marketing tab" },
+    mvp: false,
+    pulse: false,
+    truthPilot: false,
+    floorCard: true,
   },
   "vcms-os-zone": {
+    id: "vcms-os-zone",
     label: "VCMS / Agent OS zone",
     floor: "P2",
     purpose: "Govern + Build control hops (separate apps)",
@@ -1614,11 +1696,42 @@ const VHQ_ROOMS = {
     sotHref: "https://cmd.flexgrafik.nl",
     limitation: "Auth challenge OK; post-auth destination PARTIAL.",
     mvp: false,
-    extraHtml:
-      '<p><a class="buttonish" href="https://cmd.flexgrafik.nl" target="_blank" rel="noopener noreferrer">Open VCMS</a> ' +
-      '<a class="buttonish" href="https://os.flexgrafik.nl" target="_blank" rel="noopener noreferrer">Open Agent OS</a></p>',
+    pulse: false,
+    truthPilot: false,
+    floorCard: true,
+    mapHops: [
+      {
+        id: "agent-os",
+        label: "Agent OS",
+        href: "https://os.flexgrafik.nl",
+        interactive: true,
+        status: "PARTIAL",
+        evidence: null,
+        lastVerified: null,
+        meta: "P3 · Agent OS · build HITL / task approve",
+        stateText: "PARTIAL · auth OK · destination HITL",
+        mapFloor: "P3",
+      },
+      {
+        id: "vcms",
+        label: "VCMS",
+        href: "https://cmd.flexgrafik.nl",
+        interactive: true,
+        status: "PARTIAL",
+        evidence: null,
+        lastVerified: null,
+        meta: "P3 · VCMS · governance / conflicts",
+        stateText: "PARTIAL · auth OK · destination HITL",
+        mapFloor: "P3",
+      },
+    ],
+    links: [
+      { text: "Open VCMS", href: "https://cmd.flexgrafik.nl" },
+      { text: "Open Agent OS", href: "https://os.flexgrafik.nl" },
+    ],
   },
   reception: {
+    id: "reception",
     label: "Reception",
     floor: "P1",
     purpose: "First contact — widget / Telegram",
@@ -1630,8 +1743,13 @@ const VHQ_ROOMS = {
     sotHref: null,
     limitation: "Capability exists in Jadzia; HQ Work View not built in W1.",
     mvp: false,
+    pulse: false,
+    truthPilot: false,
+    floorCard: true,
   },
   "sales-room": {
+    id: "sales-room",
+    aliases: ["sales-queue"],
     label: "Sales Room",
     floor: "P1",
     purpose: "Hot leads and sales CTAs",
@@ -1642,10 +1760,23 @@ const VHQ_ROOMS = {
     sotLabel: "Commander queue #queue-list",
     sotHref: "#queue-list",
     limitation: "No invented CRM pipeline. JWT session required for live tickets.",
-    mvp: true,
     action: { type: "focus-queue", label: "Focus Sales queue" },
+    mvp: true,
+    pulse: true,
+    truthPilot: false,
+    floorCard: true,
+    flowOrder: 1,
+    pulseLabel: "Sales",
+    mapHop: {
+      href: "#queue-list",
+      interactive: true,
+      label: "Sales · leads queue",
+      meta: "P1 · Sales · CRITICAL / ACTION queue on this page",
+    },
   },
   "wizard-quote": {
+    id: "wizard-quote",
+    aliases: ["showroom-wizard"],
     label: "Wizard / Quote Room",
     floor: "P1",
     purpose: "Cash path — ZZP branding Wizard (min EUR 199)",
@@ -1657,31 +1788,78 @@ const VHQ_ROOMS = {
     sotHref: "https://zzpackage.flexgrafik.nl/wizard/",
     limitation:
       "No fake conversion KPI. Order Desk handoff PARKED. Mollie LIVE = L4 separate GO.",
-    mvp: true,
     action: {
       type: "external",
       href: "https://zzpackage.flexgrafik.nl/wizard/",
       label: "Open Wizard",
     },
-    extraHtml:
-      '<p class="hint">Future handoff → Order Desk [PARKED]: operational desk not implemented (EV-W2-010).</p>',
+    mvp: true,
+    pulse: true,
+    truthPilot: true,
+    floorCard: true,
+    flowOrder: 2,
+    pulseLabel: "Wizard",
+    mapHop: {
+      href: "https://zzpackage.flexgrafik.nl/wizard/",
+      interactive: true,
+      label: "Wizard / Quote",
+      meta: "P1 · Wizard / Quote · cash path",
+    },
+    kpi: [
+      {
+        id: "KPI-MKT-WIZARD-STARTS",
+        value: "insufficient_data",
+        note: "no fresh GA4/INT-009 snapshot",
+      },
+      { id: "Hop destination", value: "LIVE · no login wall · EV-W2-005" },
+    ],
+    honesty: [
+      {
+        status: "PARKED",
+        text: "Future handoff → Order Desk [PARKED] — operational desk not implemented (EV-W2-010).",
+      },
+    ],
   },
   "marketing-studio": {
+    id: "marketing-studio",
     label: "Marketing Studio",
     floor: "P1",
-    purpose: "Organic HITL surface; paid Ads frozen",
+    purpose: "Organic HITL surface — paid Ads out of scope in freeze",
     status: "UNVERIFIED",
     evidence: "EV-W3-001",
     lastVerified: "2026-07-27T15:13:35Z",
     owner: "Marketing/Ops",
-    sotLabel: "Campaign SoT outside VHQ scope",
+    sotLabel: "Campaign SoT requires MKT / Ads Manager verification and is outside current Virtual HQ scope.",
     sotHref: null,
     limitation:
-      "UNVERIFIED — campaign state not verified (EV-W3-001). Campaign SoT requires MKT / Ads Manager verification and is outside current Virtual HQ scope. Paid Ads PARKED until 2026-08-06. No Ads execute from VHQ.",
-    mvp: true,
+      "EV-W3-001 — do not invent campaign LIVE or campaign-absence claims. Paid Ads PARKED to 2026-08-06. No Ads execute from VHQ.",
     action: { type: "view", target: "marketing", label: "Open Marketing tab (observe)" },
+    mvp: true,
+    pulse: true,
+    truthPilot: true,
+    floorCard: true,
+    pulseLabel: "Marketing",
+    mapHop: {
+      href: null,
+      interactive: false,
+      label: "Marketing Studio",
+      meta: "P1 · Marketing Studio · UNVERIFIED — campaign state not verified",
+    },
+    honesty: [
+      { status: "UNVERIFIED", text: "UNVERIFIED — campaign state not verified · EV-W3-001" },
+      {
+        status: "PARKED",
+        text: "[PARKED] Paid Ads frozen until 2026-08-06 · €0 spend · no Ads execute from VHQ",
+      },
+    ],
+    kpi: [
+      { id: "Campaign state", value: "insufficient_data" },
+      { id: "wizard_starts (UTM)", value: "insufficient_data" },
+      { id: "KPI-CPA-WIZARD", value: "PARKED (freeze · €0 paid) · not a measured value" },
+    ],
   },
   "client-support": {
+    id: "client-support",
     label: "Client Support",
     floor: "P1",
     purpose: "Post-sale CS follow-up",
@@ -1693,36 +1871,91 @@ const VHQ_ROOMS = {
     sotHref: null,
     limitation: "HQ room shell PLANNED in W1.",
     mvp: false,
+    pulse: false,
+    truthPilot: false,
+    floorCard: true,
   },
   "design-studio": {
+    id: "design-studio",
     label: "Design Studio",
     floor: "P1",
     purpose: "Mockups / briefs before price",
     status: "PLANNED",
-    evidence: "EV-W2-006",
-    lastVerified: "2026-07-27T14:22:45Z",
+    evidence: null,
+    lastVerified: null,
     owner: "Design/Ops",
     sotLabel: "DA health / Wizard DA",
-    sotHref: "/api/v1/design-agent/health",
-    limitation: "Technical probe LIVE ≠ Production desk. Room Work View PLANNED.",
+    sotHref: null,
+    limitation: "Technical probe LIVE ≠ Production desk. Room Work View PLANNED. See design-agent-probe.",
     mvp: false,
+    pulse: false,
+    truthPilot: false,
+    floorCard: true,
+  },
+  "design-agent-probe": {
+    id: "design-agent-probe",
+    label: "System Health / Design Agent",
+    floor: "P3",
+    purpose: "Technical readiness probe — NOT a Production desk / workflow",
+    status: "LIVE",
+    evidence: "EV-W2-006",
+    lastVerified: "2026-07-27T14:22:45Z",
+    owner: "Ops/COI",
+    sotLabel: "/api/v1/design-agent/health",
+    sotHref: "/api/v1/design-agent/health",
+    limitation: "LIVE technical probe ≠ Production desk.",
+    action: {
+      type: "external",
+      href: "/api/v1/design-agent/health",
+      label: "Open Design Agent health",
+    },
+    mvp: false,
+    pulse: false,
+    truthPilot: false,
+    floorCard: false,
+    technicalProbe: true,
+    mapHop: {
+      href: "/api/v1/design-agent/health",
+      interactive: true,
+      label: "System Health / Design Agent",
+      meta: "P3 · System Health / Design Agent · readiness probe — NOT a Production desk / workflow",
+    },
   },
   "order-desk": {
+    id: "order-desk",
+    aliases: ["orders-production"],
     label: "Order Desk",
     floor: "P0",
-    purpose: "Orders operational desk",
+    purpose: "Orders & production operational desk",
     status: "PARKED",
     evidence: "EV-W2-010",
     lastVerified: "2026-07-27T14:26:00Z",
     owner: "Ops",
-    sotLabel: "none — desk not implemented",
+    sotLabel: "No live source-of-truth / operational desk not implemented",
     sotHref: null,
     limitation:
-      "Order operational desk is not implemented. Historical INT-002 #3149 ≠ live desk. Dependency: future ops SoT + VF-VHQ-W4.",
+      "EV-W2-010 = map non-interactive/PARKED sanity only. No order dashboard invented. Historical #3149 ≠ live desk.",
+    action: null,
     mvp: false,
+    pulse: true,
+    truthPilot: true,
+    floorCard: true,
+    flowOrder: 3,
+    pulseLabel: "Orders / Production",
     parkedHeadline: "Order operational desk is not implemented.",
+    mapHop: {
+      href: null,
+      interactive: false,
+      label: "Orders & Production",
+      meta: "P0 · Orders & Production · PARKED — operational desk not implemented",
+    },
+    kpi: [
+      { id: "Open orders", value: "insufficient_data" },
+      { id: "Production SLA", value: "insufficient_data" },
+    ],
   },
   "production-control": {
+    id: "production-control",
     label: "Production Control",
     floor: "P0",
     purpose: "Partner production status",
@@ -1734,8 +1967,12 @@ const VHQ_ROOMS = {
     sotHref: null,
     limitation: "No production dashboard in Commander. External Erka HITL only.",
     mvp: false,
+    pulse: false,
+    truthPilot: false,
+    floorCard: true,
   },
   "preflight-quality": {
+    id: "preflight-quality",
     label: "Preflight / Quality",
     floor: "P0",
     purpose: "Media/design quality gate",
@@ -1747,8 +1984,12 @@ const VHQ_ROOMS = {
     sotHref: null,
     limitation: "PLANNED shell only in W1.",
     mvp: false,
+    pulse: false,
+    truthPilot: false,
+    floorCard: true,
   },
   "dispatch-returns": {
+    id: "dispatch-returns",
     label: "Dispatch / Returns",
     floor: "P0",
     purpose: "Fulfilment / returns tracking",
@@ -1760,8 +2001,13 @@ const VHQ_ROOMS = {
     sotHref: null,
     limitation: "VF-PARK-DISPATCH — no tracker SoT.",
     mvp: false,
+    pulse: false,
+    truthPilot: false,
+    floorCard: true,
   },
   "supplier-dock": {
+    id: "supplier-dock",
+    aliases: ["supplier-warehouse"],
     label: "Supplier Dock",
     floor: "MAG",
     purpose: "Procurement / RFQ",
@@ -1773,8 +2019,18 @@ const VHQ_ROOMS = {
     sotHref: null,
     limitation: "VF-PARK-PROCUREMENT — ROADMAP.",
     mvp: false,
+    pulse: false,
+    truthPilot: false,
+    floorCard: true,
+    mapHop: {
+      href: null,
+      interactive: false,
+      label: "Supplier / Warehouse",
+      meta: "MAG · Supplier / Warehouse · PARKED — desk not implemented",
+    },
   },
   "asset-warehouse": {
+    id: "asset-warehouse",
     label: "Asset Warehouse",
     floor: "MAG",
     purpose: "Marketing asset inventory",
@@ -1786,8 +2042,12 @@ const VHQ_ROOMS = {
     sotHref: null,
     limitation: "MKT-ASSET-00 parked by Founder. No MKT edits from VHQ.",
     mvp: false,
+    pulse: false,
+    truthPilot: false,
+    floorCard: true,
   },
   "partner-production-network": {
+    id: "partner-production-network",
     label: "Partner Production Network",
     floor: "MAG",
     purpose: "External production partners",
@@ -1799,8 +2059,72 @@ const VHQ_ROOMS = {
     sotHref: null,
     limitation: "PLANNED — no partner SoT in Jadzia UI.",
     mvp: false,
+    pulse: false,
+    truthPilot: false,
+    floorCard: true,
   },
 };
+
+const VHQ_ROOM_ALIASES = (() => {
+  const map = Object.create(null);
+  Object.keys(VHQ_ROOMS).forEach((id) => {
+    map[id] = id;
+    const room = VHQ_ROOMS[id];
+    (room.aliases || []).forEach((a) => {
+      map[a] = id;
+    });
+  });
+  return map;
+})();
+
+function vhqResolveRoomId(idOrAlias) {
+  if (!idOrAlias) return null;
+  return VHQ_ROOM_ALIASES[idOrAlias] || null;
+}
+
+function vhqGetRoom(idOrAlias) {
+  const id = vhqResolveRoomId(idOrAlias);
+  return id ? VHQ_ROOMS[id] : null;
+}
+
+function vhqRoomsList() {
+  return Object.keys(VHQ_ROOMS).map((id) => VHQ_ROOMS[id]);
+}
+
+function vhqStatusLine(room) {
+  const parts = [room.status];
+  if (room.evidence) parts.push(room.evidence);
+  if (room.lastVerified) parts.push(room.lastVerified);
+  return parts.join(" · ");
+}
+
+function vhqAppendText(el, text) {
+  el.appendChild(document.createTextNode(text == null ? "" : String(text)));
+}
+
+function vhqClear(el) {
+  if (!el) return;
+  while (el.firstChild) el.removeChild(el.firstChild);
+}
+
+function vhqEl(tag, className, text) {
+  const n = document.createElement(tag);
+  if (className) n.className = className;
+  if (text != null) n.textContent = text;
+  return n;
+}
+
+function vhqSafeLink(href, label, className) {
+  const a = document.createElement("a");
+  if (className) a.className = className;
+  a.href = href;
+  if (/^https?:/i.test(href) || href.startsWith("/")) {
+    a.target = "_blank";
+    a.rel = "noopener noreferrer";
+  }
+  a.textContent = label;
+  return a;
+}
 
 let vhqOpen = false;
 let vhqLastFocus = null;
@@ -1828,7 +2152,6 @@ function vhqWriteHistory(state, { replace = false } = {}) {
   const url = new URL(window.location.href);
   if (state) url.searchParams.set("vhq", state);
   else url.searchParams.delete("vhq");
-  // preserve cache bust `v=` and other params
   const qs = url.searchParams.toString();
   const path = `${url.pathname}${qs ? `?${qs}` : ""}${url.hash}`;
   const data = { vhq: state || "" };
@@ -1939,8 +2262,8 @@ function vhqShowFloorBrowse(floor, opts = {}) {
   if (owner) owner.textContent = "";
   if (sot) sot.textContent = "";
   if (limit) limit.textContent = "";
-  if (extra) extra.innerHTML = "";
-  if (actions) actions.innerHTML = "";
+  vhqClear(extra);
+  vhqClear(actions);
   vhqSetMode("world");
   vhqRestoreAllSlots();
   vhqShowWorkPanel(null);
@@ -1959,21 +2282,37 @@ function vhqSelectFloor(floor) {
   vhqShowFloorBrowse(floor, { historyMode: "push" });
 }
 
+function vhqFillRoomExtra(extra, room) {
+  vhqClear(extra);
+  if (!room || !extra) return;
+  if (room.links && room.links.length) {
+    const list = vhqEl("ul", "vhq-room-links");
+    room.links.forEach((lnk) => {
+      const li = document.createElement("li");
+      if (lnk.href) li.appendChild(vhqSafeLink(lnk.href, lnk.text, "buttonish"));
+      else vhqAppendText(li, lnk.text);
+      list.appendChild(li);
+    });
+    extra.appendChild(list);
+  }
+}
+
 function vhqRenderRoom(roomId, opts = {}) {
   const historyMode = opts.historyMode || "push";
-  const room = VHQ_ROOMS[roomId];
+  const resolved = vhqResolveRoomId(roomId) || roomId;
+  const room = VHQ_ROOMS[resolved];
   if (!room) return;
-  vhqCurrentRoom = roomId;
+  vhqCurrentRoom = resolved;
   vhqSetFloor(room.floor);
 
   const loc = document.getElementById("vhq-location");
   if (loc) loc.textContent = `HQ › ${room.floor} › ${room.label}`;
 
   const teleport = document.getElementById("vhq-teleport");
-  if (teleport && teleport.value !== roomId) teleport.value = roomId;
+  if (teleport && teleport.value !== resolved) teleport.value = resolved;
 
   document.querySelectorAll(".vhq-room").forEach((btn) => {
-    const on = btn.dataset.room === roomId;
+    const on = btn.dataset.room === resolved;
     if (on) {
       btn.setAttribute("aria-current", "true");
       btn.classList.add("vhq-room--focal");
@@ -2008,69 +2347,42 @@ function vhqRenderRoom(roomId, opts = {}) {
   }
   if (owner) owner.textContent = `Owner: ${room.owner || "—"}`;
   if (sot) {
+    vhqClear(sot);
+    vhqAppendText(sot, "SoT: ");
     if (room.sotHref && (/^https?:/i.test(room.sotHref) || room.sotHref.startsWith("/"))) {
-      sot.innerHTML = `SoT: <a href="${vhqEscHtml(room.sotHref)}" target="_blank" rel="noopener noreferrer">${vhqEscHtml(
-        room.sotLabel || room.sotHref
-      )}</a>`;
+      sot.appendChild(vhqSafeLink(room.sotHref, room.sotLabel || room.sotHref));
     } else if (room.sotHref && room.sotHref.startsWith("#")) {
-      sot.textContent = `SoT: ${room.sotLabel || room.sotHref} (in Commander)`;
+      vhqAppendText(sot, `${room.sotLabel || room.sotHref} (in Commander)`);
     } else {
-      sot.textContent = `SoT: ${room.sotLabel || "none"}`;
+      vhqAppendText(sot, room.sotLabel || "none");
     }
   }
   if (limit) limit.textContent = `Limitation: ${room.limitation || "—"}`;
-  if (extra) extra.innerHTML = room.extraHtml || "";
+  vhqFillRoomExtra(extra, room);
 
   if (actions) {
-    actions.innerHTML = "";
+    vhqClear(actions);
     if (room.action) {
       if (room.action.type === "external") {
-        const a = document.createElement("a");
-        a.className = "buttonish primary";
-        a.href = room.action.href;
-        a.target = "_blank";
-        a.rel = "noopener noreferrer";
-        a.textContent = room.action.label;
-        actions.appendChild(a);
-      } else if (room.action.type === "view" || room.action.type === "goto-home") {
-        const b = document.createElement("button");
-        b.type = "button";
-        b.className = "primary";
-        b.textContent = room.action.label;
-        b.addEventListener("click", () => vhqRunAction(room.action));
-        actions.appendChild(b);
+        actions.appendChild(vhqSafeLink(room.action.href, room.action.label, "buttonish primary"));
+      } else {
+        const btn = document.createElement("button");
+        btn.type = "button";
+        btn.className = "primary";
+        btn.textContent = room.action.label;
+        btn.addEventListener("click", () => vhqRunAction(room.action));
+        actions.appendChild(btn);
       }
-    } else if (room.status === "PARKED" || room.status === "PLANNED" || room.status === "UNVERIFIED") {
-      const p = document.createElement("p");
-      p.className = "hint";
-      p.textContent =
-        room.status === "PARKED"
-          ? "No primary action — room intentionally PARKED."
-          : room.status === "PLANNED"
-            ? "No primary action — room PLANNED (shell only)."
-            : "No verified primary action — status UNVERIFIED.";
-      actions.appendChild(p);
     }
   }
-  vhqApplyRoomChrome(roomId);
+
+  vhqApplyRoomChrome(resolved);
   if (vhqIsPrimary() && historyMode !== "none") {
-    vhqWriteHistory(vhqStateFromRoom(roomId), { replace: historyMode === "replace" });
+    vhqWriteHistory(vhqStateFromRoom(resolved), { replace: historyMode === "replace" });
   }
 }
 
-
-/* ===== VF-VHQ-W2 Mission Control: mounts + Command View ===== */
-const VHQ_PULSE = [
-  { room: "mission-control", label: "Mission Control", status: "LIVE", evidence: "EV-W2-001" },
-  { room: "sales-room", label: "Sales", status: "LIVE", evidence: "EV-W2-007" },
-  { room: "wizard-quote", label: "Wizard", status: "LIVE", evidence: "EV-W2-005" },
-  { room: "ai-agent-health", label: "Agent Operations", status: "DEGRADED", evidence: "EV-W2-011" },
-  { room: "compliance-audit", label: "Compliance", status: "PARTIAL", evidence: "EV-W2-009" },
-  { room: "analytics-finance", label: "Finance / Analytics", status: "UNVERIFIED", evidence: "EV-W2-008" },
-  { room: "marketing-studio", label: "Marketing", status: "UNVERIFIED", evidence: "EV-W3-001" },
-  { room: "order-desk", label: "Orders / Production", status: "PARKED", evidence: "EV-W2-010" },
-];
-
+/* ===== VF-VHQ-W2/W3.2 Mission Control mounts + manifest renderers ===== */
 const VHQ_SLOT_HOME = {
   ops: "vhq-home-slot-ops",
   priorities: "vhq-home-slot-priorities",
@@ -2138,9 +2450,7 @@ function vhqUpdateSessionBanner() {
     return;
   }
   const prio = document.getElementById("priorities");
-  const loading =
-    prio &&
-    prio.getAttribute("aria-busy") === "true";
+  const loading = prio && prio.getAttribute("aria-busy") === "true";
   if (loading) {
     banner.hidden = false;
     banner.dataset.state = "loading";
@@ -2156,20 +2466,511 @@ function vhqUpdateSessionBanner() {
 function vhqRenderPulse() {
   const grid = document.getElementById("vhq-pulse-grid");
   if (!grid) return;
-  grid.innerHTML = "";
-  VHQ_PULSE.forEach((item) => {
-    const btn = document.createElement("button");
-    btn.type = "button";
-    btn.className = "vhq-pulse-item";
-    btn.setAttribute("role", "listitem");
-    btn.innerHTML =
-      `<span class="vhq-pulse-item__name">${vhqEscHtml(item.label)}</span>` +
-      `<span class="vhq-pulse-item__badge" data-status="${vhqEscHtml(item.status)}">[${vhqEscHtml(item.status)}]</span>` +
-      `<span class="vhq-pulse-item__meta">${vhqEscHtml(item.evidence)} · Go to room</span>`;
-    btn.addEventListener("click", () => vhqRenderRoom(item.room, { historyMode: "push" }));
-    grid.appendChild(btn);
+  vhqClear(grid);
+  vhqRoomsList()
+    .filter((r) => r.pulse)
+    .forEach((item) => {
+      const btn = document.createElement("button");
+      btn.type = "button";
+      btn.className = "vhq-pulse-item";
+      btn.setAttribute("role", "listitem");
+      btn.dataset.room = item.id;
+      const name = vhqEl("span", "vhq-pulse-item__name", item.pulseLabel || item.label);
+      const badge = vhqEl("span", "vhq-pulse-item__badge", `[${item.status}]`);
+      badge.dataset.status = item.status;
+      const meta = vhqEl(
+        "span",
+        "vhq-pulse-item__meta",
+        `${item.evidence || "—"} · Go to room`
+      );
+      btn.appendChild(name);
+      btn.appendChild(badge);
+      btn.appendChild(meta);
+      btn.addEventListener("click", () => vhqRenderRoom(item.id, { historyMode: "push" }));
+      grid.appendChild(btn);
+    });
+}
+
+function vhqRenderFloorCards() {
+  const floors = ["P3", "P2", "P1", "P0", "MAG"];
+  floors.forEach((floor) => {
+    const grid =
+      document.querySelector(`[data-vhq-floor-grid="${floor}"]`) ||
+      document.querySelector(`.vhq-floor-band[data-floor="${floor}"] .vhq-room-grid`);
+    if (!grid) return;
+    vhqClear(grid);
+    vhqRoomsList()
+      .filter((r) => r.floor === floor && r.floorCard !== false)
+      .forEach((room) => {
+        const btn = document.createElement("button");
+        btn.type = "button";
+        btn.className = "vhq-room" + (room.mvp ? " vhq-room--mvp" : "");
+        btn.dataset.room = room.id;
+        btn.dataset.status = room.status;
+        const name = vhqEl("span", "vhq-room__name", room.label);
+        const badge = vhqEl("span", "vhq-room__badge", `[${room.status}]`);
+        badge.dataset.status = room.status;
+        btn.appendChild(name);
+        btn.appendChild(badge);
+        grid.appendChild(btn);
+      });
   });
 }
+
+function vhqRenderOpsFlow() {
+  const line = document.getElementById("vhq-flow-line");
+  if (!line) return;
+  vhqClear(line);
+  const flow = vhqRoomsList()
+    .filter((r) => r.flowOrder != null)
+    .sort((a, b) => a.flowOrder - b.flowOrder);
+  flow.forEach((room, idx) => {
+    if (idx > 0) {
+      const arrow = vhqEl("li", "vhq-flow-arrow", "→");
+      arrow.setAttribute("aria-hidden", "true");
+      line.appendChild(arrow);
+    }
+    const li = document.createElement("li");
+    li.dataset.status = room.status;
+    li.appendChild(vhqEl("span", "vhq-flow-name", room.pulseLabel || room.label));
+    li.appendChild(document.createTextNode(" "));
+    li.appendChild(vhqEl("span", "vhq-flow-badge", room.status));
+    li.appendChild(document.createTextNode(" "));
+    if (room.evidence) li.appendChild(vhqEl("span", "ev", room.evidence));
+    line.appendChild(li);
+  });
+  const breakHint = document.getElementById("vhq-flow-break");
+  const order = VHQ_ROOMS["order-desk"];
+  if (breakHint && order) {
+    breakHint.textContent = `Break visible: ${order.parkedHeadline || order.limitation}`;
+  }
+}
+
+function vhqRenderCriticalPin() {
+  const aside = document.getElementById("vhq-critical-risk");
+  if (!aside) return;
+  const room = vhqRoomsList().find((r) => r.criticalPin);
+  if (!room) {
+    aside.hidden = true;
+    return;
+  }
+  aside.hidden = false;
+  const status = aside.querySelector(".vhq-critical-risk__status");
+  const hint = aside.querySelector(".vhq-critical-risk__hint");
+  if (status) {
+    status.textContent = `${room.status} · SSH connection error · evidence ${room.evidence || "—"}`;
+  }
+  if (hint) hint.textContent = room.criticalDetail || room.limitation || "";
+  const btn = aside.querySelector("[data-vhq-room]");
+  if (btn) btn.setAttribute("data-vhq-room", room.id);
+}
+
+function vhqRenderVaultStrip() {
+  const strip = document.querySelector(".vhq-vault-strip .hint[data-vhq-vault-status]");
+  const vault = vhqRoomsList().find((r) => r.briefVault) || VHQ_ROOMS["approval-vault"];
+  if (strip && vault) {
+    strip.textContent = `[${vault.status}] · ${vault.evidence || "—"} · No invented pending count. Real path only.`;
+  }
+}
+
+function vhqRenderHandoffStrip(root) {
+  if (!root) return;
+  vhqClear(root);
+  const flow = vhqRoomsList()
+    .filter((r) => r.flowOrder != null)
+    .sort((a, b) => a.flowOrder - b.flowOrder);
+  flow.forEach((room, idx) => {
+    if (idx > 0) {
+      const arrow = vhqEl("span", "vhq-flow-arrow", "→");
+      arrow.setAttribute("aria-hidden", "true");
+      root.appendChild(arrow);
+    }
+    const span = document.createElement("span");
+    span.dataset.status = room.status;
+    span.textContent = `${room.pulseLabel || room.label} ${room.status}`;
+    root.appendChild(span);
+  });
+}
+
+function vhqBindWorkViews() {
+  const sales = VHQ_ROOMS["sales-room"];
+  const wizard = VHQ_ROOMS["wizard-quote"];
+  const mkt = VHQ_ROOMS["marketing-studio"];
+  const order = VHQ_ROOMS["order-desk"];
+
+  const salesEyebrow = document.querySelector('[data-vhq-work="sales-room"] .vhq-work-eyebrow');
+  if (salesEyebrow && sales) {
+    salesEyebrow.textContent = `${sales.label} · [${sales.status}] · ${sales.evidence || "—"}`;
+  }
+  vhqRenderHandoffStrip(document.querySelector('[data-vhq-work="sales-room"] .vhq-handoff-strip'));
+
+  const wizEyebrow = document.querySelector('[data-vhq-work="wizard-quote"] .vhq-work-eyebrow');
+  if (wizEyebrow && wizard) {
+    wizEyebrow.textContent = `${wizard.label} · [${wizard.status}] · ${wizard.evidence || "—"}`;
+  }
+  const wizMeta = document.getElementById("vhq-work-wizard-meta");
+  if (wizMeta && wizard) {
+    vhqClear(wizMeta);
+    const rows = [
+      ["Status", `[${wizard.status}] · Wizard SPA Stap 1–9`],
+      ["SoT", wizard.sotLabel || wizard.sotHref || "—"],
+      [
+        "Evidence",
+        `${wizard.evidence || "—"} · last_verified ${wizard.lastVerified || "insufficient_data"}`,
+      ],
+      [
+        "KPI",
+        (wizard.kpi || [])
+          .map((k) => `${k.id} → ${k.value}${k.note ? ` (${k.note})` : ""}`)
+          .join("; ") || "insufficient_data",
+      ],
+    ];
+    rows.forEach(([dt, dd]) => {
+      const wrap = document.createElement("div");
+      wrap.appendChild(vhqEl("dt", null, dt));
+      const ddEl = document.createElement("dd");
+      if (dt === "SoT" && wizard.sotHref && /^https?:/i.test(wizard.sotHref)) {
+        ddEl.appendChild(vhqSafeLink(wizard.sotHref, wizard.sotHref));
+      } else {
+        ddEl.textContent = dd;
+      }
+      wrap.appendChild(ddEl);
+      wizMeta.appendChild(wrap);
+    });
+  }
+  const wizChild = document.getElementById("vhq-work-wizard-handoff");
+  if (wizChild && order) {
+    vhqClear(wizChild);
+    const p1 = document.createElement("p");
+    const strong = document.createElement("strong");
+    strong.textContent = `Future handoff → ${order.label} [${order.status}]`;
+    p1.appendChild(strong);
+    wizChild.appendChild(p1);
+    wizChild.appendChild(
+      vhqEl("p", "hint", order.parkedHeadline || order.limitation || "")
+    );
+    wizChild.appendChild(
+      vhqEl(
+        "p",
+        "hint",
+        "Limitation: Mollie LIVE / Purchase = L4 separate Founder GO — not from this room."
+      )
+    );
+  }
+  const wizOrderBtn = document.getElementById("vhq-wizard-order-parked");
+  if (wizOrderBtn && order) {
+    wizOrderBtn.textContent = `${order.label} handoff [${order.status}]`;
+    wizOrderBtn.setAttribute("data-vhq-room", order.id);
+  }
+
+  const mktEyebrow = document.querySelector('[data-vhq-work="marketing-studio"] .vhq-work-eyebrow');
+  if (mktEyebrow && mkt) mktEyebrow.textContent = `${mkt.label} · honest pin`;
+  const banners = document.getElementById("vhq-work-marketing-banners");
+  if (banners && mkt) {
+    vhqClear(banners);
+    (mkt.honesty || []).forEach((h) => {
+      const p = vhqEl("p", "vhq-honesty-banner", h.text);
+      p.dataset.status = h.status;
+      p.setAttribute("role", "status");
+      banners.appendChild(p);
+    });
+  }
+  const mktMeta = document.getElementById("vhq-work-marketing-meta");
+  if (mktMeta && mkt) {
+    vhqClear(mktMeta);
+    const rows = [
+      ["Status", `${mkt.status} — campaign state not verified`],
+      ["Evidence", mkt.evidence || "—"],
+      ["Explanation", mkt.sotLabel || ""],
+      ["Campaign KPIs", "insufficient_data"],
+      ["Primary action", "Observe Marketing tab only — no publish / Ads from HQ"],
+    ];
+    rows.forEach(([dt, dd]) => {
+      const wrap = document.createElement("div");
+      wrap.appendChild(vhqEl("dt", null, dt));
+      wrap.appendChild(vhqEl("dd", null, dd));
+      mktMeta.appendChild(wrap);
+    });
+  }
+}
+
+function vhqMapStateText(room, hop) {
+  if (hop && hop.stateText) return hop.stateText;
+  if (room.technicalProbe) {
+    return `${room.status} · technical readiness probe · ${room.evidence || ""}`.trim();
+  }
+  return vhqStatusLine(room);
+}
+
+function vhqRenderSystemMap() {
+  const root = document.getElementById("system-map-links");
+  if (!root) return;
+  vhqClear(root);
+  root.dataset.hopsBound = "0";
+
+  const appendHop = (room, hop) => {
+    const floor = hop.mapFloor || room.floor;
+    const interactive = !!(hop.interactive && hop.href);
+    const el = interactive ? document.createElement("a") : document.createElement("div");
+    el.className = "map-link" + (interactive ? "" : " map-status");
+    if (room.status === "PARKED") el.classList.add("is-parked");
+    if (room.status === "UNVERIFIED") el.classList.add("is-unverified");
+    if (interactive) {
+      el.href = hop.href;
+      if (/^https?:/i.test(hop.href) || hop.href.startsWith("/")) {
+        el.target = "_blank";
+        el.rel = "noopener noreferrer";
+      }
+      el.dataset.hop = hop.label || room.label;
+    } else {
+      el.setAttribute("role", "status");
+      el.tabIndex = -1;
+    }
+    el.dataset.roomId = room.id;
+    el.dataset.floor = floor;
+    el.dataset.campusState = hop.status || room.status;
+    el.appendChild(vhqEl("span", "hop-label", hop.label || room.label));
+    el.appendChild(vhqEl("span", "hop-meta", hop.meta || `${floor} · ${room.label}`));
+    el.appendChild(
+      vhqEl("span", "hop-state", vhqMapStateText({ ...room, status: hop.status || room.status }, hop))
+    );
+    root.appendChild(el);
+  };
+
+  // Stable Director-first order for map
+  const order = [
+    "mission-control",
+    "vcms-os-zone",
+    "knowledge-library",
+    "wizard-quote",
+    "design-agent-probe",
+    "sales-room",
+    "analytics-finance",
+    "order-desk",
+    "marketing-studio",
+    "compliance-audit",
+    "supplier-dock",
+  ];
+  order.forEach((id) => {
+    const room = VHQ_ROOMS[id];
+    if (!room) return;
+    if (room.mapHops && room.mapHops.length) {
+      room.mapHops.forEach((h) => appendHop(room, h));
+      return;
+    }
+    if (room.mapHop) appendHop(room, room.mapHop);
+  });
+
+  if (typeof bindSystemMapHops === "function") bindSystemMapHops();
+}
+
+function vhqRenderSettingsMap() {
+  const ul = document.getElementById("settings-system-map");
+  if (!ul) return;
+  vhqClear(ul);
+  const ids = [
+    "mission-control",
+    "vcms-os-zone",
+    "knowledge-library",
+    "wizard-quote",
+    "design-agent-probe",
+    "sales-room",
+    "compliance-audit",
+    "analytics-finance",
+    "order-desk",
+    "marketing-studio",
+    "supplier-dock",
+  ];
+  ids.forEach((id) => {
+    const room = VHQ_ROOMS[id];
+    if (!room) return;
+    if (room.mapHops) {
+      room.mapHops.forEach((h) => {
+        const li = document.createElement("li");
+        li.textContent = `${h.mapFloor || room.floor} ${h.label} ${h.status || room.status}${
+          room.evidence ? ` · ${room.evidence}` : ""
+        }: ${h.href || "HITL"}`;
+        ul.appendChild(li);
+      });
+      return;
+    }
+    const li = document.createElement("li");
+    const href = (room.mapHop && room.mapHop.href) || room.sotHref || "";
+    li.textContent = `${room.floor} ${room.label} ${vhqStatusLine(room)}${href ? `: ${href}` : ""}`;
+    ul.appendChild(li);
+  });
+  const pilot = vhqRoomsList()
+    .filter((r) => r.truthPilot)
+    .map((r) => r.label)
+    .join(" · ");
+  const foot = document.createElement("li");
+  foot.textContent = `W3 Truth Cards pilot (Console appendix): ${pilot} — read-only · manifest VHQ_ROOMS`;
+  ul.appendChild(foot);
+}
+
+function vhqRenderTruthCards() {
+  const grid = document.querySelector("#truth-cards-pilot .truth-card-grid");
+  if (!grid) return;
+  vhqClear(grid);
+  vhqRoomsList()
+    .filter((r) => r.truthPilot)
+    .forEach((room) => {
+      const art = document.createElement("article");
+      art.className = "truth-card";
+      art.dataset.roomId = room.id;
+      art.dataset.truthStatus = room.status;
+
+      const head = vhqEl("header", "truth-card__head");
+      head.appendChild(vhqEl("h4", "truth-card__name", room.label));
+      head.appendChild(vhqEl("p", "truth-card__purpose", room.purpose || ""));
+      art.appendChild(head);
+
+      const status = vhqEl("p", "truth-card__status");
+      status.appendChild(document.createTextNode(`${room.status} · `));
+      if (room.evidence) {
+        const ev = vhqEl("span", "ev", room.evidence);
+        status.appendChild(ev);
+      }
+      if (room.id === "wizard-quote") {
+        status.appendChild(document.createTextNode(" · Wizard SPA Stap 1–9"));
+      }
+      if (room.id === "order-desk") {
+        status.appendChild(document.createTextNode(" · no operational desk"));
+      }
+      if (room.id === "marketing-studio") {
+        status.appendChild(document.createTextNode(" — campaign state not verified"));
+      }
+      art.appendChild(status);
+
+      const action = vhqEl("p", "truth-card__action");
+      const ak = vhqEl("span", "k", "Primary action:");
+      action.appendChild(ak);
+      action.appendChild(document.createTextNode(" "));
+      if (room.action && room.action.type === "external") {
+        action.appendChild(vhqSafeLink(room.action.href, room.action.label, "truth-card__cta"));
+      } else if (room.action) {
+        action.appendChild(vhqEl("span", "muted", room.action.label));
+      } else if (room.id === "marketing-studio") {
+        action.appendChild(vhqEl("span", "muted", "Observe only — no execution in Campus sessions"));
+      } else if (room.id === "order-desk") {
+        action.appendChild(vhqEl("span", "muted", "None — desk not implemented (W4 deep-link after C2)"));
+      } else {
+        action.appendChild(vhqEl("span", "muted", "—"));
+      }
+      art.appendChild(action);
+
+      const sot = vhqEl("p", "truth-card__sot");
+      sot.appendChild(vhqEl("span", "k", "SoT:"));
+      sot.appendChild(document.createTextNode(" "));
+      if (room.sotHref && (/^https?:/i.test(room.sotHref) || room.sotHref.startsWith("/"))) {
+        sot.appendChild(vhqSafeLink(room.sotHref, room.sotLabel || room.sotHref, "truth-card__cta"));
+      } else {
+        sot.appendChild(document.createTextNode(room.sotLabel || "—"));
+      }
+      art.appendChild(sot);
+
+      if (room.kpi && room.kpi.length) {
+        const ul = document.createElement("ul");
+        ul.className = "truth-card__kpi";
+        ul.setAttribute("aria-label", `KPI ${room.label}`);
+        room.kpi.forEach((k) => {
+          const li = document.createElement("li");
+          li.appendChild(vhqEl("span", "k", `${k.id}:`));
+          li.appendChild(document.createTextNode(` ${k.value}`));
+          if (k.note) {
+            li.appendChild(document.createTextNode(" "));
+            li.appendChild(vhqEl("span", "muted", `(${k.note})`));
+          }
+          ul.appendChild(li);
+        });
+        art.appendChild(ul);
+      }
+
+      const meta = vhqEl("p", "truth-card__meta");
+      meta.appendChild(vhqEl("span", "k", "Owner:"));
+      meta.appendChild(document.createTextNode(` ${room.owner || "—"} · `));
+      meta.appendChild(vhqEl("span", "k", "last_verified:"));
+      meta.appendChild(document.createTextNode(` ${room.lastVerified || "insufficient_data"}`));
+      art.appendChild(meta);
+
+      art.appendChild(
+        (() => {
+          const p = vhqEl("p", "truth-card__limit");
+          p.appendChild(vhqEl("span", "k", "Limitation:"));
+          p.appendChild(document.createTextNode(` ${room.limitation || "—"}`));
+          return p;
+        })()
+      );
+
+      grid.appendChild(art);
+    });
+}
+
+function vhqRenderTeleportOptions() {
+  const sel = document.getElementById("vhq-teleport");
+  if (!sel) return;
+  const current = sel.value;
+  vhqClear(sel);
+  const opt0 = document.createElement("option");
+  opt0.value = "";
+  opt0.textContent = "Select room…";
+  sel.appendChild(opt0);
+  const floors = ["P3", "P2", "P1", "P0", "MAG"];
+  floors.forEach((floor) => {
+    vhqRoomsList()
+      .filter((r) => r.floor === floor && r.floorCard !== false)
+      .forEach((room) => {
+        const opt = document.createElement("option");
+        opt.value = room.id;
+        opt.textContent = `${floor} · ${room.label}`;
+        sel.appendChild(opt);
+      });
+  });
+  if (current && VHQ_ROOMS[current]) sel.value = current;
+}
+
+function vhqRenderAllManifestSurfaces() {
+  vhqRenderFloorCards();
+  vhqRenderPulse();
+  vhqRenderOpsFlow();
+  vhqRenderCriticalPin();
+  vhqRenderVaultStrip();
+  vhqBindWorkViews();
+  vhqRenderSystemMap();
+  vhqRenderSettingsMap();
+  vhqRenderTruthCards();
+  vhqRenderTeleportOptions();
+}
+
+/**
+ * Local-only propagation fixture. Temporarily mutates one field, proves renderers
+ * read VHQ_ROOMS, then restores. Safe for dogfood — does not persist.
+ */
+function vhqManifestPropagationTest() {
+  const room = VHQ_ROOMS["marketing-studio"];
+  if (!room) return { pass: false, error: "missing marketing-studio" };
+  const orig = room.status;
+  const token = "TEST_PROP_W32";
+  room.status = token;
+  try {
+    vhqRenderAllManifestSurfaces();
+    const hay = [
+      document.getElementById("vhq-pulse-grid")?.textContent || "",
+      document.querySelector('[data-room="marketing-studio"]')?.textContent || "",
+      document.getElementById("system-map-links")?.textContent || "",
+      document.getElementById("settings-system-map")?.textContent || "",
+      document.querySelector("#truth-cards-pilot .truth-card-grid")?.textContent || "",
+    ];
+    const hits = hay.map((t) => t.includes(token));
+    const pass = hits.every(Boolean);
+    return { pass, hits, surfaces: ["pulse", "floor", "system-map", "settings", "truth"] };
+  } finally {
+    room.status = orig;
+    vhqRenderAllManifestSurfaces();
+  }
+}
+
+window.vhqManifestPropagationTest = vhqManifestPropagationTest;
 
 function vhqGoMissionControl(opts = {}) {
   const historyMode = opts.historyMode || "push";
@@ -2267,26 +3068,31 @@ function vhqApplyRoomChrome(roomId) {
     vhqShowWorkPanel(null);
     vhqMountSlotsForRoom("mission-control");
     vhqRenderPulse();
+    vhqRenderOpsFlow();
+    vhqRenderCriticalPin();
+    vhqRenderVaultStrip();
     vhqUpdateSessionBanner();
   } else if (roomId === "sales-room") {
     vhqSetMode("work");
     vhqShowWorkPanel("sales-room");
     vhqMountSlotsForRoom("sales-room");
+    vhqBindWorkViews();
     vhqUpdateWorkSessionBanner();
   } else if (roomId === "wizard-quote") {
     vhqSetMode("work");
     vhqRestoreAllSlots();
     vhqShowWorkPanel("wizard-quote");
+    vhqBindWorkViews();
   } else if (roomId === "marketing-studio") {
     vhqSetMode("work");
     vhqRestoreAllSlots();
     vhqShowWorkPanel("marketing-studio");
+    vhqBindWorkViews();
   } else {
     vhqSetMode("world");
     vhqRestoreAllSlots();
     vhqShowWorkPanel(null);
   }
-  // keep panel filled for non-command rooms; for MC still useful as compact status
   if (!room) return;
 }
 
@@ -2525,15 +3331,16 @@ function vhqApplyUrlState(raw, opts = {}) {
       vhqNavState = "mc";
       return;
     }
-    if (VHQ_ROOMS[state]) {
+    const resolved = vhqResolveRoomId(state);
+    if (resolved && VHQ_ROOMS[resolved]) {
       if (vhqIsPrimary()) {
         vhqApplyLegacyShellAttrs(false);
         showView("hq");
         document.body.classList.add("vhq-open");
         vhqOpen = true;
-        vhqRenderRoom(state, { historyMode: "none" });
+        vhqRenderRoom(resolved, { historyMode: "none" });
       } else {
-        vhqOpenShell(state);
+        vhqOpenShell(resolved);
       }
       vhqNavState = state;
       return;
@@ -2590,8 +3397,18 @@ function bindVhqShell() {
       }
     });
   });
-  document.querySelectorAll("[data-vhq-room]").forEach((btn) => {
-    btn.addEventListener("click", () => vhqRenderRoom(btn.getAttribute("data-vhq-room"), { historyMode: "push" }));
+  document.addEventListener("click", (e) => {
+    const roomBtn = e.target.closest("[data-vhq-room]");
+    if (roomBtn && document.getElementById("vhq-shell")?.contains(roomBtn)) {
+      e.preventDefault();
+      vhqRenderRoom(roomBtn.getAttribute("data-vhq-room"), { historyMode: "push" });
+      return;
+    }
+    const floorRoom = e.target.closest(".vhq-room[data-room]");
+    if (floorRoom && document.getElementById("vhq-building")?.contains(floorRoom)) {
+      e.preventDefault();
+      vhqRenderRoom(floorRoom.dataset.room, { historyMode: "push" });
+    }
   });
   document.getElementById("vhq-teleport")?.addEventListener("change", (e) => {
     if (!e.target.value) return;
@@ -2602,8 +3419,15 @@ function bindVhqShell() {
       vhqSelectFloor(btn.dataset.floor);
     });
   });
-  document.querySelectorAll(".vhq-room").forEach((btn) => {
-    btn.addEventListener("click", () => vhqRenderRoom(btn.dataset.room, { historyMode: "push" }));
+  if (typeof vhqRenderAllManifestSurfaces === "function") {
+    vhqRenderAllManifestSurfaces();
+  }
+  document.querySelectorAll(".console-tech-links [data-view]").forEach((btn) => {
+    btn.addEventListener("click", () => {
+      const view = btn.getAttribute("data-view");
+      if (!view) return;
+      vhqRunAction({ type: "view", target: view });
+    });
   });
   document.addEventListener("keydown", (e) => {
     if (!vhqOpen && vhqIsPrimary()) {

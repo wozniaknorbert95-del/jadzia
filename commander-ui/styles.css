@@ -1191,6 +1191,31 @@ dialog {
 }
 
 /* ===== VF-VHQ-W1-SHELL ===== */
+/* W3.2 Operations Console — secondary utility collapses */
+.console-collapse {
+  margin: 0.75rem 0 1rem;
+  border: 1px solid color-mix(in srgb, var(--border, #2a3544) 80%, transparent);
+  border-radius: 6px;
+  padding: 0.35rem 0.65rem 0.65rem;
+  background: color-mix(in srgb, #0c1117 92%, #1a2330);
+}
+.console-collapse > summary {
+  cursor: pointer;
+  font-weight: 600;
+  padding: 0.45rem 0.15rem;
+  color: var(--muted, #9aa7b5);
+  list-style: disclosure-closed;
+}
+.console-collapse[open] > summary {
+  color: var(--text, #e8eef5);
+  margin-bottom: 0.35rem;
+}
+.console-tech-links {
+  margin-top: 0.75rem;
+}
+.view-home--console .home-sub {
+  max-width: 42rem;
+}
 .vhq-entry {
   margin: 0.75rem 0 1.25rem;
   padding: 0.85rem 1rem;
