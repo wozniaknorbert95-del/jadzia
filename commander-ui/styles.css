@@ -880,6 +880,14 @@ dialog {
   margin-top: 0.1rem;
   padding-left: 1rem;
 }
+.map-link .hop-state {
+  color: var(--muted);
+  font-size: 10px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  margin-top: 0.15rem;
+  padding-left: 1rem;
+}
 .map-link:hover, .map-link:focus-visible {
   border-color: transparent;
   background: transparent;
@@ -895,6 +903,33 @@ dialog {
 }
 .map-link.is-opening .hop-label {
   color: var(--ok);
+}
+
+/* Campus W1 — non-interactive status rows (PARKED / UNVERIFIED / NO ACTIVE CAMPAIGN) */
+.map-link.map-status {
+  cursor: default;
+  pointer-events: none;
+  opacity: 0.72;
+  user-select: text;
+}
+.map-link.map-status .hop-label {
+  color: var(--muted);
+}
+.map-link.map-status .hop-label::before {
+  content: "· ";
+  color: var(--muted);
+}
+.map-link.map-status .hop-state {
+  color: var(--warn, #c9a227);
+}
+.map-link.map-status.is-parked .hop-state {
+  color: var(--muted);
+}
+.map-link.map-status.is-no-campaign .hop-state {
+  color: var(--accent);
+}
+.map-link.map-status:hover .hop-label {
+  text-decoration: none;
 }
 
 .system-map-settings {

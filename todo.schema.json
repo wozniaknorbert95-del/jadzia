@@ -1,0 +1,54 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://flexgrafik.nl/schemas/jadzia-todo.schema.json",
+  "title": "Jadzia todo.json control plane (VF-CAMPUS-PLAN-00 sketch)",
+  "description": "CI validation is a follow-up; W0 defines the contract. Not a blocker for PLAN-00 CLOSE.",
+  "type": "object",
+  "required": ["project", "active_gate", "tasks", "runtime_changes_allowed"],
+  "properties": {
+    "project": { "type": "string" },
+    "active_gate": {
+      "type": "string",
+      "description": "Exactly one gate id (may include human suffix after em-dash); must match a task id prefix"
+    },
+    "active_plan": { "type": "string" },
+    "plan": { "type": "string" },
+    "runtime_changes_allowed": { "type": "boolean" },
+    "gate_machine": {
+      "type": "object",
+      "properties": {
+        "active": { "type": "string" },
+        "unblocked": { "type": "array", "items": { "type": "string" } },
+        "parked": { "type": "array", "items": { "type": "string" } }
+      }
+    },
+    "tasks": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["id", "task", "status"],
+        "properties": {
+          "id": { "type": "string", "minLength": 1 },
+          "sprint": { "type": "string" },
+          "task": { "type": "string" },
+          "status": {
+            "type": "string",
+            "enum": ["pending", "in_progress", "completed", "parked", "unblocked", "blocked", "ready_for_human"]
+          },
+          "priority": { "type": "string" },
+          "owner": { "type": "string" },
+          "depends_on": {
+            "type": "array",
+            "items": { "type": "string" }
+          },
+          "checklist": { "type": "string" },
+          "note": { "type": "string" },
+          "evidence_required": { "type": "string" },
+          "runtime_changes_allowed": { "type": "boolean" }
+        },
+        "additionalProperties": true
+      }
+    }
+  },
+  "additionalProperties": true
+}

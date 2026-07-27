@@ -13,7 +13,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" href="styles.css?v=mkt-dash08" />
+  <link rel="stylesheet" href="styles.css?v=campus-w01" />
 </head>
 <body>
   <a class="skip-link" href="#main">Przejdź do treści</a>
@@ -74,9 +74,9 @@
         <div id="home-ops-chips" class="exec-rail-chips" role="list"></div>
       </aside>
       <header class="home-hero">
-        <p class="home-eyebrow">COI Commander · Start</p>
+        <p class="home-eyebrow">Mission Control · FlexGrafik Campus</p>
         <h2 id="home-title">Dziś — 3 priorytety</h2>
-        <p class="home-sub">Wybierz jedną akcję. Potwierdź → odłóż → zamknij. Mapa systemu na dole — hops bez merge kodu.</p>
+        <p class="home-sub">Mission Control — company-wide priorities, alerts, approvals and system health. One action: confirm → snooze → close. System map below — hops without code merge (D0.19).</p>
       </header>
       <h3 class="home-section-title">Priorytety</h3>
       <div id="priorities" class="card-grid" role="list" aria-live="polite"></div>
@@ -96,33 +96,69 @@
         </div>
       </form>
       <section class="system-map" aria-labelledby="system-map-title">
-        <h3 id="system-map-title">Mapa systemu</h3>
-        <p class="hint">Osobne systemy — otwieraj z hubu (ADR D0.6 / D0.19). Basic Auth u właściciela hosta (OS/VCMS). Sesja JWT w Commanderze zostaje.</p>
+        <h3 id="system-map-title">Mapa systemu · Campus</h3>
+        <p class="hint">Piętro · pokój · cel. Status jawny (LIVE tylko z dowodem). W2 = Trust hops. Osobne systemy — Basic Auth u właściciela hosta (OS/VCMS). Sesja JWT w Commanderze zostaje (D0.6 / D0.19).</p>
         <div class="system-map-links" id="system-map-links">
-          <a class="map-link" href="https://api.zzpackage.flexgrafik.nl/commander/" target="_blank" rel="noopener noreferrer" data-hop="Commander">
-            <span class="hop-label">Commander (ten hub)</span>
-            <span class="hop-meta">api.zzpackage · bieżąca sesja</span>
+          <a class="map-link" href="https://api.zzpackage.flexgrafik.nl/commander/?v=campus-w01" target="_blank" rel="noopener noreferrer" data-hop="Mission Control" data-room-id="mission-control" data-floor="P3" data-campus-state="LIVE">
+            <span class="hop-label">Mission Control</span>
+            <span class="hop-meta">P3 · Mission Control · priorities, alerts, approvals, system health</span>
+            <span class="hop-state">LIVE · EV-002</span>
           </a>
-          <a class="map-link" href="https://os.flexgrafik.nl" target="_blank" rel="noopener noreferrer" data-hop="Agent OS">
-            <span class="hop-label">Agent OS Mission Control</span>
-            <span class="hop-meta">os.flexgrafik.nl · Basic Auth</span>
+          <a class="map-link" href="https://os.flexgrafik.nl" target="_blank" rel="noopener noreferrer" data-hop="Agent OS" data-room-id="agent-os-control" data-floor="P3" data-campus-state="PARTIAL">
+            <span class="hop-label">Agent OS</span>
+            <span class="hop-meta">P3 · Agent OS · build HITL / task approve</span>
+            <span class="hop-state">PARTIAL · pending W2 auth/destination</span>
           </a>
-          <a class="map-link" href="https://cmd.flexgrafik.nl" target="_blank" rel="noopener noreferrer" data-hop="VCMS">
-            <span class="hop-label">VCMS Command Center</span>
-            <span class="hop-meta">cmd.flexgrafik.nl · Basic Auth</span>
+          <a class="map-link" href="https://cmd.flexgrafik.nl" target="_blank" rel="noopener noreferrer" data-hop="VCMS" data-room-id="vcms-command" data-floor="P3" data-campus-state="PARTIAL">
+            <span class="hop-label">VCMS</span>
+            <span class="hop-meta">P3 · VCMS · governance / conflicts</span>
+            <span class="hop-state">PARTIAL · pending W2 hop verify</span>
           </a>
-          <a class="map-link" href="https://cmd.flexgrafik.nl/docs/" target="_blank" rel="noopener noreferrer" data-hop="VCMS docs">
-            <span class="hop-label">VCMS docs</span>
-            <span class="hop-meta">Dokumentacja ekosystemu</span>
+          <a class="map-link" href="https://cmd.flexgrafik.nl/docs/" target="_blank" rel="noopener noreferrer" data-hop="Knowledge" data-room-id="knowledge-library" data-floor="P2" data-campus-state="UNVERIFIED">
+            <span class="hop-label">Knowledge</span>
+            <span class="hop-meta">P2 · Knowledge · ecosystem docs</span>
+            <span class="hop-state">UNVERIFIED · destination marker pending W2</span>
           </a>
-          <a class="map-link" href="https://zzpackage.flexgrafik.nl/wizard/" target="_blank" rel="noopener noreferrer" data-hop="Wizard">
-            <span class="hop-label">Wizard</span>
-            <span class="hop-meta">zzpackage · ścieżka zakupu</span>
+          <a class="map-link" href="https://zzpackage.flexgrafik.nl/wizard/" target="_blank" rel="noopener noreferrer" data-hop="Wizard" data-room-id="showroom-wizard" data-floor="P1" data-campus-state="PARTIAL">
+            <span class="hop-label">Sales / Wizard</span>
+            <span class="hop-meta">P1 · Sales / Wizard · cash path</span>
+            <span class="hop-state">PARTIAL · pending W2 destination/auth</span>
           </a>
-          <a class="map-link" href="https://api.zzpackage.flexgrafik.nl/api/v1/design-agent/health" target="_blank" rel="noopener noreferrer" data-hop="Design Agent">
-            <span class="hop-label">Design Agent health</span>
-            <span class="hop-meta">JSON health probe</span>
+          <a class="map-link" href="https://api.zzpackage.flexgrafik.nl/api/v1/design-agent/health" target="_blank" rel="noopener noreferrer" data-hop="Design Agent" data-room-id="system-health-da" data-floor="P3" data-campus-state="PARTIAL">
+            <span class="hop-label">System Health / Design Agent</span>
+            <span class="hop-meta">P3 · System Health / Design Agent · readiness probe (not a production desk)</span>
+            <span class="hop-state">PARTIAL · EV-007 technical health</span>
           </a>
+          <a class="map-link" href="#queue-list" data-hop="Sales queue" data-room-id="sales-queue" data-floor="P1" data-campus-state="LIVE">
+            <span class="hop-label">Sales · leads queue</span>
+            <span class="hop-meta">P1 · Sales · CRITICAL / ACTION queue on this page</span>
+            <span class="hop-state">LIVE · #queue-list verified</span>
+          </a>
+          <div class="map-link map-status" role="status" tabindex="-1" data-room-id="analytics" data-floor="P2" data-campus-state="UNVERIFIED" aria-label="P2 Analytics. Finance data UNVERIFIED. No desk link. Use Analityka tab.">
+            <span class="hop-label">Analytics</span>
+            <span class="hop-meta">P2 · Analytics · Finance data UNVERIFIED — use tab Analityka (existing)</span>
+            <span class="hop-state">UNVERIFIED · not a Finance Room</span>
+          </div>
+          <div class="map-link map-status is-parked" role="status" tabindex="-1" data-room-id="orders-production" data-floor="P0" data-campus-state="PARKED" aria-label="P0 Orders and Production. PARKED. Operational desk not implemented.">
+            <span class="hop-label">Orders &amp; Production</span>
+            <span class="hop-meta">P0 · Orders &amp; Production · PARKED — operational desk not implemented</span>
+            <span class="hop-state">PARKED · no desk</span>
+          </div>
+          <div class="map-link map-status is-no-campaign" role="status" tabindex="-1" data-room-id="marketing-studio" data-floor="P1" data-campus-state="NO_ACTIVE_CAMPAIGN" aria-label="P1 Marketing Studio. No active campaign. No active-work link.">
+            <span class="hop-label">Marketing Studio</span>
+            <span class="hop-meta">P1 · Marketing Studio · NO ACTIVE CAMPAIGN</span>
+            <span class="hop-state">NO ACTIVE CAMPAIGN · execution out of scope</span>
+          </div>
+          <div class="map-link map-status" role="status" tabindex="-1" data-room-id="compliance" data-floor="P3" data-campus-state="UNVERIFIED" aria-label="P3 Compliance and Approvals. UNVERIFIED. Use Ustawienia then Audyt. Pending W2 verification.">
+            <span class="hop-label">Compliance / Approvals</span>
+            <span class="hop-meta">P3 · Compliance / Approvals · use Ustawienia → Audyt</span>
+            <span class="hop-state">UNVERIFIED · pending W2 Settings→Audyt</span>
+          </div>
+          <div class="map-link map-status is-parked" role="status" tabindex="-1" data-room-id="supplier-warehouse" data-floor="MAG" data-campus-state="PARKED" aria-label="MAG Supplier and Warehouse. PARKED. Desk not implemented.">
+            <span class="hop-label">Supplier / Warehouse</span>
+            <span class="hop-meta">MAG · Supplier / Warehouse · PARKED — desk not implemented</span>
+            <span class="hop-state">PARKED · no desk</span>
+          </div>
         </div>
       </section>
     </section>
@@ -285,15 +321,16 @@
         <ul id="roles-list" class="roles-list hint"></ul>
         <label for="ui-lang">Język UI</label>
         <select id="ui-lang"><option value="pl">Polski</option></select>
-        <h3>Mapa systemu (URL, read-only)</h3>
+        <h3>Mapa systemu (URL + Campus status, read-only)</h3>
         <ul class="system-map-settings hint">
-          <li>Commander: https://api.zzpackage.flexgrafik.nl/commander/</li>
-          <li>Agent OS: https://os.flexgrafik.nl (Basic Auth)</li>
-          <li>VCMS: https://cmd.flexgrafik.nl (Basic Auth)</li>
-          <li>VCMS docs: https://cmd.flexgrafik.nl/docs/</li>
-          <li>Wizard: https://zzpackage.flexgrafik.nl/wizard/</li>
-          <li>Marketing OS (SoT): jadzia <code>docs/ops/marketing/OPERATOR-TODAY.md</code></li>
-          <li>DA health: https://api.zzpackage.flexgrafik.nl/api/v1/design-agent/health</li>
+          <li>P3 Mission Control LIVE: this Commander hub</li>
+          <li>P3 Agent OS PARTIAL: https://os.flexgrafik.nl (Basic Auth · W2)</li>
+          <li>P3 VCMS PARTIAL: https://cmd.flexgrafik.nl (Basic Auth · W2)</li>
+          <li>P2 Knowledge UNVERIFIED: https://cmd.flexgrafik.nl/docs/</li>
+          <li>P1 Sales/Wizard PARTIAL: https://zzpackage.flexgrafik.nl/wizard/</li>
+          <li>P3 System Health/DA PARTIAL: /api/v1/design-agent/health</li>
+          <li>P1 Sales queue LIVE: #queue-list on Start</li>
+          <li>P2 Analytics UNVERIFIED · P0 Orders PARKED · P1 Marketing NO ACTIVE CAMPAIGN · MAG Supplier PARKED</li>
         </ul>
         <button type="submit">Zapisz</button>
       </form>
@@ -333,6 +370,6 @@
   </dialog>
 
   <div id="toast" class="toast" role="status" aria-live="polite" hidden></div>
-  <script src="app.js?v=mkt-dash08"></script>
+  <script src="app.js?v=campus-w01"></script>
 </body>
 </html>

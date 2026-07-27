@@ -1,9 +1,10 @@
 ---
-status: "[ACTIVE]"
+status: "[SUPERSEDED]"
 title: "FlexGrafik Virtual Campus — research & SoT brief"
 gate: "VF-CAMPUS-01"
 updated: "2026-07-27"
 owner: "Norbert Wozniak (Dowódca)"
+superseded_by: "docs/ops/FLEXGRAFIK-CAMPUS-MAP.md"
 supersedes: "QuietForge_Architektura (external draft — input only)"
 inputs:
   - "Pitch-Deck-2026.pdf (QuietForge / FlexGrafik B.V.)"
@@ -14,6 +15,9 @@ budget_freeze_until: "2026-08-06"
 ---
 
 # FlexGrafik Virtual Campus — brief badawczy
+
+> **SoT v1 map:** [FLEXGRAFIK-CAMPUS-MAP.md](./FLEXGRAFIK-CAMPUS-MAP.md)  
+> **Program SoT (PLAN-00):** [FLEXGRAFIK-CAMPUS-PROGRAM.md](./FLEXGRAFIK-CAMPUS-PROGRAM.md) — ten brief = seed research only.
 
 ## Cel (nie gra — operacyjna siedziba)
 
