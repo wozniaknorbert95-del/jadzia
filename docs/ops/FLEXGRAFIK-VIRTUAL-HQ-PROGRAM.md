@@ -20,6 +20,14 @@ inspiration_only: "Talk&Buy store — spatial UX inspiration; no copy"
 
 North Star: ≤30 seconds in Mission Control to answer money / risk / decisions / lagging dept / failed agent / next action / untrusted gaps.
 
+### Founder product direction (2026-07-27 · W1 CLOSE)
+
+> Virtual HQ becomes the primary operational dashboard.  
+> Commander is the underlying control, data, audit and action engine.  
+> Existing dashboard content must progressively be reorganized into Mission Control and department Work Views, **not duplicated**.
+
+W1-SHELL: **CLOSED** (local `vhq-w01b`). W2+ not auto-activated.
+
 ---
 
 ## 2. Non-goals / STOP
@@ -28,7 +36,7 @@ North Star: ≤30 seconds in Mission Control to answer money / risk / decisions 
 |------|------|
 | Decorative game / fake 3D office | always |
 | Copy Talk&Buy code/assets/branding/UI | always |
-| Second disconnected app replacing Commander | always |
+| Second disconnected app / duplicate data plane replacing Commander engine | always — VHQ is primary UX; Commander remains SoT engine |
 | Chatbot-only “HQ” | always |
 | Static room labels without Work View path | always |
 | Uncontrolled agent-to-agent chat as workflow | always |

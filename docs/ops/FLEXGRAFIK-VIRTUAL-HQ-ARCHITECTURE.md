@@ -8,20 +8,31 @@ foundation: "docs/ops/FLEXGRAFIK-CAMPUS-PROGRAM.md · FLEXGRAFIK-CAMPUS-MAP.md �
 inspiration_only: "https://store.talknbuy.com/pl/ — spatial discoverability; NO copy of code/assets/branding"
 runtime_changes_allowed: false
 prod_tip_at_plan: "3487ec0"
+w1_shell: "completed 2026-07-27 · local cache vhq-w01b · Founder CLOSE"
 ---
 
 # FlexGrafik Virtual HQ — Architecture
 
 ## 0. Relationship to Campus / Commander
 
-| Layer | Role | Status @ plan |
-|-------|------|----------------|
-| **Commander (jadzia)** | Control + data foundation: queues, JWT, Marketing, Analytics, Agents, Audit, Settings | LIVE tip `3487ec0` · `?v=campus-w03` |
-| **Campus W1–W3** | Truthful map hops, evidence badges, 5 Truth Cards | DONE — foundation, **not** final product vision |
-| **Virtual HQ (this doc)** | Experience layer: interactive company building above Commander | **PLAN only** |
+| Layer | Role | Status |
+|-------|------|--------|
+| **Virtual HQ** | **Primary operational dashboard** — World / Work / Command experience | W1-SHELL CLOSED (local `vhq-w01b`) — awaiting commit/deploy GO |
+| **Commander (jadzia)** | **Underlying control, data, audit and action engine** — queues, JWT, Marketing, Analytics, Agents, Audit, Settings | LIVE tip `3487ec0` · `?v=campus-w03` until VHQ deploy |
+| **Campus W1–W3** | Truthful map hops, evidence badges, 5 Truth Cards | DONE — foundation absorbed into VHQ path |
 | **Agent OS / VCMS** | Build + Govern brains — hop destinations, not merged into jadzia | PARTIAL post-auth |
 
-**Rule:** Virtual HQ **does not replace** Commander. HQ World View orients; Work View opens real Commander surfaces / external SoT; Command View = Mission Control.
+### Founder product direction (2026-07-27 CLOSE W1)
+
+> Virtual HQ becomes the primary operational dashboard.  
+> Commander is the underlying control, data, audit and action engine.  
+> Existing dashboard content must progressively be reorganized into Mission Control and department Work Views, **not duplicated**.
+
+**Rules**
+- Virtual HQ orients and surfaces decisions; Work Views open real Commander surfaces / external SoT — **no parallel fake dashboards**.
+- Progressive reorganization of existing Home/Campus content into MC + room Work Views (W2+).
+- No 6th primary Commander tab (D0.15).
+- Talk&Buy = inspiration for spatial discoverability only. No code/assets/branding clone.
 
 **Non-copy:** Talk&Buy = inspiration for spatial interaction and discoverability only. No code, assets, branding, or UI clone.
 
