@@ -1,6 +1,6 @@
 {
   "project": "Jadzia-Core",
-  "last_updated": "2026-07-27 (VF-VHQ-W2-MISSION-CONTROL CLOSE · Founder-approved Director Polish · HITL next)",
+  "last_updated": "2026-07-27 (VF-VHQ-W3-ROOMS-COMMERCIAL CLOSE · Founder-approved Commercial Rooms · HITL next)",
   "status": "active",
   "plan": "docs/ops/FLEXGRAFIK-VIRTUAL-HQ-PROGRAM.md",
   "active_gate": "",
@@ -11,22 +11,27 @@
     "active": "",
     "active_state": "idle_awaiting_next_go",
     "unblocked": ["COM-AI-50-READY", "INC-SSH-RECOVERY-00"],
-    "parked": ["MKT-ASSET-00", "VF-CAMPUS-W4", "VF-VHQ-W3-ROOMS-COMMERCIAL", "VF-VHQ-W4-ROOMS-OPERATIONS", "VF-VHQ-W5-OPERATIONS-BUS", "VF-VHQ-W6-DIRECTOR-APPROVALS", "VF-VHQ-W7-DOGFOOD", "VF-VHQ-3D-PARKED", "VF-PARK-PROCUREMENT", "VF-PARK-DISPATCH", "VF-PARK-PRINTPACK-SAAS", "VF-PARK-FINANCE-AGENT"],
+    "parked": ["MKT-ASSET-00", "VF-CAMPUS-W4", "VF-VHQ-W4-ROOMS-OPERATIONS", "VF-VHQ-W5-OPERATIONS-BUS", "VF-VHQ-W6-DIRECTOR-APPROVALS", "VF-VHQ-W7-DOGFOOD", "VF-VHQ-3D-PARKED", "VF-PARK-PROCUREMENT", "VF-PARK-DISPATCH", "VF-PARK-PRINTPACK-SAAS", "VF-PARK-FINANCE-AGENT"],
     "founder_override": "2026-07-27 VHQ = primary operational dashboard; Commander = control/data/audit/action engine; no content duplication — reorganize into MC + Work Views",
-    "campus_prod_tip": "3487ec0 campus-w03 / assets campus-w03b (prod until VHQ deploy GO)",
+    "campus_prod_tip": "db32212 / vhq-w02b (prod baseline until W3 deploy GO)",
     "campus_w4": "parked residual — product path is VF-VHQ-*",
     "vhq_plan": "completed",
     "vhq_design": "completed commit 0323dd6",
     "vhq_w1": "completed · commits b0a28b2 + f6fce10 · cache vhq-w01b",
     "vhq_w1_close": "docs/handoffs/2026-07-27-VF-VHQ-W1-SHELL-CLOSE.md",
-    "vhq_w2": "completed · cache vhq-w02b · Founder CLOSE 2026-07-27 · uncommitted local",
+    "vhq_w2": "completed · commits 4545c6e + db32212 · cache vhq-w02b · DEPLOY-VHQ-W2-00 PASS",
     "vhq_w2_preclose": "docs/handoffs/2026-07-27-VF-VHQ-W2-MISSION-CONTROL-PRECLOSE.md",
     "vhq_w2_polish_preclose": "docs/handoffs/2026-07-27-VF-VHQ-W2-DIRECTOR-POLISH-PRECLOSE.md",
     "vhq_w2_close": "docs/handoffs/2026-07-27-VF-VHQ-W2-MISSION-CONTROL-CLOSE.md",
-    "mvp_rooms": ["mission-control", "approval-vault", "ai-agent-health", "sales-room", "wizard-quote"],
+    "vhq_w3": "completed · cache vhq-w03b · Founder CLOSE 2026-07-27 · uncommitted local",
+    "vhq_w3_preclose": "docs/handoffs/2026-07-27-VF-VHQ-W3-ROOMS-COMMERCIAL-PRECLOSE.md",
+    "vhq_w3_dogfood_truth": "docs/handoffs/2026-07-27-VF-VHQ-W3-FOUNDER-DOGFOOD-TRUTH.md",
+    "vhq_w3_close": "docs/handoffs/2026-07-27-VF-VHQ-W3-ROOMS-COMMERCIAL-CLOSE.md",
+    "mvp_rooms": ["mission-control", "approval-vault", "ai-agent-health", "sales-room", "wizard-quote", "marketing-studio"],
     "mvp_room_labels": {
       "ai-agent-health": "Agent Operations",
-      "ai-agent-health_subarea": "System Health / AI Health"
+      "ai-agent-health_subarea": "System Health / AI Health",
+      "marketing-studio": "Marketing Studio (honest pin · observe only)"
     },
     "preserved_w1": [
       "opaque_hq_overlay",
@@ -50,6 +55,17 @@
       "focus_trap_esc_restore",
       "five_tabs_unchanged"
     ],
+    "preserved_w3": [
+      "sales_work_view_live_ev_w2_007",
+      "wizard_work_view_live_ev_w2_005",
+      "marketing_studio_unverified_ev_w3_001",
+      "canonical_marketing_status_unverified_campaign_not_verified",
+      "no_active_campaign_label_removed",
+      "commercial_handoff_sales_wizard_order_parked",
+      "observe_only_marketing_deeplink",
+      "paid_ads_parked_to_2026_08_06",
+      "single_canonical_queue_list"
+    ],
     "vhq_w2_residuals": [
       "priorities_queue_need_session",
       "agent_os_vcms_post_auth_verification",
@@ -57,6 +73,13 @@
       "marketing_campaign_unverified",
       "order_desk_production_parked",
       "approval_vault_thin_partial",
+      "ssh_degraded_inc_ssh_recovery_00"
+    ],
+    "vhq_w3_residuals": [
+      "sales_disposition_needs_jwt",
+      "marketing_campaign_unverified_ev_w3_001",
+      "paid_ads_freeze_until_2026_08_06",
+      "order_desk_parked_ev_w2_010",
       "ssh_degraded_inc_ssh_recovery_00"
     ],
     "founder_d1_d7": {
@@ -68,18 +91,18 @@
       "D6": "W2 local on W1 commits — no separate W1 deploy",
       "D7": "W2 activated"
     },
-    "proposed_next_gate": "VF-VHQ-W3-ROOMS-COMMERCIAL",
+    "proposed_next_gate": "VF-VHQ-W4-ROOMS-OPERATIONS",
     "proposed_next_gate_active": false,
-    "proposed_next": "HITL: commit W2 (exclude MKT) → optional deploy GO for W1+W2 tip. Do not auto-start W3."
+    "proposed_next": "HITL: commit W3 (exclude MKT) → optional deploy GO for tip with vhq-w03b. Do not auto-start W4."
   },
   "standing_go_closeout": false,
   "closeout_queue": [],
   "closeout_expires": "2026-08-01",
-  "next_human": "Approve W2-only commit staging list (exclude MKT). Then optional deploy GO. W3 stays parked until explicit GO.",
-  "next_agent": "WAIT Founder. No commit/deploy/W3 unless explicit GO. Do not touch MKT dirty files.",
+  "next_human": "Approve W3-only commit staging list (exclude MKT). Then optional deploy GO. W4 stays parked until explicit GO.",
+  "next_agent": "WAIT Founder. No commit/deploy/W4 unless explicit GO. Do not touch MKT dirty files. Preserve Marketing UNVERIFIED EV-W3-001.",
   "budget_freeze_until": "2026-08-06",
   "budget_freeze_note": "Dowódca 2026-07-27: zero ad spend 10 dni — MKT work PARKED by Founder override",
-  "agent_rule": "1-1-1. VHQ W2 CLOSED. Preserve MC Command View polish. No fake LIVE. No 6th tab. No 3D. No Ads/Mollie. Deploy tylko ze zgoda. W3 only with GO.",
+  "agent_rule": "1-1-1. VHQ W3 CLOSED. Preserve Sales/Wizard LIVE Work Views + Marketing UNVERIFIED EV-W3-001. No fake LIVE campaign. No 6th tab. No 3D. No Ads/Mollie. Deploy tylko ze zgoda. W4 only with GO.",
   "sprints": {
     "remediation": "completed",
     "coi_phase_a": "deploy_complete",
@@ -2008,16 +2031,18 @@
       "id": "VF-VHQ-W3-ROOMS-COMMERCIAL",
       "sprint": "FlexGrafik Virtual HQ",
       "task": "Work Views commercial: Wizard/Sales + honest Marketing pin; deeplink existing surfaces",
-      "status": "parked",
+      "status": "completed",
       "priority": "high",
       "owner": "agent",
       "depends_on": ["VF-VHQ-W2-MISSION-CONTROL"],
       "runtime_changes_allowed": true,
       "risk_class": "UI + deeplink",
-      "stop_conditions": ["no Ads execute", "no fake campaign LIVE", "MKT dirty not auto-committed"],
+      "allowed_paths": ["commander-ui/**", "docs/**", "todo.json"],
+      "stop_conditions": ["no Ads execute", "no fake campaign LIVE", "MKT dirty not auto-committed", "no Order Desk LIVE", "no W4 auto"],
       "evidence_required": "Wizard LIVE hop; Sales disposition path; Marketing UNVERIFIED/PARKED label",
       "dod": "Commercial MVP rooms usable without inventing desks",
-      "note": "Parked."
+      "checklist": "docs/handoffs/2026-07-27-VF-VHQ-W3-ROOMS-COMMERCIAL-CLOSE.md",
+      "note": "2026-07-27 CLOSED under Founder GO. Cache vhq-w03b. Preserve Sales LIVE EV-W2-007 · Wizard LIVE EV-W2-005 · Marketing UNVERIFIED — campaign state not verified · EV-W3-001. W4 remains parked / not auto-activated."
     },
     {
       "id": "VF-VHQ-W4-ROOMS-OPERATIONS",
