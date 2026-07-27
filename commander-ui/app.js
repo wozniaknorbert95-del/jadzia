@@ -1435,6 +1435,22 @@ function bindNavButtons(selector) {
   document.querySelectorAll(selector).forEach((btn, idx, all) => {
     btn.addEventListener("click", async () => {
       const view = btn.dataset.view;
+      if (view === "hq") {
+        if (typeof vhqGoMissionControl === "function") {
+          vhqGoMissionControl({ historyMode: "push" });
+        } else {
+          showView("hq");
+        }
+        try {
+          await refresh();
+        } catch (e) {
+          toast(e.message);
+        }
+        return;
+      }
+      if (typeof vhqIsPrimary === "function" && vhqIsPrimary() && typeof vhqParkPrimaryShell === "function") {
+        vhqParkPrimaryShell();
+      }
       showView(view);
       try {
         await refresh();
@@ -1791,6 +1807,81 @@ let vhqLastFocus = null;
 let vhqCurrentRoom = "mission-control";
 let vhqCurrentFloor = "P3";
 let vhqFocusinGuard = null;
+let vhqNavState = "mc";
+let vhqApplyingHistory = false;
+
+/** W3.1 primary shell flag. Override: ?vhq_shell=legacy|primary */
+function vhqIsPrimary() {
+  const override = new URLSearchParams(window.location.search).get("vhq_shell");
+  if (override === "legacy") return false;
+  if (override === "primary") return true;
+  return document.body.dataset.vhqPrimary === "1";
+}
+
+function vhqStateFromRoom(roomId) {
+  if (!roomId || roomId === "mission-control") return "mc";
+  return roomId;
+}
+
+function vhqWriteHistory(state, { replace = false } = {}) {
+  if (!vhqIsPrimary() || vhqApplyingHistory) return;
+  const url = new URL(window.location.href);
+  if (state) url.searchParams.set("vhq", state);
+  else url.searchParams.delete("vhq");
+  // preserve cache bust `v=` and other params
+  const qs = url.searchParams.toString();
+  const path = `${url.pathname}${qs ? `?${qs}` : ""}${url.hash}`;
+  const data = { vhq: state || "" };
+  if (replace) window.history.replaceState(data, "", path);
+  else window.history.pushState(data, "", path);
+  vhqNavState = state || "";
+}
+
+/**
+ * Legacy modal portal: move #vhq-shell to body so inert/visibility can safely
+ * target .coi-shell without hiding an ancestor of the dialog.
+ * Primary mode always keeps the shell inside #view-hq.
+ */
+function vhqPortalShellForLegacy(open) {
+  const shell = document.getElementById("vhq-shell");
+  const host = document.getElementById("view-hq");
+  if (!shell || !host) return;
+  if (open) {
+    if (shell.parentElement !== document.body) {
+      document.body.appendChild(shell);
+    }
+    return;
+  }
+  if (shell.parentElement !== host) {
+    host.insertBefore(shell, host.firstChild);
+  }
+}
+
+function vhqApplyLegacyShellAttrs(on) {
+  const shell = document.getElementById("vhq-shell");
+  if (!shell) return;
+  if (on) {
+    shell.setAttribute("role", "dialog");
+    shell.setAttribute("aria-modal", "true");
+    document.body.classList.add("vhq-legacy");
+  } else {
+    shell.removeAttribute("role");
+    shell.removeAttribute("aria-modal");
+    document.body.classList.remove("vhq-legacy");
+    vhqPortalShellForLegacy(false);
+  }
+}
+
+function vhqParkPrimaryShell() {
+  if (!vhqIsPrimary()) return;
+  try {
+    vhqRestoreAllSlots();
+  } catch (err) {
+    console.warn("vhqRestoreAllSlots failed", err);
+  }
+  document.body.classList.remove("vhq-open", "vhq-mode-command", "vhq-mode-work", "vhq-mode-world");
+  vhqOpen = false;
+}
 
 function vhqEscHtml(s) {
   return String(s == null ? "" : s)
@@ -1819,7 +1910,8 @@ function vhqClearRoomHighlights() {
   });
 }
 
-function vhqShowFloorBrowse(floor) {
+function vhqShowFloorBrowse(floor, opts = {}) {
+  const historyMode = opts.historyMode || "push";
   vhqSetFloor(floor);
   vhqCurrentRoom = null;
   vhqClearRoomHighlights();
@@ -1852,6 +1944,9 @@ function vhqShowFloorBrowse(floor) {
   vhqSetMode("world");
   vhqRestoreAllSlots();
   vhqShowWorkPanel(null);
+  if (vhqIsPrimary() && historyMode !== "none") {
+    vhqWriteHistory("world", { replace: historyMode === "replace" });
+  }
 }
 
 /** Floor filter only — never auto-opens a room. */
@@ -1861,10 +1956,11 @@ function vhqSelectFloor(floor) {
     vhqSetFloor(floor);
     return;
   }
-  vhqShowFloorBrowse(floor);
+  vhqShowFloorBrowse(floor, { historyMode: "push" });
 }
 
-function vhqRenderRoom(roomId) {
+function vhqRenderRoom(roomId, opts = {}) {
+  const historyMode = opts.historyMode || "push";
   const room = VHQ_ROOMS[roomId];
   if (!room) return;
   vhqCurrentRoom = roomId;
@@ -1957,6 +2053,9 @@ function vhqRenderRoom(roomId) {
     }
   }
   vhqApplyRoomChrome(roomId);
+  if (vhqIsPrimary() && historyMode !== "none") {
+    vhqWriteHistory(vhqStateFromRoom(roomId), { replace: historyMode === "replace" });
+  }
 }
 
 
@@ -2067,11 +2166,61 @@ function vhqRenderPulse() {
       `<span class="vhq-pulse-item__name">${vhqEscHtml(item.label)}</span>` +
       `<span class="vhq-pulse-item__badge" data-status="${vhqEscHtml(item.status)}">[${vhqEscHtml(item.status)}]</span>` +
       `<span class="vhq-pulse-item__meta">${vhqEscHtml(item.evidence)} · Go to room</span>`;
-    btn.addEventListener("click", () => vhqRenderRoom(item.room));
+    btn.addEventListener("click", () => vhqRenderRoom(item.room, { historyMode: "push" }));
     grid.appendChild(btn);
   });
 }
 
+function vhqGoMissionControl(opts = {}) {
+  const historyMode = opts.historyMode || "push";
+  if (vhqIsPrimary()) {
+    vhqApplyLegacyShellAttrs(false);
+    const shell = document.getElementById("vhq-shell");
+    if (shell) shell.hidden = false;
+    showView("hq");
+    document.body.classList.add("vhq-open");
+    vhqOpen = true;
+    vhqDetachFocusGuard();
+    vhqSetBackdropInert(false);
+    vhqRenderRoom("mission-control", { historyMode });
+    return;
+  }
+  vhqOpenShell("mission-control");
+}
+
+function vhqGoConsole(opts = {}) {
+  const focusAuth = !!opts.focusAuth;
+  const historyMode = opts.historyMode || "push";
+  if (vhqIsPrimary()) {
+    try {
+      vhqRestoreAllSlots();
+    } catch (err) {
+      console.warn("vhqRestoreAllSlots failed", err);
+    }
+    document.body.classList.remove("vhq-open", "vhq-mode-command", "vhq-mode-work", "vhq-mode-world");
+    vhqOpen = false;
+    vhqDetachFocusGuard();
+    vhqSetBackdropInert(false);
+    showView("home");
+    if (historyMode !== "none") {
+      vhqWriteHistory("console", { replace: historyMode === "replace" });
+    }
+    if (focusAuth || !(typeof getToken === "function" && getToken())) {
+      setAuthExpanded(true);
+      const jwt = document.getElementById("jwt-input");
+      if (jwt) {
+        jwt.focus();
+        return;
+      }
+    }
+    const enter = document.getElementById("vhq-enter");
+    if (enter) enter.focus();
+    return;
+  }
+  vhqOpenOperationsConsole({ focusAuth });
+}
+
+/** Legacy: close modal overlay and land on Operations Console (home). */
 function vhqOpenOperationsConsole(opts = {}) {
   const focusAuth = !!opts.focusAuth;
   vhqClose({ restoreFocus: false });
@@ -2144,7 +2293,8 @@ function vhqApplyRoomChrome(roomId) {
 
 function vhqFocusableNodes() {
   const shell = document.getElementById("vhq-shell");
-  if (!shell || shell.hidden) return [];
+  if (!shell) return [];
+  if (!vhqIsPrimary() && shell.hidden) return [];
   const selector =
     'a[href], button:not([disabled]), select:not([disabled]), textarea:not([disabled]), input:not([disabled]):not([type="hidden"]), [tabindex]:not([tabindex="-1"])';
   return Array.from(shell.querySelectorAll(selector)).filter((el) => {
@@ -2156,17 +2306,30 @@ function vhqFocusableNodes() {
   });
 }
 
+function vhqClearBackdropInert() {
+  document.querySelectorAll(".vhq-backdrop-inert").forEach((el) => {
+    el.removeAttribute("inert");
+    el.removeAttribute("aria-hidden");
+    el.classList.remove("vhq-backdrop-inert");
+  });
+}
+
 function vhqSetBackdropInert(on) {
-  document.querySelectorAll("body > *:not(#vhq-shell):not(#toast)").forEach((el) => {
-    if (on) {
-      el.setAttribute("inert", "");
-      el.setAttribute("aria-hidden", "true");
-      el.classList.add("vhq-backdrop-inert");
-    } else {
-      el.removeAttribute("inert");
-      el.removeAttribute("aria-hidden");
-      el.classList.remove("vhq-backdrop-inert");
-    }
+  if (vhqIsPrimary() || !on) {
+    // Primary shell is a normal view — never inert the app chrome.
+    // Legacy close also clears fully before restoring shell to #view-hq.
+    vhqClearBackdropInert();
+    return;
+  }
+  // Legacy open: shell must already be portaled to body (sibling of .coi-shell).
+  // Never inert #vhq-shell or any ancestor that contains it.
+  const shell = document.getElementById("vhq-shell");
+  document.querySelectorAll("body > *:not(#toast)").forEach((el) => {
+    if (el === shell || el.id === "vhq-shell") return;
+    if (shell && el.contains(shell)) return;
+    el.setAttribute("inert", "");
+    el.setAttribute("aria-hidden", "true");
+    el.classList.add("vhq-backdrop-inert");
   });
 }
 
@@ -2178,11 +2341,12 @@ function vhqDetachFocusGuard() {
 }
 
 function vhqAttachFocusGuard() {
+  if (vhqIsPrimary()) return; // no modal focus trap in primary shell
   vhqDetachFocusGuard();
   vhqFocusinGuard = (e) => {
     if (!vhqOpen) return;
     const shell = document.getElementById("vhq-shell");
-    if (!shell || shell.hidden) return;
+    if (!shell) return;
     if (shell.contains(e.target)) return;
     e.preventDefault();
     const nodes = vhqFocusableNodes();
@@ -2198,9 +2362,10 @@ function vhqAttachFocusGuard() {
 }
 
 function vhqTrapTab(e) {
+  if (vhqIsPrimary()) return;
   if (e.key !== "Tab" || !vhqOpen) return;
   const shell = document.getElementById("vhq-shell");
-  if (!shell || shell.hidden) return;
+  if (!shell) return;
   const nodes = vhqFocusableNodes();
   if (!nodes.length) {
     e.preventDefault();
@@ -2221,8 +2386,13 @@ function vhqTrapTab(e) {
 }
 
 function vhqClose(opts = {}) {
+  if (vhqIsPrimary()) {
+    // Esc ladder B handled by vhqEscLadder; Close button → Console
+    vhqGoConsole({ focusAuth: false, historyMode: opts.historyMode || "push" });
+    return;
+  }
   const shell = document.getElementById("vhq-shell");
-  if (!shell || shell.hidden) return;
+  if (!shell) return;
   try {
     vhqRestoreAllSlots();
   } catch (err) {
@@ -2233,6 +2403,8 @@ function vhqClose(opts = {}) {
   vhqOpen = false;
   vhqDetachFocusGuard();
   vhqSetBackdropInert(false);
+  vhqPortalShellForLegacy(false);
+  // Keep body.vhq-legacy + dialog attrs while ?vhq_shell=legacy for next open.
   showView("home");
   if (opts.restoreFocus === false) return;
   const enterBtn = document.getElementById("vhq-enter");
@@ -2243,15 +2415,46 @@ function vhqClose(opts = {}) {
   }
 }
 
+function vhqEscLadder() {
+  if (!vhqIsPrimary()) {
+    vhqClose();
+    return;
+  }
+  // B: room → Mission Control → Operations Console
+  const onHq = document.getElementById("view-hq") && !document.getElementById("view-hq").hidden;
+  if (!onHq || !vhqOpen) {
+    return;
+  }
+  if (vhqCurrentRoom && vhqCurrentRoom !== "mission-control") {
+    vhqGoMissionControl({ historyMode: "push" });
+    return;
+  }
+  if (document.body.classList.contains("vhq-mode-world")) {
+    vhqGoMissionControl({ historyMode: "push" });
+    return;
+  }
+  vhqGoConsole({ focusAuth: false, historyMode: "push" });
+}
+
 function vhqOpenShell(roomId) {
   const shell = document.getElementById("vhq-shell");
   if (!shell) return;
+  if (vhqIsPrimary()) {
+    vhqGoMissionControl({ historyMode: "push" });
+    if (roomId && roomId !== "mission-control") {
+      vhqRenderRoom(roomId, { historyMode: "push" });
+    }
+    return;
+  }
+  vhqApplyLegacyShellAttrs(true);
+  vhqPortalShellForLegacy(true);
   vhqLastFocus = document.getElementById("vhq-enter") || document.activeElement;
   shell.hidden = false;
+  showView("hq");
   document.body.classList.add("vhq-open");
   vhqOpen = true;
   vhqSetBackdropInert(true);
-  vhqRenderRoom(roomId || "mission-control");
+  vhqRenderRoom(roomId || "mission-control", { historyMode: "none" });
   vhqAttachFocusGuard();
   const hasToken = typeof getToken === "function" && !!getToken();
   const focusBtn = !hasToken
@@ -2267,24 +2470,80 @@ function vhqRunAction(action) {
     return;
   }
   if (action.type === "view") {
-    vhqClose();
-    showView(action.target);
+    if (vhqIsPrimary()) {
+      vhqParkPrimaryShell();
+      showView(action.target);
+      vhqWriteHistory("", { replace: false });
+    } else {
+      vhqClose({ restoreFocus: false });
+      showView(action.target);
+    }
     return;
   }
   if (action.type === "focus-queue") {
     if (vhqCurrentRoom !== "sales-room") {
-      vhqRenderRoom("sales-room");
+      vhqRenderRoom("sales-room", { historyMode: "push" });
     }
     const el = document.getElementById("queue-list");
     if (el) el.scrollIntoView({ behavior: "smooth", block: "start" });
     return;
   }
   if (action.type === "goto-home") {
-    vhqClose();
-    showView("home");
+    vhqGoConsole({ focusAuth: false, historyMode: "push" });
     const el = document.querySelector(action.target);
     if (el) {
       el.scrollIntoView({ behavior: "smooth", block: "start" });
+    }
+  }
+}
+
+function vhqApplyUrlState(raw, opts = {}) {
+  const historyMode = opts.historyMode || "none";
+  const state = (raw || "mc").toLowerCase();
+  vhqApplyingHistory = true;
+  try {
+    if (state === "console") {
+      vhqGoConsole({ focusAuth: false, historyMode: "none" });
+      vhqNavState = "console";
+      return;
+    }
+    if (state === "world") {
+      if (vhqIsPrimary()) {
+        vhqApplyLegacyShellAttrs(false);
+        showView("hq");
+        document.body.classList.add("vhq-open");
+        vhqOpen = true;
+      } else {
+        vhqOpenShell("mission-control");
+      }
+      vhqShowFloorBrowse(vhqCurrentFloor || "P3", { historyMode: "none" });
+      vhqNavState = "world";
+      return;
+    }
+    if (state === "mc" || state === "mission-control") {
+      vhqGoMissionControl({ historyMode: "none" });
+      vhqNavState = "mc";
+      return;
+    }
+    if (VHQ_ROOMS[state]) {
+      if (vhqIsPrimary()) {
+        vhqApplyLegacyShellAttrs(false);
+        showView("hq");
+        document.body.classList.add("vhq-open");
+        vhqOpen = true;
+        vhqRenderRoom(state, { historyMode: "none" });
+      } else {
+        vhqOpenShell(state);
+      }
+      vhqNavState = state;
+      return;
+    }
+    vhqGoMissionControl({ historyMode: "none" });
+    vhqNavState = "mc";
+  } finally {
+    vhqApplyingHistory = false;
+    if (historyMode === "replace" && vhqIsPrimary()) {
+      vhqWriteHistory(vhqNavState || "mc", { replace: true });
     }
   }
 }
@@ -2294,16 +2553,18 @@ function bindVhqShell() {
   const shell = document.getElementById("vhq-shell");
   if (!enter || !shell) return;
 
-  enter.addEventListener("click", () => vhqOpenShell("mission-control"));
-  document.getElementById("vhq-close")?.addEventListener("click", () => vhqClose());
+  enter.addEventListener("click", () => vhqGoMissionControl({ historyMode: "push" }));
+  document.getElementById("vhq-close")?.addEventListener("click", () => {
+    vhqGoConsole({ focusAuth: false, historyMode: "push" });
+  });
   document.getElementById("vhq-to-console")?.addEventListener("click", () => {
-    vhqOpenOperationsConsole({ focusAuth: false });
+    vhqGoConsole({ focusAuth: false, historyMode: "push" });
   });
   document.getElementById("vhq-sign-in")?.addEventListener("click", () => {
-    vhqOpenOperationsConsole({ focusAuth: true });
+    vhqGoConsole({ focusAuth: true, historyMode: "push" });
   });
   document.getElementById("vhq-to-mc")?.addEventListener("click", () => {
-    vhqRenderRoom("mission-control");
+    vhqGoMissionControl({ historyMode: "push" });
   });
   document.getElementById("vhq-open-audit")?.addEventListener("click", () => {
     vhqRunAction({ type: "view", target: "audit" });
@@ -2321,20 +2582,20 @@ function bindVhqShell() {
     btn.addEventListener("click", () => {
       const jump = btn.getAttribute("data-vhq-jump");
       if (jump === "priorities") {
-        vhqRenderRoom("mission-control");
+        vhqGoMissionControl({ historyMode: "push" });
         document.getElementById("priorities")?.scrollIntoView({ behavior: "smooth", block: "start" });
       } else if (jump === "queue") {
-        vhqRenderRoom("mission-control");
+        vhqGoMissionControl({ historyMode: "push" });
         document.getElementById("queue-list")?.scrollIntoView({ behavior: "smooth", block: "start" });
       }
     });
   });
   document.querySelectorAll("[data-vhq-room]").forEach((btn) => {
-    btn.addEventListener("click", () => vhqRenderRoom(btn.getAttribute("data-vhq-room")));
+    btn.addEventListener("click", () => vhqRenderRoom(btn.getAttribute("data-vhq-room"), { historyMode: "push" }));
   });
   document.getElementById("vhq-teleport")?.addEventListener("change", (e) => {
     if (!e.target.value) return;
-    vhqRenderRoom(e.target.value);
+    vhqRenderRoom(e.target.value, { historyMode: "push" });
   });
   document.querySelectorAll(".vhq-floor-btn").forEach((btn) => {
     btn.addEventListener("click", () => {
@@ -2342,16 +2603,27 @@ function bindVhqShell() {
     });
   });
   document.querySelectorAll(".vhq-room").forEach((btn) => {
-    btn.addEventListener("click", () => vhqRenderRoom(btn.dataset.room));
+    btn.addEventListener("click", () => vhqRenderRoom(btn.dataset.room, { historyMode: "push" }));
   });
   document.addEventListener("keydown", (e) => {
-    if (!vhqOpen) return;
+    if (!vhqOpen && vhqIsPrimary()) {
+      // allow Esc only when HQ view is active
+      const hq = document.getElementById("view-hq");
+      if (!(hq && !hq.hidden)) return;
+    } else if (!vhqOpen) {
+      return;
+    }
     if (e.key === "Escape") {
       e.preventDefault();
-      vhqClose();
+      vhqEscLadder();
       return;
     }
     vhqTrapTab(e);
+  });
+  window.addEventListener("popstate", (e) => {
+    if (!vhqIsPrimary()) return;
+    const st = (e.state && e.state.vhq) || new URLSearchParams(window.location.search).get("vhq") || "mc";
+    vhqApplyUrlState(st, { historyMode: "none" });
   });
 }
 
@@ -2359,11 +2631,32 @@ bindVhqShell();
 
 function vhqColdOpenMissionControl() {
   if (document.body.dataset.vhqW2 !== "1") return;
-  // Ticket deeplink stays on Console until user returns to HQ
   const params = new URLSearchParams(window.location.search);
-  if (params.get("ticket")) return;
+  if (params.get("ticket")) {
+    if (vhqIsPrimary()) {
+      vhqApplyingHistory = true;
+      try {
+        showView("home");
+        vhqParkPrimaryShell();
+      } finally {
+        vhqApplyingHistory = false;
+      }
+      vhqWriteHistory("console", { replace: true });
+    }
+    return;
+  }
+  if (!vhqIsPrimary()) {
+    try {
+      vhqOpenShell("mission-control");
+    } catch (err) {
+      console.warn("vhq cold-open failed", err);
+      vhqRestoreAllSlots();
+    }
+    return;
+  }
   try {
-    vhqOpenShell("mission-control");
+    const raw = params.get("vhq") || "mc";
+    vhqApplyUrlState(raw, { historyMode: "replace" });
   } catch (err) {
     console.warn("vhq cold-open failed", err);
     vhqRestoreAllSlots();
@@ -2388,9 +2681,9 @@ document.getElementById("auth-save").onclick = () => {
   toast("Token zapisany");
   refresh()
     .then(() => {
-      if (vhqOpen) {
+      if (vhqOpen || (vhqIsPrimary() && document.getElementById("view-hq") && !document.getElementById("view-hq").hidden)) {
         vhqUpdateSessionBanner();
-        vhqOpenShell("mission-control");
+        vhqGoMissionControl({ historyMode: "push" });
       }
     })
     .catch((e) => toast(e.message));

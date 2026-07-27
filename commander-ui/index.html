@@ -13,9 +13,9 @@
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" href="styles.css?v=vhq-w03b" />
+  <link rel="stylesheet" href="styles.css?v=vhq-w31b" />
 </head>
-<body data-vhq-w2="1" data-vhq-w3="1">
+<body data-vhq-w2="1" data-vhq-w3="1" data-vhq-w31="1" data-vhq-primary="1">
   <a class="skip-link" href="#main">Przejdź do treści</a>
   <div id="delegat-banner" class="banner warning-banner" hidden role="alert">
     Brak Delegata — skonfiguruj email w Ustawieniach (eskalacja 24h).
@@ -30,7 +30,7 @@
     </div>
     <h1>COI Commander</h1>
     <nav aria-label="Główne menu" id="main-nav" class="nav-desktop">
-      <button type="button" data-view="home" class="nav-btn active" aria-current="page">Start</button>
+      <button type="button" data-view="hq" class="nav-btn active" aria-current="page">Start</button>
       <button type="button" data-view="marketing" class="nav-btn">Marketing</button>
       <button type="button" data-view="analytics" class="nav-btn">Analityka</button>
       <button type="button" data-view="agents" class="nav-btn">Agenci</button>
@@ -67,7 +67,251 @@
   </div>
 
   <main id="main" class="main" tabindex="-1">
-    <section id="view-home" class="view active view-home--console" aria-labelledby="home-title">
+    <section id="view-hq" class="view active" aria-labelledby="vhq-title">
+      <div id="vhq-shell" class="vhq-shell" aria-labelledby="vhq-title">
+          <div class="vhq-shell__chrome">
+            <header class="vhq-shell__header">
+              <div class="vhq-shell__brand">
+                <p class="vhq-shell__eyebrow">Primary dashboard · Commander = engine</p>
+                <h2 id="vhq-title">FlexGrafik Virtual HQ</h2>
+                <p id="vhq-location" class="vhq-shell__location" aria-live="polite">HQ › P3 › Mission Control</p>
+              </div>
+              <div class="vhq-shell__actions">
+                <div class="vhq-actions-primary" role="group" aria-label="Session and console">
+                  <button type="button" id="vhq-to-console" class="secondary">Operations Console</button>
+                  <button type="button" id="vhq-sign-in" class="primary">Sign in</button>
+                </div>
+                <details class="vhq-nav-drawer" id="vhq-nav-drawer">
+                  <summary class="vhq-nav-drawer__summary">Navigate HQ</summary>
+                  <div class="vhq-nav-drawer__body">
+                    <label class="vhq-teleport-label" for="vhq-teleport">Teleport</label>
+                    <select id="vhq-teleport" class="vhq-teleport" aria-label="Teleport to room">
+                      <option value="">Select room…</option>
+                      <option value="mission-control">P3 · Mission Control</option>
+                      <option value="approval-vault">P3 · Approval Vault</option>
+                      <option value="ai-agent-health">P3 · Agent Operations</option>
+                      <option value="boardroom">P3 · Boardroom</option>
+                      <option value="analytics-finance">P2 · Finance / Analytics</option>
+                      <option value="compliance-audit">P2 · Compliance / Audit</option>
+                      <option value="knowledge-library">P2 · Knowledge</option>
+                      <option value="data-ai-lab">P2 · Data &amp; AI Lab</option>
+                      <option value="vcms-os-zone">P2 · VCMS / Agent OS</option>
+                      <option value="sales-room">P1 · Sales Room</option>
+                      <option value="wizard-quote">P1 · Wizard / Quote</option>
+                      <option value="marketing-studio">P1 · Marketing Studio</option>
+                      <option value="reception">P1 · Reception</option>
+                      <option value="client-support">P1 · Client Support</option>
+                      <option value="design-studio">P1 · Design Studio</option>
+                      <option value="order-desk">P0 · Order Desk</option>
+                      <option value="production-control">P0 · Production Control</option>
+                      <option value="preflight-quality">P0 · Preflight / Quality</option>
+                      <option value="dispatch-returns">P0 · Dispatch / Returns</option>
+                      <option value="supplier-dock">MAG · Supplier Dock</option>
+                      <option value="asset-warehouse">MAG · Asset Warehouse</option>
+                      <option value="partner-production-network">MAG · Partner Network</option>
+                    </select>
+                    <button type="button" id="vhq-to-mc" class="secondary">Mission Control</button>
+                    <button type="button" id="vhq-close" class="secondary" aria-label="Operations Console">Close</button>
+                  </div>
+                </details>
+              </div>
+            </header>
+            <nav class="vhq-floors" id="vhq-floors" aria-label="Floor navigation" role="tablist">
+              <button type="button" role="tab" class="vhq-floor-btn active" data-floor="P3" aria-selected="true">P3 Director</button>
+              <button type="button" role="tab" class="vhq-floor-btn" data-floor="P2" aria-selected="false">P2 Intelligence</button>
+              <button type="button" role="tab" class="vhq-floor-btn" data-floor="P1" aria-selected="false">P1 Commercial</button>
+              <button type="button" role="tab" class="vhq-floor-btn" data-floor="P0" aria-selected="false">P0 Operations</button>
+              <button type="button" role="tab" class="vhq-floor-btn" data-floor="MAG" aria-selected="false">MAG Network</button>
+            </nav>
+          </div>
+          <div class="vhq-shell__body">
+            <section id="vhq-command" class="vhq-command" hidden aria-labelledby="vhq-brief-title">
+              <p id="vhq-session-banner" class="vhq-session-banner" role="status" aria-live="polite"></p>
+              <aside id="vhq-critical-risk" class="vhq-critical-risk" aria-label="Persistent critical risk">
+                <p class="vhq-critical-risk__status">DEGRADED · SSH connection error · evidence EV-W2-011</p>
+                <p class="hint">INC-SSH-RECOVERY-00 · static verified Campus evidence. Not a live session health probe — worker health refresh needs JWT / Agent Operations.</p>
+                <button type="button" class="secondary" data-vhq-room="ai-agent-health" id="vhq-risk-agent-ops">Open Agent Operations</button>
+              </aside>
+              <header class="vhq-brief-head">
+                <h3 id="vhq-brief-title">Director Brief</h3>
+                <p class="hint">What needs my decision today? Priorities are display-only. Queue dispositions remain the canonical action surface.</p>
+              </header>
+              <div id="vhq-mount-ops" class="vhq-mount" data-vhq-mount="ops"></div>
+              <div class="vhq-brief-block">
+                <h4 class="vhq-brief-label">Top priorities</h4>
+                <div id="vhq-mount-priorities" class="vhq-mount" data-vhq-mount="priorities"></div>
+              </div>
+              <div class="vhq-brief-block">
+                <h4 class="vhq-brief-label">Critical / Action queue</h4>
+                <div id="vhq-mount-queue" class="vhq-mount" data-vhq-mount="queue"></div>
+              </div>
+              <section class="vhq-vault-strip" aria-labelledby="vhq-vault-title">
+                <h4 id="vhq-vault-title">Approval Vault</h4>
+                <p class="hint">[PARTIAL] · EV-W2-009 · No invented pending count. Real path only.</p>
+                <button type="button" id="vhq-open-audit" class="secondary">Open Audyt</button>
+              </section>
+              <section class="vhq-pulse" aria-labelledby="vhq-pulse-title">
+                <h4 id="vhq-pulse-title">Department Pulse</h4>
+                <div id="vhq-pulse-grid" class="vhq-pulse-grid" role="list"></div>
+              </section>
+              <section class="vhq-flow" aria-labelledby="vhq-flow-title">
+                <h4 id="vhq-flow-title">Operations Flow</h4>
+                <ol class="vhq-flow-line" id="vhq-flow-line">
+                  <li data-status="LIVE"><span class="vhq-flow-name">Sales</span> <span class="vhq-flow-badge">LIVE</span> <span class="ev">EV-W2-007</span></li>
+                  <li class="vhq-flow-arrow" aria-hidden="true">→</li>
+                  <li data-status="LIVE"><span class="vhq-flow-name">Wizard</span> <span class="vhq-flow-badge">LIVE</span> <span class="ev">EV-W2-005</span></li>
+                  <li class="vhq-flow-arrow" aria-hidden="true">→</li>
+                  <li data-status="PARKED"><span class="vhq-flow-name">Order Desk</span> <span class="vhq-flow-badge">PARKED</span> <span class="ev">EV-W2-010</span></li>
+                </ol>
+                <p class="hint">Break visible: Order operational desk is not implemented — do not pretend execution exists.</p>
+              </section>
+              <section class="vhq-director-actions" aria-label="Director actions">
+                <h4>Director actions</h4>
+                <div class="vhq-director-actions__row">
+                  <button type="button" class="secondary" data-vhq-jump="priorities">Focus priorities</button>
+                  <button type="button" class="secondary" data-vhq-jump="queue">Focus queue</button>
+                  <button type="button" class="secondary" id="vhq-action-audit">Open Audyt</button>
+                  <button type="button" class="secondary" data-vhq-room="ai-agent-health">Agent Operations</button>
+                  <a class="buttonish primary" href="https://zzpackage.flexgrafik.nl/wizard/" target="_blank" rel="noopener noreferrer">Open Wizard</a>
+                </div>
+              </section>
+            </section>
+            <section id="vhq-work" class="vhq-work" hidden aria-label="Room work view">
+              <article id="vhq-work-sales" class="vhq-work-panel" hidden data-vhq-work="sales-room" aria-labelledby="vhq-work-sales-title">
+                <header class="vhq-work-head">
+                  <p class="vhq-work-eyebrow">Sales Room · [LIVE] · EV-W2-007</p>
+                  <h3 id="vhq-work-sales-title">Which lead needs a human push now?</h3>
+                  <p class="hint">Disposition Ack / Snooze / Close on the real queue. No invented CRM pipeline.</p>
+                </header>
+                <p id="vhq-work-session-banner" class="vhq-session-banner" role="status" aria-live="polite" hidden></p>
+                <div class="vhq-handoff-strip" aria-label="Commercial handoff">
+                  <span data-status="LIVE">Sales LIVE</span>
+                  <span class="vhq-flow-arrow" aria-hidden="true">→</span>
+                  <span data-status="LIVE">Wizard LIVE</span>
+                  <span class="vhq-flow-arrow" aria-hidden="true">→</span>
+                  <span data-status="PARKED">Order Desk PARKED</span>
+                </div>
+                <div class="vhq-work-actions">
+                  <button type="button" class="secondary" id="vhq-sales-focus-queue">Focus queue</button>
+                  <button type="button" class="primary" id="vhq-sales-open-wizard" data-vhq-room="wizard-quote">Open Wizard / Quote Room</button>
+                </div>
+                <div id="vhq-mount-work-queue" class="vhq-mount" data-vhq-mount="queue"></div>
+                <div id="vhq-mount-work-cs" class="vhq-mount" data-vhq-mount="cs"></div>
+                <p class="hint">SoT: Commander queue #queue-list · Primary = disposition L1 in place.</p>
+              </article>
+              <article id="vhq-work-wizard" class="vhq-work-panel" hidden data-vhq-work="wizard-quote" aria-labelledby="vhq-work-wizard-title">
+                <header class="vhq-work-head">
+                  <p class="vhq-work-eyebrow">Wizard / Quote · [LIVE] · EV-W2-005</p>
+                  <h3 id="vhq-work-wizard-title">Is the cash machine reachable and healthy?</h3>
+                  <p class="hint">Wizard SPA Stap 1–9. No fake conversion % or revenue.</p>
+                </header>
+                <dl class="vhq-work-meta">
+                  <div><dt>Status</dt><dd>[LIVE] · Wizard SPA Stap 1–9</dd></div>
+                  <div><dt>SoT</dt><dd><a href="https://zzpackage.flexgrafik.nl/wizard/" target="_blank" rel="noopener noreferrer">https://zzpackage.flexgrafik.nl/wizard/</a></dd></div>
+                  <div><dt>Evidence</dt><dd>EV-W2-005 · last_verified 2026-07-27T14:22:45Z</dd></div>
+                  <div><dt>KPI</dt><dd>wizard_starts → <strong>insufficient_data</strong> (no fresh GA4/INT-009 snapshot)</dd></div>
+                </dl>
+                <div class="vhq-work-actions vhq-work-actions--primary">
+                  <a class="buttonish primary vhq-cta-wizard" href="https://zzpackage.flexgrafik.nl/wizard/" target="_blank" rel="noopener noreferrer">Open Wizard</a>
+                  <button type="button" class="secondary" id="vhq-wizard-order-parked" data-vhq-room="order-desk">Order Desk handoff [PARKED]</button>
+                  <button type="button" class="secondary" data-vhq-room="sales-room">Back to Sales</button>
+                </div>
+                <aside class="vhq-work-child" aria-label="Future handoff">
+                  <p><strong>Future handoff → Order Desk [PARKED]</strong></p>
+                  <p class="hint">Order operational desk is not implemented (EV-W2-010). Do not pretend execution exists.</p>
+                  <p class="hint">Limitation: Mollie LIVE / Purchase = L4 separate Founder GO — not from this room.</p>
+                </aside>
+              </article>
+              <article id="vhq-work-marketing" class="vhq-work-panel" hidden data-vhq-work="marketing-studio" aria-labelledby="vhq-work-marketing-title">
+                <header class="vhq-work-head">
+                  <p class="vhq-work-eyebrow">Marketing Studio · honest pin</p>
+                  <h3 id="vhq-work-marketing-title">What organic work is ready — and what must stay parked?</h3>
+                </header>
+                <div class="vhq-honesty-banners">
+                  <p class="vhq-honesty-banner" data-status="UNVERIFIED" role="status">UNVERIFIED — campaign state not verified · EV-W3-001</p>
+                  <p class="vhq-honesty-banner" data-status="PARKED" role="status">[PARKED] Paid Ads frozen until 2026-08-06 · €0 spend · no Ads execute from VHQ</p>
+                </div>
+                <dl class="vhq-work-meta">
+                  <div><dt>Status</dt><dd>UNVERIFIED — campaign state not verified</dd></div>
+                  <div><dt>Evidence</dt><dd>EV-W3-001</dd></div>
+                  <div><dt>Explanation</dt><dd>Campaign SoT requires MKT / Ads Manager verification and is outside current Virtual HQ scope.</dd></div>
+                  <div><dt>Campaign KPIs</dt><dd>insufficient_data</dd></div>
+                  <div><dt>Primary action</dt><dd>Observe Marketing tab only — no publish / Ads from HQ</dd></div>
+                </dl>
+                <div class="vhq-work-actions">
+                  <button type="button" class="primary" id="vhq-marketing-observe">Open Marketing tab (observe)</button>
+                  <button type="button" class="secondary" data-vhq-room="mission-control">Back to Mission Control</button>
+                </div>
+                <p class="hint">Hard STOP: no Ads Manager, no paid spend, no fake campaign LIVE, no MKT file edits from this room.</p>
+              </article>
+            </section>
+            <div class="vhq-building" id="vhq-building" aria-label="Virtual HQ building map">
+              <!-- floors filled / enhanced by CSS; room buttons are the interactive map -->
+              <section class="vhq-floor-band" data-floor="P3" aria-labelledby="vhq-floor-p3">
+                <h3 id="vhq-floor-p3" class="vhq-floor-band__title">P3 — Director</h3>
+                <div class="vhq-room-grid">
+                  <button type="button" class="vhq-room vhq-room--mvp" data-room="mission-control" data-status="LIVE"><span class="vhq-room__name">Mission Control</span><span class="vhq-room__badge" data-status="LIVE">[LIVE]</span></button>
+                  <button type="button" class="vhq-room vhq-room--mvp" data-room="approval-vault" data-status="PARTIAL"><span class="vhq-room__name">Approval Vault</span><span class="vhq-room__badge" data-status="PARTIAL">[PARTIAL]</span></button>
+                  <button type="button" class="vhq-room vhq-room--mvp" data-room="ai-agent-health" data-status="DEGRADED"><span class="vhq-room__name">Agent Operations</span><span class="vhq-room__badge" data-status="DEGRADED">[DEGRADED]</span></button>
+                  <button type="button" class="vhq-room" data-room="boardroom" data-status="PARTIAL"><span class="vhq-room__name">Boardroom</span><span class="vhq-room__badge" data-status="PARTIAL">[PARTIAL]</span></button>
+                </div>
+              </section>
+              <section class="vhq-floor-band" data-floor="P2" aria-labelledby="vhq-floor-p2" hidden>
+                <h3 id="vhq-floor-p2" class="vhq-floor-band__title">P2 — Intelligence &amp; Governance</h3>
+                <div class="vhq-room-grid">
+                  <button type="button" class="vhq-room" data-room="analytics-finance" data-status="UNVERIFIED"><span class="vhq-room__name">Finance / Analytics</span><span class="vhq-room__badge" data-status="UNVERIFIED">[UNVERIFIED]</span></button>
+                  <button type="button" class="vhq-room" data-room="compliance-audit" data-status="PARTIAL"><span class="vhq-room__name">Compliance / Audit</span><span class="vhq-room__badge" data-status="PARTIAL">[PARTIAL]</span></button>
+                  <button type="button" class="vhq-room" data-room="knowledge-library" data-status="UNVERIFIED"><span class="vhq-room__name">Knowledge Library</span><span class="vhq-room__badge" data-status="UNVERIFIED">[UNVERIFIED]</span></button>
+                  <button type="button" class="vhq-room" data-room="data-ai-lab" data-status="PARTIAL"><span class="vhq-room__name">Data &amp; AI Lab</span><span class="vhq-room__badge" data-status="PARTIAL">[PARTIAL]</span></button>
+                  <button type="button" class="vhq-room" data-room="vcms-os-zone" data-status="PARTIAL"><span class="vhq-room__name">VCMS / Agent OS</span><span class="vhq-room__badge" data-status="PARTIAL">[PARTIAL]</span></button>
+                </div>
+              </section>
+              <section class="vhq-floor-band" data-floor="P1" aria-labelledby="vhq-floor-p1" hidden>
+                <h3 id="vhq-floor-p1" class="vhq-floor-band__title">P1 — Commercial</h3>
+                <div class="vhq-room-grid">
+                  <button type="button" class="vhq-room" data-room="reception" data-status="PLANNED"><span class="vhq-room__name">Reception</span><span class="vhq-room__badge" data-status="PLANNED">[PLANNED]</span></button>
+                  <button type="button" class="vhq-room vhq-room--mvp" data-room="sales-room" data-status="LIVE"><span class="vhq-room__name">Sales Room</span><span class="vhq-room__badge" data-status="LIVE">[LIVE]</span></button>
+                  <button type="button" class="vhq-room vhq-room--mvp" data-room="wizard-quote" data-status="LIVE"><span class="vhq-room__name">Wizard / Quote</span><span class="vhq-room__badge" data-status="LIVE">[LIVE]</span></button>
+                  <button type="button" class="vhq-room vhq-room--mvp" data-room="marketing-studio" data-status="UNVERIFIED"><span class="vhq-room__name">Marketing Studio</span><span class="vhq-room__badge" data-status="UNVERIFIED">[UNVERIFIED]</span></button>
+                  <button type="button" class="vhq-room" data-room="client-support" data-status="PLANNED"><span class="vhq-room__name">Client Support</span><span class="vhq-room__badge" data-status="PLANNED">[PLANNED]</span></button>
+                  <button type="button" class="vhq-room" data-room="design-studio" data-status="PLANNED"><span class="vhq-room__name">Design Studio</span><span class="vhq-room__badge" data-status="PLANNED">[PLANNED]</span></button>
+                </div>
+              </section>
+              <section class="vhq-floor-band" data-floor="P0" aria-labelledby="vhq-floor-p0" hidden>
+                <h3 id="vhq-floor-p0" class="vhq-floor-band__title">P0 — Operations</h3>
+                <div class="vhq-room-grid">
+                  <button type="button" class="vhq-room" data-room="order-desk" data-status="PARKED"><span class="vhq-room__name">Order Desk</span><span class="vhq-room__badge" data-status="PARKED">[PARKED]</span></button>
+                  <button type="button" class="vhq-room" data-room="production-control" data-status="PARKED"><span class="vhq-room__name">Production Control</span><span class="vhq-room__badge" data-status="PARKED">[PARKED]</span></button>
+                  <button type="button" class="vhq-room" data-room="preflight-quality" data-status="PLANNED"><span class="vhq-room__name">Preflight / Quality</span><span class="vhq-room__badge" data-status="PLANNED">[PLANNED]</span></button>
+                  <button type="button" class="vhq-room" data-room="dispatch-returns" data-status="PARKED"><span class="vhq-room__name">Dispatch / Returns</span><span class="vhq-room__badge" data-status="PARKED">[PARKED]</span></button>
+                </div>
+              </section>
+              <section class="vhq-floor-band" data-floor="MAG" aria-labelledby="vhq-floor-mag" hidden>
+                <h3 id="vhq-floor-mag" class="vhq-floor-band__title">MAG — Network</h3>
+                <div class="vhq-room-grid">
+                  <button type="button" class="vhq-room" data-room="supplier-dock" data-status="PARKED"><span class="vhq-room__name">Supplier Dock</span><span class="vhq-room__badge" data-status="PARKED">[PARKED]</span></button>
+                  <button type="button" class="vhq-room" data-room="asset-warehouse" data-status="PLANNED"><span class="vhq-room__name">Asset Warehouse</span><span class="vhq-room__badge" data-status="PLANNED">[PLANNED]</span></button>
+                  <button type="button" class="vhq-room" data-room="partner-production-network" data-status="PLANNED"><span class="vhq-room__name">Partner Production Network</span><span class="vhq-room__badge" data-status="PLANNED">[PLANNED]</span></button>
+                </div>
+              </section>
+            </div>
+            <aside class="vhq-panel" id="vhq-panel" aria-labelledby="vhq-panel-title">
+              <h3 id="vhq-panel-title">Room</h3>
+              <p id="vhq-panel-purpose" class="hint"></p>
+              <p id="vhq-panel-status" class="vhq-panel__status"></p>
+              <p id="vhq-panel-evidence" class="vhq-panel__meta"></p>
+              <p id="vhq-panel-owner" class="vhq-panel__meta"></p>
+              <p id="vhq-panel-sot" class="vhq-panel__meta"></p>
+              <p id="vhq-panel-limit" class="vhq-panel__limit"></p>
+              <div id="vhq-panel-extra" class="vhq-panel__extra"></div>
+              <div class="vhq-panel__actions" id="vhq-panel-actions"></div>
+            </aside>
+          </div>
+          <p class="vhq-shell__hint hint">Esc: room → Mission Control → Operations Console · Sign in never blocked · No 3D · Cache vhq-w31b</p>
+        </div>
+    </section>
+
+    <section id="view-home" class="view view-home--console" aria-labelledby="home-title" hidden>
       <header class="home-hero">
         <p class="home-eyebrow">Operations Console · Commander engine</p>
         <h2 id="home-title">Operations Console</h2>
@@ -75,8 +319,8 @@
       </header>
       <section class="vhq-entry panel" id="vhq-entry" aria-labelledby="vhq-entry-title">
         <h3 id="vhq-entry-title">Virtual HQ</h3>
-        <p class="hint">Primary operational dashboard. Re-enter Mission Control anytime.</p>
-        <button type="button" id="vhq-enter" class="primary">Enter Virtual HQ</button>
+        <p class="hint">Primary dashboard lives in Virtual HQ · Mission Control. Console is secondary — auth, map, Truth Cards, ticket tools.</p>
+        <button type="button" id="vhq-enter" class="primary">Return to HQ</button>
       </section>
       <div id="vhq-home-slot-ops" class="vhq-home-slot" data-vhq-slot="ops">
         <aside id="home-ops-rail" class="exec-rail panel" aria-label="Ops Decision Rail">
@@ -446,7 +690,7 @@
   </div><!-- /.coi-shell -->
 
   <nav id="bottom-nav" class="bottom-nav" aria-label="Menu mobilne">
-    <button type="button" data-view="home" class="nav-btn active" aria-current="page">Start</button>
+    <button type="button" data-view="hq" class="nav-btn active" aria-current="page">Start</button>
     <button type="button" data-view="marketing" class="nav-btn">Marketing</button>
     <button type="button" data-view="analytics" class="nav-btn">Analityka</button>
     <button type="button" data-view="agents" class="nav-btn">Agenci</button>
@@ -472,250 +716,8 @@
     </form>
   </dialog>
 
-  <!-- VF-VHQ-W1-SHELL: experience layer overlay (not a 6th tab) -->
-  <div id="vhq-shell" class="vhq-shell" hidden role="dialog" aria-modal="true" aria-labelledby="vhq-title">
-    <div class="vhq-shell__chrome">
-      <header class="vhq-shell__header">
-        <div class="vhq-shell__brand">
-          <p class="vhq-shell__eyebrow">Primary dashboard · Commander = engine</p>
-          <h2 id="vhq-title">FlexGrafik Virtual HQ</h2>
-          <p id="vhq-location" class="vhq-shell__location" aria-live="polite">HQ › P3 › Mission Control</p>
-        </div>
-        <div class="vhq-shell__actions">
-          <div class="vhq-actions-primary" role="group" aria-label="Session and console">
-            <button type="button" id="vhq-to-console" class="secondary">Operations Console</button>
-            <button type="button" id="vhq-sign-in" class="primary">Sign in</button>
-          </div>
-          <details class="vhq-nav-drawer" id="vhq-nav-drawer">
-            <summary class="vhq-nav-drawer__summary">Navigate HQ</summary>
-            <div class="vhq-nav-drawer__body">
-              <label class="vhq-teleport-label" for="vhq-teleport">Teleport</label>
-              <select id="vhq-teleport" class="vhq-teleport" aria-label="Teleport to room">
-                <option value="">Select room…</option>
-                <option value="mission-control">P3 · Mission Control</option>
-                <option value="approval-vault">P3 · Approval Vault</option>
-                <option value="ai-agent-health">P3 · Agent Operations</option>
-                <option value="boardroom">P3 · Boardroom</option>
-                <option value="analytics-finance">P2 · Finance / Analytics</option>
-                <option value="compliance-audit">P2 · Compliance / Audit</option>
-                <option value="knowledge-library">P2 · Knowledge</option>
-                <option value="data-ai-lab">P2 · Data &amp; AI Lab</option>
-                <option value="vcms-os-zone">P2 · VCMS / Agent OS</option>
-                <option value="sales-room">P1 · Sales Room</option>
-                <option value="wizard-quote">P1 · Wizard / Quote</option>
-                <option value="marketing-studio">P1 · Marketing Studio</option>
-                <option value="reception">P1 · Reception</option>
-                <option value="client-support">P1 · Client Support</option>
-                <option value="design-studio">P1 · Design Studio</option>
-                <option value="order-desk">P0 · Order Desk</option>
-                <option value="production-control">P0 · Production Control</option>
-                <option value="preflight-quality">P0 · Preflight / Quality</option>
-                <option value="dispatch-returns">P0 · Dispatch / Returns</option>
-                <option value="supplier-dock">MAG · Supplier Dock</option>
-                <option value="asset-warehouse">MAG · Asset Warehouse</option>
-                <option value="partner-production-network">MAG · Partner Network</option>
-              </select>
-              <button type="button" id="vhq-to-mc" class="secondary">Mission Control</button>
-              <button type="button" id="vhq-close" class="secondary" aria-label="Close Virtual HQ">Close</button>
-            </div>
-          </details>
-        </div>
-      </header>
-      <nav class="vhq-floors" id="vhq-floors" aria-label="Floor navigation" role="tablist">
-        <button type="button" role="tab" class="vhq-floor-btn active" data-floor="P3" aria-selected="true">P3 Director</button>
-        <button type="button" role="tab" class="vhq-floor-btn" data-floor="P2" aria-selected="false">P2 Intelligence</button>
-        <button type="button" role="tab" class="vhq-floor-btn" data-floor="P1" aria-selected="false">P1 Commercial</button>
-        <button type="button" role="tab" class="vhq-floor-btn" data-floor="P0" aria-selected="false">P0 Operations</button>
-        <button type="button" role="tab" class="vhq-floor-btn" data-floor="MAG" aria-selected="false">MAG Network</button>
-      </nav>
-    </div>
-    <div class="vhq-shell__body">
-      <section id="vhq-command" class="vhq-command" hidden aria-labelledby="vhq-brief-title">
-        <p id="vhq-session-banner" class="vhq-session-banner" role="status" aria-live="polite"></p>
-        <aside id="vhq-critical-risk" class="vhq-critical-risk" aria-label="Persistent critical risk">
-          <p class="vhq-critical-risk__status">DEGRADED · SSH connection error · evidence EV-W2-011</p>
-          <p class="hint">INC-SSH-RECOVERY-00 · static verified Campus evidence. Not a live session health probe — worker health refresh needs JWT / Agent Operations.</p>
-          <button type="button" class="secondary" data-vhq-room="ai-agent-health" id="vhq-risk-agent-ops">Open Agent Operations</button>
-        </aside>
-        <header class="vhq-brief-head">
-          <h3 id="vhq-brief-title">Director Brief</h3>
-          <p class="hint">What needs my decision today? Priorities are display-only. Queue dispositions remain the canonical action surface.</p>
-        </header>
-        <div id="vhq-mount-ops" class="vhq-mount" data-vhq-mount="ops"></div>
-        <div class="vhq-brief-block">
-          <h4 class="vhq-brief-label">Top priorities</h4>
-          <div id="vhq-mount-priorities" class="vhq-mount" data-vhq-mount="priorities"></div>
-        </div>
-        <div class="vhq-brief-block">
-          <h4 class="vhq-brief-label">Critical / Action queue</h4>
-          <div id="vhq-mount-queue" class="vhq-mount" data-vhq-mount="queue"></div>
-        </div>
-        <section class="vhq-vault-strip" aria-labelledby="vhq-vault-title">
-          <h4 id="vhq-vault-title">Approval Vault</h4>
-          <p class="hint">[PARTIAL] · EV-W2-009 · No invented pending count. Real path only.</p>
-          <button type="button" id="vhq-open-audit" class="secondary">Open Audyt</button>
-        </section>
-        <section class="vhq-pulse" aria-labelledby="vhq-pulse-title">
-          <h4 id="vhq-pulse-title">Department Pulse</h4>
-          <div id="vhq-pulse-grid" class="vhq-pulse-grid" role="list"></div>
-        </section>
-        <section class="vhq-flow" aria-labelledby="vhq-flow-title">
-          <h4 id="vhq-flow-title">Operations Flow</h4>
-          <ol class="vhq-flow-line" id="vhq-flow-line">
-            <li data-status="LIVE"><span class="vhq-flow-name">Sales</span> <span class="vhq-flow-badge">LIVE</span> <span class="ev">EV-W2-007</span></li>
-            <li class="vhq-flow-arrow" aria-hidden="true">→</li>
-            <li data-status="LIVE"><span class="vhq-flow-name">Wizard</span> <span class="vhq-flow-badge">LIVE</span> <span class="ev">EV-W2-005</span></li>
-            <li class="vhq-flow-arrow" aria-hidden="true">→</li>
-            <li data-status="PARKED"><span class="vhq-flow-name">Order Desk</span> <span class="vhq-flow-badge">PARKED</span> <span class="ev">EV-W2-010</span></li>
-          </ol>
-          <p class="hint">Break visible: Order operational desk is not implemented — do not pretend execution exists.</p>
-        </section>
-        <section class="vhq-director-actions" aria-label="Director actions">
-          <h4>Director actions</h4>
-          <div class="vhq-director-actions__row">
-            <button type="button" class="secondary" data-vhq-jump="priorities">Focus priorities</button>
-            <button type="button" class="secondary" data-vhq-jump="queue">Focus queue</button>
-            <button type="button" class="secondary" id="vhq-action-audit">Open Audyt</button>
-            <button type="button" class="secondary" data-vhq-room="ai-agent-health">Agent Operations</button>
-            <a class="buttonish primary" href="https://zzpackage.flexgrafik.nl/wizard/" target="_blank" rel="noopener noreferrer">Open Wizard</a>
-          </div>
-        </section>
-      </section>
-      <section id="vhq-work" class="vhq-work" hidden aria-label="Room work view">
-        <article id="vhq-work-sales" class="vhq-work-panel" hidden data-vhq-work="sales-room" aria-labelledby="vhq-work-sales-title">
-          <header class="vhq-work-head">
-            <p class="vhq-work-eyebrow">Sales Room · [LIVE] · EV-W2-007</p>
-            <h3 id="vhq-work-sales-title">Which lead needs a human push now?</h3>
-            <p class="hint">Disposition Ack / Snooze / Close on the real queue. No invented CRM pipeline.</p>
-          </header>
-          <p id="vhq-work-session-banner" class="vhq-session-banner" role="status" aria-live="polite" hidden></p>
-          <div class="vhq-handoff-strip" aria-label="Commercial handoff">
-            <span data-status="LIVE">Sales LIVE</span>
-            <span class="vhq-flow-arrow" aria-hidden="true">→</span>
-            <span data-status="LIVE">Wizard LIVE</span>
-            <span class="vhq-flow-arrow" aria-hidden="true">→</span>
-            <span data-status="PARKED">Order Desk PARKED</span>
-          </div>
-          <div class="vhq-work-actions">
-            <button type="button" class="secondary" id="vhq-sales-focus-queue">Focus queue</button>
-            <button type="button" class="primary" id="vhq-sales-open-wizard" data-vhq-room="wizard-quote">Open Wizard / Quote Room</button>
-          </div>
-          <div id="vhq-mount-work-queue" class="vhq-mount" data-vhq-mount="queue"></div>
-          <div id="vhq-mount-work-cs" class="vhq-mount" data-vhq-mount="cs"></div>
-          <p class="hint">SoT: Commander queue #queue-list · Primary = disposition L1 in place.</p>
-        </article>
-        <article id="vhq-work-wizard" class="vhq-work-panel" hidden data-vhq-work="wizard-quote" aria-labelledby="vhq-work-wizard-title">
-          <header class="vhq-work-head">
-            <p class="vhq-work-eyebrow">Wizard / Quote · [LIVE] · EV-W2-005</p>
-            <h3 id="vhq-work-wizard-title">Is the cash machine reachable and healthy?</h3>
-            <p class="hint">Wizard SPA Stap 1–9. No fake conversion % or revenue.</p>
-          </header>
-          <dl class="vhq-work-meta">
-            <div><dt>Status</dt><dd>[LIVE] · Wizard SPA Stap 1–9</dd></div>
-            <div><dt>SoT</dt><dd><a href="https://zzpackage.flexgrafik.nl/wizard/" target="_blank" rel="noopener noreferrer">https://zzpackage.flexgrafik.nl/wizard/</a></dd></div>
-            <div><dt>Evidence</dt><dd>EV-W2-005 · last_verified 2026-07-27T14:22:45Z</dd></div>
-            <div><dt>KPI</dt><dd>wizard_starts → <strong>insufficient_data</strong> (no fresh GA4/INT-009 snapshot)</dd></div>
-          </dl>
-          <div class="vhq-work-actions vhq-work-actions--primary">
-            <a class="buttonish primary vhq-cta-wizard" href="https://zzpackage.flexgrafik.nl/wizard/" target="_blank" rel="noopener noreferrer">Open Wizard</a>
-            <button type="button" class="secondary" id="vhq-wizard-order-parked" data-vhq-room="order-desk">Order Desk handoff [PARKED]</button>
-            <button type="button" class="secondary" data-vhq-room="sales-room">Back to Sales</button>
-          </div>
-          <aside class="vhq-work-child" aria-label="Future handoff">
-            <p><strong>Future handoff → Order Desk [PARKED]</strong></p>
-            <p class="hint">Order operational desk is not implemented (EV-W2-010). Do not pretend execution exists.</p>
-            <p class="hint">Limitation: Mollie LIVE / Purchase = L4 separate Founder GO — not from this room.</p>
-          </aside>
-        </article>
-        <article id="vhq-work-marketing" class="vhq-work-panel" hidden data-vhq-work="marketing-studio" aria-labelledby="vhq-work-marketing-title">
-          <header class="vhq-work-head">
-            <p class="vhq-work-eyebrow">Marketing Studio · honest pin</p>
-            <h3 id="vhq-work-marketing-title">What organic work is ready — and what must stay parked?</h3>
-          </header>
-          <div class="vhq-honesty-banners">
-            <p class="vhq-honesty-banner" data-status="UNVERIFIED" role="status">UNVERIFIED — campaign state not verified · EV-W3-001</p>
-            <p class="vhq-honesty-banner" data-status="PARKED" role="status">[PARKED] Paid Ads frozen until 2026-08-06 · €0 spend · no Ads execute from VHQ</p>
-          </div>
-          <dl class="vhq-work-meta">
-            <div><dt>Status</dt><dd>UNVERIFIED — campaign state not verified</dd></div>
-            <div><dt>Evidence</dt><dd>EV-W3-001</dd></div>
-            <div><dt>Explanation</dt><dd>Campaign SoT requires MKT / Ads Manager verification and is outside current Virtual HQ scope.</dd></div>
-            <div><dt>Campaign KPIs</dt><dd>insufficient_data</dd></div>
-            <div><dt>Primary action</dt><dd>Observe Marketing tab only — no publish / Ads from HQ</dd></div>
-          </dl>
-          <div class="vhq-work-actions">
-            <button type="button" class="primary" id="vhq-marketing-observe">Open Marketing tab (observe)</button>
-            <button type="button" class="secondary" data-vhq-room="mission-control">Back to Mission Control</button>
-          </div>
-          <p class="hint">Hard STOP: no Ads Manager, no paid spend, no fake campaign LIVE, no MKT file edits from this room.</p>
-        </article>
-      </section>
-      <div class="vhq-building" id="vhq-building" aria-label="Virtual HQ building map">
-        <!-- floors filled / enhanced by CSS; room buttons are the interactive map -->
-        <section class="vhq-floor-band" data-floor="P3" aria-labelledby="vhq-floor-p3">
-          <h3 id="vhq-floor-p3" class="vhq-floor-band__title">P3 — Director</h3>
-          <div class="vhq-room-grid">
-            <button type="button" class="vhq-room vhq-room--mvp" data-room="mission-control" data-status="LIVE"><span class="vhq-room__name">Mission Control</span><span class="vhq-room__badge" data-status="LIVE">[LIVE]</span></button>
-            <button type="button" class="vhq-room vhq-room--mvp" data-room="approval-vault" data-status="PARTIAL"><span class="vhq-room__name">Approval Vault</span><span class="vhq-room__badge" data-status="PARTIAL">[PARTIAL]</span></button>
-            <button type="button" class="vhq-room vhq-room--mvp" data-room="ai-agent-health" data-status="DEGRADED"><span class="vhq-room__name">Agent Operations</span><span class="vhq-room__badge" data-status="DEGRADED">[DEGRADED]</span></button>
-            <button type="button" class="vhq-room" data-room="boardroom" data-status="PARTIAL"><span class="vhq-room__name">Boardroom</span><span class="vhq-room__badge" data-status="PARTIAL">[PARTIAL]</span></button>
-          </div>
-        </section>
-        <section class="vhq-floor-band" data-floor="P2" aria-labelledby="vhq-floor-p2" hidden>
-          <h3 id="vhq-floor-p2" class="vhq-floor-band__title">P2 — Intelligence &amp; Governance</h3>
-          <div class="vhq-room-grid">
-            <button type="button" class="vhq-room" data-room="analytics-finance" data-status="UNVERIFIED"><span class="vhq-room__name">Finance / Analytics</span><span class="vhq-room__badge" data-status="UNVERIFIED">[UNVERIFIED]</span></button>
-            <button type="button" class="vhq-room" data-room="compliance-audit" data-status="PARTIAL"><span class="vhq-room__name">Compliance / Audit</span><span class="vhq-room__badge" data-status="PARTIAL">[PARTIAL]</span></button>
-            <button type="button" class="vhq-room" data-room="knowledge-library" data-status="UNVERIFIED"><span class="vhq-room__name">Knowledge Library</span><span class="vhq-room__badge" data-status="UNVERIFIED">[UNVERIFIED]</span></button>
-            <button type="button" class="vhq-room" data-room="data-ai-lab" data-status="PARTIAL"><span class="vhq-room__name">Data &amp; AI Lab</span><span class="vhq-room__badge" data-status="PARTIAL">[PARTIAL]</span></button>
-            <button type="button" class="vhq-room" data-room="vcms-os-zone" data-status="PARTIAL"><span class="vhq-room__name">VCMS / Agent OS</span><span class="vhq-room__badge" data-status="PARTIAL">[PARTIAL]</span></button>
-          </div>
-        </section>
-        <section class="vhq-floor-band" data-floor="P1" aria-labelledby="vhq-floor-p1" hidden>
-          <h3 id="vhq-floor-p1" class="vhq-floor-band__title">P1 — Commercial</h3>
-          <div class="vhq-room-grid">
-            <button type="button" class="vhq-room" data-room="reception" data-status="PLANNED"><span class="vhq-room__name">Reception</span><span class="vhq-room__badge" data-status="PLANNED">[PLANNED]</span></button>
-            <button type="button" class="vhq-room vhq-room--mvp" data-room="sales-room" data-status="LIVE"><span class="vhq-room__name">Sales Room</span><span class="vhq-room__badge" data-status="LIVE">[LIVE]</span></button>
-            <button type="button" class="vhq-room vhq-room--mvp" data-room="wizard-quote" data-status="LIVE"><span class="vhq-room__name">Wizard / Quote</span><span class="vhq-room__badge" data-status="LIVE">[LIVE]</span></button>
-            <button type="button" class="vhq-room vhq-room--mvp" data-room="marketing-studio" data-status="UNVERIFIED"><span class="vhq-room__name">Marketing Studio</span><span class="vhq-room__badge" data-status="UNVERIFIED">[UNVERIFIED]</span></button>
-            <button type="button" class="vhq-room" data-room="client-support" data-status="PLANNED"><span class="vhq-room__name">Client Support</span><span class="vhq-room__badge" data-status="PLANNED">[PLANNED]</span></button>
-            <button type="button" class="vhq-room" data-room="design-studio" data-status="PLANNED"><span class="vhq-room__name">Design Studio</span><span class="vhq-room__badge" data-status="PLANNED">[PLANNED]</span></button>
-          </div>
-        </section>
-        <section class="vhq-floor-band" data-floor="P0" aria-labelledby="vhq-floor-p0" hidden>
-          <h3 id="vhq-floor-p0" class="vhq-floor-band__title">P0 — Operations</h3>
-          <div class="vhq-room-grid">
-            <button type="button" class="vhq-room" data-room="order-desk" data-status="PARKED"><span class="vhq-room__name">Order Desk</span><span class="vhq-room__badge" data-status="PARKED">[PARKED]</span></button>
-            <button type="button" class="vhq-room" data-room="production-control" data-status="PARKED"><span class="vhq-room__name">Production Control</span><span class="vhq-room__badge" data-status="PARKED">[PARKED]</span></button>
-            <button type="button" class="vhq-room" data-room="preflight-quality" data-status="PLANNED"><span class="vhq-room__name">Preflight / Quality</span><span class="vhq-room__badge" data-status="PLANNED">[PLANNED]</span></button>
-            <button type="button" class="vhq-room" data-room="dispatch-returns" data-status="PARKED"><span class="vhq-room__name">Dispatch / Returns</span><span class="vhq-room__badge" data-status="PARKED">[PARKED]</span></button>
-          </div>
-        </section>
-        <section class="vhq-floor-band" data-floor="MAG" aria-labelledby="vhq-floor-mag" hidden>
-          <h3 id="vhq-floor-mag" class="vhq-floor-band__title">MAG — Network</h3>
-          <div class="vhq-room-grid">
-            <button type="button" class="vhq-room" data-room="supplier-dock" data-status="PARKED"><span class="vhq-room__name">Supplier Dock</span><span class="vhq-room__badge" data-status="PARKED">[PARKED]</span></button>
-            <button type="button" class="vhq-room" data-room="asset-warehouse" data-status="PLANNED"><span class="vhq-room__name">Asset Warehouse</span><span class="vhq-room__badge" data-status="PLANNED">[PLANNED]</span></button>
-            <button type="button" class="vhq-room" data-room="partner-production-network" data-status="PLANNED"><span class="vhq-room__name">Partner Production Network</span><span class="vhq-room__badge" data-status="PLANNED">[PLANNED]</span></button>
-          </div>
-        </section>
-      </div>
-      <aside class="vhq-panel" id="vhq-panel" aria-labelledby="vhq-panel-title">
-        <h3 id="vhq-panel-title">Room</h3>
-        <p id="vhq-panel-purpose" class="hint"></p>
-        <p id="vhq-panel-status" class="vhq-panel__status"></p>
-        <p id="vhq-panel-evidence" class="vhq-panel__meta"></p>
-        <p id="vhq-panel-owner" class="vhq-panel__meta"></p>
-        <p id="vhq-panel-sot" class="vhq-panel__meta"></p>
-        <p id="vhq-panel-limit" class="vhq-panel__limit"></p>
-        <div id="vhq-panel-extra" class="vhq-panel__extra"></div>
-        <div class="vhq-panel__actions" id="vhq-panel-actions"></div>
-      </aside>
-    </div>
-    <p class="vhq-shell__hint hint">Esc / Close → Operations Console · Sign in never blocked · No 3D · Cache vhq-w03b</p>
-  </div>
 
   <div id="toast" class="toast" role="status" aria-live="polite" hidden></div>
-  <script src="app.js?v=vhq-w03b"></script>
+  <script src="app.js?v=vhq-w31b"></script>
 </body>
 </html>

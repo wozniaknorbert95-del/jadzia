@@ -1199,13 +1199,34 @@ dialog {
 .vhq-entry h3 { margin: 0 0 0.35rem; }
 .vhq-entry .primary { margin-top: 0.5rem; }
 
-.vhq-shell {
+/* W3.1 primary: HQ is a normal view inside #main — not a modal overlay */
+#view-hq {
+  padding: 0;
+}
+#view-hq .vhq-shell {
+  position: relative;
+  inset: auto;
+  z-index: auto;
+  min-height: calc(100vh - 7rem);
+  display: flex;
+  flex-direction: column;
+  background: #080b10;
+  color: var(--text);
+  padding: 0.75rem 0.75rem calc(0.75rem + env(safe-area-inset-bottom, 0));
+  overflow: auto;
+  isolation: isolate;
+}
+/* Legacy modal rollback (?vhq_shell=legacy)
+   Shell is portaled to body while open — inert/visibility may hide .coi-shell
+   (sibling) but NEVER an ancestor of #vhq-shell. */
+body.vhq-legacy #view-hq:not([hidden]) .vhq-shell,
+body.vhq-legacy .vhq-shell,
+body.vhq-legacy > #vhq-shell {
   position: fixed;
   inset: 0;
   z-index: 80;
   display: flex;
   flex-direction: column;
-  /* Fully opaque dialog surface — Commander must not compete visually */
   background: #080b10;
   color: var(--text);
   padding: 0.75rem 0.75rem calc(0.75rem + env(safe-area-inset-bottom, 0));
@@ -1213,12 +1234,29 @@ dialog {
   isolation: isolate;
 }
 .vhq-shell[hidden] { display: none !important; }
-body.vhq-open { overflow: hidden; }
-body.vhq-open .bottom-nav { visibility: hidden; pointer-events: none; }
-/* Hide Commander chrome while HQ dialog is open (keeps DOM for a11y restore) */
-body.vhq-open > .vhq-backdrop-inert {
+body.vhq-legacy.vhq-open { overflow: hidden; }
+body.vhq-legacy.vhq-open .bottom-nav { visibility: hidden; pointer-events: none; }
+/* Only siblings of the portaled shell — never ancestors of #vhq-shell */
+body.vhq-legacy.vhq-open .vhq-backdrop-inert {
   visibility: hidden !important;
   pointer-events: none !important;
+}
+/* Primary shell: utility tabs stay usable */
+body[data-vhq-primary="1"]:not(.vhq-legacy).vhq-open .bottom-nav {
+  visibility: visible;
+  pointer-events: auto;
+}
+/* No JWT chrome inside primary HQ — Sign in routes to Console */
+body[data-vhq-primary="1"]:not(.vhq-legacy) #view-hq:not([hidden]) ~ * {
+  /* siblings after view-hq inside main — no-op */
+}
+body[data-vhq-primary="1"]:not(.vhq-legacy):has(#view-hq:not([hidden])) #auth-panel,
+body[data-vhq-primary="1"]:not(.vhq-legacy):has(#view-hq:not([hidden])) #ticket-panel,
+body[data-vhq-primary="1"]:not(.vhq-legacy):has(#view-hq:not([hidden])) #undo-bar {
+  display: none;
+}
+body[data-vhq-primary="1"]:not(.vhq-legacy) .view-home--console .vhq-home-slot:empty {
+  display: none;
 }
 
 .vhq-shell__header {
