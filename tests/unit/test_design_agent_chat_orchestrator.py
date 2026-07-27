@@ -59,6 +59,28 @@ def test_at_chat_02_opening_defers_standard_premium_to_recommendation(client: Te
     assert re.search(r"bedrijfsnaam", body["reply_nl"], re.I)
 
 
+def test_at_chat_opening_always_fresh_session_id(client: TestClient) -> None:
+    a = client.get("/api/v1/design-agent/chat/opening").json()
+    b = client.get("/api/v1/design-agent/chat/opening").json()
+    assert a["session_id"] != b["session_id"]
+    assert not (a.get("brief_partial") or {}).get("bedrijfsnaam")
+
+
+def test_at_chat_opening_no_cache_headers(client: TestClient) -> None:
+    resp = client.get("/api/v1/design-agent/chat/opening")
+    assert resp.status_code == 200
+    cc = resp.headers.get("cache-control", "")
+    assert "no-store" in cc or "no-cache" in cc
+
+
+def test_at_chat_session_delete(client: TestClient) -> None:
+    opening = client.get("/api/v1/design-agent/chat/opening").json()
+    sid = opening["session_id"]
+    del_resp = client.delete(f"/api/v1/design-agent/chat/{sid}")
+    assert del_resp.status_code == 204
+    assert client.get(f"/api/v1/design-agent/chat/{sid}").status_code == 404
+
+
 def test_at_chat_04_no_budget_not_ready(client: TestClient) -> None:
     opening = client.get("/api/v1/design-agent/chat/opening").json()
     sid = opening["session_id"]

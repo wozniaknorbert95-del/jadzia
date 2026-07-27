@@ -127,7 +127,7 @@ def _result_from_turn(
 
 def get_opening(session_id: str | None = None, *, locale: str | None = None) -> ChatTurnResult:
     chat_bridge, _, IntakePhase, IntakeState, process_intake_opening, _ = _orch_imports()
-    sid = session_id or str(uuid.uuid4())
+    sid = str(uuid.uuid4())
     loc = normalize_locale(locale)
     state = IntakeState(session_id=sid, phase=IntakePhase.OPENING)
     state.brief_draft["locale"] = loc

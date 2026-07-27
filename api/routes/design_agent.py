@@ -5,7 +5,7 @@ from __future__ import annotations
 import os
 from typing import Any
 
-from fastapi import APIRouter, File, Form, Header, Request, UploadFile
+from fastapi import APIRouter, File, Form, Header, Request, Response, UploadFile
 
 from agent.design_agent_service import process_design_agent_generate
 from core.models import DesignAgentGenerateResponse
@@ -31,6 +31,7 @@ async def design_agent_health() -> dict[str, Any]:
 @router.post("/api/v1/design-agent/generate", response_model=DesignAgentGenerateResponse)
 async def design_agent_generate(
     request: Request,
+    response: Response,
     vehicle: str = Form(...),
     branche: str = Form(""),
     bedrijfsnaam: str = Form(...),
@@ -58,7 +59,7 @@ async def design_agent_generate(
 ) -> DesignAgentGenerateResponse:
     """Generate 2 inspiration mockups (INSPIRE v4 — inspirationOnly, no fal customer path)."""
     client_ip = request.client.host if request.client else "unknown"
-    return await process_design_agent_generate(
+    result = await process_design_agent_generate(
         vehicle=vehicle,
         branche=branche,
         bedrijfsnaam=bedrijfsnaam,
@@ -85,3 +86,6 @@ async def design_agent_generate(
         session_id=session_id or None,
         locale=locale or None,
     )
+    response.headers["Cache-Control"] = "no-store, no-cache, must-revalidate, max-age=0"
+    response.headers["Pragma"] = "no-cache"
+    return result

@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from fastapi import APIRouter, File, Form, Header, HTTPException, Request, UploadFile
+from fastapi import APIRouter, File, Form, Header, HTTPException, Request, Response, UploadFile
 
 from agent.design_agent_service import _verify_api_key
 from agent.inspire.chat_advisor import (
@@ -24,6 +24,16 @@ from core.models import (
 router = APIRouter(tags=["design-agent"])
 
 _CHAT_RATE_WINDOW_SEC = 3600
+
+_NO_CACHE_HEADERS = {
+    "Cache-Control": "no-store, no-cache, must-revalidate, max-age=0",
+    "Pragma": "no-cache",
+}
+
+
+def _apply_no_cache(response: Response) -> None:
+    for key, value in _NO_CACHE_HEADERS.items():
+        response.headers[key] = value
 
 
 def _chat_rate_limit() -> int:
@@ -92,24 +102,27 @@ def _to_response(result) -> DesignAgentChatResponse:
 @router.get("/api/v1/design-agent/chat/opening", response_model=DesignAgentChatResponse)
 async def design_agent_chat_opening(
     request: Request,
+    response: Response,
     session_id: str | None = None,
     locale: str | None = None,
     x_fg_design_agent_key: str | None = Header(None, alias="X-FG-Design-Agent-Key"),
 ) -> DesignAgentChatResponse:
-    """Deterministic brain opening — no LLM, no 'Hoi'."""
+    """Deterministic brain opening — no LLM, no 'Hoi'. Always fresh session (ignore session_id)."""
     _verify_api_key(x_fg_design_agent_key)
     client_ip = request.client.host if request.client else "unknown"
-    _check_chat_rate_limit(client_ip, session_id, locale=locale)
+    _check_chat_rate_limit(client_ip, None, locale=locale)
     try:
-        result = get_chat_opening(session_id, locale=locale)
+        result = get_chat_opening(None, locale=locale)
     except RuntimeError as exc:
         raise HTTPException(status_code=503, detail=str(exc)) from exc
+    _apply_no_cache(response)
     return _to_response(result)
 
 
 @router.post("/api/v1/design-agent/chat", response_model=DesignAgentChatResponse)
 async def design_agent_chat(
     request: Request,
+    response: Response,
     request_body: DesignAgentChatRequest,
     x_fg_design_agent_key: str | None = Header(None, alias="X-FG-Design-Agent-Key"),
 ) -> DesignAgentChatResponse:
@@ -137,12 +150,14 @@ async def design_agent_chat(
         raise HTTPException(status_code=400, detail=str(exc)) from exc
     except RuntimeError as exc:
         raise HTTPException(status_code=503, detail=str(exc)) from exc
+    _apply_no_cache(response)
     return _to_response(result)
 
 
 @router.post("/api/v1/design-agent/chat/turn", response_model=DesignAgentChatResponse)
 async def design_agent_chat_multipart(
     request: Request,
+    response: Response,
     message: str = Form(""),
     session_id: str = Form(""),
     brand_colors: str = Form("[]"),
@@ -172,7 +187,21 @@ async def design_agent_chat_multipart(
         raise HTTPException(status_code=400, detail=str(exc)) from exc
     except RuntimeError as exc:
         raise HTTPException(status_code=503, detail=str(exc)) from exc
+    _apply_no_cache(response)
     return _to_response(result)
+
+
+@router.delete("/api/v1/design-agent/chat/{session_id}", status_code=204, response_class=Response)
+async def design_agent_chat_session_delete(
+    session_id: str,
+    x_fg_design_agent_key: str | None = Header(None, alias="X-FG-Design-Agent-Key"),
+) -> Response:
+    """Ops/HITL — purge persisted orchestrator session."""
+    _verify_api_key(x_fg_design_agent_key)
+    from agent.inspire import chat_session_store
+
+    chat_session_store.delete_session(session_id)
+    return Response(status_code=204)
 
 
 @router.get(
@@ -180,6 +209,7 @@ async def design_agent_chat_multipart(
     response_model=DesignAgentChatSessionResponse,
 )
 async def design_agent_chat_session(
+    response: Response,
     session_id: str,
     locale: str | None = None,
     x_fg_design_agent_key: str | None = Header(None, alias="X-FG-Design-Agent-Key"),
@@ -201,6 +231,7 @@ async def design_agent_chat_session(
     tail = session.messages[-5:] if session.messages else []
     stap = int(brief.get("_stap") or session.phase)
     loc = normalize_locale(locale or brief.get("locale"))
+    _apply_no_cache(response)
     return DesignAgentChatSessionResponse(
         session_id=session.session_id,
         brief_partial=brief,
