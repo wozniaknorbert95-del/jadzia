@@ -932,6 +932,85 @@ dialog {
   text-decoration: none;
 }
 
+.truth-cards {
+  margin-top: var(--space-5);
+  padding: 12px 14px;
+  border: 1px solid var(--border-terminal);
+  border-radius: var(--radius-terminal);
+}
+.truth-cards h3 {
+  margin: 0 0 0.35rem;
+  font-size: 12px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+.truth-cards h3::before {
+  content: "## ";
+  color: var(--accent);
+}
+.truth-card-grid {
+  display: grid;
+  gap: 0.75rem;
+  margin-top: 0.85rem;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+}
+.truth-card {
+  padding: 0.65rem 0.15rem 0.35rem;
+  border-top: 1px solid var(--border-terminal);
+  background: transparent;
+}
+.truth-card__name {
+  margin: 0;
+  font-size: 14px;
+  color: var(--accent);
+  letter-spacing: 0.04em;
+}
+.truth-card__purpose {
+  margin: 0.2rem 0 0.45rem;
+  color: var(--muted);
+  font-size: 12px;
+}
+.truth-card__status {
+  margin: 0 0 0.35rem;
+  color: var(--text-strong);
+  font-size: 12px;
+}
+.truth-card__action,
+.truth-card__sot,
+.truth-card__meta,
+.truth-card__limit {
+  margin: 0.2rem 0;
+  font-size: 12px;
+}
+.truth-card__kpi {
+  margin: 0.35rem 0;
+  padding-left: 1.1rem;
+  font-size: 12px;
+  color: var(--text);
+}
+.truth-card .k {
+  color: var(--muted);
+}
+.truth-card .ev {
+  color: var(--ok);
+}
+.truth-card .muted {
+  color: var(--muted);
+}
+.truth-card a,
+.truth-card .linkish {
+  color: var(--accent);
+}
+.truth-card[data-truth-status="PARKED"] .truth-card__status,
+.truth-card[data-truth-status="NO_ACTIVE_CAMPAIGN"] .truth-card__status,
+.truth-card[data-truth-status="UNVERIFIED"] .truth-card__status {
+  color: var(--action);
+}
+.truth-card[data-truth-status="LIVE"] .truth-card__status {
+  color: var(--ok);
+}
+
 .system-map-settings {
   padding-left: 1.25rem;
   line-height: 1.6;
@@ -1040,7 +1119,7 @@ dialog {
 }
 
 @media (max-width: 720px) {
-  .coi-shell { padding: 12px 8px 90px; }
+  .coi-shell { padding: 12px 8px calc(100px + env(safe-area-inset-bottom, 0px)); }
   .coi-terminal__body { padding: 12px; }
 }
 
@@ -1055,6 +1134,27 @@ dialog {
   .main {
     padding: 0 0 0.5rem;
     max-width: 100%;
+  }
+  /* F5: keep Truth Card CTAs clear of fixed bottom-nav */
+  #truth-cards-pilot {
+    padding-bottom: calc(1.25rem + 72px + env(safe-area-inset-bottom, 0px));
+  }
+  #priorities,
+  #queue-list,
+  #truth-cards-pilot .truth-card__cta {
+    scroll-margin-top: 4.5rem;
+    scroll-margin-bottom: calc(88px + env(safe-area-inset-bottom, 0px));
+  }
+  .truth-card__cta {
+    display: inline-block;
+    min-height: var(--touch);
+    padding: 0.35rem 0;
+    position: relative;
+    z-index: 1;
+  }
+  .coi-terminal__body {
+    position: relative;
+    z-index: 1;
   }
   .bottom-nav {
     display: flex;
@@ -1084,6 +1184,7 @@ dialog {
   .toast { bottom: 5rem; right: 0.75rem; left: 0.75rem; max-width: none; }
   .card-grid { grid-template-columns: 1fr; }
   .system-map-links { grid-template-columns: 1fr; }
+  .truth-card-grid { grid-template-columns: 1fr; }
   .nav-btn, button { min-height: var(--touch); }
 }
 @media (min-width: 601px) {

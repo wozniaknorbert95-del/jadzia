@@ -13,7 +13,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" href="styles.css?v=campus-w01" />
+  <link rel="stylesheet" href="styles.css?v=campus-w03b" />
 </head>
 <body>
   <a class="skip-link" href="#main">Przejdź do treści</a>
@@ -76,7 +76,7 @@
       <header class="home-hero">
         <p class="home-eyebrow">Mission Control · FlexGrafik Campus</p>
         <h2 id="home-title">Dziś — 3 priorytety</h2>
-        <p class="home-sub">Mission Control — company-wide priorities, alerts, approvals and system health. One action: confirm → snooze → close. System map below — hops without code merge (D0.19).</p>
+        <p class="home-sub">Mission Control — company-wide priorities, alerts, approvals and system health. One action: confirm → snooze → close. System map + Truth Cards below — hops without code merge (D0.19).</p>
       </header>
       <h3 class="home-section-title">Priorytety</h3>
       <div id="priorities" class="card-grid" role="list" aria-live="polite"></div>
@@ -99,7 +99,7 @@
         <h3 id="system-map-title">Mapa systemu · Campus</h3>
         <p class="hint">Piętro · pokój · cel. Status jawny (LIVE tylko z dowodem). W2 = Trust hops. Osobne systemy — Basic Auth u właściciela hosta (OS/VCMS). Sesja JWT w Commanderze zostaje (D0.6 / D0.19).</p>
         <div class="system-map-links" id="system-map-links">
-          <a class="map-link" href="https://api.zzpackage.flexgrafik.nl/commander/?v=campus-w01" target="_blank" rel="noopener noreferrer" data-hop="Mission Control" data-room-id="mission-control" data-floor="P3" data-campus-state="LIVE">
+          <a class="map-link" href="https://api.zzpackage.flexgrafik.nl/commander/?v=campus-w03" target="_blank" rel="noopener noreferrer" data-hop="Mission Control" data-room-id="mission-control" data-floor="P3" data-campus-state="LIVE">
             <span class="hop-label">Mission Control</span>
             <span class="hop-meta">P3 · Mission Control · priorities, alerts, approvals, system health</span>
             <span class="hop-state">LIVE · EV-W2-001 · 2026-07-27T14:22:43Z</span>
@@ -159,6 +159,94 @@
             <span class="hop-meta">MAG · Supplier / Warehouse · PARKED — desk not implemented</span>
             <span class="hop-state">PARKED · no desk</span>
           </div>
+        </div>
+      </section>
+
+      <section class="truth-cards" id="truth-cards-pilot" aria-labelledby="truth-cards-title">
+        <h3 id="truth-cards-title">Truth Cards · pilot W3</h3>
+        <p class="hint">Read-only. Status + Evidence only. KPI bez świeżego SoT = <code>insufficient_data</code> — nigdy fake 0. Bez 6. taba (D0.15).</p>
+        <div class="truth-card-grid">
+
+          <article class="truth-card" data-room-id="mission-control" data-truth-status="LIVE">
+            <header class="truth-card__head">
+              <h4 class="truth-card__name">Mission Control</h4>
+              <p class="truth-card__purpose">Company-wide priorities, alerts, approvals, system health</p>
+            </header>
+            <p class="truth-card__status">LIVE · <span class="ev">EV-W2-001</span></p>
+            <p class="truth-card__action"><span class="k">Primary action:</span> <a class="truth-card__cta" href="#priorities">Confirm / snooze / close priorities</a></p>
+            <p class="truth-card__sot"><span class="k">SoT:</span> <a class="truth-card__cta" href="https://api.zzpackage.flexgrafik.nl/commander/?v=campus-w03" rel="noopener noreferrer">Commander Home</a></p>
+            <ul class="truth-card__kpi" aria-label="KPI Mission Control">
+              <li><span class="k">KPI-CEO-COLD-OPEN:</span> insufficient_data <span class="muted">(no timed dogfood in this window)</span></li>
+              <li><span class="k">Worker health:</span> DEGRADED · ssh_connection=error · <span class="ev">EV-W2-011</span> · INC-SSH-RECOVERY-00</li>
+            </ul>
+            <p class="truth-card__meta"><span class="k">Owner:</span> Ops/COI · <span class="k">last_verified:</span> 2026-07-27T14:22:43Z</p>
+            <p class="truth-card__limit"><span class="k">Limitation:</span> Ops rails / queue payload need Commander session JWT.</p>
+          </article>
+
+          <article class="truth-card" data-room-id="showroom-wizard" data-truth-status="LIVE">
+            <header class="truth-card__head">
+              <h4 class="truth-card__name">Sales / Wizard</h4>
+              <p class="truth-card__purpose">Cash path — ZZP branding configurator (min €199)</p>
+            </header>
+            <p class="truth-card__status">LIVE · <span class="ev">EV-W2-005</span> · Wizard SPA Stap 1–9</p>
+            <p class="truth-card__action"><span class="k">Primary action:</span> <a class="truth-card__cta" href="https://zzpackage.flexgrafik.nl/wizard/" target="_blank" rel="noopener noreferrer">Open Wizard</a></p>
+            <p class="truth-card__sot"><span class="k">SoT:</span> <a class="truth-card__cta" href="https://zzpackage.flexgrafik.nl/wizard/" target="_blank" rel="noopener noreferrer">https://zzpackage.flexgrafik.nl/wizard/</a></p>
+            <ul class="truth-card__kpi" aria-label="KPI Wizard">
+              <li><span class="k">KPI-MKT-WIZARD-STARTS:</span> insufficient_data <span class="muted">(no fresh GA4/INT-009 snapshot)</span></li>
+              <li><span class="k">Hop destination:</span> LIVE · no login wall · EV-W2-005</li>
+            </ul>
+            <p class="truth-card__meta"><span class="k">Owner:</span> Sales/Ops · <span class="k">last_verified:</span> 2026-07-27T14:22:45Z</p>
+            <p class="truth-card__limit"><span class="k">Limitation:</span> Purchase / Mollie LIVE = osobne Founder GO (poza Campus).</p>
+          </article>
+
+          <article class="truth-card" data-room-id="marketing-studio" data-truth-status="UNVERIFIED">
+            <header class="truth-card__head">
+              <h4 class="truth-card__name">Marketing Studio</h4>
+              <p class="truth-card__purpose">Organic HITL surface — paid Ads out of scope in freeze</p>
+            </header>
+            <p class="truth-card__status">UNVERIFIED — campaign state not verified · <span class="ev">EV-W3-001</span></p>
+            <p class="truth-card__action"><span class="k">Primary action:</span> <span class="muted">Observe only — no execution in Campus sessions</span></p>
+            <p class="truth-card__sot"><span class="k">SoT:</span> No live campaign SoT in Campus scope — verifying active-campaign state requires MKT materials / Ads Manager (excluded by Founder override)</p>
+            <ul class="truth-card__kpi" aria-label="KPI Marketing">
+              <li><span class="k">Campaign state:</span> insufficient_data</li>
+              <li><span class="k">wizard_starts (UTM):</span> insufficient_data</li>
+              <li><span class="k">KPI-CPA-WIZARD:</span> PARKED (freeze · €0 paid) · not a measured value</li>
+            </ul>
+            <p class="truth-card__meta"><span class="k">Owner:</span> Marketing/Ops · <span class="k">last_verified:</span> 2026-07-27T15:13:35Z</p>
+            <p class="truth-card__limit"><span class="k">Limitation:</span> EV-W3-001 = W3 pre-close finding only (campaign not probed). Map label NO ACTIVE CAMPAIGN is not campaign proof. No MKT scope in this wave. Never EV-W2-010 for campaign claim.</p>
+          </article>
+
+          <article class="truth-card" data-room-id="orders-production" data-truth-status="PARKED">
+            <header class="truth-card__head">
+              <h4 class="truth-card__name">Order Desk</h4>
+              <p class="truth-card__purpose">Orders &amp; production operational desk</p>
+            </header>
+            <p class="truth-card__status">PARKED · no operational desk · <span class="ev">EV-W2-010</span></p>
+            <p class="truth-card__action"><span class="k">Primary action:</span> <span class="muted">None — desk not implemented (W4 deep-link after C2)</span></p>
+            <p class="truth-card__sot"><span class="k">SoT:</span> No live source-of-truth / operational desk not implemented</p>
+            <ul class="truth-card__kpi" aria-label="KPI Order Desk">
+              <li><span class="k">Open orders:</span> insufficient_data</li>
+              <li><span class="k">Production SLA:</span> insufficient_data</li>
+            </ul>
+            <p class="truth-card__meta"><span class="k">Owner:</span> Ops · <span class="k">last_verified:</span> 2026-07-27T14:26:00Z</p>
+            <p class="truth-card__limit"><span class="k">Limitation:</span> EV-W2-010 = map non-interactive/PARKED sanity only. No order dashboard invented. Historical #3149 ≠ live desk.</p>
+          </article>
+
+          <article class="truth-card" data-room-id="finance-analytics" data-truth-status="UNVERIFIED">
+            <header class="truth-card__head">
+              <h4 class="truth-card__name">Finance / Analytics</h4>
+              <p class="truth-card__purpose">Revenue / margin visibility via existing Analityka tab — not a Finance Room agent</p>
+            </header>
+            <p class="truth-card__status">UNVERIFIED · Finance data UNVERIFIED · <span class="ev">EV-W2-008</span></p>
+            <p class="truth-card__action"><span class="k">Primary action:</span> <span class="muted">Use nav → Analityka (existing tab · D0.15)</span></p>
+            <p class="truth-card__sot"><span class="k">SoT:</span> Existing Analytics surface (Commander tab Analityka) — <strong>Finance data UNVERIFIED</strong> (session/DTL not proven in W3)</p>
+            <ul class="truth-card__kpi" aria-label="KPI Finance Analytics">
+              <li>insufficient_data — no finance KPI or numeric values without authenticated freshness</li>
+            </ul>
+            <p class="truth-card__meta"><span class="k">Owner:</span> Finance/Ops · <span class="k">last_verified:</span> 2026-07-27T14:24:00Z</p>
+            <p class="truth-card__limit"><span class="k">Limitation:</span> Path-only evidence EV-W2-008. Purchase/Mollie PARK. No fake revenue numbers.</p>
+          </article>
+
         </div>
       </section>
     </section>
@@ -332,6 +420,7 @@
           <li>P1 Sales queue LIVE · EV-W2-007: #queue-list on Start</li>
           <li>P3 Compliance PARTIAL · path EV-W2-009 · chain data needs session (Ustawienia → Audyt)</li>
           <li>P2 Analytics UNVERIFIED finance · Analityka path OK · P0 Orders PARKED · P1 Marketing NO ACTIVE CAMPAIGN · MAG Supplier PARKED</li>
+          <li>W3 Truth Cards pilot (Home): Mission Control · Wizard · Marketing Studio · Order Desk · Finance — read-only · campus-w03</li>
         </ul>
         <button type="submit">Zapisz</button>
       </form>
@@ -371,6 +460,6 @@
   </dialog>
 
   <div id="toast" class="toast" role="status" aria-live="polite" hidden></div>
-  <script src="app.js?v=campus-w01"></script>
+  <script src="app.js?v=campus-w03b"></script>
 </body>
 </html>
