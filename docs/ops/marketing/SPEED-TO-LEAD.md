@@ -7,6 +7,8 @@ updated: "2026-07-19"
 
 # Speed-to-Lead (P-MKT-05)
 
+**GTM offer ladder:** Check → **WA &lt;15 min** → Wizard — [GTM-1PAGER.md](./GTM-1PAGER.md).
+
 Budżet paid umiera przy wolnym follow-upie.
 
 ## SLA (teraz — ręcznie)

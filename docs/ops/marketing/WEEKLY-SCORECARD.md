@@ -1,12 +1,15 @@
 ---
 status: "[ACTIVE]"
 title: "Marketing OS — Weekly Scorecard (PON)"
-updated: "2026-07-19"
+updated: "2026-07-27"
+parent: "GTM-1PAGER.md"
 ---
 
 # Weekly Scorecard — wypełnij w PON
 
 Skopiuj tę tabelę do notatki / Telegram i wypełnij w 5 min. Decyzja = **jedna** kratka na dole.
+
+**GTM KPI SoT:** [GTM-1PAGER.md](./GTM-1PAGER.md) · TT success = wizard_starts utm=tiktok.
 
 **Kampania:** `zzp_branding_check_v1`  
 **Tydzień ISO:** ____-W__  
@@ -21,7 +24,9 @@ Spend/CPL z Ads API = `null` — wklej z Ads Manager. Draft **nie** wybiera HOLD
 |-----|---------|---------|
 | Leads (Instant Form) | | |
 | CPL | | spend/leads |
-| Wizard starts (UTM) | | |
+| Wizard starts (UTM meta paid) | | utm_source=meta medium=paid |
+| Wizard starts (UTM meta organic) | | secondary compound |
+| Wizard starts (UTM tiktok) | | **TT success metric** |
 | Lead→Wizard % | | |
 | Purchases | | |
 | Lead→Purchase % | | |

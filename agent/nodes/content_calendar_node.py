@@ -16,6 +16,7 @@ from agent.db import (
 )
 from agent.publishers.calendar_publish import publish_calendar_content
 from agent.publishers.facebook import is_facebook_configured
+from agent.publishers.tiktok import is_tiktok_configured
 from core.models import (
     ContentCalendarCreateRequest,
     ContentCalendarCreateResponse,
@@ -200,7 +201,7 @@ def suggest_case_study_orders(limit: int = 10) -> List[dict]:
 
 
 def publish_entry(entry_id: str) -> dict:
-    """Publish an approved Facebook calendar entry via Graph API (INT-011)."""
+    """Publish an approved calendar entry (Facebook Graph or TikTok Content Posting)."""
     try:
         internal_id = int(entry_id)
     except ValueError:
@@ -210,10 +211,11 @@ def publish_entry(entry_id: str) -> dict:
     if not row:
         return {"status": "error", "message": "Entry not found"}
 
-    if row.get("platform") != "facebook":
+    platform = (row.get("platform") or "").strip().lower()
+    if platform not in ("facebook", "tiktok"):
         return {
             "status": "error",
-            "message": f"Publish supported for facebook only, not {row.get('platform')}",
+            "message": f"Publish supported for facebook|tiktok, not {row.get('platform')}",
         }
 
     if row.get("status") != "approved":
@@ -222,17 +224,25 @@ def publish_entry(entry_id: str) -> dict:
             "message": f"Entry must be approved, not {row.get('status')}",
         }
 
-    if not is_facebook_configured():
+    if platform == "facebook" and not is_facebook_configured():
         return {
             "status": "error",
             "message": "FB_PAGE_ID and FB_ACCESS_TOKEN not configured",
+        }
+    if platform == "tiktok" and not is_tiktok_configured():
+        return {
+            "status": "error",
+            "message": "TIKTOK_ACCESS_TOKEN not configured",
         }
 
     result = publish_calendar_content(row)
     updates = {
         "publish_result": json.dumps(result),
-        "fb_post_id": result.get("post_id"),
     }
+    if platform == "tiktok":
+        updates["tiktok_post_id"] = result.get("post_id") or result.get("publish_id")
+    else:
+        updates["fb_post_id"] = result.get("post_id")
     if result.get("status") == "success":
         updates["status"] = "published"
     else:
@@ -240,43 +250,52 @@ def publish_entry(entry_id: str) -> dict:
 
     db_update_calendar_entry(internal_id, updates)
     logger.info(
-        "[ContentCalendarNode] Publish entry_id=%s fb_status=%s",
+        "[ContentCalendarNode] Publish entry_id=%s platform=%s status=%s",
         entry_id,
+        platform,
         result.get("status"),
     )
     return result
 
 
 def publish_due_scheduled_entries(limit: int = 20) -> int:
-    """Publish approved entries whose scheduled_publish_at is due (worker hook)."""
-    if not is_facebook_configured():
-        return 0
-
-    entries = db_list_calendar_entries(status="approved", platform="facebook", limit=limit)
+    """Publish approved FB/TikTok entries whose scheduled_publish_at is due."""
     now = datetime.now(timezone.utc)
     published_count = 0
 
-    for entry in entries:
-        sched_raw = entry.get("scheduled_publish_at") or entry.get("scheduled_at")
-        if not sched_raw:
-            continue
-        if entry.get("status") == "held":
-            continue
-        try:
-            sched_dt = datetime.fromisoformat(str(sched_raw).replace("Z", "+00:00"))
-            if sched_dt.tzinfo is None:
-                sched_dt = sched_dt.replace(tzinfo=timezone.utc)
-        except (ValueError, TypeError):
-            continue
-        if sched_dt <= now:
-            from agent.commander.publish import publish_calendar_entry_system
+    platforms: list[str] = []
+    if is_facebook_configured():
+        platforms.append("facebook")
+    if is_tiktok_configured():
+        platforms.append("tiktok")
+    if not platforms:
+        return 0
 
-            result = publish_calendar_entry_system(
-                str(entry["entry_id"]),
-                expected_version=entry.get("version"),
-            )
-            if result.get("status") == "success":
-                published_count += 1
+    for platform in platforms:
+        entries = db_list_calendar_entries(
+            status="approved", platform=platform, limit=limit
+        )
+        for entry in entries:
+            sched_raw = entry.get("scheduled_publish_at") or entry.get("scheduled_at")
+            if not sched_raw:
+                continue
+            if entry.get("status") == "held":
+                continue
+            try:
+                sched_dt = datetime.fromisoformat(str(sched_raw).replace("Z", "+00:00"))
+                if sched_dt.tzinfo is None:
+                    sched_dt = sched_dt.replace(tzinfo=timezone.utc)
+            except (ValueError, TypeError):
+                continue
+            if sched_dt <= now:
+                from agent.commander.publish import publish_calendar_entry_system
+
+                result = publish_calendar_entry_system(
+                    str(entry["entry_id"]),
+                    expected_version=entry.get("version"),
+                )
+                if result.get("status") == "success":
+                    published_count += 1
 
     if published_count:
         logger.info("[ContentCalendarNode] Scheduled publish count=%s", published_count)

@@ -1,10 +1,13 @@
 ---
 status: "[ACTIVE]"
 title: "Marketing OS — Unit Economics"
-updated: "2026-07-19"
+updated: "2026-07-27"
+parent: "GTM-1PAGER.md"
 ---
 
 # Unit Economics — FlexGrafik demand
+
+**GTM North Star:** [GTM-1PAGER.md](./GTM-1PAGER.md) · `CPA_wizard < 0.40 × marża_brutto`.
 
 ## Definicje
 
@@ -41,4 +44,4 @@ Przykład roboczy (zastąp realną marżą po 10 zakupach):
 
 ## Co nie steruje budżetem
 
-Followers, likes, reach, video views **bez** wizard_starts / purchases.
+Followers, likes, reach, video views **bez** wizard_starts / purchases — patrz też [GTM-1PAGER](./GTM-1PAGER.md) anti-metrics.

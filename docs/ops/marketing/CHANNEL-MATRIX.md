@@ -1,10 +1,13 @@
 ---
 status: "[ACTIVE]"
 title: "Marketing OS — Channel Matrix + UTM"
-updated: "2026-07-19"
+updated: "2026-07-27 (GTM lock)"
+parent: "GTM-1PAGER.md"
 ---
 
 # Channel Matrix — 1 asset → N surfaces
+
+**GTM:** [GTM-1PAGER.md](./GTM-1PAGER.md) — jeden master, wiele cutów, ten sam offer ladder.
 
 ## Zasada
 
@@ -14,8 +17,9 @@ Każdy kanał = cut + CTA Wizard, nie osobna „strategia kreatywna”.
 | Surface | Cut | utm_source | utm_medium | CTA |
 |---------|-----|------------|------------|-----|
 | Meta Ads (paid) | 9:16 + 1:1 | `meta` | `paid` | Instant Form → thank-you → Wizard |
-| FB/IG organic (Commander HITL) | ten sam master | `meta` | `organic` | Wizard / WA |
-| TikTok organic | 15s hook z mastera | `tiktok` | `organic` | bio → Wizard |
+| FB organic (Commander HITL) | ten sam master | `meta` | `organic` | Wizard / WA |
+| TikTok organic (`@flexgrafik.nl`) | 15s hook z mastera | `tiktok` | `organic` | bio → Wizard |
+| ~~IG organic~~ | — | — | — | **out of scope** (brak konta) |
 | Blog ZZP | stills z mastera | `blog` | `organic` | in-content → Wizard |
 | Retarget (później) | ten sam Reel | `meta` | `paid` | Wizard + game code |
 

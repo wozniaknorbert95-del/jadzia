@@ -7,6 +7,8 @@ updated: "2026-07-19"
 
 # L0 — Instrumentacja (zakaz scale bez tego)
 
+**GTM:** [GTM-1PAGER.md](./GTM-1PAGER.md) · Meta publish wymaga min. IC PASS (#2); Purchase PARK świadomie na learning.
+
 ## Checklist
 
 | # | Check | Jak | Status |

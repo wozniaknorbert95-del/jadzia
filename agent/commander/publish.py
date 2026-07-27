@@ -17,7 +17,15 @@ from agent.db import (
     db_update_calendar_entry_versioned,
 )
 from agent.publishers.calendar_publish import publish_calendar_content
-from agent.publishers.facebook import delete_post, is_facebook_configured, parse_publish_error
+from agent.publishers.facebook import (
+    delete_post,
+    is_facebook_configured,
+    parse_publish_error as parse_fb_publish_error,
+)
+from agent.publishers.tiktok import (
+    is_tiktok_configured,
+    parse_publish_error as parse_tt_publish_error,
+)
 
 logger = logging.getLogger(__name__)
 
@@ -78,16 +86,29 @@ def publish_calendar_entry(
             "message": f"Entry must be approved or failed (retry), not {row.get('status')}",
         }
 
-    if not is_facebook_configured():
-        return {"status": "error", "message": "Facebook not configured"}
+    platform = (row.get("platform") or "facebook").strip().lower()
+    if platform == "facebook":
+        if not is_facebook_configured():
+            return {"status": "error", "message": "Facebook not configured"}
+    elif platform == "tiktok":
+        if not is_tiktok_configured():
+            return {"status": "error", "message": "TikTok not configured (TIKTOK_ACCESS_TOKEN)"}
+    else:
+        return {"status": "error", "message": f"Unsupported platform: {platform}"}
 
     actor_id, actor_role = actor_from_payload(auth_payload)
     result = publish_calendar_content(row)
-    human_error = parse_publish_error(result) if result.get("status") != "success" else ""
+    parse_err = (
+        parse_tt_publish_error if platform == "tiktok" else parse_fb_publish_error
+    )
+    human_error = parse_err(result) if result.get("status") != "success" else ""
     updates = {
         "publish_result": json.dumps(result),
-        "fb_post_id": result.get("post_id"),
     }
+    if platform == "tiktok":
+        updates["tiktok_post_id"] = result.get("post_id") or result.get("publish_id")
+    else:
+        updates["fb_post_id"] = result.get("post_id")
     if result.get("status") == "success":
         updates["status"] = "published"
     else:
@@ -107,6 +128,10 @@ def publish_calendar_entry(
         notify_publish_failure(row_after, result)
 
     db_commander_increment_daily_actions()
+    after_ids = {
+        "fb_post_id": updates.get("fb_post_id"),
+        "tiktok_post_id": updates.get("tiktok_post_id"),
+    }
     append_audit(
         actor_id=actor_id,
         actor_role=actor_role,
@@ -114,8 +139,8 @@ def publish_calendar_entry(
         source="commander",
         target_type="calendar_entry",
         target_id=entry_id,
-        before={"status": row.get("status"), "version": version},
-        after={"status": updates["status"], "version": new_ver, "fb_post_id": result.get("post_id")},
+        before={"status": row.get("status"), "version": version, "platform": platform},
+        after={"status": updates["status"], "version": new_ver, **after_ids},
         reason=reason,
         risk_tier="sensitive",
     )

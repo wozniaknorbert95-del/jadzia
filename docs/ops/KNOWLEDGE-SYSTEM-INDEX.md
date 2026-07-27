@@ -70,7 +70,7 @@
 - Phone hub ADR: [../design/coi-commander/adr/D0.6-phone-hub-not-merge.md](../design/coi-commander/adr/D0.6-phone-hub-not-merge.md)
 - Operator playbook (cmd): `Flex-vcms/flex-vcms/docs/study/coi-commander-ops-handbook.md`
 - Design folder pointer: [../design/coi-commander/OPERATOR-PLAYBOOK.md](../design/coi-commander/OPERATOR-PLAYBOOK.md)
-- **Marketing OS (FG):** [marketing/README.md](./marketing/README.md) — unit economics, L0–L5; QuietForge marketing → `services/docs/strategy/` only
+- **Marketing OS (FG):** [marketing/README.md](./marketing/README.md) · **GTM SoT:** [marketing/GTM-1PAGER.md](./marketing/GTM-1PAGER.md) — unit economics, L0–L5; QuietForge marketing → `services/docs/strategy/` only
 
 ## Docs IA + Archive policy (ECO-POLISH-01)
 

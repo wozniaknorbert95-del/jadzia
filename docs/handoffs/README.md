@@ -2,12 +2,13 @@
 
 Session continuity for `/vibe-init`: read the **last 2** handoffs from this folder.
 
-## Start here — 2026-07-26
+## Start here — 2026-07-27
 
-1. [`2026-07-26-SESSION-CLOSE-META-FREE-GIT.md`](2026-07-26-SESSION-CLOSE-META-FREE-GIT.md) — **META-FREE 9/10 PASS** · tip `598e674` · kampanie HOLD
-2. [`2026-07-25-META-FREE-90-CLOSE.md`](2026-07-25-META-FREE-90-CLOSE.md) — gate CLOSE scorecard
-3. [`2026-07-25-OPS-FB-TOKEN-01-CLOSE.md`](2026-07-25-OPS-FB-TOKEN-01-CLOSE.md) — FB `read_insights`
-4. [`docs/ops/marketing/OPERATOR-TODAY.md`](../ops/marketing/OPERATOR-TODAY.md) — operator start
+1. [`2026-07-27-GTM-1PAGER-CLOSE.md`](2026-07-27-GTM-1PAGER-CLOSE.md) — **GTM v2 LOCKED** · NEXT = [META-FINAL-CHECKLIST](../ops/marketing/META-FINAL-CHECKLIST.md)
+2. [`2026-07-27-SESSION-CLOSE-GTM-NEXT.md`](2026-07-27-SESSION-CLOSE-GTM-NEXT.md) — poprzedni wątek (TT-PUB 5/7 parked)
+2. [`2026-07-26-FREE-TIKTOK-PLAN.md`](2026-07-26-FREE-TIKTOK-PLAN.md) — TT system plan (after GTM)
+3. [`docs/ops/marketing/OPERATOR-TODAY.md`](../ops/marketing/OPERATOR-TODAY.md) — operator start
+4. [`docs/ops/marketing/FREE-META-90.md`](../ops/marketing/FREE-META-90.md) — Meta CLOSED 9/10
 
 ## Program + audit SoT
 

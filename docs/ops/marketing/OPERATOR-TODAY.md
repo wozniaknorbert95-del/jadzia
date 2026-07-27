@@ -1,21 +1,26 @@
 ---
 status: "[ACTIVE]"
 title: "Marketing OS — START TUTAJ (operator)"
-updated: "2026-07-25 (META-FREE-90 9/10 PASS · kampanie HOLD until final)"
+updated: "2026-07-27 (GTM v2 expert · NEXT Meta final checklist)"
 ---
 
 # START TUTAJ — jedna ścieżka (ADHD)
 
-**Priorytet teraz:** [FREE-META-90.md](./FREE-META-90.md) — **9/10 PASS** · kampanie HOLD until Dowódca **„final”**. Leftover Low: S9 IG.  
+**Priorytet teraz:** **Meta „final”** — [META-FINAL-CHECKLIST](./META-FINAL-CHECKLIST.md) → [META-CLICK-PATH](./META-CLICK-PATH.md) → publish €10/d.  
+**GTM SoT:** [GTM-1PAGER.md](./GTM-1PAGER.md) — ICP · offer · WA bridge · **Meta #1** · TT #2 · KPI.  
+**Meta organic:** [FREE-META-90.md](./FREE-META-90.md) — **CLOSED 9/10** (IG usunięte). Kampanie HOLD until **„final”**.  
+**TikTok system:** [FREE-TIKTOK.md](./FREE-TIKTOK.md) — kod **5/7** · E2E **po** Meta final + asset cadence.  
 **Roadmapa:** [MKT-BRAIN-PRO.md](./MKT-BRAIN-PRO.md) — **~86%** overall · runtime **100%** · **MB_MODE=propose**  
 **Commander cockpit:** https://api.zzpackage.flexgrafik.nl/commander/?v=mkt-dash08  
 **Prod SoT tip:** VPS `/opt/jadzia` **`92da711`** · cache **`mkt-dash08`** · FB Page + `read_insights` + **`pages_read_user_content` LIVE** · SLA `@6e4a637`  
-**Meta:** [FREE-META-90.md](./FREE-META-90.md) · [META-CLICK-PATH.md](./META-CLICK-PATH.md) (po „final”) · [WEEKLY-SCORECARD.md](./WEEKLY-SCORECARD.md)
+**Kanały:** [FREE-TIKTOK.md](./FREE-TIKTOK.md) · [FREE-META-90.md](./FREE-META-90.md) · [META-CLICK-PATH.md](./META-CLICK-PATH.md) (po „final”) · [WEEKLY-SCORECARD.md](./WEEKLY-SCORECARD.md)
 
 | Co | Status |
 |----|--------|
-| **FREE-META-90** | **9/10 PASS** @ tip **`92da711`** · S5 Away+IR ON · S9 Low leftover · kampanie HOLD |
-| **#1 Meta lean** | **HOLD** — €5 · **po** Dowódca **„final”** |
+| **GTM-1PAGER** | **LOCKED** — [GTM-1PAGER.md](./GTM-1PAGER.md) |
+| **#1 Meta lean** | **NEXT** — [META-FINAL-CHECKLIST](./META-FINAL-CHECKLIST.md) → publish €10/d |
+| **FREE-META-90** | **CLOSED 9/10** · IG out of scope · organic utrzymanie |
+| **FREE-TIKTOK** | **5/7** · E2E **#2** po Meta final + cadence · no Studio spam |
 | Runtime F0→F4b | **100%** LIVE |
 | Weekly scorecard draft | **LIVE** · Organic ER baseline numeric |
 | Decision Rail (MB) | **LIVE** — preflight/breakers/accuracy (read-only) |
@@ -53,12 +58,14 @@ updated: "2026-07-25 (META-FREE-90 9/10 PASS · kampanie HOLD until final)"
 
 ## Twoje parks (HITL — poza Commanderem)
 
-1. **H-FREE-META** — **GATE PASS 9/10** · leftover Low S9 IG ([FREE-META-90](./FREE-META-90.md))
-2. **H-Meta** — hold → optimize ([META-CLICK-PATH](./META-CLICK-PATH.md)) — **dopiero po** „final”
-3. **H-Purchase** — Mollie GO → Test Events Purchase (poza 90%)
-4. **H-Insights** — **DONE 2026-07-25** (Page + `read_insights`); F1 = `pages_read_user_content`
-5. **H-WA** — Lead → WA &lt;15 min ([SPEED-TO-LEAD](./SPEED-TO-LEAD.md)) · też S10 organic
-6. **H-F4x** — distribution / blog / lead webhook — po triggerach
+1. **H-Meta** — **NEXT** [META-FINAL-CHECKLIST](./META-FINAL-CHECKLIST.md) → A1–A3 → publish €10/d · 7d hold
+2. **H-FREE-META** — **CLOSED 9/10** · organic utrzymanie ([FREE-META-90](./FREE-META-90.md))
+3. **H-FREE-TIKTOK** — **#2** po Meta final + cadence · token VPS + E2E ([FREE-TIKTOK](./FREE-TIKTOK.md))
+4. **H-GTM** — **DONE** ([GTM-1PAGER](./GTM-1PAGER.md) · [handoff](../../handoffs/2026-07-27-GTM-1PAGER-CLOSE.md))
+5. **H-Purchase** — Mollie GO → Test Events Purchase (poza 90%)
+6. **H-Insights** — **DONE 2026-07-25** (Page + `read_insights`); F1 = `pages_read_user_content`
+7. **H-WA** — Lead → WA &lt;15 min ([SPEED-TO-LEAD](./SPEED-TO-LEAD.md)) · też S10 organic
+8. **H-F4x** — distribution / blog / lead webhook — po triggerach
 
 ## Operator (Telegram)
 
@@ -66,8 +73,10 @@ updated: "2026-07-25 (META-FREE-90 9/10 PASS · kampanie HOLD until final)"
 2. APPROVE = ticket paste-ready (nie Ads API create).
 3. Co tydzień: draft scorecard w TG / Commander (bez auto HOLD/KILL).
 
-### Meta (#1 HOLD)
+### Meta (#1 NEXT — po „final”)
 
-`zzp_branding_check_v1` · €5/dzień · camp `120254517992840360`.
+`zzp_branding_check_v1` · **€10/dzień** · camp `120254517992840360` · [GTM-1PAGER](./GTM-1PAGER.md) · [META-FINAL-CHECKLIST](./META-FINAL-CHECKLIST.md) · [META-PACK-LEAN](./META-PACK-LEAN.md).
+
+**„Final” =** checklist P+O+X odhaczony + świadome Purchase PARK + real bus Reel (lub static fallback).
 
 **Zakaz:** Ads API create · Mollie LIVE · fake PASS · reorder STATUS BOARD bez GO · kampanie bez **„final”**.

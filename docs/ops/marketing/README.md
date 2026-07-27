@@ -7,7 +7,7 @@ updated: "2026-07-19 (MB F0–F3 LIVE)"
 
 # Marketing OS — FlexGrafik
 
-**Zaczynaj tutaj:** [OPERATOR-TODAY.md](./OPERATOR-TODAY.md) · **Plan 14d:** [PLAN-14D.md](./PLAN-14D.md) · **Klik Meta:** [META-CLICK-PATH.md](./META-CLICK-PATH.md) · **Paste NL:** [META-PACK-LEAN.md](./META-PACK-LEAN.md) · **MB STATUS:** [MKT-BRAIN-PRO.md](./MKT-BRAIN-PRO.md).
+**Zaczynaj tutaj:** [OPERATOR-TODAY.md](./OPERATOR-TODAY.md) · **GTM SoT:** [GTM-1PAGER.md](./GTM-1PAGER.md) · **Meta unlock:** [META-FINAL-CHECKLIST.md](./META-FINAL-CHECKLIST.md) · **Plan 14d:** [PLAN-14D.md](./PLAN-14D.md) · **Klik Meta:** [META-CLICK-PATH.md](./META-CLICK-PATH.md) · **Paste NL:** [META-PACK-LEAN.md](./META-PACK-LEAN.md) · **MB STATUS:** [MKT-BRAIN-PRO.md](./MKT-BRAIN-PRO.md).
 
 North Star: `CPA_wizard` < 40% marży brutto ZZPackage. Bez Purchase w pikselu → **zakaz scale** (tylko learning ≤ €10/dzień Leads).
 
@@ -24,13 +24,16 @@ North Star: `CPA_wizard` < 40% marży brutto ZZPackage. Bez Purchase w pikselu �
 | Kiedy | Plik |
 |-------|------|
 | Start dnia / tygodnia | [OPERATOR-TODAY.md](./OPERATOR-TODAY.md) |
+| GTM (ICP · offer · KPI) | [GTM-1PAGER.md](./GTM-1PAGER.md) |
+| Meta unlock („final”) | [META-FINAL-CHECKLIST.md](./META-FINAL-CHECKLIST.md) |
 | Marketing Brain architecture | [MKT-BRAIN-PRO.md](./MKT-BRAIN-PRO.md) |
 | Meta lean (1 Reel €10) | [META-PACK-LEAN.md](./META-PACK-LEAN.md) |
 | Publish kampanii (pełny paste / 3 kreacje) | [FB-FIRST-CAMPAIGN.md](./FB-FIRST-CAMPAIGN.md) |
 | L0 przed € | [L0-INSTRUMENTATION.md](./L0-INSTRUMENTATION.md) |
 | PON decyzja scale/kill | [WEEKLY-SCORECARD.md](./WEEKLY-SCORECARD.md) · [UNIT-ECONOMICS.md](./UNIT-ECONOMICS.md) |
 | Shoot / cuts / UTM | [ASSET-FACTORY.md](./ASSET-FACTORY.md) · [CHANNEL-MATRIX.md](./CHANNEL-MATRIX.md) |
-| TikTok organic | [TIKTOK-ORGANIC.md](./TIKTOK-ORGANIC.md) |
+| TikTok gate + organic | [FREE-TIKTOK.md](./FREE-TIKTOK.md) · [TIKTOK-ORGANIC.md](./TIKTOK-ORGANIC.md) |
+| Meta free (CLOSED) | [FREE-META-90.md](./FREE-META-90.md) |
 | Lead &lt;15 min | [SPEED-TO-LEAD.md](./SPEED-TO-LEAD.md) |
 | Tor A Business Suite | [FB-AUTOMATION-PLAYBOOK.md](./FB-AUTOMATION-PLAYBOOK.md) |
 

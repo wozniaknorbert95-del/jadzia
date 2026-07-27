@@ -32,7 +32,7 @@ mb_mode: "propose"
 | **Data Health honesty** | drivers + IC ack + insights park-info | observe | **~98%** |
 | **Insights agent-half (#5)** | scopes + reason codes + DH park | Graph `read_insights` (HITL) | **READY** |
 | **Weekly scorecard draft** | DTL → JSON/PL + CLI/API/TG | Ads spend paste HITL | **LIVE** |
-| **Paid Meta ops (#1 lean)** | published €5 HOLD | optimize after 7d | **70%** |
+| **Paid Meta ops (#1 lean)** | GTM LOCK · publish €10 pending „final” | 7d hold → optimize | **75%** |
 | **L0 pixel events** | IC PASS | Purchase PARK (Mollie) | **50%** |
 | **Faza 4 extras** (distribution / blog / lead webhook) | — | **ready_for_human** | **0%** |
 | **Program overall** (runtime + ops + parks) | agent debt CLOSED | Meta · Purchase · Graph · F4x | **~86%** |
@@ -61,11 +61,11 @@ mb_mode: "propose"
 
 ### ready_for_human (freeze — checklist, nie OPEN vague)
 
-**SoT tygodnia:** [PLAN-14D.md](./PLAN-14D.md) · klik Meta: [META-CLICK-PATH.md](./META-CLICK-PATH.md) · start: [OPERATOR-TODAY.md](./OPERATOR-TODAY.md)
+**SoT tygodnia:** [GTM-1PAGER.md](./GTM-1PAGER.md) · [PLAN-14D.md](./PLAN-14D.md) · [META-FINAL-CHECKLIST.md](./META-FINAL-CHECKLIST.md) · start: [OPERATOR-TODAY.md](./OPERATOR-TODAY.md)
 
 | Priorytet | Co | Owner | Checklist |
 |-----------|-----|-------|-----------|
-| **1** | **META lean** Instant Form HOLD | Dowódca | Hold 7d €5 → optimize ([META-CLICK-PATH](./META-CLICK-PATH.md)) |
+| **1** | **META lean** publish €10/d | Dowódca | [META-FINAL-CHECKLIST](./META-FINAL-CHECKLIST.md) → [META-CLICK-PATH](./META-CLICK-PATH.md) |
 | **2** | Shadow → GO `propose` | — | **DONE** LIVE tip `4ad1e99` |
 | **3** | L0 **Purchase** w Test Events | Dowódca | Mollie GO → Test Events Purchase |
 | **4** | **F4/F4b Act** ticket_only + paste_ready v1 | — | **DONE** tip `0ae8244` (Ads create PARK) |
@@ -106,7 +106,7 @@ Gate D · Mollie LIVE charge · Ads API **create** · TikTok API C1-01 · full a
 
 | # | Item | Status |
 |---|------|--------|
-| H-Meta | Meta HOLD 7d €5 → optimize | **ready_for_human** ([META-CLICK-PATH](./META-CLICK-PATH.md)) |
+| H-Meta | Meta publish €10/d po „final” | **ready_for_human** ([META-FINAL-CHECKLIST](./META-FINAL-CHECKLIST.md)) |
 | H-Purchase | Purchase Test Events | **ready_for_human** (Mollie GO) |
 | H-Insights | Graph `read_insights` → token | **ready_for_human** (agent-half READY @ `3c2fc6e`) |
 | H-WA | WA &lt;15 min na lead | **ready_for_human** ([SPEED-TO-LEAD](./SPEED-TO-LEAD.md)) |

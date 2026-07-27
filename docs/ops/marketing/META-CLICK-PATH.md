@@ -1,11 +1,14 @@
 ---
 status: "[ACTIVE]"
 title: "Meta Ads — klik po kliku (bez IT)"
-updated: "2026-07-19"
+updated: "2026-07-27"
 gate: "META-PACK-01"
+parent: "GTM-1PAGER.md"
 ---
 
 # META-CLICK-PATH — A1 → A2 → A3
+
+**Prerequisite:** [GTM-1PAGER](./GTM-1PAGER.md) locked · [META-FINAL-CHECKLIST](./META-FINAL-CHECKLIST.md) odhaczony · Dowódca **„final”**.
 
 Nie musisz rozumieć kodu. Otwórz **Meta Ads Manager** na komputerze i idź wiersz po wierszu.  
 Teksty do wklejenia: [META-PACK-LEAN.md](./META-PACK-LEAN.md) (sekcje Instant Form + Creative).

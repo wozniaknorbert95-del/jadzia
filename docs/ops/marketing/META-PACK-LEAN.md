@@ -12,7 +12,8 @@ updated: "2026-07-19"
 **Agent:** ten pack + HTML probe — **nie** klika Ads Manager i **nie** wydaje €.
 
 Pełny playbook (3 kreacje, later): [FB-FIRST-CAMPAIGN.md](./FB-FIRST-CAMPAIGN.md).  
-Start dnia: [OPERATOR-TODAY.md](./OPERATOR-TODAY.md).
+Start dnia: [OPERATOR-TODAY.md](./OPERATOR-TODAY.md).  
+**GTM SoT:** [GTM-1PAGER.md](./GTM-1PAGER.md) · unlock: [META-FINAL-CHECKLIST.md](./META-FINAL-CHECKLIST.md).
 
 ## HTML probe (agent) — 2026-07-19
 
