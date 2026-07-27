@@ -1,16 +1,19 @@
 ---
-status: "[ACTIVE]"
-title: "Meta „final” — unlock checklist (GTM G1)"
+status: "[PARKED]"
+title: "Meta „final” — unlock checklist (GTM G4 — po freeze)"
 gate: "META-PACK-01"
 updated: "2026-07-27"
 parent: "GTM-1PAGER.md"
+budget_freeze_until: "2026-08-06"
 ---
 
 # Meta „final” — unlock checklist
 
-**Parent SoT:** [GTM-1PAGER.md](./GTM-1PAGER.md) · **Paste NL:** [META-PACK-LEAN.md](./META-PACK-LEAN.md) · **Klik:** [META-CLICK-PATH.md](./META-CLICK-PATH.md).
+> **PARK do 2026-08-06** — Dowódca: **zero budżetu paid 10 dni.** **Nie publish Ads. Nie €10/d.**
 
-Powiedz **„final”** dopiero gdy poniższe jest świadomie OK. Potem: A1→A3 → publish €10/d → **7d hold ad set**.
+**Parent SoT:** [GTM-1PAGER.md](./GTM-1PAGER.md) · **Po freeze:** [META-PACK-LEAN.md](./META-PACK-LEAN.md) · [META-CLICK-PATH.md](./META-CLICK-PATH.md).
+
+Po **2026-08-06**: odhacz poniżej → **„final”** → A1→A3 → publish €10/d → **7d hold ad set**.
 
 ---
 
@@ -23,6 +26,7 @@ Powiedz **„final”** dopiero gdy poniższe jest świadomie OK. Potem: A1→A3
 | P3 | Events Manager: `InitiateCheckout` PASS | [x] | [L0-INSTRUMENTATION](./L0-INSTRUMENTATION.md) |
 | P4 | Events Manager: `Purchase` — **PARK świadomie** (Mollie) | [ ] | akceptujesz learning bez Purchase scale |
 | P5 | Custom Audience exclude klientów Wizard | [ ] | META-CLICK-PATH A1 |
+| P0 | **Budget unlock ≥ 2026-08-06** | [ ] | Dowódca GO na spend |
 
 ## Offer + creative
 
@@ -44,13 +48,13 @@ Powiedz **„final”** dopiero gdy poniższe jest świadomie OK. Potem: A1→A3
 
 ---
 
-## Po publish (tydzień 1)
+## Teraz (freeze) — zamiast paid
 
-| Kiedy | Akcja |
+| Akcja | Gdzie |
 |-------|-------|
-| Każdy lead | WhatsApp &lt;15 min + Wizard UTM |
-| PON | Scorecard: spend · leads · CPL · wizard_starts · Lead→Wizard · SLA |
-| d7 | Decyzja: HOLD / KILL / SCALE / FORM fix — **jedna** kratka |
-| Po d7 | Opcja v1.1: 2. kreacja lub organic Commander |
+| Deploy VPS TT-PUB kod | Agent GO |
+| FB organic HITL | Commander |
+| TT token + E2E (HITL) | [FREE-TIKTOK](./FREE-TIKTOK.md) S6–S7 |
+| Asset `MKT/YYYY-WW/` | Dowódca |
 
-**Kampania:** `zzp_branding_check_v1` · **€10/d** · camp ID `120254517992840360`
+**Kampania (po freeze):** `zzp_branding_check_v1` · **€10/d** · camp ID `120254517992840360`

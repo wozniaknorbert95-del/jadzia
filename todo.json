@@ -1,15 +1,17 @@
 {
   "project": "Jadzia-Core",
-  "last_updated": "2026-07-27 (GTM v2 expert · META-FINAL NEXT · stack sync 12 files)",
+  "last_updated": "2026-07-27 (deploy 4cf66fe LIVE · budget freeze do 2026-08-06 · €0 paid)",
   "status": "active",
-  "plan": "docs/handoffs/2026-07-27-GTM-1PAGER-CLOSE.md",
-  "active_gate": "META-FINAL — Dowódca checklist + „final” → publish €10/d (GTM G1)",
-  "active_plan": "docs/ops/marketing/META-FINAL-CHECKLIST.md",
+  "plan": "docs/handoffs/2026-07-27-DEPLOY-FREEZE-CLOSE.md",
+  "active_gate": "FREE-TIKTOK S6–S7 — token HITL + E2E (organic €0, post-deploy)",
+  "active_plan": "docs/ops/marketing/FREE-TIKTOK.md",
   "standing_go_closeout": false,
   "closeout_queue": [],
   "closeout_expires": "2026-08-01",
-  "next_human": "META-FINAL-CHECKLIST P+O+X → powiedz „final” → META-CLICK-PATH A1–A3 → publish €10/d → 7d hold → PON scorecard.",
-  "next_agent": "Observe Meta learning. TT-PUB E2E only after G1+G2+G3 gates. No Ads API. TT code 5/7 uncommitted.",
+  "next_human": "€0 paid do 2026-08-06. TT Developer token → VPS. Asset MKT/WW. FB organic Commander. Meta paid dopiero po freeze.",
+  "next_agent": "Support TT E2E after token. Organic cadence. Zero Ads. Prod tip 4cf66fe.",
+  "budget_freeze_until": "2026-08-06",
+  "budget_freeze_note": "Dowódca 2026-07-27: zero ad spend 10 dni",
   "agent_rule": "1-1-1. Evidence-first. Deploy tylko ze zgoda. Hard STOP: Gate D/Mollie/fake PASS/execute UI/6th Audyt tab. No Ads create without explicit GO.",
   "sprints": {
     "remediation": "completed",
@@ -1707,9 +1709,9 @@
       "task": "TT-PUB-01: Jadzia TikTok publisher parity FB (calendar→publish→tiktok_post_id)",
       "status": "blocked",
       "priority": "high",
-      "owner": "agent",
+      "owner": "human",
       "checklist": "docs/ops/marketing/FREE-TIKTOK.md",
-      "note": "2026-07-27 PARKED #2 per GTM. Code 5/7 uncommitted. E2E after Meta final + asset cadence. KPI = wizard_starts utm=tiktok."
+      "note": "2026-07-27 kod LIVE VPS 4cf66fe. Blocked on TIKTOK_ACCESS_TOKEN HITL (S6). Budget freeze — organic €0 tor. KPI wizard_starts utm=tiktok."
     },
     {
       "id": "GTM-1PAGER",
@@ -1724,12 +1726,22 @@
     {
       "id": "META-FINAL",
       "sprint": "Marketing OS — Meta paid",
-      "task": "Dowódca: META-FINAL-CHECKLIST → „final” → publish €10/d → 7d hold",
-      "status": "pending",
-      "priority": "critical",
+      "task": "Dowódca: META-FINAL-CHECKLIST → publish €10/d (after budget unlock)",
+      "status": "blocked",
+      "priority": "high",
       "owner": "human",
       "checklist": "docs/ops/marketing/META-FINAL-CHECKLIST.md",
-      "note": "2026-07-27 GTM G1. Blocks TT E2E until G1+learning started + asset cadence."
+      "note": "PARK do 2026-08-06 — Dowódca zero ad spend 10d. Unblock after budget GO."
+    },
+    {
+      "id": "DEPLOY-GTM-TT",
+      "sprint": "Marketing OS deploy",
+      "task": "VPS deploy 4cf66fe: TT-PUB code + GTM docs + health smoke",
+      "status": "completed",
+      "priority": "critical",
+      "owner": "agent",
+      "checklist": "docs/handoffs/2026-07-27-DEPLOY-FREEZE-CLOSE.md",
+      "note": "2026-07-27 LIVE tip 4cf66fe. Health degraded SSH pre-existing. output/secrets dirs restored."
     },
     {
       "id": "META-FREE-90-F0",

@@ -2,8 +2,9 @@
 status: "[ACTIVE]"
 title: "GTM 1-Pager — FlexGrafik SoT"
 gate: "GTM-1PAGER"
-updated: "2026-07-27 (expert review v2)"
-approved: "2026-07-27 — Dowódca decyzja A"
+updated: "2026-07-27 (budget freeze 10d · deploy · no paid Meta)"
+approved: "2026-07-27 — Dowódca: zero ad spend do 2026-08-06"
+budget_freeze_until: "2026-08-06"
 ---
 
 # GTM 1-Pager — FlexGrafik
@@ -15,14 +16,16 @@ approved: "2026-07-27 — Dowódca decyzja A"
 
 ## Executive summary
 
+> **BUDGET FREEZE (2026-07-27 → 2026-08-06):** **zero wydatków paid Meta.** Kampania €10/d **NIE startuje**. Tor = deploy + organic free (FB + TT).
+
 | | |
 |--|--|
 | **Rynek** | NL · ZZP bouw/techniek · bus = billboard 365 dni |
 | **Produkt** | ZZPackage via **Wizard-only** (≥ €199 checkout, typ. ~€218) |
 | **Wejście** | Gratis ZZP Branding Check (lead) → WA &lt;15 min → Wizard |
-| **Kanał #1 teraz** | **Meta paid learning** €10/d · Instant Form · **po** Dowódca „final” |
-| **Kanał #2** | TikTok organic — ten sam asset · **po** Meta publish + cadence |
-| **North Star** | `CPA_wizard` &lt; 40% marży brutto · TT success = `wizard_starts` utm=tiktok |
+| **Kanał #1 teraz (freeze)** | **FB organic** Commander HITL + **TT organic** prep/E2E — **$0** |
+| **Kanał paid** | Meta €10/d — **PARK do 2026-08-06** · potem META-FINAL |
+| **North Star** | `CPA_wizard` &lt; 40% marży · TT success = `wizard_starts` utm=tiktok |
 
 ---
 
@@ -86,26 +89,19 @@ Meta paid €10       / FB CTA              + check 1d            InitiateChecko
 
 ---
 
-## Channel strategy
+## Channel strategy (budget freeze aktywny)
 
-| Kanał | Rola | Status | KPI primary |
-|-------|------|--------|-------------|
-| **Meta paid** | #1 money · learning | HOLD → **„final”** → publish €10/d | leads · CPL · Lead→Wizard · wizard_starts |
-| **FB organic** | compound · trust · ten sam asset | FREE-META **9/10 CLOSED** | wizard_starts utm=meta organic · ER (DTL) |
-| **TikTok organic** | #2 dystrybucja · ten sam hook | TT-PUB **5/7** · E2E po Meta+cadence | **wizard_starts utm=tiktok** |
-| **Blog ZZP** | SEO compound (później) | PARK do triggerów | wizard_starts utm=blog |
-| **IG** | — | **out of scope** | — |
+> **2026-07-27 → 2026-08-06:** paid Meta **OFF**. Organic **$0** tory = priorytet.
 
-### Dlaczego Meta paid przed TikTok
+| Kanał | Rola (freeze) | Status | KPI primary |
+|-------|---------------|--------|-------------|
+| **Meta paid** | money path (później) | **PARK** · €0 do 2026-08-06 | — wyłączone |
+| **FB organic** | **#1 teraz** · compound | FREE-META **9/10** · Commander HITL | wizard_starts utm=meta organic |
+| **TikTok organic** | **#2 teraz** · ten sam hook | deploy → token/E2E | **wizard_starts utm=tiktok** |
+| **Blog ZZP** | SEO (później) | PARK | wizard_starts utm=blog |
+| **IG** | — | out of scope | — |
 
-| Meta paid | TikTok organic |
-|-----------|----------------|
-| L0 InitiateCheckout **PASS** | Brak token VPS · brak E2E publish |
-| Checklist + Instant Form gotowe | Kod 5/7 — nie prod-ready |
-| Unit economics + CPL/CPA framework | Views nie korelują z Wizard |
-| WA SLA już zdefiniowany | Aktywacja **po** Meta publish + 1× asset cadence |
-
-**FB organic:** utrzymanie równoległe (Commander HITL), nie zastępuje paid learning w tygodniu 1–2.
+**Po freeze:** Meta paid wraca jako #1 money · [META-FINAL-CHECKLIST](./META-FINAL-CHECKLIST.md).
 
 ---
 
@@ -116,17 +112,9 @@ Meta paid €10       / FB CTA              + check 1d            InitiateChecko
 `CPA_wizard < 0.40 × marża_brutto_ZZPackage` — [UNIT-ECONOMICS](./UNIT-ECONOMICS.md).  
 **Bez Purchase w pikselu → zakaz scale budżetu** (learning ≤ €10/d OK).
 
-### Meta paid — tygodniowo ([WEEKLY-SCORECARD](./WEEKLY-SCORECARD.md))
+### Meta paid — **PARK do 2026-08-06** (freeze)
 
-| Metryka | Definicja | Próg / akcja |
-|---------|-----------|--------------|
-| `spend` | EUR Ads Manager | cap learning **€10/d** |
-| `leads` | Instant Form unikalne | 0 / 5d → kill creative |
-| `CPL` | spend / leads | &gt; €25 → kill; &lt; €10 + L→W ≥30% → scale +€5/3d |
-| `wizard_starts` | UTM meta + paid + campaign | razem z Lead→Wizard |
-| `Lead→Wizard` | wizard_starts / leads | &lt; 10% → FORM/OFFER fix, nie scale |
-| `purchases` | Pixel (gdy LIVE) | 0 po 14d + spend ≥€100 → nie scale |
-| `SLA median` | min do pierwszego WA | cel **&lt;15 min** |
+Brak spend · brak scorecard paid · nie wypełniaj CPL/CPA w freeze.
 
 ### Meta organic
 
@@ -142,7 +130,7 @@ Meta paid €10       / FB CTA              + check 1d            InitiateChecko
 | **TT success** | **`wizard_starts` WHERE `utm_source=tiktok`** |
 | **TT leading** | first-comment / bio click → Wizard (verified: brak Website w profile) |
 | **Nie KPI** | views · followers · likes · reach bez wizard_starts |
-| **Cadence** | 2–3×/tydz. **po** TT-PUB E2E · cut `tt_hook_15s` |
+| **Cadence** | 2–3×/tydz. po TT-PUB E2E · cut `tt_hook_15s` — **primary KPI w freeze** |
 
 ### Anti-metrics (globalnie)
 
@@ -155,29 +143,25 @@ Followers · likes · reach · video views · „viral” bez `wizard_starts` / 
 | # | Gate | Owner | Done when |
 |---|------|-------|-----------|
 | **G0** | GTM lock | Agent | **DONE** — ten dokument |
-| **G1** | Meta **„final”** | Dowódca | Checklist 10 [META-PACK-LEAN](./META-PACK-LEAN.md) **lub** A1–A3 [META-CLICK-PATH](./META-CLICK-PATH.md) + publish €10/d |
-| **G2** | Learning hold | Dowódca | **7 dni** bez edycji ad setu · każdy lead → WA &lt;15 min |
-| **G3** | Asset cadence | Dowódca + Commander | `MKT/YYYY-WW/` master live · FB organic HITL |
-| **G4** | TT-PUB E2E | Dowódca + Agent | [FREE-TIKTOK](./FREE-TIKTOK.md) S6 token + S7 calendar publish |
-| **G5** | TT compound | Agent | TT-INS-01 · TT-CMT-01 (po G4) |
+| **G1** | Meta **„final”** | Dowódca | **PARK do 2026-08-06** — budget freeze · zero paid |
+| **G1b** | **Deploy VPS** + TT-PUB kod | Agent | tip `4cf66fe+` · health OK |
+| **G2** | Asset cadence organic | Dowódca + Commander | `MKT/YYYY-WW/` · FB + TT hook |
+| **G3** | TT-PUB E2E | Dowódca + Agent | token + calendar publish (S6–S7) |
+| **G4** | Meta paid publish | Dowódca | **po 2026-08-06** · checklist + €10/d |
 
 ### Co znaczy „final” (unlock Meta publish)
 
-Dowódca mówi **„final”** **dopiero gdy**:
+**PARK do 2026-08-06** — Dowódca zablokował paid (brak budżetu 10 dni). **Nie publish Ads.**
 
-1. [ ] Checklist 10 w META-PACK-LEAN odhaczony (min. #1–4 L0, #6–10 form+creative+publish plan)  
-2. [ ] Świadoma decyzja: Purchase PARK OK na learning phase  
-3. [ ] Gotowy real bus Reel w `MKT/YYYY-WW/` (#8) — **fallback static OK** per META-CLICK-PATH  
+Po **2026-08-06** — odhacz [META-FINAL-CHECKLIST](./META-FINAL-CHECKLIST.md) → powiedz **„final”** → A1–A3 → €10/d.
 
-Po „final”: wykonaj [META-CLICK-PATH](./META-CLICK-PATH.md) A1→A3 · **7d hold** · PON scorecard.
+### TT activation gate (kiedy organic TT aktywny)
 
-### TT activation gate (kiedy #2 staje się aktywny)
+- [ ] VPS deploy TT-PUB kod (G1b)  
+- [ ] G2: min. 1× master asset w `MKT/YYYY-WW/`  
+- [ ] Dowódca GO: `TIKTOK_ACCESS_TOKEN` + verified URL (S6) → E2E (S7)  
 
-**Wszystkie:**
-
-- [ ] G1+G2: Meta opublikowane **lub** min. 1 tydzień learning rozpoczęty  
-- [ ] G3: min. 1× master asset w `MKT/YYYY-WW/`  
-- [ ] Dowódca GO na VPS token + deploy TT-PUB  
+**Nie wymaga Meta paid** — TT organic = $0 tor równoległy w freeze.
 
 ---
 
@@ -185,7 +169,8 @@ Po „final”: wykonaj [META-CLICK-PATH](./META-CLICK-PATH.md) A1→A3 · **7d 
 
 | Faza | Budżet | Reguła |
 |------|--------|--------|
-| Learning v1 | **€10/d** CBO | 1 kampania · 1 ad set · 1 ad (`reel_a`) |
+| **Freeze (do 2026-08-06)** | **€0 paid** | Ads OFF · organic only |
+| Learning v1 (po freeze) | **€10/d** CBO | 1 kampania · 1 ad set · 1 ad |
 | Scale (po proof) | +€5 / 3 dni | tylko gdy CPL &lt;€10 **i** Lead→Wizard ≥30% |
 | Kill | — | CPL &gt;€25 **lub** 0 leadów / 5d **lub** Lead→Wizard &lt;10% |
 | Ceiling bez Purchase | ≤ €10/d | nie podnosimy bez Purchase w Events Manager |
@@ -216,4 +201,5 @@ Po „final”: wykonaj [META-CLICK-PATH](./META-CLICK-PATH.md) A1→A3 · **7d 
 
 ## STOP (twardy)
 
-Ads API create · scale bez „final” · TikTok Studio spam bez E2E · fake PASS · deploy VPS bez GO (Zasada 11) · secrets w repo.
+- Publish / scale paid Meta w freeze (do 2026-08-06)  
+- Ads API create · TikTok Studio spam bez E2E · fake PASS · secrets w repo  
