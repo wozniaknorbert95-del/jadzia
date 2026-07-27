@@ -1448,6 +1448,656 @@ bindNavButtons("#main-nav .nav-btn");
 bindNavButtons("#bottom-nav .nav-btn");
 bindSystemMapHops();
 
+/* ===== VF-VHQ-W1-SHELL (minimal shell state; no new APIs) ===== */
+const VHQ_ROOMS = {
+  "mission-control": {
+    label: "Mission Control",
+    floor: "P3",
+    purpose: "Company-wide priorities, alerts, approvals and system health",
+    status: "LIVE",
+    evidence: "EV-W2-001",
+    lastVerified: "2026-07-27T14:22:43Z",
+    owner: "Ops/COI",
+    sotLabel: "Commander Home priorities / queue",
+    sotHref: "#priorities",
+    limitation: "Queue payload needs Commander session JWT.",
+    mvp: true,
+    action: { type: "goto-home", target: "#priorities", label: "Open priorities / queue" },
+  },
+  "approval-vault": {
+    label: "Approval Vault",
+    floor: "P3",
+    purpose: "Pending human approvals and audit trail",
+    status: "PARTIAL",
+    evidence: "EV-W2-009",
+    lastVerified: "2026-07-27T14:24:30Z",
+    owner: "Dowódca / Ops",
+    sotLabel: "Commander Audyt (secondary)",
+    sotHref: null,
+    limitation:
+      "Path Settings→Audyt verified PARTIAL; hash-chain detail needs authenticated session. No autonomous finance.",
+    mvp: true,
+    action: { type: "view", target: "audit", label: "Open Audyt" },
+    extraHtml:
+      '<p class="hint">L0–L4 policy applies. L3/L4 require explicit Founder GO. No Mollie/Ads from this room.</p>',
+  },
+  "ai-agent-health": {
+    label: "Agent Operations",
+    floor: "P3",
+    purpose: "Agent / worker health overview (System Health / AI Health sub-area)",
+    status: "DEGRADED",
+    evidence: "EV-W2-011",
+    lastVerified: "2026-07-27T14:22:43Z",
+    owner: "Ops/COI",
+    sotLabel: "Worker health · Design Agent health · Agent OS · VCMS",
+    sotHref: null,
+    limitation:
+      "SSH DEGRADED is pre-existing (INC-SSH-RECOVERY-00). OS/VCMS post-auth remain PARTIAL.",
+    mvp: true,
+    action: { type: "view", target: "agents", label: "Open Agenci tab" },
+    extraHtml:
+      "<p><strong>Sub-area: System Health / AI Health</strong></p>" +
+      "<ul>" +
+      "<li>[DEGRADED] Worker SSH · ssh_connection=error · EV-W2-011 · INC-SSH-RECOVERY-00</li>" +
+      '<li>[LIVE] Design Agent technical probe · EV-W2-006 — NOT a Production desk · <a href="/api/v1/design-agent/health" target="_blank" rel="noopener noreferrer">/api/v1/design-agent/health</a></li>' +
+      '<li>[PARTIAL] Agent OS · <a href="https://os.flexgrafik.nl" target="_blank" rel="noopener noreferrer">os.flexgrafik.nl</a></li>' +
+      '<li>[PARTIAL] VCMS · <a href="https://cmd.flexgrafik.nl" target="_blank" rel="noopener noreferrer">cmd.flexgrafik.nl</a></li>' +
+      "</ul>",
+  },
+  boardroom: {
+    label: "Boardroom",
+    floor: "P3",
+    purpose: "Strategy alignment to master-plan / scorecard",
+    status: "PARTIAL",
+    evidence: null,
+    lastVerified: null,
+    owner: "Dowódca",
+    sotLabel: "flexgrafik-meta master-plan (docs)",
+    sotHref: null,
+    limitation: "Docs LIVE; no interactive board UI in W1.",
+    mvp: false,
+  },
+  "analytics-finance": {
+    label: "Finance / Analytics",
+    floor: "P2",
+    purpose: "Revenue / margin visibility via existing Analityka tab",
+    status: "UNVERIFIED",
+    evidence: "EV-W2-008",
+    lastVerified: "2026-07-27T14:24:00Z",
+    owner: "Finance/Ops",
+    sotLabel: "Commander Analityka tab",
+    sotHref: null,
+    limitation: "Finance data UNVERIFIED. No numeric KPI in VHQ. Mollie/Purchase = L4 separate GO.",
+    mvp: false,
+    action: { type: "view", target: "analytics", label: "Open Analityka tab" },
+  },
+  "compliance-audit": {
+    label: "Compliance / Audit",
+    floor: "P2",
+    purpose: "Hard STOP list, parks, audit chain",
+    status: "PARTIAL",
+    evidence: "EV-W2-009",
+    lastVerified: "2026-07-27T14:24:30Z",
+    owner: "Ops/Security",
+    sotLabel: "Audyt / parks",
+    sotHref: null,
+    limitation: "Path OK; chain body needs session.",
+    mvp: false,
+    action: { type: "view", target: "audit", label: "Open Audyt" },
+  },
+  "knowledge-library": {
+    label: "Knowledge Library",
+    floor: "P2",
+    purpose: "Canonical docs index",
+    status: "UNVERIFIED",
+    evidence: null,
+    lastVerified: null,
+    owner: "Govern",
+    sotLabel: "VCMS docs (Basic Auth)",
+    sotHref: "https://cmd.flexgrafik.nl/docs/",
+    limitation: "Docs body unseen in W2 window (Basic Auth).",
+    mvp: false,
+    action: {
+      type: "external",
+      href: "https://cmd.flexgrafik.nl/docs/",
+      label: "Open Knowledge docs hop",
+    },
+  },
+  "data-ai-lab": {
+    label: "Data & AI Lab",
+    floor: "P2",
+    purpose: "MB propose / experiments — no Ads execute",
+    status: "PARTIAL",
+    evidence: null,
+    lastVerified: null,
+    owner: "Marketing/Ops",
+    sotLabel: "Marketing Decision Rail",
+    sotHref: null,
+    limitation: "Propose-only. Campaign state UNVERIFIED. No Ads from VHQ.",
+    mvp: false,
+    action: { type: "view", target: "marketing", label: "Open Marketing tab" },
+  },
+  "vcms-os-zone": {
+    label: "VCMS / Agent OS zone",
+    floor: "P2",
+    purpose: "Govern + Build control hops (separate apps)",
+    status: "PARTIAL",
+    evidence: null,
+    lastVerified: null,
+    owner: "Govern / Build",
+    sotLabel: "cmd.flexgrafik.nl · os.flexgrafik.nl",
+    sotHref: "https://cmd.flexgrafik.nl",
+    limitation: "Auth challenge OK; post-auth destination PARTIAL.",
+    mvp: false,
+    extraHtml:
+      '<p><a class="buttonish" href="https://cmd.flexgrafik.nl" target="_blank" rel="noopener noreferrer">Open VCMS</a> ' +
+      '<a class="buttonish" href="https://os.flexgrafik.nl" target="_blank" rel="noopener noreferrer">Open Agent OS</a></p>',
+  },
+  reception: {
+    label: "Reception",
+    floor: "P1",
+    purpose: "First contact — widget / Telegram",
+    status: "PLANNED",
+    evidence: null,
+    lastVerified: null,
+    owner: "Ops/Sales",
+    sotLabel: "none in VHQ shell",
+    sotHref: null,
+    limitation: "Capability exists in Jadzia; HQ Work View not built in W1.",
+    mvp: false,
+  },
+  "sales-room": {
+    label: "Sales Room",
+    floor: "P1",
+    purpose: "Hot leads and sales CTAs",
+    status: "LIVE",
+    evidence: "EV-W2-007",
+    lastVerified: "2026-07-27T14:23:30Z",
+    owner: "Sales/Ops",
+    sotLabel: "Commander queue #queue-list",
+    sotHref: "#queue-list",
+    limitation: "No invented CRM pipeline. JWT session required for live tickets.",
+    mvp: true,
+    action: { type: "goto-home", target: "#queue-list", label: "Open Sales queue" },
+  },
+  "wizard-quote": {
+    label: "Wizard / Quote Room",
+    floor: "P1",
+    purpose: "Cash path — ZZP branding Wizard (min EUR 199)",
+    status: "LIVE",
+    evidence: "EV-W2-005",
+    lastVerified: "2026-07-27T14:22:45Z",
+    owner: "Sales/Ops",
+    sotLabel: "https://zzpackage.flexgrafik.nl/wizard/",
+    sotHref: "https://zzpackage.flexgrafik.nl/wizard/",
+    limitation:
+      "No fake conversion KPI. Order Desk handoff PARKED. Mollie LIVE = L4 separate GO.",
+    mvp: true,
+    action: {
+      type: "external",
+      href: "https://zzpackage.flexgrafik.nl/wizard/",
+      label: "Open Wizard",
+    },
+    extraHtml:
+      '<p class="hint">Future handoff → Order Desk [PARKED]: operational desk not implemented (EV-W2-010).</p>',
+  },
+  "marketing-studio": {
+    label: "Marketing Studio",
+    floor: "P1",
+    purpose: "Organic HITL surface; paid Ads frozen",
+    status: "UNVERIFIED",
+    evidence: "EV-W3-001",
+    lastVerified: "2026-07-27T15:13:35Z",
+    owner: "Marketing/Ops",
+    sotLabel: "Marketing tab (observe)",
+    sotHref: null,
+    limitation: "Campaign state not verified. No Ads execute from VHQ.",
+    mvp: false,
+    action: { type: "view", target: "marketing", label: "Open Marketing tab (observe)" },
+  },
+  "client-support": {
+    label: "Client Support",
+    floor: "P1",
+    purpose: "Post-sale CS follow-up",
+    status: "PLANNED",
+    evidence: null,
+    lastVerified: null,
+    owner: "Ops/CS",
+    sotLabel: "Home CS form (outside VHQ Work View)",
+    sotHref: null,
+    limitation: "HQ room shell PLANNED in W1.",
+    mvp: false,
+  },
+  "design-studio": {
+    label: "Design Studio",
+    floor: "P1",
+    purpose: "Mockups / briefs before price",
+    status: "PLANNED",
+    evidence: "EV-W2-006",
+    lastVerified: "2026-07-27T14:22:45Z",
+    owner: "Design/Ops",
+    sotLabel: "DA health / Wizard DA",
+    sotHref: "/api/v1/design-agent/health",
+    limitation: "Technical probe LIVE ≠ Production desk. Room Work View PLANNED.",
+    mvp: false,
+  },
+  "order-desk": {
+    label: "Order Desk",
+    floor: "P0",
+    purpose: "Orders operational desk",
+    status: "PARKED",
+    evidence: "EV-W2-010",
+    lastVerified: "2026-07-27T14:26:00Z",
+    owner: "Ops",
+    sotLabel: "none — desk not implemented",
+    sotHref: null,
+    limitation:
+      "Order operational desk is not implemented. Historical INT-002 #3149 ≠ live desk. Dependency: future ops SoT + VF-VHQ-W4.",
+    mvp: false,
+    parkedHeadline: "Order operational desk is not implemented.",
+  },
+  "production-control": {
+    label: "Production Control",
+    floor: "P0",
+    purpose: "Partner production status",
+    status: "PARKED",
+    evidence: null,
+    lastVerified: null,
+    owner: "Ops",
+    sotLabel: "none",
+    sotHref: null,
+    limitation: "No production dashboard in Commander. External Erka HITL only.",
+    mvp: false,
+  },
+  "preflight-quality": {
+    label: "Preflight / Quality",
+    floor: "P0",
+    purpose: "Media/design quality gate",
+    status: "PLANNED",
+    evidence: null,
+    lastVerified: null,
+    owner: "Ops/Design",
+    sotLabel: "none in VHQ",
+    sotHref: null,
+    limitation: "PLANNED shell only in W1.",
+    mvp: false,
+  },
+  "dispatch-returns": {
+    label: "Dispatch / Returns",
+    floor: "P0",
+    purpose: "Fulfilment / returns tracking",
+    status: "PARKED",
+    evidence: null,
+    lastVerified: null,
+    owner: "Ops",
+    sotLabel: "none",
+    sotHref: null,
+    limitation: "VF-PARK-DISPATCH — no tracker SoT.",
+    mvp: false,
+  },
+  "supplier-dock": {
+    label: "Supplier Dock",
+    floor: "MAG",
+    purpose: "Procurement / RFQ",
+    status: "PARKED",
+    evidence: null,
+    lastVerified: null,
+    owner: "Dowódca",
+    sotLabel: "none",
+    sotHref: null,
+    limitation: "VF-PARK-PROCUREMENT — ROADMAP.",
+    mvp: false,
+  },
+  "asset-warehouse": {
+    label: "Asset Warehouse",
+    floor: "MAG",
+    purpose: "Marketing asset inventory",
+    status: "PLANNED",
+    evidence: null,
+    lastVerified: null,
+    owner: "Marketing/Dowódca",
+    sotLabel: "GDrive MKT WW (HITL)",
+    sotHref: null,
+    limitation: "MKT-ASSET-00 parked by Founder. No MKT edits from VHQ.",
+    mvp: false,
+  },
+  "partner-production-network": {
+    label: "Partner Production Network",
+    floor: "MAG",
+    purpose: "External production partners",
+    status: "PLANNED",
+    evidence: null,
+    lastVerified: null,
+    owner: "Ops",
+    sotLabel: "none",
+    sotHref: null,
+    limitation: "PLANNED — no partner SoT in Jadzia UI.",
+    mvp: false,
+  },
+};
+
+let vhqOpen = false;
+let vhqLastFocus = null;
+let vhqCurrentRoom = "mission-control";
+let vhqCurrentFloor = "P3";
+let vhqFocusinGuard = null;
+
+function vhqEscHtml(s) {
+  return String(s == null ? "" : s)
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;");
+}
+
+function vhqSetFloor(floor) {
+  vhqCurrentFloor = floor;
+  document.querySelectorAll(".vhq-floor-band").forEach((band) => {
+    band.hidden = band.dataset.floor !== floor;
+  });
+  document.querySelectorAll(".vhq-floor-btn").forEach((btn) => {
+    const on = btn.dataset.floor === floor;
+    btn.classList.toggle("active", on);
+    btn.setAttribute("aria-selected", on ? "true" : "false");
+  });
+}
+
+function vhqClearRoomHighlights() {
+  document.querySelectorAll(".vhq-room").forEach((btn) => {
+    btn.removeAttribute("aria-current");
+  });
+}
+
+function vhqShowFloorBrowse(floor) {
+  vhqSetFloor(floor);
+  vhqCurrentRoom = null;
+  vhqClearRoomHighlights();
+
+  const loc = document.getElementById("vhq-location");
+  if (loc) loc.textContent = `HQ › ${floor} › select a room`;
+
+  const teleport = document.getElementById("vhq-teleport");
+  if (teleport) teleport.value = "";
+
+  const title = document.getElementById("vhq-panel-title");
+  const purpose = document.getElementById("vhq-panel-purpose");
+  const statusEl = document.getElementById("vhq-panel-status");
+  const evidence = document.getElementById("vhq-panel-evidence");
+  const owner = document.getElementById("vhq-panel-owner");
+  const sot = document.getElementById("vhq-panel-sot");
+  const limit = document.getElementById("vhq-panel-limit");
+  const extra = document.getElementById("vhq-panel-extra");
+  const actions = document.getElementById("vhq-panel-actions");
+
+  if (title) title.textContent = `Floor ${floor}`;
+  if (purpose) purpose.textContent = "Select a room on this floor.";
+  if (statusEl) statusEl.textContent = "";
+  if (evidence) evidence.textContent = "";
+  if (owner) owner.textContent = "";
+  if (sot) sot.textContent = "";
+  if (limit) limit.textContent = "";
+  if (extra) extra.innerHTML = "";
+  if (actions) actions.innerHTML = "";
+}
+
+/** Floor filter only — never auto-opens a room. */
+function vhqSelectFloor(floor) {
+  const current = vhqCurrentRoom ? VHQ_ROOMS[vhqCurrentRoom] : null;
+  if (current && current.floor === floor) {
+    vhqSetFloor(floor);
+    return;
+  }
+  vhqShowFloorBrowse(floor);
+}
+
+function vhqRenderRoom(roomId) {
+  const room = VHQ_ROOMS[roomId];
+  if (!room) return;
+  vhqCurrentRoom = roomId;
+  vhqSetFloor(room.floor);
+
+  const loc = document.getElementById("vhq-location");
+  if (loc) loc.textContent = `HQ › ${room.floor} › ${room.label}`;
+
+  const teleport = document.getElementById("vhq-teleport");
+  if (teleport && teleport.value !== roomId) teleport.value = roomId;
+
+  document.querySelectorAll(".vhq-room").forEach((btn) => {
+    if (btn.dataset.room === roomId) btn.setAttribute("aria-current", "true");
+    else btn.removeAttribute("aria-current");
+  });
+
+  const title = document.getElementById("vhq-panel-title");
+  const purpose = document.getElementById("vhq-panel-purpose");
+  const statusEl = document.getElementById("vhq-panel-status");
+  const evidence = document.getElementById("vhq-panel-evidence");
+  const owner = document.getElementById("vhq-panel-owner");
+  const sot = document.getElementById("vhq-panel-sot");
+  const limit = document.getElementById("vhq-panel-limit");
+  const extra = document.getElementById("vhq-panel-extra");
+  const actions = document.getElementById("vhq-panel-actions");
+
+  if (title) title.textContent = room.label;
+  if (purpose) purpose.textContent = room.purpose || "";
+  if (statusEl) {
+    const parkedNote = room.parkedHeadline ? ` — ${room.parkedHeadline}` : "";
+    statusEl.textContent = `[${room.status}]${parkedNote}`;
+  }
+  if (evidence) {
+    const ev = room.evidence ? `Evidence: ${room.evidence}` : "Evidence: —";
+    const lv = room.lastVerified
+      ? ` · last_verified: ${room.lastVerified}`
+      : " · last_verified: insufficient_data";
+    evidence.textContent = ev + lv;
+  }
+  if (owner) owner.textContent = `Owner: ${room.owner || "—"}`;
+  if (sot) {
+    if (room.sotHref && (/^https?:/i.test(room.sotHref) || room.sotHref.startsWith("/"))) {
+      sot.innerHTML = `SoT: <a href="${vhqEscHtml(room.sotHref)}" target="_blank" rel="noopener noreferrer">${vhqEscHtml(
+        room.sotLabel || room.sotHref
+      )}</a>`;
+    } else if (room.sotHref && room.sotHref.startsWith("#")) {
+      sot.textContent = `SoT: ${room.sotLabel || room.sotHref} (in Commander)`;
+    } else {
+      sot.textContent = `SoT: ${room.sotLabel || "none"}`;
+    }
+  }
+  if (limit) limit.textContent = `Limitation: ${room.limitation || "—"}`;
+  if (extra) extra.innerHTML = room.extraHtml || "";
+
+  if (actions) {
+    actions.innerHTML = "";
+    if (room.action) {
+      if (room.action.type === "external") {
+        const a = document.createElement("a");
+        a.className = "buttonish primary";
+        a.href = room.action.href;
+        a.target = "_blank";
+        a.rel = "noopener noreferrer";
+        a.textContent = room.action.label;
+        actions.appendChild(a);
+      } else if (room.action.type === "view" || room.action.type === "goto-home") {
+        const b = document.createElement("button");
+        b.type = "button";
+        b.className = "primary";
+        b.textContent = room.action.label;
+        b.addEventListener("click", () => vhqRunAction(room.action));
+        actions.appendChild(b);
+      }
+    } else if (room.status === "PARKED" || room.status === "PLANNED" || room.status === "UNVERIFIED") {
+      const p = document.createElement("p");
+      p.className = "hint";
+      p.textContent =
+        room.status === "PARKED"
+          ? "No primary action — room intentionally PARKED."
+          : room.status === "PLANNED"
+            ? "No primary action — room PLANNED (shell only)."
+            : "No verified primary action — status UNVERIFIED.";
+      actions.appendChild(p);
+    }
+  }
+}
+
+function vhqFocusableNodes() {
+  const shell = document.getElementById("vhq-shell");
+  if (!shell || shell.hidden) return [];
+  const selector =
+    'a[href], button:not([disabled]), select:not([disabled]), textarea:not([disabled]), input:not([disabled]):not([type="hidden"]), [tabindex]:not([tabindex="-1"])';
+  return Array.from(shell.querySelectorAll(selector)).filter((el) => {
+    if (el.closest("[hidden]")) return false;
+    if (el.getAttribute("aria-hidden") === "true") return false;
+    const style = window.getComputedStyle(el);
+    if (style.visibility === "hidden" || style.display === "none") return false;
+    return true;
+  });
+}
+
+function vhqSetBackdropInert(on) {
+  document.querySelectorAll("body > *:not(#vhq-shell):not(#toast)").forEach((el) => {
+    if (on) {
+      el.setAttribute("inert", "");
+      el.setAttribute("aria-hidden", "true");
+      el.classList.add("vhq-backdrop-inert");
+    } else {
+      el.removeAttribute("inert");
+      el.removeAttribute("aria-hidden");
+      el.classList.remove("vhq-backdrop-inert");
+    }
+  });
+}
+
+function vhqDetachFocusGuard() {
+  if (vhqFocusinGuard) {
+    document.removeEventListener("focusin", vhqFocusinGuard, true);
+    vhqFocusinGuard = null;
+  }
+}
+
+function vhqAttachFocusGuard() {
+  vhqDetachFocusGuard();
+  vhqFocusinGuard = (e) => {
+    if (!vhqOpen) return;
+    const shell = document.getElementById("vhq-shell");
+    if (!shell || shell.hidden) return;
+    if (shell.contains(e.target)) return;
+    e.preventDefault();
+    const nodes = vhqFocusableNodes();
+    const fallback = document.getElementById("vhq-close") || nodes[0];
+    if (fallback) fallback.focus();
+  };
+  document.addEventListener("focusin", vhqFocusinGuard, true);
+}
+
+function vhqTrapTab(e) {
+  if (e.key !== "Tab" || !vhqOpen) return;
+  const shell = document.getElementById("vhq-shell");
+  if (!shell || shell.hidden) return;
+  const nodes = vhqFocusableNodes();
+  if (!nodes.length) {
+    e.preventDefault();
+    return;
+  }
+  const first = nodes[0];
+  const last = nodes[nodes.length - 1];
+  const active = document.activeElement;
+  if (e.shiftKey) {
+    if (active === first || !shell.contains(active)) {
+      e.preventDefault();
+      last.focus();
+    }
+  } else if (active === last || !shell.contains(active)) {
+    e.preventDefault();
+    first.focus();
+  }
+}
+
+function vhqClose() {
+  const shell = document.getElementById("vhq-shell");
+  if (!shell || shell.hidden) return;
+  shell.hidden = true;
+  document.body.classList.remove("vhq-open");
+  vhqOpen = false;
+  vhqDetachFocusGuard();
+  vhqSetBackdropInert(false);
+  showView("home");
+  const enterBtn = document.getElementById("vhq-enter");
+  if (enterBtn && typeof enterBtn.focus === "function") {
+    enterBtn.focus();
+  } else if (vhqLastFocus && typeof vhqLastFocus.focus === "function") {
+    vhqLastFocus.focus();
+  }
+}
+
+function vhqOpenShell(roomId) {
+  const shell = document.getElementById("vhq-shell");
+  if (!shell) return;
+  vhqLastFocus = document.getElementById("vhq-enter") || document.activeElement;
+  shell.hidden = false;
+  document.body.classList.add("vhq-open");
+  vhqOpen = true;
+  vhqSetBackdropInert(true);
+  vhqRenderRoom(roomId || "mission-control");
+  vhqAttachFocusGuard();
+  const closeBtn = document.getElementById("vhq-close");
+  if (closeBtn) closeBtn.focus();
+}
+
+function vhqRunAction(action) {
+  if (!action) return;
+  if (action.type === "external") {
+    window.open(action.href, "_blank", "noopener,noreferrer");
+    return;
+  }
+  if (action.type === "view") {
+    vhqClose();
+    showView(action.target);
+    return;
+  }
+  if (action.type === "goto-home") {
+    vhqClose();
+    showView("home");
+    const el = document.querySelector(action.target);
+    if (el) {
+      el.scrollIntoView({ behavior: "smooth", block: "start" });
+    }
+  }
+}
+
+function bindVhqShell() {
+  const enter = document.getElementById("vhq-enter");
+  const shell = document.getElementById("vhq-shell");
+  if (!enter || !shell) return;
+
+  enter.addEventListener("click", () => vhqOpenShell("mission-control"));
+  document.getElementById("vhq-close")?.addEventListener("click", vhqClose);
+  document.getElementById("vhq-to-mc")?.addEventListener("click", () => {
+    vhqRenderRoom("mission-control");
+  });
+  document.getElementById("vhq-teleport")?.addEventListener("change", (e) => {
+    if (!e.target.value) return;
+    vhqRenderRoom(e.target.value);
+  });
+  document.querySelectorAll(".vhq-floor-btn").forEach((btn) => {
+    btn.addEventListener("click", () => {
+      vhqSelectFloor(btn.dataset.floor);
+    });
+  });
+  document.querySelectorAll(".vhq-room").forEach((btn) => {
+    btn.addEventListener("click", () => vhqRenderRoom(btn.dataset.room));
+  });
+  document.addEventListener("keydown", (e) => {
+    if (!vhqOpen) return;
+    if (e.key === "Escape") {
+      e.preventDefault();
+      vhqClose();
+      return;
+    }
+    vhqTrapTab(e);
+  });
+}
+
+bindVhqShell();
+
 const settingsToAudit = document.getElementById("settings-to-audit");
 if (settingsToAudit) {
   settingsToAudit.onclick = async () => {
