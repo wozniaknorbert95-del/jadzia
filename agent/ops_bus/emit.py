@@ -7,7 +7,7 @@ import logging
 import uuid
 from dataclasses import dataclass
 from datetime import datetime, timezone
-from typing import Any, Dict, Optional
+from typing import Any, Dict, List, Optional
 
 from agent.ops_bus.catalog import (
     APPROVAL_LEVELS,
@@ -32,6 +32,7 @@ class EmitResult:
     error: Optional[str] = None
     approval_needed_id: Optional[str] = None
     approval_state: Optional[str] = None
+    synced_event_ids: Optional[List[str]] = None
 
 
 def _utc_now() -> str:
@@ -294,6 +295,28 @@ def _append_bus_audit(
     )
 
 
+def _l2_peer_event_ids(row: Dict[str, Any]) -> List[str]:
+    """DI-S3: companion ↔ parent pairs that must stay consistent."""
+    from agent.db import db_ops_bus_get_by_source
+
+    peers: List[str] = []
+    event_id = str(row.get("event_id") or "")
+    event_type = row.get("event_type") or ""
+    payload = row.get("payload") or {}
+    if event_type == "approval_needed":
+        parent_id = payload.get("parent_event_id")
+        if parent_id:
+            peers.append(str(parent_id))
+        return peers
+    # Parent L2 executable → companion source_event_id convention
+    companion = db_ops_bus_get_by_source(
+        "approval_needed", f"approval_needed:{event_id}"
+    )
+    if companion and companion.get("event_id"):
+        peers.append(str(companion["event_id"]))
+    return peers
+
+
 def set_approval_state(
     *,
     event_id: str,
@@ -301,7 +324,7 @@ def set_approval_state(
     actor_id: str,
     actor_role: str,
 ) -> EmitResult:
-    """L2-only state flip; no side effects (no deploy/publish/charge)."""
+    """L2-only state flip; syncs parent↔companion; no deploy/publish/charge."""
     if new_state not in ("approved", "rejected"):
         return EmitResult(ok=False, error="invalid_approval_state")
     if not is_ops_bus_enabled():
@@ -336,4 +359,40 @@ def set_approval_state(
         after={"approval_state": new_state, "approval_level": level},
         risk_tier="elevated",
     )
-    return EmitResult(ok=True, event_id=event_id, approval_state=new_state)
+
+    synced: List[str] = []
+    for peer_id in _l2_peer_event_ids(row):
+        if peer_id == event_id:
+            continue
+        peer = db_ops_bus_get_by_event_id(peer_id)
+        if not peer:
+            continue
+        if (peer.get("approval_level") or "L0") != "L2":
+            continue
+        if peer.get("approval_state") != "pending":
+            continue
+        if not db_ops_bus_set_approval_state(peer_id, new_state):
+            continue
+        synced.append(peer_id)
+        append_audit(
+            actor_id=actor_id,
+            actor_role=actor_role,
+            action="ops_bus.approval_state_sync",
+            source="ops_bus",
+            target_type="ops_bus_event",
+            target_id=peer_id,
+            before={"approval_state": "pending", "approval_level": "L2"},
+            after={
+                "approval_state": new_state,
+                "approval_level": "L2",
+                "synced_from": event_id,
+            },
+            risk_tier="elevated",
+        )
+
+    return EmitResult(
+        ok=True,
+        event_id=event_id,
+        approval_state=new_state,
+        synced_event_ids=synced or None,
+    )

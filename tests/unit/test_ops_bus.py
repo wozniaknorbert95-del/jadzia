@@ -332,14 +332,25 @@ def test_ops_bus_api_list_ingest_approval(client, temp_db):
             approval_level="L2",
             actor_id="test",
         )
-        assert l2.ok and l2.event_id
+        assert l2.ok and l2.event_id and l2.approval_needed_id
         appr = client.post(
             f"/api/v1/commander/ops-bus/events/{l2.event_id}/approval",
             headers=_auth_headers(),
             json={"state": "approved"},
         )
         assert appr.status_code == 200
-        assert appr.json()["side_effects"] is False
+        body_appr = appr.json()
+        assert body_appr["side_effects"] is False
+        assert l2.approval_needed_id in (body_appr.get("synced_event_ids") or [])
+        # DI-S3: companion leaves pending vault after parent approve
+        pending = client.get(
+            "/api/v1/commander/ops-bus/events",
+            headers=_auth_headers(),
+            params={"approval_state": "pending", "type": "approval_needed"},
+        )
+        assert l2.approval_needed_id not in {
+            e["event_id"] for e in pending.json()["events"]
+        }
 
         # L3 row inserted directly → 403 on approve
         from agent.db import db_ops_bus_insert
@@ -431,7 +442,9 @@ def test_ops_bus_vault_pending_filter_and_l2_companion_approve(client, temp_db):
             json={"state": "approved"},
         )
         assert appr.status_code == 200
-        assert appr.json()["side_effects"] is False
+        body_appr = appr.json()
+        assert body_appr["side_effects"] is False
+        assert parent.event_id in (body_appr.get("synced_event_ids") or [])
 
         after = client.get(
             "/api/v1/commander/ops-bus/events",
@@ -442,6 +455,12 @@ def test_ops_bus_vault_pending_filter_and_l2_companion_approve(client, temp_db):
             e["event_id"] for e in after.json()["events"]
         }
 
+    from agent.db import db_ops_bus_get_by_event_id
+
     companions = db_ops_bus_list(event_type="approval_needed", limit=20)
     row = next(c for c in companions if c["event_id"] == parent.approval_needed_id)
     assert row["approval_state"] == "approved"
+    # DI-S3: parent must not stay pending after companion approve
+    parent_row = db_ops_bus_get_by_event_id(parent.event_id)
+    assert parent_row is not None
+    assert parent_row["approval_state"] == "approved"

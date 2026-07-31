@@ -3072,11 +3072,16 @@ async function vhqVaultDecide(eventId, state) {
     `${label} this L2 Ops Bus approval? State flip only — no deploy, publish, Ads, or Mollie.`
   );
   if (!confirmed || !confirmed.ok) return;
-  await api(`/api/v1/commander/ops-bus/events/${encodeURIComponent(eventId)}/approval`, {
+  const res = await api(`/api/v1/commander/ops-bus/events/${encodeURIComponent(eventId)}/approval`, {
     method: "POST",
     body: { state },
   });
-  toast(`L2 ${state} · EV-W6-00${state === "approved" ? "2" : "3"} · no side effects`, "ok");
+  const synced = (res && res.synced_event_ids) || [];
+  const syncNote = synced.length ? ` · peer sync ${synced.length}` : "";
+  toast(
+    `L2 ${state}${syncNote} · EV-S3-001 · no side effects`,
+    "ok",
+  );
   await vhqRenderVaultPending();
   vhqRenderVaultStrip();
 }

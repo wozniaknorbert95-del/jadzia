@@ -166,5 +166,6 @@ async def approve_ops_bus_event(
         "ok": True,
         "event_id": event_id,
         "approval_state": result.approval_state,
+        "synced_event_ids": result.synced_event_ids or [],
         "side_effects": False,
     }
