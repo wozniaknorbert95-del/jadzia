@@ -2154,14 +2154,15 @@ const VHQ_ROOMS = {
     firmStage: "deliver",
     status: "PARKED",
     evidence: "EV-W2-010",
-    lastVerified: "2026-07-27T14:26:00Z",
+    lastVerified: "2026-07-31T14:05:00Z",
     owner: "Ops",
-    sotLabel: "No live source-of-truth / operational desk not implemented",
+    sotLabel:
+      "ORDER-DESK-SOT-v0 ACCEPTED · INT-002 mirror read-only · ops_state missing · not LIVE desk",
     sotHref: null,
-    firmRole: "Tu firma domyka zamówienie i produkcję — dziś bez biurka SoT.",
+    firmRole: "Tu firma domyka zamówienie i produkcję — dziś mirror RO, bez biurka LIVE.",
     limitation:
-      "EV-W2-010 = PARKED shell only. No order dashboard invented. Historical #3149 ≠ live desk. INT-002 rows ≠ operational desk SoT.",
-    unlockHint: "Wymaga Order Desk SoT + unpark EV-W2-010 (osobny projekt). INT-002 ≠ desk.",
+      "EV-W2-010 = PARKED. SoT ACCEPTED. Mirror list ≠ operational desk. No LIVE KPI / no fulfil CTAs.",
+    unlockHint: "Unpark EV-W2-010 only after D5 U2–U8 evidence + Founder GO UNPARK. INT-002 ≠ desk LIVE.",
     action: null,
     mvp: false,
     pulse: true,
@@ -2169,22 +2170,22 @@ const VHQ_ROOMS = {
     floorCard: true,
     flowOrder: 3,
     pulseLabel: "Order Desk",
-    parkedHeadline: "Order operational desk is not implemented.",
+    parkedHeadline: "Order desk PARKED — mirror read-only (SoT ACCEPTED).",
     directorQ: "Is there an operational order desk we can trust today?",
     mapHop: {
       href: null,
       interactive: false,
       label: "Orders & Production",
-      meta: "P0 · Orders & Production · PARKED — operational desk not implemented",
+      meta: "P0 · Orders & Production · PARKED — mirror RO · EV-W2-010",
     },
     honesty: [
       {
         status: "PARKED",
-        text: "PARKED — operational desk not implemented · EV-W2-010",
+        text: "PARKED · EV-W2-010 · SoT ACCEPTED — operational desk not LIVE",
       },
       {
         status: "PARKED",
-        text: "No LIVE order KPIs. Historical #3149 / INT-002 rows ≠ desk SoT.",
+        text: "INT-002 mirror below is commerce ingest only. ops_state = insufficient_data. No LIVE KPI.",
       },
     ],
     kpi: [
@@ -3416,6 +3417,103 @@ function vhqBindWorkViews() {
         : `${order.label} [${order.status}]`;
     });
   });
+  if (order) {
+    vhqRenderOrderDeskMirror();
+  }
+}
+
+function vhqFmtOrderPay(row) {
+  const pay = row && row.payment_status;
+  const at = row && row.paid_at;
+  if (!pay && !at) return "insufficient_data";
+  return at ? `${pay || "unknown"} @ ${at}` : String(pay);
+}
+
+function vhqRenderOrderDeskMirror() {
+  const body = document.getElementById("vhq-work-order-mirror-body");
+  const hint = document.getElementById("vhq-work-order-mirror-hint");
+  if (!body) return;
+  vhqClear(body);
+  const hasToken = typeof getToken === "function" && !!getToken();
+  if (!hasToken) {
+    if (hint) {
+      hint.textContent =
+        "Session required — Sign in / Tools to load INT-002 mirror. Ops state = insufficient_data. No fake open-order board.";
+    }
+    body.appendChild(
+      vhqEl("p", "hint", "No session · mirror not loaded · insufficient_data for open orders.")
+    );
+    return;
+  }
+  if (hint) {
+    hint.textContent =
+      "INT-002 commerce mirror (read-only). ops_state = insufficient_data until desk store. Not LIVE Order Desk · EV-W2-010.";
+  }
+  body.appendChild(vhqEl("p", "hint", "Loading mirror…"));
+  api("/api/v1/orders?limit=20")
+    .then((data) => {
+      vhqClear(body);
+      const orders = (data && data.orders) || [];
+      if (!orders.length) {
+        body.appendChild(
+          vhqEl(
+            "p",
+            "hint",
+            "No mirror rows · honest empty · Open orders = insufficient_data (not 0 LIVE)."
+          )
+        );
+        return;
+      }
+      const table = document.createElement("table");
+      table.className = "vhq-order-mirror-table";
+      table.setAttribute("aria-label", "INT-002 order mirror");
+      const thead = document.createElement("thead");
+      const hr = document.createElement("tr");
+      ["Order", "Class", "WC", "Pay", "Gross", "Ingested", "Ops"].forEach((label) => {
+        hr.appendChild(vhqEl("th", null, label));
+      });
+      thead.appendChild(hr);
+      table.appendChild(thead);
+      const tbody = document.createElement("tbody");
+      orders.forEach((row) => {
+        const tr = document.createElement("tr");
+        const gross =
+          row.total_gross == null
+            ? "insufficient_data"
+            : `${row.total_gross}${row.currency ? ` ${row.currency}` : ""}`;
+        [
+          String(row.order_id || "—"),
+          String(row.classification || "unknown"),
+          String(row.status || "—"),
+          vhqFmtOrderPay(row),
+          gross,
+          String(row.created_at || "insufficient_data"),
+          "insufficient_data",
+        ].forEach((val) => {
+          tr.appendChild(vhqEl("td", null, val));
+        });
+        tbody.appendChild(tr);
+      });
+      table.appendChild(tbody);
+      body.appendChild(table);
+      body.appendChild(
+        vhqEl(
+          "p",
+          "hint",
+          `Mirror rows shown: ${orders.length} · KPI Open orders = insufficient_data · EV-W2-010`
+        )
+      );
+    })
+    .catch((err) => {
+      vhqClear(body);
+      body.appendChild(
+        vhqEl(
+          "p",
+          "state-error",
+          `Mirror load failed · insufficient_data · ${err && err.message ? err.message : "error"}`
+        )
+      );
+    });
 }
 
 function vhqMapStateText(room, hop) {
@@ -3870,6 +3968,9 @@ function vhqApplyRoomChrome(roomId) {
     vhqRestoreAllSlots();
     vhqShowWorkPanel(roomId);
     vhqBindWorkViews();
+    if (roomId === "order-desk") {
+      vhqRenderOrderDeskMirror();
+    }
     const workTitle = document.querySelector(`[data-vhq-work="${roomId}"] .vhq-work-head h3`);
     if (workTitle) {
       workTitle.setAttribute("tabindex", "-1");

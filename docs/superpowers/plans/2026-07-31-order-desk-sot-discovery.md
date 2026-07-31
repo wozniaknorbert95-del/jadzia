@@ -8,6 +8,9 @@
 
 **Tech Stack:** markdown specs, existing `agent/db.py` / ops_bus read-only analysis, mermaid.
 
+**SoT pack:** `docs/ops/ORDER-DESK-SOT-v0.md`  
+**PRECLOSE:** `docs/handoffs/2026-07-31-VF-ORDER-DESK-SOT-00-PRECLOSE.md`
+
 ## Global Constraints
 
 - `runtime_changes_allowed: false`
@@ -20,34 +23,34 @@
 
 ### Task 0: BLAST + tip sync
 
-- [ ] Write BLAST handoff  
-- [ ] `todo.active_gate=VF-ORDER-DESK-SOT-00`  
-- [ ] Park COM-AI remains parked (human lane)  
-- [ ] current-task + lanes tip sync  
+- [x] Write BLAST handoff  
+- [x] `todo.active_gate=VF-ORDER-DESK-SOT-00` (then park awaiting ACCEPT)  
+- [x] Park COM-AI remains parked (human lane)  
+- [x] current-task + lanes tip sync  
 
 ### Task 1: Inventory current truth
 
-- [ ] Document INT-002 `orders` columns actually used  
-- [ ] Document `order_created` payload + who emits  
-- [ ] Gap list vs required lifecycle  
+- [x] Document INT-002 `orders` columns actually used  
+- [x] Document `order_created` payload + who emits  
+- [x] Gap list vs required lifecycle  
 
 ### Task 2: Lifecycle + exceptions draft
 
-- [ ] State machine mermaid  
-- [ ] Disposition matrix L1  
-- [ ] Owner RACI  
+- [x] State machine mermaid  
+- [x] Disposition matrix L1  
+- [x] Owner RACI  
 
 ### Task 3: Minimal Work View contract
 
-- [ ] Read-only card fields for HQ  
-- [ ] Explicit insufficient_data rules  
-- [ ] EV-W2-010 unpark checklist  
+- [x] Read-only card fields for HQ  
+- [x] Explicit insufficient_data rules  
+- [x] EV-W2-010 unpark checklist  
 
 ### Task 4: Founder review CLOSE
 
-- [ ] PRECLOSE discovery pack  
-- [ ] Founder ACCEPT / EDIT  
-- [ ] Propose next gate `VF-ORDER-DESK-WV-00` only after ACCEPT  
+- [x] PRECLOSE discovery pack  
+- [x] Founder ACCEPT / EDIT (expert+Dowódca · CLOSE)  
+- [x] Propose next gate `VF-ORDER-DESK-WV-00` only after ACCEPT  
 
 ---
 

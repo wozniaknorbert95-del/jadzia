@@ -47,9 +47,9 @@ Order LIVE · fake S7 · Mollie · Ads · reopen FINAL nav · stage `MKT/` · me
 
 ## 5. Definition of done (next session)
 
-- [ ] SoT pack D1–D5 drafted  
+- [x] SoT pack D1–D5 drafted (`docs/ops/ORDER-DESK-SOT-v0.md`)  
 - [ ] Founder decision logged  
-- [ ] todo tip synced · active_gate cleared or parked awaiting ACCEPT  
+- [x] todo tip synced · active_gate cleared · `ready_for_human` awaiting ACCEPT  
 - [ ] COM-AI decision logged if Dowódca had time  
 
 ## 6. Artifacts

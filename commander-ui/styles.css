@@ -1917,6 +1917,32 @@ body[data-vhq-primary="1"]:not(.vhq-legacy) .view-home--console .vhq-home-slot:e
 .vhq-work-meta dd {
   margin: 0;
 }
+.vhq-order-mirror {
+  margin: 0.75rem 0 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+.vhq-order-mirror h4 {
+  margin: 0;
+  font-size: 0.95rem;
+}
+.vhq-order-mirror-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.85rem;
+}
+.vhq-order-mirror-table th,
+.vhq-order-mirror-table td {
+  border-bottom: 1px solid var(--border, #2a3542);
+  padding: 0.35rem 0.4rem;
+  text-align: left;
+  vertical-align: top;
+}
+.vhq-order-mirror-table th {
+  color: var(--muted, #9aa7b5);
+  font-weight: 600;
+}
 .vhq-work-child {
   padding: 0.65rem 0.75rem;
   border-left: 3px solid var(--warn, #c9a227);

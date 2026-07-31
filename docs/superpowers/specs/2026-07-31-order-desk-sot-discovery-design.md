@@ -1,5 +1,5 @@
 ---
-status: "[SPEC · DISCOVERY]"
+status: "[SPEC · DISCOVERY · PRECLOSE]"
 title: "VF-ORDER-DESK-SOT-00 — Order Desk Source-of-Truth discovery"
 updated: "2026-07-31"
 gate: "VF-ORDER-DESK-SOT-00"
@@ -7,6 +7,8 @@ program: "docs/ops/FLEXGRAFIK-VIRTUAL-HQ-PROGRAM.md"
 blocks: "VF-VHQ-DI-S7-LOOP / EV-W2-010 unpark"
 runtime_changes_allowed: false
 priority: "P0 next after FINAL seal"
+sot_pack: "docs/ops/ORDER-DESK-SOT-v0.md"
+preclose: "docs/handoffs/2026-07-31-VF-ORDER-DESK-SOT-00-PRECLOSE.md"
 ---
 
 # Design: VF-ORDER-DESK-SOT-00 (discovery only)
@@ -60,3 +62,13 @@ Produce a **Founder-approved SoT contract** that answers:
 ## 6. Success = unlock next build gate
 
 Only after D1–D5 accept → propose **`VF-ORDER-DESK-WV-00`** (thin read-only Work View) as separate 1-1-1 gate.
+
+## 7. Draft status (2026-07-31 session)
+
+| ID | Status | Location |
+|----|--------|----------|
+| D1–D5 | **DRAFTED · awaiting Founder ACCEPT** | `docs/ops/ORDER-DESK-SOT-v0.md` |
+| Inventory | INT-002 columns + `order_created` emit mapped | SoT §D2 + Gap list |
+| Runtime | unchanged · Order Desk PARKED | prod `vhq-w67a` tip-check PASS |
+
+**Recommended Founder path:** ACCEPT D1–D5 as written (WC commerce + separate `ops_state`; mirror ≠ desk).

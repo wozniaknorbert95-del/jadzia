@@ -50,9 +50,9 @@ def test_f7_finish_card_chrome():
     assert "not live-verified" in APP
 
 
-def test_f7_cache_vhq_w67a():
-    assert "vhq-w67a" in HTML
-    assert "coi-commander-shell-vhq-w67a" in SW
+def test_f7_cache_vhq_w68a():
+    assert "vhq-w68a" in HTML
+    assert "coi-commander-shell-vhq-w68a" in SW
 
 
 def test_f7_css_stage_bands():

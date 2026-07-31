@@ -2648,6 +2648,7 @@ def db_list_orders(limit: int = 50) -> List[Dict]:
         SELECT orders.order_id, orders.status, orders.total_gross,
                orders.customer_name, orders.customer_email,
                orders.created_at, orders.updated_at,
+               orders.payment_status, orders.paid_at, orders.currency,
                classification.classification,
                classification.reason_code AS classification_reason
         FROM orders
@@ -2672,6 +2673,8 @@ def db_list_orders(limit: int = 50) -> List[Dict]:
             if item["classification"] == "test"
             else False if item["classification"] == "real" else None
         )
+        # Ops desk lifecycle is not stored yet — callers must not invent ops_state.
+        item["ops_state"] = None
         result.append(item)
     return result
 
