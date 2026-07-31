@@ -3,7 +3,7 @@ status: "[APPENDIX]"
 title: "Program lanes — DONE vs WAITING (ściąga, nie plan)"
 updated: "2026-07-31"
 owner: "Dowódca + agent"
-tip: "WV-00 DEPLOY PASS · cache vhq-w68a · tip eb3c45e"
+tip: "COM-AI-50-SHIP DEPLOY PASS · tip fcf6a9f · VHQ cache vhq-w68a"
 cache: "vhq-w68a"
 parent_program: "docs/ops/FLEXGRAFIK-VIRTUAL-HQ-PROGRAM.md"
 todo: "todo.json"
@@ -26,7 +26,7 @@ order_desk_sot: "docs/ops/ORDER-DESK-SOT-v0.md"
 | A2 | VHQ Final Dashboard | **DONE** |
 | C0 | Order Desk SoT discovery | **DONE · ACCEPTED** |
 | C1 | Order Desk thin WV (mirror RO) | **DONE · DEPLOY PASS** `vhq-w68a` |
-| B | Growth / Demand (COM-AI) | **SHIP PRECLOSE** · czekaj `GO DEPLOY COM-AI-50-SHIP` · organic ≥2026-08-02 · counsel TAK |
+| B | Growth / Demand (COM-AI) | **SHIP DEPLOYED** · widget disclosure LIVE · organic ≥2026-08-02 · counsel TAK · Ads freeze do 2026-08-06 |
 | C | Order Desk / S7 LIVE | **PARKED** (`blocked_sot` · EV-W2-010) |
 | D | 3D · MKT-ASSET · Ads freeze | **PARKED** |
 

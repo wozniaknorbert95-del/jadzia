@@ -1,6 +1,6 @@
 {
   "project": "Jadzia-Core",
-  "last_updated": "2026-07-31 (COM-AI-50-SHIP PRECLOSE · awaiting GO DEPLOY)",
+  "last_updated": "2026-07-31 (COM-AI-50-SHIP DEPLOY PASS · tip fcf6a9f)",
   "status": "active",
   "plan": "docs/ops/FLEXGRAFIK-VIRTUAL-HQ-PROGRAM.md",
   "active_gate": null,
@@ -9,7 +9,7 @@
   "todo_schema": "todo.schema.json",
   "gate_machine": {
     "active": null,
-    "active_state": "com_ai_50_ship_preclose_awaiting_go_deploy",
+    "active_state": "com_ai_50_ship_deployed_idle",
     "vhq_final": "completed · DEPLOY PASS · cache vhq-w67a · dashboard_seal FINISHED_PARTIAL_LOOP",
     "vhq_final_preclose": "docs/handoffs/2026-07-31-VF-VHQ-FINAL-00-PRECLOSE.md",
     "vhq_final_deploy": "docs/handoffs/2026-07-31-DEPLOY-VHQ-FINAL-00-CLOSE.md",
@@ -35,13 +35,15 @@
     "vhq_final_blast": "docs/handoffs/2026-07-31-VF-VHQ-FINAL-00-BLAST.md",
     "vhq_final_spec": "docs/superpowers/specs/2026-07-31-vhq-final-dashboard-design.md",
     "vhq_final_plan": "docs/superpowers/plans/2026-07-31-vhq-final-dashboard.md",
-    "com_ai_50": "completed · HITL ACCEPT 2026-07-31 · disclosure NL locked · counsel TAK · organic ≥2026-08-02 · widget ship = COM-AI-50-SHIP + GO",
+    "com_ai_50": "completed · HITL ACCEPT + SHIP DEPLOYED tip fcf6a9f · counsel TAK · organic ≥2026-08-02",
     "com_ai_50_blast": "docs/handoffs/2026-07-31-COM-AI-50-READY-BLAST.md",
     "com_ai_50_pack": "docs/ops/marketing/COM-AI-50-READY-PACK.md",
     "com_ai_50_close": "docs/handoffs/2026-07-31-COM-AI-50-READY-CLOSE.md",
-    "com_ai_50_ship": "PRECLOSE · local PASS · awaiting GO DEPLOY · disclosure in widget API",
+    "com_ai_50_ship": "completed · DEPLOY PASS tip fcf6a9f · widget ai_disclosure LIVE",
     "com_ai_50_ship_blast": "docs/handoffs/2026-07-31-COM-AI-50-SHIP-BLAST.md",
     "com_ai_50_ship_preclose": "docs/handoffs/2026-07-31-COM-AI-50-SHIP-PRECLOSE.md",
+    "com_ai_50_ship_deploy": "docs/handoffs/2026-07-31-DEPLOY-COM-AI-50-SHIP-CLOSE.md",
+    "com_ai_50_ship_verify": "docs/handoffs/2026-07-31-VERIFY-COM-AI-50-SHIP-POSTDEPLOY.md",
 
     "vhq_firm_ia_deploy_pass": "completed · DEPLOY PASS tip adafd83 · cache vhq-w66a · docs/handoffs/2026-07-31-DEPLOY-VHQ-FIRM-IA-00-CLOSE.md",
     "program_lanes_appendix": "docs/ops/PROGRAM-LANES-SOT.md",
@@ -58,7 +60,7 @@
     "vhq_di_s3_close": "docs/archive/handoffs/2026-07-31-VF-VHQ-DI-S3-APPROVAL-CLOSE.md",
     "vhq_di_s3_deploy": "docs/archive/handoffs/2026-07-31-DEPLOY-VHQ-DI-S3-00-CLOSE.md",
     "vhq_di_s3_evidence": "docs/archive/handoffs/evidence-vhq-di-s3/",
-    "prod_tip": "eb3c45e / cache vhq-w68a / Order Desk mirror RO PARKED · dashboard_seal FINISHED_PARTIAL_LOOP",
+    "prod_tip": "fcf6a9f / cache vhq-w68a / COM-AI-50-SHIP widget disclosure LIVE · Order Desk PARKED",
     "vhq_firm_ia_blast": "docs/handoffs/2026-07-31-VF-VHQ-FIRM-IA-00-BLAST.md",
     "vhq_firm_ia_close": "docs/handoffs/2026-07-31-VF-VHQ-FIRM-IA-00-CLOSE.md",
     "vhq_firm_ia": "completed · DEPLOY PASS tip adafd83 · cache vhq-w66a · Esc HQ home · Firm Chain LIVE",
@@ -113,7 +115,7 @@
     "vhq_w7_dogfood": "docs/archive/handoffs/2026-07-31-VF-VHQ-W7-DOGFOOD-FOUNDER-DOGFOOD.md",
     "vhq_w7_close": "docs/archive/handoffs/2026-07-31-VF-VHQ-W7-DOGFOOD-CLOSE.md",
     "unblocked": [],
-    "ready_for_human": ["COM-AI-50-SHIP"],
+    "ready_for_human": [],
     "parked": ["MKT-ASSET-00", "VF-CAMPUS-W4", "VF-VHQ-3D-PARKED", "VF-PARK-PROCUREMENT", "VF-PARK-DISPATCH", "VF-PARK-PRINTPACK-SAAS", "VF-PARK-FINANCE-AGENT"],
     "founder_override": "2026-07-27 VHQ = primary operational dashboard; Commander = control/data/audit/action engine; no content duplication — reorganize into MC + Work Views",
     "campus_prod_tip_legacy_ux_audit": "a49644c / runtime 06212d7 / cache vhq-w61a (superseded by P2-SNR tip 7e34940)",
@@ -290,7 +292,7 @@
     },
     "proposed_next_gate": null,
     "proposed_next_gate_active": false,
-    "proposed_next": "GO DEPLOY COM-AI-50-SHIP. Human: counsel before organic ≥2026-08-02. Ads freeze do 2026-08-06."
+    "proposed_next": "Idle. Human: counsel + organic GO ≥2026-08-02. Ads freeze do 2026-08-06. Order Desk unpark only with GO UNPARK."
   },
   "standing_go_closeout": false,
   "closeout_queue": [],
@@ -302,11 +304,11 @@
     }
   ],
   "closeout_expires": "2026-08-15",
-  "next_human": "GO DEPLOY COM-AI-50-SHIP. Counsel przed organic ≥2026-08-02. Ads freeze do 2026-08-06.",
-  "next_agent": "On GO DEPLOY: pull+restart → smoke widget ai_disclosure. No organic. No Mollie.",
+  "next_human": "Counsel przed organic ≥2026-08-02 + osobne GO publish. Ads freeze do 2026-08-06. VHQ observe vhq-w68a.",
+  "next_agent": "Idle unless Founder GO (organic evidence / ops_state / unpark). No fake S7. No Mollie.",
   "budget_freeze_until": "2026-08-06",
   "budget_freeze_note": "Dowódca 2026-07-27: zero ad spend 10 dni — MKT assets PARKED; Growth = organic/COM-AI first, paid after freeze",
-  "agent_rule": "COM-AI-50-SHIP PRECLOSE. WV tip eb3c45e / vhq-w68a. EV-W2-010 PARKED. Deploy only with GO DEPLOY.",
+  "agent_rule": "COM-AI-50-SHIP DEPLOYED tip fcf6a9f. WV vhq-w68a. EV-W2-010 PARKED. Deploy only with GO DEPLOY.",
   "sprints": {
     "remediation": "completed",
     "coi_phase_a": "deploy_complete",
@@ -2089,7 +2091,7 @@
       "id": "COM-AI-50-SHIP",
       "sprint": "Compliance — AI Act Art.50",
       "task": "Ship canonical NL AI disclosure into widget UI/API (after COM-AI-50 ACCEPT)",
-      "status": "ready_for_human",
+      "status": "completed",
       "priority": "high",
       "owner": "agent",
       "depends_on": ["COM-AI-50-READY"],
@@ -2097,7 +2099,9 @@
       "evidence_required": "GO DEPLOY + prod smoke ai_disclosure on /api/v1/widget/chat",
       "runtime_changes_allowed": true,
       "preclose": "docs/handoffs/2026-07-31-COM-AI-50-SHIP-PRECLOSE.md",
-      "note": "2026-07-31 PRECLOSE local PASS · pytest 55/55. Awaiting GO DEPLOY. No organic in this gate."
+      "deploy": "docs/handoffs/2026-07-31-DEPLOY-COM-AI-50-SHIP-CLOSE.md",
+      "verify": "docs/handoffs/2026-07-31-VERIFY-COM-AI-50-SHIP-POSTDEPLOY.md",
+      "note": "2026-07-31 DEPLOY+VERIFY PASS tip fcf6a9f · smoke ai_disclosure LIVE. Organic still ≥2026-08-02."
     },
     {
       "id": "VF-VHQ-FINAL-00",

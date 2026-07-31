@@ -47,7 +47,7 @@ canonical_disclosure_nl: "Je chat met een AI-assistent van FlexGrafik. Wil je ee
 
 | Powierzchnia | System | Klient widzi? | Disclosure dziś |
 |--------------|--------|---------------|-----------------|
-| Widget chat | `POST /api/v1/widget/chat` → `customer_agent.py` | TAK | **SHIP lokalny** (`ai_disclosure` + first-turn prefix) — prod po GO DEPLOY |
+| Widget chat | `POST /api/v1/widget/chat` → `customer_agent.py` | TAK | **LIVE prod** tip `fcf6a9f` — `ai_disclosure` + first-turn prefix |
 | Design Agent offerte | `design_agent_offerte.py` | TAK (jeśli exposed) | traktuj jako AI |
 | Commander / VHQ | `commander-ui` | NIE | N/A |
 | Telegram WP agent | `telegram.py` | wewnętrzne | N/A |

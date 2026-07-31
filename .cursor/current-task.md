@@ -1,11 +1,10 @@
-# PRECLOSE — COM-AI-50-SHIP
+# DONE — COM-AI-50-SHIP DEPLOY PASS
 
-**Gate:** widget AI disclosure NL shipped locally  
-**PRECLOSE:** `docs/handoffs/2026-07-31-COM-AI-50-SHIP-PRECLOSE.md`  
-**Prod VHQ:** still `vhq-w68a` (unrelated)
+**Tip:** `fcf6a9f` · widget `ai_disclosure` LIVE  
+**CLOSE:** `docs/handoffs/2026-07-31-DEPLOY-COM-AI-50-SHIP-CLOSE.md`
 
-## Next
-`GO DEPLOY COM-AI-50-SHIP` → VPS restart → smoke widget response has `ai_disclosure`
+## Next human
+Counsel przed organic ≥2026-08-02 · Ads freeze do 2026-08-06
 
 ## STOP
-Organic &lt;2026-08-02 · Ads freeze · deploy bez GO
+Organic przed datą · fake S7 · Mollie · stage dirty `MKT/`
