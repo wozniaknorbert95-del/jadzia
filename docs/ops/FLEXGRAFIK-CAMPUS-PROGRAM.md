@@ -91,7 +91,7 @@ Równoległość W1+MKT tylko: **inny owner / osobna sesja / osobny worktree**.
 | EV-CAMPUS-002 | Commander `?v=mkt-dash08` | prod | URL 200 + cache `mkt-dash08` in HTML | 2026-07-27T15:50+02 | 24h | Ops/COI | **verified** |
 | EV-CAMPUS-003 | VCMS Conflicts=0 | governance | `node tools/vcms-scan.js` → Conflicts: 0 | 2026-07-27T15:50+02 | start kolejnej sesji | Govern | **verified** |
 | EV-CAMPUS-004 | Order #3149 E2E INT-002 | business | archive handoff deploy-int-002 + SPINE proof | history | never | Ops/COI | **verified** (history) |
-| EV-CAMPUS-005 | Worker health / SSH | prod | `/worker/health` → degraded · `ssh_connection=error` · worker+sqlite OK | 2026-07-27T15:50+02 | 24h + INC | Ops/COI | **DEGRADED** → `INC-SSH-RECOVERY-00` |
+| EV-CAMPUS-005 | Worker health / SSH | prod | `/worker/health` → healthy · `ssh_connection=ok` · INC-SSH-RECOVERY-00 **CLOSED** 2026-07-31 | 2026-07-31 | przy regresji | Ops/COI | **verified** (recovered) |
 | EV-CAMPUS-006 | Scorecard #1–9 | docs | [SCORECARD-AI-OS-ZALICZENIE](./SCORECARD-AI-OS-ZALICZENIE.md) PASS 2026-07-18 | 2026-07-18 | per-item re-verify W2+ | Ops/COI | **verified** (docs; freshness stale → re-verify before W3 badges) |
 | EV-CAMPUS-007 | Design-agent health hop | prod | `GET /api/v1/design-agent/health` → **200** `status=ok` | 2026-07-27T15:50+02 | 24h | Ops/COI | **verified** |
 
@@ -472,19 +472,14 @@ Checklist (kontrolki — **nie** porada prawna; Founder + doradca NL/EU):
 
 ---
 
-## 15. INC-SSH-RECOVERY-00 (P3)
+## 15. INC-SSH-RECOVERY-00 (P3) — **CLOSED 2026-07-31**
 
 | Field | Value |
 |-------|-------|
-| Impact | SSH orchestrator / WP agent path degraded; API+worker+sqlite OK |
-| Evidence | EV-CAMPUS-005 |
-| Scope | VPS jadzia `ssh_connection=error` |
+| Status | **CLOSED** — handoff `docs/handoffs/2026-07-31-INC-SSH-RECOVERY-00-CLOSE.md` |
+| Post-fix | `/worker/health` → `ssh_connection=ok` · `status=healthy` |
+| Evidence | EV-CAMPUS-005 · EV-W2-011 (historical) |
 | Owner A | Ops/COI (Norbert) |
-| Next update | przy kolejnej sesji ops / max 7d |
-| Recovery plan | diagnose SSH creds/host from VPS; restore connection; re-run health |
-| Post-fix test | `/worker/health` → `ssh_connection` ok + smoke SSH read |
-| Fallback | Telegram/WP HITL limited; no fake LIVE on SSH-dependent tasks |
-| Deadline | before W3 badges that claim SSH LIVE |
 
 ---
 
@@ -532,7 +527,7 @@ Campus v1 **DONE** gdy:
 ## 19. C0 Founder GO checklist (po PLAN-00)
 
 - [ ] PROGRAM v2 przeczytany (boundary + gate machine)
-- [ ] Evidence Ledger zaakceptowany (w tym SSH DEGRADED + INC)
+- [ ] Evidence Ledger zaakceptowany (SSH INC-SSH-RECOVERY-00 **CLOSED** · EV-CAMPUS-005 recovered)
 - [ ] `active_gate = MKT-ASSET-00` zatwierdzony
 - [ ] W1 pozostaje `unblocked` (nie start bez C1)
 - [ ] Freeze €0 paid do 2026-08-06 potwierdzony

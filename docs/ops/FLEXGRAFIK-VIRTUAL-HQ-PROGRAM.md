@@ -60,7 +60,7 @@ W1-SHELL: **CLOSED** (local `vhq-w01b`). W2+ not auto-activated.
 | **W1 Navigate** | Floor·room hop labels on Mission Control map; no 6th tab |
 | **W2 Trust** | Hop Contracts + honest LIVE/PARTIAL/UNVERIFIED/PARKED badges + evidence IDs |
 | **W3 Truth Cards** | 5 read-only cards: status + SoT + primary action + insufficient_data rule |
-| **Deploy** | Prod tip **`3487ec0`** · cache URL `campus-w03` · assets `campus-w03b` |
+| **Deploy** | Prod tip **`94268f7`** · cache URL **`vhq-w50a`** · runtime **`174603e`** · W5 ops_bus LIVE |
 
 Campus = **truthful control foundation**. It is **not** the interactive Virtual HQ product vision.
 
@@ -78,14 +78,14 @@ Campus = **truthful control foundation**. It is **not** the interactive Virtual 
 
 ---
 
-## 5. Evidence Baseline (reconciled 2026-07-27 · tip `3487ec0`)
+## 5. Evidence Baseline (reconciled 2026-07-31 · W5 LIVE · tip `94268f7` · cache `vhq-w50a`)
 
 | System / room | Current reality | SoT | Status | Evidence | Can appear in HQ? |
 |---------------|-----------------|-----|--------|----------|-------------------|
-| Mission Control | Commander Home LIVE | `commander/?v=campus-w03` | **LIVE** | EV-W2-001 · tip 3487ec0 | **Yes — MVP core** |
+| Mission Control | Commander Home LIVE | `commander/?v=vhq-w50a` | **LIVE** | EV-W2-001 · tip 94268f7 | **Yes — MVP core** |
 | Boardroom | docs strategy | flexgrafik-meta master-plan | PARTIAL | docs | Yes — later |
 | Approval Vault | Audyt secondary path | Commander Audyt / handoffs | PARTIAL | EV-W2-009 | Yes — MVP thin |
-| AI / Agent Health | DA OK · worker SSH error | health APIs · Agenci | PARTIAL / DEGRADED | EV-W2-006 · EV-W2-011 | Yes — MVP |
+| AI / Agent Health | DA OK · worker SSH ok (INC-SSH CLOSED 2026-07-31) | health APIs · Agenci | **PARTIAL** (OS/VCMS post-auth) | EV-W2-006 · INC-SSH-RECOVERY-00 CLOSE | Yes — MVP |
 | Agent OS | hop challenge; post-auth unseen | os.flexgrafik.nl | PARTIAL | W2 residual | Pin only |
 | VCMS | Conflicts claim; post-auth PARTIAL | cmd.flexgrafik.nl | PARTIAL | W2 · scan | Pin only |
 | Knowledge | docs / Basic Auth body unseen | KNOWLEDGE index · cmd docs | UNVERIFIED | W2 | Later |
@@ -144,7 +144,7 @@ Campus = **truthful control foundation**. It is **not** the interactive Virtual 
 
 | Dependency | Impact |
 |------------|--------|
-| Commander tip `3487ec0` Truth Cards / map | MVP data surface |
+| Commander tip `94268f7` · cache `vhq-w50a` · ops_bus_events | MVP data surface + W5 bus |
 | JWT session | queue / audit / analytics freshness |
 | INC-SSH-RECOVERY-00 | **CLOSED** 2026-07-31 — prod `ssh_connection=ok` |
 | Order Desk SoT | blocks LIVE ops room |
@@ -212,5 +212,5 @@ DO NOT auto-start DESIGN or W1-SHELL without separate Founder GO.
 - Architecture: [FLEXGRAFIK-VIRTUAL-HQ-ARCHITECTURE.md](./FLEXGRAFIK-VIRTUAL-HQ-ARCHITECTURE.md)  
 - Campus program (foundation): [FLEXGRAFIK-CAMPUS-PROGRAM.md](./FLEXGRAFIK-CAMPUS-PROGRAM.md)  
 - Campus map: [FLEXGRAFIK-CAMPUS-MAP.md](./FLEXGRAFIK-CAMPUS-MAP.md)  
-- Prod Commander: https://api.zzpackage.flexgrafik.nl/commander/?v=campus-w03  
+- Prod Commander: https://api.zzpackage.flexgrafik.nl/commander/?v=vhq-w50a  
 - Inspiration only: https://store.talknbuy.com/pl/

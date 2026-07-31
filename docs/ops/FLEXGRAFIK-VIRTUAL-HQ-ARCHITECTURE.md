@@ -17,8 +17,8 @@ w1_shell: "completed 2026-07-27 · local cache vhq-w01b · Founder CLOSE"
 
 | Layer | Role | Status |
 |-------|------|--------|
-| **Virtual HQ** | **Primary operational dashboard** — World / Work / Command experience | W1-SHELL CLOSED (local `vhq-w01b`) — awaiting commit/deploy GO |
-| **Commander (jadzia)** | **Underlying control, data, audit and action engine** — queues, JWT, Marketing, Analytics, Agents, Audit, Settings | LIVE tip `3487ec0` · `?v=campus-w03` until VHQ deploy |
+| **Virtual HQ** | **Primary operational dashboard** — World / Work / Command experience | W1–W5 CLOSED+DEPLOY · cache `vhq-w50a` · tip `94268f7` |
+| **Commander (jadzia)** | **Underlying control, data, audit and action engine** — queues, JWT, Marketing, Analytics, Agents, Audit, Settings | LIVE tip `94268f7` · `?v=vhq-w50a` · ops_bus_events |
 | **Campus W1–W3** | Truthful map hops, evidence badges, 5 Truth Cards | DONE — foundation absorbed into VHQ path |
 | **Agent OS / VCMS** | Build + Govern brains — hop destinations, not merged into jadzia | PARTIAL post-auth |
 
@@ -241,7 +241,7 @@ Field legend: `approval` = max level for primary action in that room; `MVP` = no
 | primary action | Confirm / snooze / close CRITICAL+ACTION queue |
 | human owner | Ops/COI (Dowódca Accountable) |
 | AI/agent role | COI brief · queue ranking · MB propose (read) |
-| source of truth | Commander Home `https://api.zzpackage.flexgrafik.nl/commander/?v=campus-w03` · `jadzia.db` |
+| source of truth | Commander Home `https://api.zzpackage.flexgrafik.nl/commander/?v=vhq-w50a` · `jadzia.db` · `ops_bus_events` |
 | current status | **LIVE** |
 | data shown | queue tickets, worker health strip, Truth Cards, evidence IDs |
 | approval level | L1 (disposition) · L2/L3 for escalations |
@@ -305,14 +305,14 @@ Field legend: `approval` = max level for primary action in that room; `MVP` = no
 | human owner | Ops/COI |
 | AI/agent role | self-report only |
 | source of truth | `/worker/health` · `/api/v1/design-agent/health` · Agents view |
-| current status | **PARTIAL** (DA LIVE; worker SSH **DEGRADED** INC-SSH-RECOVERY-00) |
+| current status | **PARTIAL** (DA LIVE; worker SSH **ok** · INC-SSH-RECOVERY-00 **CLOSED** 2026-07-31; OS/VCMS post-auth PARTIAL) |
 | data shown | status enums only — no fake busy avatars |
 | approval level | L0 · L3 for recovery deploy |
 | inputs | health events |
 | outputs | incident tickets |
 | next | mission-control · INC room |
 | MVP | **now** |
-| evidence | EV-W2-006 · EV-W2-011 |
+| evidence | EV-W2-006 · INC-SSH-RECOVERY-00 CLOSE (EV-W2-011 historical) |
 
 ### P2 — Intelligence & Governance
 
