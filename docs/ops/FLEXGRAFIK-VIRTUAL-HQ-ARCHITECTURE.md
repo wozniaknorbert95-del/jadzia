@@ -756,7 +756,10 @@ Sales lead → Wizard/Quote → (Dir approval if needed) → Order Desk
 ## 10. Data model (experience layer)
 
 ```yaml
-# conceptual — implement in later gates; not runtime now
+# RoomState: VHQ_ROOMS (commander-ui) remains UX SoT
+# BusEvent: RUNTIME as of VF-VHQ-W5 (2026-07-31) — table ops_bus_events + agent/ops_bus/
+# Cash-spine types LIVE: lead_qualified, wizard_started, order_created, approval_needed
+# Full §8 catalog beyond cash spine = later gates (not W5)
 RoomState:
   room_id: string
   status: LIVE|PARTIAL|UNVERIFIED|PARKED|PLANNED|DEGRADED
@@ -775,7 +778,7 @@ BusEvent:
   evidence_id: string
 ```
 
-Reuse Campus Contract schema intent (`room_id`, evidence, SoT) — extend with bus fields in DESIGN-00.
+Reuse Campus Contract schema intent (`room_id`, evidence, SoT). W5 implements BusEvent cash spine in SQLite; remaining catalog events stay design-only until their gates.
 
 ---
 

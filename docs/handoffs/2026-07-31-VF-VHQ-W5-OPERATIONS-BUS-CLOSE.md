@@ -7,8 +7,10 @@ cache: "vhq-w50a"
 local_url: "http://127.0.0.1:8000/commander/?v=vhq-w50a"
 pytest_ops_bus: "9/9 PASS"
 commit: "174603e"
-deploy: false
+deploy: true
+deploy_tip: "67700ff"
 w5_closed: true
+w5_deployed: true
 founder_verdict: "CLOSED after local JWT dogfood PASS"
 dogfood: "docs/handoffs/2026-07-31-VF-VHQ-W5-OPERATIONS-BUS-FOUNDER-DOGFOOD.md"
 evidence_dir: "docs/handoffs/evidence-vhq-w50-dogfood/"

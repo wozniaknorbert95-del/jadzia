@@ -116,7 +116,8 @@ Campus = **truthful control foundation**. It is **not** the interactive Virtual 
 4. See World pins for Marketing / Order Desk / Finance with **honest** UNVERIFIED/PARKED  
 5. Never invent desks, KPIs, or busy agents  
 
-**Out of MVP:** full P0 production spine UI, 3D, Ads, Mollie, all rooms polished, Operations Bus runtime (design in PLAN; implement W5).
+**Out of MVP:** full P0 production spine UI, 3D, Ads, Mollie, all rooms polished, full Ops Bus catalog beyond cash spine.  
+**W5 LIVE (2026-07-31):** typed cash-spine bus `lead_qualified` → `wizard_started` → `order_created` + audit/L2–L3 STOP · tip `67700ff` · cache `vhq-w50a` · Order Desk remains PARKED EV-W2-010.
 
 ---
 
@@ -130,7 +131,7 @@ Campus = **truthful control foundation**. It is **not** the interactive Virtual 
 | **VF-VHQ-W2-MISSION-CONTROL** | Command View 7-question loop bound to real data | UI + read APIs | W1 |
 | **VF-VHQ-W3-ROOMS-COMMERCIAL** | Work Views: Wizard/Sales/Marketing pins honest | UI + deeplinks | W2 |
 | **VF-VHQ-W4-ROOMS-OPERATIONS** | PARKED/PLANNED ops shells + Order Desk path when SoT exists | UI (+ data if SoT) | W2; Order LIVE needs SoT |
-| **VF-VHQ-W5-OPERATIONS-BUS** | Typed events/tasks + audit (no agent chat) | data integration | W2+ schemas |
+| **VF-VHQ-W5-OPERATIONS-BUS** | Typed events/tasks + audit (no agent chat) — **CLOSED+DEPLOY tip `67700ff` / `vhq-w50a`** | data integration | W2+ schemas |
 | **VF-VHQ-W6-DIRECTOR-APPROVALS** | Approval Vault L2–L4 UX | UI + action risk | W5 + GO per class |
 | **VF-VHQ-W7-DOGFOOD** | Director ≤30s dogfood + evidence | verify | W2 min; prefer W6 |
 | **VF-VHQ-3D-PARKED** | True 3D | parked forever until unpark | W7 PASS + Founder |
@@ -145,7 +146,7 @@ Campus = **truthful control foundation**. It is **not** the interactive Virtual 
 |------------|--------|
 | Commander tip `3487ec0` Truth Cards / map | MVP data surface |
 | JWT session | queue / audit / analytics freshness |
-| INC-SSH-RECOVERY-00 | Agent Health stays DEGRADED until fixed |
+| INC-SSH-RECOVERY-00 | **CLOSED** 2026-07-31 — prod `ssh_connection=ok` |
 | Order Desk SoT | blocks LIVE ops room |
 | Finance session/DTL | blocks LIVE finance |
 | MKT-ASSET-00 / freeze | Marketing remains UNVERIFIED/PARKED |
