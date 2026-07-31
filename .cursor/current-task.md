@@ -1,13 +1,11 @@
-# Idle — VF-VHQ-UX-AUDIT-00 CLOSED (Conditional Pass)
+# Idle — VF-VHQ-UX-AUDIT-00 CLOSED+DEPLOY PASS
 
-**Last gate:** `VF-VHQ-UX-AUDIT-00`  
-**Report:** `docs/handoffs/2026-07-31-VF-VHQ-UX-AUDIT-00-REPORT.md`  
-**CLOSE:** `docs/handoffs/2026-07-31-VF-VHQ-UX-AUDIT-00-CLOSE.md`  
-**Tip cache:** `vhq-w61a` (prod still `vhq-w60a` until GO DEPLOY)
+**Tip:** `a49644c` · cache `vhq-w61a` · runtime feature `06212d7`  
+**URL:** `https://api.zzpackage.flexgrafik.nl/commander/?v=vhq-w61a`  
+**Deploy CLOSE:** `docs/handoffs/2026-07-31-DEPLOY-VHQ-UX-AUDIT-00-CLOSE.md`
 
 ## Next
 
-- `GO DEPLOY` → prod re-walk F1/F2/F3 on `?v=vhq-w61a`  
-- Else idle · COM-AI-50 ≥2026-08-02 · 3D PARKED  
+- Idle · COM-AI-50 ≥2026-08-02 · P2 UX backlog only with GO · 3D PARKED  
 
-**STOP:** no MKT · no 3D · no Order LIVE without GO  
+**STOP:** no MKT · no Order LIVE · no 3D  

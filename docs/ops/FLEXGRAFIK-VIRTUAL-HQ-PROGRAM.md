@@ -137,7 +137,7 @@ Campus = **truthful control foundation**. It is **not** the interactive Virtual 
 | **VF-VHQ-W5-OPERATIONS-BUS** | Typed events/tasks + audit (no agent chat) — **CLOSED+DEPLOY tip `67700ff` / `vhq-w50a`** | data integration | W2+ schemas |
 | **VF-VHQ-W6-DIRECTOR-APPROVALS** | Approval Vault L2–L4 UX — **CLOSED+DEPLOY tip `014c791` / runtime `06212d7` / `vhq-w60a`** · maturity PARTIAL | UI + action risk | W5 + GO per class |
 | **VF-VHQ-W7-DOGFOOD** | Director ≤30s dogfood + evidence — **CLOSED PASS 2026-07-31** · 994ms · `vhq-w60a` | verify | W2 min; prefer W6 |
-| **VF-VHQ-UX-AUDIT-00** | Interaction UX audit + P0/P1 fix — **CLOSED Conditional Pass 2026-07-31** · tip cache `vhq-w61a` · prod deploy parked | verify → UI | W7 |
+| **VF-VHQ-UX-AUDIT-00** | Interaction UX audit + P0/P1 fix — **CLOSED+DEPLOY PASS 2026-07-31** · tip `a49644c` · cache `vhq-w61a` | verify → UI | W7 |
 | **VF-VHQ-3D-PARKED** | True 3D | parked forever until unpark | W7 PASS + Founder |
 
 **Campus W4** stays **parked** (UNIT-ECONOMICS hint / Order deep-link residual). Product path = VHQ gates.
