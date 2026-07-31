@@ -1,6 +1,6 @@
 {
   "project": "Jadzia-Core",
-  "last_updated": "2026-07-31 (W5 CLOSE local dogfood PASS · COMMIT next · await GO DEPLOY)",
+  "last_updated": "2026-07-31 (W5 CLOSE+COMMIT 174603e · await exact GO DEPLOY)",
   "status": "active",
   "plan": "docs/ops/FLEXGRAFIK-VIRTUAL-HQ-PROGRAM.md",
   "active_gate": "VF-VHQ-W5-OPERATIONS-BUS",
@@ -9,7 +9,7 @@
   "todo_schema": "todo.schema.json",
   "gate_machine": {
     "active": "VF-VHQ-W5-OPERATIONS-BUS",
-    "active_state": "w5_closed_committing_awaiting_deploy_go",
+    "active_state": "w5_committed_174603e_awaiting_exact_go_deploy",
     "unblocked": ["COM-AI-50-READY"],
     "parked": ["MKT-ASSET-00", "VF-CAMPUS-W4", "VF-VHQ-W6-DIRECTOR-APPROVALS", "VF-VHQ-W7-DOGFOOD", "VF-VHQ-3D-PARKED", "VF-PARK-PROCUREMENT", "VF-PARK-DISPATCH", "VF-PARK-PRINTPACK-SAAS", "VF-PARK-FINANCE-AGENT"],
     "founder_override": "2026-07-27 VHQ = primary operational dashboard; Commander = control/data/audit/action engine; no content duplication — reorganize into MC + Work Views",
@@ -17,7 +17,7 @@
     "inc_ssh": "completed · CLOSE docs/handoffs/2026-07-31-INC-SSH-RECOVERY-00-CLOSE.md · ssh_connection=ok",
     "session_close": "docs/handoffs/2026-07-31-SESSION-CLOSE-W5-VERIFY-PRECLOSE.md",
     "w5_prep": "superseded — CLOSED",
-    "vhq_w5": "completed · CLOSE local · cache vhq-w50a · pytest 9/9 · dogfood PASS · EV-W2-010 preserved · next COMMIT + GO DEPLOY",
+    "vhq_w5": "completed · CLOSE+COMMIT 174603e · cache vhq-w50a · pytest 9/9 · dogfood PASS · EV-W2-010 preserved · await exact GO DEPLOY · prod still 6375ab1/vhq-w40c",
     "vhq_w5_blast": "docs/handoffs/2026-07-31-VF-VHQ-W5-OPERATIONS-BUS-BLAST.md",
     "vhq_w5_preclose": "docs/handoffs/2026-07-31-VF-VHQ-W5-OPERATIONS-BUS-PRECLOSE.md",
     "vhq_w5_dogfood": "docs/handoffs/2026-07-31-VF-VHQ-W5-OPERATIONS-BUS-FOUNDER-DOGFOOD.md",
@@ -2223,7 +2223,7 @@
       "evidence_required": "event catalog MVP + audit rows + EV-W5-001..005 + sales_cta emit test",
       "dod": "At least lead→wizard→order_created path typed with approval hooks",
       "checklist": "docs/handoffs/2026-07-31-VF-VHQ-W5-OPERATIONS-BUS-CLOSE.md",
-      "note": "2026-07-31 CLOSED local. Cache vhq-w50a. pytest 9/9. Dogfood PASS Sales ack→wizard_started→Order PARKED EV-W2-010. Evidence evidence-vhq-w50-dogfood/. Next: COMMIT allowlist (no MKT) → exact GO DEPLOY. W6 parked."
+      "note": "2026-07-31 CLOSED+COMMIT 174603e. Cache vhq-w50a. pytest 9/9. Dogfood PASS. Evidence evidence-vhq-w50-dogfood/. Await exact GO DEPLOY (Zasada 11). Prod still 6375ab1/vhq-w40c. W6 parked."
     },
     {
       "id": "VF-VHQ-W6-DIRECTOR-APPROVALS",

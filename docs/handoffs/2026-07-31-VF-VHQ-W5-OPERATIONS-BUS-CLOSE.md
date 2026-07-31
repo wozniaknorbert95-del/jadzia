@@ -6,7 +6,7 @@ gate: "VF-VHQ-W5-OPERATIONS-BUS"
 cache: "vhq-w50a"
 local_url: "http://127.0.0.1:8000/commander/?v=vhq-w50a"
 pytest_ops_bus: "9/9 PASS"
-commit: pending_allowlist
+commit: "174603e"
 deploy: false
 w5_closed: true
 founder_verdict: "CLOSED after local JWT dogfood PASS"
