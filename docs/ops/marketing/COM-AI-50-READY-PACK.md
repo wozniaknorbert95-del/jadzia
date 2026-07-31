@@ -1,71 +1,85 @@
 ---
-status: "[ACTIVE — agent prep · ready_for_human]"
+status: "[ACCEPTED · HITL CLOSED]"
 gate: "COM-AI-50-READY"
 updated: "2026-07-31"
+accepted_at: "2026-07-31T14:20+02:00"
+accepted_by: "Dowódca"
 applies_from: "2026-08-02"
 legal: "Kontrolki operacyjne — nie porada prawna. Founder + doradca NL/EU."
 blast: "docs/handoffs/2026-07-31-COM-AI-50-READY-BLAST.md"
+close: "docs/handoffs/2026-07-31-COM-AI-50-READY-CLOSE.md"
+canonical_disclosure_nl: "Je chat met een AI-assistent van FlexGrafik. Wil je een mens? Laat het weten — we nemen over."
 ---
 
-# COM-AI-50-READY — pack (SoT poza MKT/)
+# COM-AI-50-READY — pack HITL (ACCEPTED)
 
-**Cel:** dependency przed organic publish ≥2026-08-02 + public Concierge/widget AI.  
-**Nie blokuje:** shoot-plan docs · VHQ idle · Ads freeze (osobno do 2026-08-06).
+**Status:** Founder **ACCEPT** 2026-07-31 · disclosure NL locked · counsel **TAK** przed organic.  
+**Nie zamyka:** organic publish (osobne GO ≥2026-08-02) · ship disclosure w widget (osobny gate + GO) · Ads freeze do 2026-08-06.
 
-## 1. Inventory — public AI surfaces (agent 2026-07-31)
+---
 
-| Surface | System / path | Customer-facing? | Disclosure today |
-|---------|---------------|------------------|------------------|
-| Widget chat | `POST /api/v1/widget/chat` → `agent/customer_agent.py` (Claude) | YES (public) | **MISSING** in API/UI response — prompt admits AI only server-side |
-| Design Agent offerte | `api/routes/design_agent_offerte.py` | YES (if exposed) | **UNVERIFIED** — treat as AI until checked at publish |
-| Commander / VHQ | `commander-ui` | NO (operator HITL) | N/A for Art.50 public path |
-| Telegram WP agent | `api/telegram.py` → COI | Internal ops | N/A public |
-| MKT 2026-W31 video | Human shoot plans | Organic later | Captions/edit may be AI-assisted → disclose if used |
-| MKT images | No AI bus image as master | — | STOP synthetic masters |
+## Decyzja Founder (zapisana)
 
-## 2. Proposed interactive disclosure (NL)
+| Pole | Wartość |
+|------|---------|
+| Gate | `ACCEPT COM-AI-50` |
+| Disclosure | **ACCEPT** (tekst NL poniżej) |
+| Counsel | **TAK** (przed pierwszym organic ≥2026-08-02) |
+| Kiedy | 2026-07-31 ~14:20 +02 |
+
+### Kanoniczny disclosure NL
 
 > Je chat met een AI-assistent van FlexGrafik. Wil je een mens? Laat het weten — we nemen over.
 
-**Handoff path:** user asks for human → Dowódca via Telegram / WhatsApp (SPEED-TO-LEAD manual).  
-**Founder decision:** ACCEPT / EDIT copy before widget UI/API ships disclosure.
+**Handoff człowieka:** Telegram / WhatsApp → Dowódca (SPEED-TO-LEAD).
 
-## 3. Claims / deepfake STOP
+---
 
-- No synthetic „client” faces as testimonials  
-- No fake before/after — real footage only  
-- Reviewer = Dowódca before any publish GO  
+## HITL checklist (zamknięty)
 
-## 4. Marking / metadata (process stub)
+- [x] ACCEPT disclosure NL  
+- [x] Counsel TAK  
+- [x] STOP: bez syntetycznych twarzy / fake before-after / organic &lt;2026-08-02 / Ads freeze do 2026-08-06  
 
-| Step | Owner | Status |
-|------|-------|--------|
-| Decide when media is AI-generated vs AI-assisted vs none | Founder + counsel | **PARKED** |
-| Record `ai_disclosure` on Asset Card | Marketing ops | Template exists in Campus PROGRAM asset contract |
-| Machine-readable marking (KE Art.50) | Counsel | **UNVERIFIED** — escalate |
+---
 
-## 5. Evidence pack (fill at publish ≥2026-08-02)
+## 1. Inwentarz — publiczne powierzchnie AI
 
-- [ ] Screenshot of live disclosure (widget first message / chrome)
-- [ ] Copy version + timestamp
-- [ ] Model/provider if AI-assisted captions/edit (no secrets)
-- [ ] Human approval name + timestamp
-- [ ] Counsel note if obtained (optional path)
+| Powierzchnia | System | Klient widzi? | Disclosure dziś |
+|--------------|--------|---------------|-----------------|
+| Widget chat | `POST /api/v1/widget/chat` → `customer_agent.py` | TAK | **SHIP lokalny** (`ai_disclosure` + first-turn prefix) — prod po GO DEPLOY |
+| Design Agent offerte | `design_agent_offerte.py` | TAK (jeśli exposed) | traktuj jako AI |
+| Commander / VHQ | `commander-ui` | NIE | N/A |
+| Telegram WP agent | `telegram.py` | wewnętrzne | N/A |
+| MKT 2026-W31 video | human shoot | organic później | disclose jeśli AI captions/edit |
+| MKT images | — | — | STOP: syntetyczne mastery |
 
-## 6. Agent vs human
+## 2. Claims / deepfake — STOP
 
-| Item | Agent | Human |
-|------|-------|-------|
-| Inventory + this pack | DONE (this doc) | Review |
-| Accept NL disclosure | — | **REQUIRED** |
-| Counsel schedule before week-of publish | — | **REQUIRED if publishing** |
-| Widget UI/API disclosure ship | Only after Founder accept + separate GO | Approve |
-| Organic publish | — | Separate GO ≥2026-08-02 |
+- Bez syntetycznych twarzy „klientów”  
+- Bez fake before/after  
+- Publish tylko po GO Foundera  
 
-## 7. Decision log
+## 3. Evidence przy publish (≥2026-08-02)
 
-| When | Who | Decision |
-|------|-----|----------|
-| 2026-07-31 | Founder | GO prep COM-AI-50 after FIRM-IA (this BLAST) |
-| _pending_ | Founder | Accept / edit disclosure copy |
-| _pending_ | Founder | Counsel Y/N before first organic ≥2026-08-02 |
+- [ ] Screenshot live disclosure  
+- [ ] Wersja copy + timestamp  
+- [ ] Model/provider jeśli AI captions (bez sekretów)  
+- [ ] Approver + timestamp  
+- [ ] Notatka counsel  
+
+## 4. Decision log
+
+| Kiedy | Kto | Decyzja |
+|-------|-----|---------|
+| 2026-07-31 | Founder | GO prep COM-AI-50 (BLAST) |
+| 2026-07-31 | Founder | **ACCEPT** disclosure NL (kanoniczny tekst) |
+| 2026-07-31 | Founder | **Counsel TAK** przed organic ≥2026-08-02 |
+
+## 5. Następny krok
+
+| Gate | Co | Warunek |
+|------|-----|---------|
+| `COM-AI-50-SHIP` (proponowany) | Wstawienie disclosure w widget UI/API | osobne **GO** Dowódcy |
+| Organic publish | MKT / Growth | ≥2026-08-02 + counsel note + osobne GO |
+| Ads | paid | freeze do **2026-08-06** |

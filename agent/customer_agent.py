@@ -8,6 +8,7 @@ from typing import Dict, Any, List, Optional
 import httpx
 from anthropic import AsyncAnthropic
 from agent.alerts import send_alert
+from agent.widget_disclosure import apply_widget_ai_disclosure
 from cachetools import TTLCache
 
 logger = logging.getLogger(__name__)
@@ -115,6 +116,7 @@ TWOJE ZADANIE:
 3. Zachęcaj do wejścia w Wizard na zzpackage.flexgrafik.nl.
 4. Analizuj intencję (Lead Scoring).
 5. Jeśli klient poda email i zgodę na kontakt, potwierdź to krótko w reply.
+6. Jesteś AI-asystentem FlexGrafik. Serwer dokłada oficjalne AI-disclosure NL — nie zaprzeczaj temu i nie udawaj człowieka.
 
 Zasady scoringu: +60 to high intent (wycena/zakup), +40 to usługi, pytanie o cenę +30, termin +20.
 
@@ -266,15 +268,21 @@ async def process_customer_message(session_id: str, user_input: str) -> Dict[str
         "cta_sku": None,
         "lead_id": None,
     }
+    session_id = _normalize_widget_session_id(session_id)
+    async with _cache_lock:
+        history = _load_widget_history(session_id)
+    is_first_turn = len(history) == 0
+
     if not client:
         logger.error(
             "[CustomerAgent] Błąd krytyczny: ANTHROPIC_API_KEY nie jest ustawiony. Zwracam fallback."
         )
+        reply, disclosure = apply_widget_ai_disclosure(
+            fallback["reply"], is_first_turn=is_first_turn
+        )
+        fallback["reply"] = reply
+        fallback["ai_disclosure"] = disclosure
         return fallback
-
-    session_id = _normalize_widget_session_id(session_id)
-    async with _cache_lock:
-        history = _load_widget_history(session_id)
 
     if len(history) > 20:
         history = history[-20:]
@@ -351,7 +359,16 @@ async def process_customer_message(session_id: str, user_input: str) -> Dict[str
                 e,
                 exc_info=True,
             )
-            return {"error": "system_temporarily_unavailable", "code": 503}
+            reply, disclosure = apply_widget_ai_disclosure(
+                str(parsed.get("reply") or fallback["reply"]),
+                is_first_turn=is_first_turn,
+            )
+            return {
+                "error": "system_temporarily_unavailable",
+                "code": 503,
+                "reply": reply,
+                "ai_disclosure": disclosure,
+            }
 
         ai_score = int(lead_info.get("score") or 0)
         try:
@@ -392,6 +409,11 @@ async def process_customer_message(session_id: str, user_input: str) -> Dict[str
             session_id=session_id,
         )
 
+        reply, disclosure = apply_widget_ai_disclosure(
+            str(parsed.get("reply") or ""), is_first_turn=is_first_turn
+        )
+        parsed["reply"] = reply
+        parsed["ai_disclosure"] = disclosure
         parsed["wizard_deeplink"] = wizard_deeplink
         parsed["cta_sku"] = cta_sku
         parsed["lead_id"] = lead_id
@@ -408,4 +430,9 @@ async def process_customer_message(session_id: str, user_input: str) -> Dict[str
             logger.error(
                 "[CustomerAgent] Odpowiedź API (error): %s", e.response.text
             )
+        reply, disclosure = apply_widget_ai_disclosure(
+            fallback["reply"], is_first_turn=is_first_turn
+        )
+        fallback["reply"] = reply
+        fallback["ai_disclosure"] = disclosure
         return fallback

@@ -26,7 +26,7 @@ order_desk_sot: "docs/ops/ORDER-DESK-SOT-v0.md"
 | A2 | VHQ Final Dashboard | **DONE** |
 | C0 | Order Desk SoT discovery | **DONE · ACCEPTED** |
 | C1 | Order Desk thin WV (mirror RO) | **DONE · DEPLOY PASS** `vhq-w68a` |
-| B | Growth / Demand (COM-AI) | **HITL parallel** ACCEPT copy |
+| B | Growth / Demand (COM-AI) | **SHIP PRECLOSE** · czekaj `GO DEPLOY COM-AI-50-SHIP` · organic ≥2026-08-02 · counsel TAK |
 | C | Order Desk / S7 LIVE | **PARKED** (`blocked_sot` · EV-W2-010) |
 | D | 3D · MKT-ASSET · Ads freeze | **PARKED** |
 

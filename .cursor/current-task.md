@@ -1,11 +1,11 @@
-# DONE — VF-ORDER-DESK-WV-00 DEPLOY PASS
+# PRECLOSE — COM-AI-50-SHIP
 
-**Prod:** https://api.zzpackage.flexgrafik.nl/commander/?v=vhq-w68a  
-**Tip:** `eb3c45e` · seal FINISHED_PARTIAL_LOOP · Order Desk PARKED (mirror RO)
+**Gate:** widget AI disclosure NL shipped locally  
+**PRECLOSE:** `docs/handoffs/2026-07-31-COM-AI-50-SHIP-PRECLOSE.md`  
+**Prod VHQ:** still `vhq-w68a` (unrelated)
 
-## Next human
-1. COM-AI ACCEPT (`docs/ops/marketing/COM-AI-50-READY-PACK.md`)  
-2. Later: D5 U2–U8 before any `GO UNPARK EV-W2-010`
+## Next
+`GO DEPLOY COM-AI-50-SHIP` → VPS restart → smoke widget response has `ai_disclosure`
 
 ## STOP
-Fake S7 · Mollie · Ads · stage dirty `MKT/`
+Organic &lt;2026-08-02 · Ads freeze · deploy bez GO

@@ -70,6 +70,7 @@ async def widget_chat(request: Request):
             wizard_deeplink=result.get("wizard_deeplink"),
             cta_sku=result.get("cta_sku"),
             lead_id=result.get("lead_id"),
+            ai_disclosure=result.get("ai_disclosure"),
         )
     except HTTPException:
         raise

@@ -277,6 +277,10 @@ async def test_persist_failure_does_not_break_reply(monkeypatch):
                         "sess-fail-save", "hallo"
                     )
 
-    assert result.get("reply") == "Ok"
+    from agent.widget_disclosure import AI_DISCLOSURE_NL
+
+    assert result.get("reply", "").startswith(AI_DISCLOSURE_NL)
+    assert result.get("reply", "").endswith("Ok")
+    assert result.get("ai_disclosure") == AI_DISCLOSURE_NL
     assert "sess-fail-save" in _customer_sessions_cache
     _cleanup_db(path)

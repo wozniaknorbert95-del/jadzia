@@ -40,6 +40,8 @@ class CustomerChatResponse(BaseModel):
     wizard_deeplink: Optional[str] = None
     cta_sku: Optional[str] = None
     lead_id: Optional[str] = None
+    # COM-AI-50: always present for public widget clients (Art.50 interactive AI).
+    ai_disclosure: Optional[str] = None
 
 
 class PortalQualifyUiSuggestion(BaseModel):
