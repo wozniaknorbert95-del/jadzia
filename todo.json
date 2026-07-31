@@ -1,6 +1,6 @@
 {
   "project": "Jadzia-Core",
-  "last_updated": "2026-07-31 (VF-ORDER-DESK-WV-00 PRECLOSE · cache vhq-w68a · awaiting GO DEPLOY)",
+  "last_updated": "2026-07-31 (VF-ORDER-DESK-WV-00 DEPLOY PASS · tip eb3c45e · cache vhq-w68a)",
   "status": "active",
   "plan": "docs/ops/FLEXGRAFIK-VIRTUAL-HQ-PROGRAM.md",
   "active_gate": null,
@@ -9,7 +9,7 @@
   "todo_schema": "todo.schema.json",
   "gate_machine": {
     "active": null,
-    "active_state": "order_desk_wv_preclose_awaiting_go_deploy",
+    "active_state": "order_desk_wv_deployed_idle",
     "vhq_final": "completed · DEPLOY PASS · cache vhq-w67a · dashboard_seal FINISHED_PARTIAL_LOOP",
     "vhq_final_preclose": "docs/handoffs/2026-07-31-VF-VHQ-FINAL-00-PRECLOSE.md",
     "vhq_final_deploy": "docs/handoffs/2026-07-31-DEPLOY-VHQ-FINAL-00-CLOSE.md",
@@ -24,9 +24,11 @@
     "order_desk_sot_pack": "docs/ops/ORDER-DESK-SOT-v0.md",
     "order_desk_sot_spec": "docs/superpowers/specs/2026-07-31-order-desk-sot-discovery-design.md",
     "order_desk_sot_plan": "docs/superpowers/plans/2026-07-31-order-desk-sot-discovery.md",
-    "order_desk_wv": "PRECLOSE · local PASS · cache vhq-w68a · awaiting GO DEPLOY",
+    "order_desk_wv": "completed · DEPLOY PASS tip eb3c45e · cache vhq-w68a · EV-W2-010 PARKED",
     "order_desk_wv_blast": "docs/handoffs/2026-07-31-VF-ORDER-DESK-WV-00-BLAST.md",
     "order_desk_wv_preclose": "docs/handoffs/2026-07-31-VF-ORDER-DESK-WV-00-PRECLOSE.md",
+    "order_desk_wv_deploy": "docs/handoffs/2026-07-31-DEPLOY-VHQ-ORDER-DESK-WV-00-CLOSE.md",
+    "order_desk_wv_verify": "docs/handoffs/2026-07-31-VERIFY-ORDER-DESK-WV-00-POSTDEPLOY.md",
     "order_desk_wv_spec": "docs/superpowers/specs/2026-07-31-order-desk-wv-design.md",
     "order_desk_wv_plan": "docs/superpowers/plans/2026-07-31-order-desk-wv.md",
     "session_close": "docs/handoffs/2026-07-31-DEPLOY-VHQ-FINAL-00-CLOSE.md",
@@ -52,7 +54,7 @@
     "vhq_di_s3_close": "docs/archive/handoffs/2026-07-31-VF-VHQ-DI-S3-APPROVAL-CLOSE.md",
     "vhq_di_s3_deploy": "docs/archive/handoffs/2026-07-31-DEPLOY-VHQ-DI-S3-00-CLOSE.md",
     "vhq_di_s3_evidence": "docs/archive/handoffs/evidence-vhq-di-s3/",
-    "prod_tip": "c870cbd / cache vhq-w67a / dashboard_seal FINISHED_PARTIAL_LOOP (FINAL DEPLOY PASS)",
+    "prod_tip": "eb3c45e / cache vhq-w68a / Order Desk mirror RO PARKED · dashboard_seal FINISHED_PARTIAL_LOOP",
     "vhq_firm_ia_blast": "docs/handoffs/2026-07-31-VF-VHQ-FIRM-IA-00-BLAST.md",
     "vhq_firm_ia_close": "docs/handoffs/2026-07-31-VF-VHQ-FIRM-IA-00-CLOSE.md",
     "vhq_firm_ia": "completed · DEPLOY PASS tip adafd83 · cache vhq-w66a · Esc HQ home · Firm Chain LIVE",
@@ -107,7 +109,7 @@
     "vhq_w7_dogfood": "docs/archive/handoffs/2026-07-31-VF-VHQ-W7-DOGFOOD-FOUNDER-DOGFOOD.md",
     "vhq_w7_close": "docs/archive/handoffs/2026-07-31-VF-VHQ-W7-DOGFOOD-CLOSE.md",
     "unblocked": [],
-    "ready_for_human": ["VF-ORDER-DESK-WV-00"],
+    "ready_for_human": ["COM-AI-50-READY"],
     "parked": ["MKT-ASSET-00", "VF-CAMPUS-W4", "VF-VHQ-3D-PARKED", "VF-PARK-PROCUREMENT", "VF-PARK-DISPATCH", "VF-PARK-PRINTPACK-SAAS", "VF-PARK-FINANCE-AGENT"],
     "founder_override": "2026-07-27 VHQ = primary operational dashboard; Commander = control/data/audit/action engine; no content duplication — reorganize into MC + Work Views",
     "campus_prod_tip_legacy_ux_audit": "a49644c / runtime 06212d7 / cache vhq-w61a (superseded by P2-SNR tip 7e34940)",
@@ -284,7 +286,7 @@
     },
     "proposed_next_gate": null,
     "proposed_next_gate_active": false,
-    "proposed_next": "GO DEPLOY VF-ORDER-DESK-WV-00 (vhq-w68a). Parallel HITL: COM-AI ACCEPT. EV-W2-010 stays PARKED until D5 U2–U8."
+    "proposed_next": "HITL COM-AI ACCEPT. Later: ops_state store / D5 unpark only with GO UNPARK. Ads freeze do 2026-08-06."
   },
   "standing_go_closeout": false,
   "closeout_queue": [],
@@ -292,15 +294,15 @@
     {
       "gate": "VF-VHQ-DI-S7-LOOP",
       "status": "blocked_sot",
-      "reason": "PARKED — SoT ACCEPTED + WV mirror RO PRECLOSE. Unpark needs D5 U2–U8 + GO UNPARK. NOT LIVE. Mollie test ≠ unlock."
+      "reason": "PARKED — SoT ACCEPTED + WV mirror RO DEPLOYED. Unpark needs D5 U2–U8 + GO UNPARK. NOT LIVE. Mollie test ≠ unlock."
     }
   ],
   "closeout_expires": "2026-08-15",
-  "next_human": "GO DEPLOY VF-ORDER-DESK-WV-00 (cache vhq-w68a). Parallel: COM-AI ACCEPT. Organic ≥2026-08-02. Ads freeze do 2026-08-06.",
-  "next_agent": "On GO DEPLOY: jadzia-deploy VF-ORDER-DESK-WV-00 → dogfood ?v=vhq-w68a → VERIFY. No unpark EV-W2-010. No fake S7.",
+  "next_human": "ACCEPT COM-AI copy in COM-AI-50-READY-PACK.md. Organic ≥2026-08-02. Ads freeze do 2026-08-06. Observe Order Desk mirror at vhq-w68a (still PARKED).",
+  "next_agent": "Idle unless COM-AI runtime gate or Founder GO for ops_state/D5 unpark. No fake S7. No Mollie.",
   "budget_freeze_until": "2026-08-06",
   "budget_freeze_note": "Dowódca 2026-07-27: zero ad spend 10 dni — MKT assets PARKED; Growth = organic/COM-AI first, paid after freeze",
-  "agent_rule": "SoT ACCEPTED. WV-00 PRECLOSE vhq-w68a. Preserve EV-W2-010 PARKED. No Order LIVE. Deploy only with GO DEPLOY.",
+  "agent_rule": "WV-00 DEPLOYED tip eb3c45e / vhq-w68a. EV-W2-010 PARKED. No Order LIVE. Deploy only with GO DEPLOY.",
   "sprints": {
     "remediation": "completed",
     "coi_phase_a": "deploy_complete",
@@ -2111,7 +2113,7 @@
       "id": "VF-ORDER-DESK-WV-00",
       "sprint": "Order Desk SoT",
       "task": "Thin read-only Order Desk Work View — INT-002 mirror + honesty, PARKED EV-W2-010",
-      "status": "ready_for_human",
+      "status": "completed",
       "priority": "critical",
       "owner": "agent",
       "depends_on": ["VF-ORDER-DESK-SOT-00"],
@@ -2119,7 +2121,9 @@
       "evidence_required": "W1–W5 local + GO DEPLOY + prod dogfood vhq-w68a",
       "runtime_changes_allowed": true,
       "preclose": "docs/handoffs/2026-07-31-VF-ORDER-DESK-WV-00-PRECLOSE.md",
-      "note": "2026-07-31 PRECLOSE local PASS · cache vhq-w68a · pytest 24/24. Awaiting GO DEPLOY. No unpark. No Mollie."
+      "deploy": "docs/handoffs/2026-07-31-DEPLOY-VHQ-ORDER-DESK-WV-00-CLOSE.md",
+      "verify": "docs/handoffs/2026-07-31-VERIFY-ORDER-DESK-WV-00-POSTDEPLOY.md",
+      "note": "2026-07-31 DEPLOY+VERIFY PASS tip eb3c45e · cache vhq-w68a · EV-W2-010 PARKED · no S7 LIVE."
     },
     {
       "id": "INC-SSH-RECOVERY-00",

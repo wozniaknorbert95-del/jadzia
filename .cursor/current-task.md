@@ -1,17 +1,11 @@
-# PRECLOSE — VF-ORDER-DESK-WV-00
+# DONE — VF-ORDER-DESK-WV-00 DEPLOY PASS
 
-**Gate:** `VF-ORDER-DESK-WV-00` (thin mirror Work View)  
-**SoT:** `docs/ops/ORDER-DESK-SOT-v0.md` **ACCEPTED**  
-**PRECLOSE:** `docs/handoffs/2026-07-31-VF-ORDER-DESK-WV-00-PRECLOSE.md`  
-**Cache:** `vhq-w68a` · pytest 24/24
+**Prod:** https://api.zzpackage.flexgrafik.nl/commander/?v=vhq-w68a  
+**Tip:** `eb3c45e` · seal FINISHED_PARTIAL_LOOP · Order Desk PARKED (mirror RO)
 
-## Status
-Local PASS. Awaiting **GO DEPLOY**. Room stays PARKED · EV-W2-010.
-
-## Next
-1. Dowódca: `GO DEPLOY VF-ORDER-DESK-WV-00`  
-2. Parallel HITL: COM-AI ACCEPT  
-3. After deploy dogfood: still no unpark without D5 U2–U8
+## Next human
+1. COM-AI ACCEPT (`docs/ops/marketing/COM-AI-50-READY-PACK.md`)  
+2. Later: D5 U2–U8 before any `GO UNPARK EV-W2-010`
 
 ## STOP
-Unpark · fake S7 · Mollie · Ads · stage dirty `MKT/`
+Fake S7 · Mollie · Ads · stage dirty `MKT/`
