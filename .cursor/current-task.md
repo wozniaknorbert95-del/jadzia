@@ -1,12 +1,10 @@
-# Idle — VF-VHQ-P2-SNR-00 CLOSED (code PASS)
+# DEPLOY_READY — VF-VHQ-P2-SNR-00
 
-**Cache:** `vhq-w62a` (prod until GO DEPLOY)  
-**CLOSE:** `docs/handoffs/2026-07-31-VF-VHQ-P2-SNR-00-CLOSE.md`  
-**pytest:** 9/9 queue + escalation  
+**Tip:** `4c1ab56` · cache `vhq-w62a`  
+**Verify:** pytest 9/9 · local E2E PASS · `docs/handoffs/evidence-vhq-p2-snr/VERIFY-DEPLOY-READY.md`
 
 ## Next
 
-- `GO DEPLOY` → prod dogfood `?v=vhq-w62a`  
-- W2 NBA only with new Founder GO · 3D PARKED  
+Napisz **`GO DEPLOY`** → VPS pull/restart + prod dogfood `?v=vhq-w62a`  
 
-**STOP:** no MKT · no Order LIVE · no 3D  
+**STOP:** no MKT · no 3D · no Order LIVE  

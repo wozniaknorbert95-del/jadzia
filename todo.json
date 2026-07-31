@@ -1,6 +1,6 @@
 {
   "project": "Jadzia-Core",
-  "last_updated": "2026-07-31 (VF-VHQ-P2-SNR-00 CLOSED code PASS · cache vhq-w62a · deploy parked)",
+  "last_updated": "2026-07-31 (VF-VHQ-P2-SNR-00 DEPLOY_READY · tip 4c1ab56 · cache vhq-w62a)",
   "status": "idle",
   "plan": "docs/ops/FLEXGRAFIK-VIRTUAL-HQ-PROGRAM.md",
   "active_gate": null,
@@ -10,7 +10,7 @@
   "gate_machine": {
     "active": null,
     "active_state": "idle",
-    "vhq_p2_snr": "completed · CLOSED code PASS · cache vhq-w62a · deploy parked · pytest 9/9 · residual analytics_stale OK for W2",
+    "vhq_p2_snr": "completed · DEPLOY_READY tip 4c1ab56 · cache vhq-w62a · pytest 9/9 · local E2E PASS · residual analytics_stale OK for W2",
     "vhq_p2_snr_blast": "docs/handoffs/2026-07-31-VF-VHQ-P2-SNR-00-BLAST.md",
     "vhq_p2_snr_close": "docs/handoffs/2026-07-31-VF-VHQ-P2-SNR-00-CLOSE.md",
     "vhq_p2_snr_evidence": "docs/handoffs/evidence-vhq-p2-snr/",
@@ -212,8 +212,8 @@
   "standing_go_closeout": false,
   "closeout_queue": [],
   "closeout_expires": "2026-08-01",
-  "next_human": "GO DEPLOY vhq-w62a for P2-SNR prod dogfood, or idle. Optional COM-AI-50 ≥2026-08-02. 3D parked. Nie ruszaj MKT.",
-  "next_agent": "Idle. P2-SNR-00 CLOSED code PASS cache vhq-w62a. Await GO DEPLOY. W2 NBA parked. Preserve EV-W2-010. No MKT. No 3D.",
+  "next_human": "DEPLOY_READY: GO DEPLOY tip 4c1ab56 / vhq-w62a, then prod dogfood D3–D6. Optional COM-AI-50 ≥2026-08-02. 3D parked. Nie ruszaj MKT.",
+  "next_agent": "Idle. P2-SNR-00 DEPLOY_READY tip 4c1ab56. Await GO DEPLOY. W2 NBA parked. Preserve EV-W2-010. No MKT. No 3D.",
   "budget_freeze_until": "2026-08-06",
   "budget_freeze_note": "Dowódca 2026-07-27: zero ad spend 10 dni — MKT work PARKED by Founder override",
   "agent_rule": "1-1-1. Preserve EV-W2-010. No Order LIVE. No silent L3/L4. No MKT. No 3D. Deploy only with GO DEPLOY.",
