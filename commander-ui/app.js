@@ -278,10 +278,11 @@ function bindSystemMapHops() {
 }
 
 async function loadHome() {
-  const prioEl = document.getElementById("priorities");
-  const queueEl = document.getElementById("queue-list");
-  const chipsEl = document.getElementById("home-ops-chips");
-  const summaryEl = document.getElementById("home-ops-summary");
+  let prioEl = document.getElementById("priorities");
+  let queueEl = document.getElementById("queue-list");
+  let chipsEl = document.getElementById("home-ops-chips");
+  let summaryEl = document.getElementById("home-ops-summary");
+  if (!prioEl || !queueEl) return;
   prioEl.setAttribute("aria-busy", "true");
   queueEl.setAttribute("aria-busy", "true");
   prioEl.innerHTML = homeSkeleton(2);
@@ -297,17 +298,30 @@ async function loadHome() {
       api("/api/v1/commander/priorities/today"),
       api("/api/v1/commander/queue"),
     ]);
+    // Re-query after await — VHQ cold-open may remount slot nodes mid-flight.
+    prioEl = document.getElementById("priorities");
+    queueEl = document.getElementById("queue-list");
+    chipsEl = document.getElementById("home-ops-chips");
+    summaryEl = document.getElementById("home-ops-summary");
+    if (!prioEl || !queueEl) return;
     renderPriorities(prio.priorities || []);
     renderQueue(queue.items || []);
     prioEl.removeAttribute("aria-busy");
     queueEl.removeAttribute("aria-busy");
     if (typeof vhqUpdateSessionBanner === "function") vhqUpdateSessionBanner();
   } catch (e) {
-    prioEl.removeAttribute("aria-busy");
-    queueEl.removeAttribute("aria-busy");
+    prioEl = document.getElementById("priorities");
+    queueEl = document.getElementById("queue-list");
+    summaryEl = document.getElementById("home-ops-summary");
+    if (prioEl) prioEl.removeAttribute("aria-busy");
+    if (queueEl) queueEl.removeAttribute("aria-busy");
     if (typeof vhqUpdateSessionBanner === "function") vhqUpdateSessionBanner();
-    prioEl.innerHTML = `<p class="state-error">Nie udało się pobrać priorytetów. <button type="button" class="primary" id="home-retry">Spróbuj ponownie</button></p>`;
-    queueEl.innerHTML = `<p class="state-error">Nie udało się pobrać kolejki.</p>`;
+    if (prioEl) {
+      prioEl.innerHTML = `<p class="state-error">Nie udało się pobrać priorytetów. <button type="button" class="primary" id="home-retry">Spróbuj ponownie</button></p>`;
+    }
+    if (queueEl) {
+      queueEl.innerHTML = `<p class="state-error">Nie udało się pobrać kolejki.</p>`;
+    }
     if (summaryEl) summaryEl.textContent = "Status częściowy — odśwież po naprawie sesji.";
     const retry = document.getElementById("home-retry");
     if (retry) retry.onclick = () => loadHome().catch((err) => toast(err.message, "err"));
@@ -1391,10 +1405,21 @@ async function loadSettings() {
   document.getElementById("delegat-banner").hidden = !!s.delegat_configured;
 }
 
+function vhqNeedsHomeData() {
+  const active = document.querySelector(".view:not([hidden])")?.id?.replace("view-", "") || "home";
+  if (active === "home") return true;
+  if (active !== "hq") return false;
+  const command = document.getElementById("vhq-command");
+  const workSales = document.getElementById("vhq-work-sales");
+  if (command && !command.hidden) return true;
+  if (workSales && !workSales.hidden) return true;
+  return false;
+}
+
 async function refresh() {
   if (!getToken()) return;
   const active = document.querySelector(".view:not([hidden])")?.id?.replace("view-", "") || "home";
-  if (active === "home") await loadHome();
+  if (active === "home" || vhqNeedsHomeData()) await loadHome();
   if (active === "marketing") await loadMarketing();
   if (active === "analytics") await loadAnalytics();
   if (active === "agents") await loadAgents();
@@ -3511,12 +3536,18 @@ function vhqApplyRoomChrome(roomId) {
     vhqRenderCriticalPin();
     vhqRenderVaultStrip();
     vhqUpdateSessionBanner();
+    if (typeof getToken === "function" && getToken()) {
+      loadHome().catch((e) => toast(e.message, "err"));
+    }
   } else if (roomId === "sales-room") {
     vhqSetMode("work");
     vhqShowWorkPanel("sales-room");
     vhqMountSlotsForRoom("sales-room");
     vhqBindWorkViews();
     vhqUpdateWorkSessionBanner();
+    if (typeof getToken === "function" && getToken()) {
+      loadHome().catch((e) => toast(e.message, "err"));
+    }
   } else if (roomId === "wizard-quote") {
     vhqSetMode("work");
     vhqRestoreAllSlots();
@@ -3849,6 +3880,9 @@ function bindVhqShell() {
   });
   document.getElementById("vhq-to-mc")?.addEventListener("click", () => {
     vhqGoMissionControl({ historyMode: "push" });
+  });
+  document.getElementById("vhq-open-vault")?.addEventListener("click", () => {
+    vhqRenderRoom("approval-vault", { historyMode: "push" });
   });
   document.getElementById("vhq-open-audit")?.addEventListener("click", () => {
     vhqRunAction({ type: "view", target: "audit" });

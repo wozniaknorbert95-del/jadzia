@@ -1,16 +1,13 @@
-# VF-VHQ-W7-DOGFOOD — CLOSED PASS
+# Idle — VF-VHQ-UX-AUDIT-00 CLOSED (Conditional Pass)
 
-**Gate:** `VF-VHQ-W7-DOGFOOD` · `completed`  
-**Cache:** `vhq-w60a` · runtime `06212d7`  
-**CLOSE:** `docs/handoffs/2026-07-31-VF-VHQ-W7-DOGFOOD-CLOSE.md`  
-**Timer:** 994 ms ≤30s  
-
-## Done
-
-Q1–Q7 PASS · honest gaps · Order PARKED EV-W2-010 · Vault PARTIAL · 3D still parked  
+**Last gate:** `VF-VHQ-UX-AUDIT-00`  
+**Report:** `docs/handoffs/2026-07-31-VF-VHQ-UX-AUDIT-00-REPORT.md`  
+**CLOSE:** `docs/handoffs/2026-07-31-VF-VHQ-UX-AUDIT-00-CLOSE.md`  
+**Tip cache:** `vhq-w61a` (prod still `vhq-w60a` until GO DEPLOY)
 
 ## Next
 
-Idle / COM-AI-50 optional · **no 3D** without separate unpark GO  
+- `GO DEPLOY` → prod re-walk F1/F2/F3 on `?v=vhq-w61a`  
+- Else idle · COM-AI-50 ≥2026-08-02 · 3D PARKED  
 
-**STOP:** no MKT · no Order LIVE · no silent L3/L4  
+**STOP:** no MKT · no 3D · no Order LIVE without GO  
