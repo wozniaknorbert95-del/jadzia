@@ -1,12 +1,13 @@
-# COM-AI-50-READY — prep (ready_for_human)
+# VF-VHQ-FINAL-00 — PRECLOSE · ready_for_go_deploy
 
-**Kanon:** todo.json → COM-AI-50-READY-PACK.md  
-**BLAST:** `docs/handoffs/2026-07-31-COM-AI-50-READY-BLAST.md`  
-**Pack:** `docs/ops/marketing/COM-AI-50-READY-PACK.md`  
-**VHQ tip:** runtime `adafd83` · cache `vhq-w66a`
+**Cache:** `vhq-w67a` · pytest 17/17  
+**PRECLOSE:** `docs/handoffs/2026-07-31-VF-VHQ-FINAL-00-PRECLOSE.md`
 
-## ACTIVE
-Agent inventory DONE · czekamy na Founder ACCEPT/EDIT disclosure NL
+## DONE locally
+W0–W3 · F7 Firm Chain only · Finish Cards · Deliver honesty · W3 polish
+
+## NEXT HUMAN
+`GO DEPLOY VF-VHQ-FINAL-00`
 
 ## STOP
-Organic <2026-08-02 · Ads · Order LIVE · fake COMPLETE · widget runtime bez GO DEPLOY · stage dirty `MKT/`
+Order LIVE · fake S7 · Ads · deploy bez GO · stage dirty `MKT/`

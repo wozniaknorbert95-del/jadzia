@@ -1733,14 +1733,19 @@ const VHQ_ROOMS = {
     firmRole: "Tu firma pilnuje zdrowia agentów, workerów i krytycznych probe.",
     limitation:
       "Worker SSH recovered (INC-SSH-RECOVERY-00 CLOSED 2026-07-31 · ssh_connection=ok). OS/VCMS post-auth remain PARTIAL.",
-    action: { type: "view", target: "agents", label: "Open Agenci tab" },
+    action: {
+      type: "view",
+      target: "agents",
+      label: "Open in Tools · Agenci",
+    },
+    unlockHint: "Pełna konsola agentów = Tools. Tu: kanoniczny health + hopy — bez fake busy agents.",
     mvp: true,
     pulse: true,
     truthPilot: false,
     floorCard: true,
     criticalPin: false,
     links: [
-      { text: "Sub-area: System Health / AI Health", href: null },
+      { text: "Health strip: Worker SSH [LIVE] · DA probe [LIVE] · OS/VCMS [PARTIAL]", href: null },
       {
         text: "[LIVE] Worker SSH · ssh_connection=ok · INC-SSH-RECOVERY-00 CLOSED",
         href: null,
@@ -1749,8 +1754,8 @@ const VHQ_ROOMS = {
         text: "[LIVE] Design Agent technical probe · EV-W2-006 — NOT a Production desk",
         href: "/api/v1/design-agent/health",
       },
-      { text: "[PARTIAL] Agent OS", href: "https://os.flexgrafik.nl" },
-      { text: "[PARTIAL] VCMS", href: "https://cmd.flexgrafik.nl" },
+      { text: "[PARTIAL] Agent OS hop", href: "https://os.flexgrafik.nl" },
+      { text: "[PARTIAL] VCMS hop", href: "https://cmd.flexgrafik.nl" },
     ],
   },
   "boardroom": {
@@ -1786,8 +1791,13 @@ const VHQ_ROOMS = {
     sotLabel: "Existing Analytics surface (Commander tab Analityka) — Finance data UNVERIFIED",
     sotHref: null,
     firmRole: "Tu firma czyta liczby, marżę i sygnały bez wymyślania KPI.",
-    limitation: "Path-only evidence EV-W2-008. Purchase/Mollie PARK. No fake revenue numbers.",
-    action: { type: "view", target: "analytics", label: "Open Analityka tab" },
+    limitation: "Path-only evidence EV-W2-008. Purchase/Mollie PARK. No fake revenue numbers. Zero green euro without freshness.",
+    action: {
+      type: "view",
+      target: "analytics",
+      label: "Open in Tools · Analityka (insufficient_data)",
+    },
+    unlockHint: "Brak verified finance freshness — nie pokazuj zielonych euro w HQ.",
     mvp: false,
     pulse: true,
     truthPilot: true,
@@ -1796,7 +1806,7 @@ const VHQ_ROOMS = {
       href: null,
       interactive: false,
       label: "Analytics",
-      meta: "P2 · Analytics · Finance data UNVERIFIED — use tab Analityka (existing)",
+      meta: "Finance UNVERIFIED — Tools › Analityka only",
     },
     kpi: [{ id: "Finance KPI", value: "insufficient_data", note: "no finance KPI without authenticated freshness" }],
   },
@@ -2425,12 +2435,25 @@ function vhqSafeLink(href, label, className) {
 let vhqOpen = false;
 let vhqLastFocus = null;
 let vhqCurrentRoom = "mission-control";
-let vhqCurrentFloor = "P3";
-let vhqCurrentFirmStage = null;
+let vhqCurrentFloor = "P3"; // legacy data field only — not a UI filter (VF-VHQ-FINAL-00 F7)
+let vhqCurrentFirmStage = "direct";
 let vhqFocusinGuard = null;
 let vhqNavState = "mc";
 let vhqApplyingHistory = false;
 const VHQ_FIRM_STAGES = ["demand", "sell", "deliver", "direct"];
+const VHQ_FIRM_STAGE_LABELS = {
+  demand: "1 Popyt",
+  sell: "2 Sprzedaż",
+  deliver: "3 Realizacja",
+  direct: "4 Sterowanie",
+};
+const VHQ_FLOOR_TO_STAGE = {
+  P3: "direct",
+  P2: "direct",
+  P1: "sell",
+  P0: "deliver",
+  MAG: "deliver",
+};
 
 /** W3.1 primary shell flag. Override: ?vhq_shell=legacy|primary */
 function vhqIsPrimary() {
@@ -2512,30 +2535,38 @@ function vhqEscHtml(s) {
     .replace(/"/g, "&quot;");
 }
 
-function vhqSetFloor(floor) {
-  vhqCurrentFloor = floor;
-  document.querySelectorAll(".vhq-floor-band").forEach((band) => {
-    band.hidden = band.dataset.floor !== floor;
-  });
-  document.querySelectorAll(".vhq-floor-btn").forEach((btn) => {
-    const on = btn.dataset.floor === floor;
-    btn.classList.toggle("active", on);
-    btn.setAttribute("aria-selected", on ? "true" : "false");
-  });
+function vhqStageLabel(stage) {
+  return VHQ_FIRM_STAGE_LABELS[stage] || stage || "—";
 }
 
-function vhqSetFirmStageFilter(stage) {
-  stage = VHQ_FIRM_STAGES.includes(stage) ? stage : null;
+/** Legacy floor id → firmStage (data only; no floor tabrow UI). */
+function vhqSetFloor(floor) {
+  vhqCurrentFloor = floor;
+  const stage = VHQ_FLOOR_TO_STAGE[floor] || vhqCurrentFirmStage || "direct";
+  vhqSetFirmStageFilter(stage, { browseOnly: true });
+}
+
+function vhqSetFirmStageFilter(stage, opts = {}) {
+  stage = VHQ_FIRM_STAGES.includes(stage) ? stage : "direct";
   vhqCurrentFirmStage = stage;
   document.querySelectorAll(".vhq-firm-stage").forEach((btn) => {
     const on = btn.dataset.firmStage === stage;
     btn.classList.toggle("is-active", on);
     btn.setAttribute("aria-current", on ? "true" : "false");
   });
-  document.querySelectorAll(".vhq-room-card[data-firm-stage]").forEach((card) => {
-    const match = !stage || card.dataset.firmStage === stage;
-    card.classList.toggle("is-dim", stage && !match);
+  document.querySelectorAll(".vhq-stage-band").forEach((band) => {
+    band.hidden = band.dataset.firmStage !== stage;
   });
+  document.querySelectorAll(".vhq-room-card[data-firm-stage]").forEach((card) => {
+    const match = card.dataset.firmStage === stage;
+    card.classList.toggle("is-dim", !match);
+    card.hidden = !match;
+  });
+  const honesty = document.getElementById("vhq-deliver-honesty");
+  if (honesty) honesty.hidden = stage !== "deliver";
+  if (!opts.browseOnly) {
+    /* caller may open browse panel separately */
+  }
 }
 
 function vhqBindFirmChain() {
@@ -2544,8 +2575,7 @@ function vhqBindFirmChain() {
     btn.dataset.vhqFirmBound = "1";
     btn.addEventListener("click", () => {
       const stage = btn.dataset.firmStage;
-      const already = btn.classList.contains("is-active");
-      vhqSetFirmStageFilter(already ? null : stage);
+      vhqShowStageBrowse(stage, { historyMode: "push" });
     });
   });
 }
@@ -2557,14 +2587,16 @@ function vhqClearRoomHighlights() {
   });
 }
 
-function vhqShowFloorBrowse(floor, opts = {}) {
+function vhqShowStageBrowse(stage, opts = {}) {
   const historyMode = opts.historyMode || "push";
-  vhqSetFloor(floor);
+  stage = VHQ_FIRM_STAGES.includes(stage) ? stage : "direct";
+  vhqSetFirmStageFilter(stage, { browseOnly: true });
   vhqCurrentRoom = null;
   vhqClearRoomHighlights();
 
+  const label = vhqStageLabel(stage);
   const loc = document.getElementById("vhq-location");
-  if (loc) loc.textContent = `HQ › ${floor} › select a room`;
+  if (loc) loc.textContent = `HQ › ${label} › select a room`;
 
   const teleport = document.getElementById("vhq-teleport");
   if (teleport) teleport.value = "";
@@ -2579,13 +2611,23 @@ function vhqShowFloorBrowse(floor, opts = {}) {
   const extra = document.getElementById("vhq-panel-extra");
   const actions = document.getElementById("vhq-panel-actions");
 
-  if (title) title.textContent = `Floor ${floor}`;
-  if (purpose) purpose.textContent = "Select a room on this floor.";
-  if (statusEl) statusEl.textContent = "";
+  if (title) title.textContent = label;
+  if (purpose) {
+    purpose.textContent =
+      stage === "deliver"
+        ? "Wybierz pokój realizacji. Order Desk i sieć partnerów są PARKED (EV-W2-010) — bez LIVE KPI."
+        : "Wybierz pokój na tym etapie łańcucha firmy.";
+  }
+  if (statusEl) statusEl.textContent = stage === "deliver" ? "[PARKED chain · EV-W2-010]" : "";
   if (evidence) evidence.textContent = "";
   if (owner) owner.textContent = "";
   if (sot) sot.textContent = "";
-  if (limit) limit.textContent = "";
+  if (limit) {
+    limit.textContent =
+      stage === "deliver"
+        ? "Limitation: brak biurka fulfilment SoT — nie udawaj Order LIVE."
+        : "";
+  }
   vhqClear(extra);
   vhqClear(actions);
   vhqSetMode("world");
@@ -2596,14 +2638,14 @@ function vhqShowFloorBrowse(floor, opts = {}) {
   }
 }
 
-/** Floor filter only — never auto-opens a room. */
+/** @deprecated floor tabrow removed — maps floor → firmStage browse */
+function vhqShowFloorBrowse(floor, opts = {}) {
+  vhqShowStageBrowse(VHQ_FLOOR_TO_STAGE[floor] || "direct", opts);
+}
+
+/** @deprecated */
 function vhqSelectFloor(floor) {
-  const current = vhqCurrentRoom ? VHQ_ROOMS[vhqCurrentRoom] : null;
-  if (current && current.floor === floor) {
-    vhqSetFloor(floor);
-    return;
-  }
-  vhqShowFloorBrowse(floor, { historyMode: "push" });
+  vhqShowStageBrowse(VHQ_FLOOR_TO_STAGE[floor] || "direct", { historyMode: "push" });
 }
 
 function vhqFillRoomExtra(extra, room) {
@@ -2612,9 +2654,12 @@ function vhqFillRoomExtra(extra, room) {
   if (room.firmRole) {
     extra.appendChild(vhqEl("p", "vhq-firm-role", room.firmRole));
   }
-  if (room.unlockHint) {
-    extra.appendChild(vhqEl("p", "hint vhq-unlock-hint", room.unlockHint));
-  }
+  const unlock =
+    room.unlockHint ||
+    (room.status === "PARKED" || room.status === "PLANNED"
+      ? "Shell uczciwy — odblokowanie wymaga osobnego SoT / Founder GO."
+      : "Finish Card / Work View — szczegóły w limitation i SoT.");
+  extra.appendChild(vhqEl("p", "hint vhq-unlock-hint", unlock));
   if (room.links && room.links.length) {
     const list = vhqEl("ul", "vhq-room-links");
     room.links.forEach((lnk) => {
@@ -2633,11 +2678,15 @@ function vhqRenderRoom(roomId, opts = {}) {
   const room = VHQ_ROOMS[resolved];
   if (!room) return;
   vhqCurrentRoom = resolved;
-  vhqSetFloor(room.floor);
-  vhqSetFirmStageFilter(room.firmStage || null);
+  vhqCurrentFloor = room.floor;
+  vhqSetFirmStageFilter(room.firmStage || VHQ_FLOOR_TO_STAGE[room.floor] || "direct", {
+    browseOnly: true,
+  });
 
   const loc = document.getElementById("vhq-location");
-  if (loc) loc.textContent = `HQ › ${room.floor} › ${room.label}`;
+  if (loc) {
+    loc.textContent = `HQ › ${vhqStageLabel(room.firmStage || "direct")} › ${room.label}`;
+  }
 
   const teleport = document.getElementById("vhq-teleport");
   if (teleport && teleport.value !== resolved) teleport.value = resolved;
@@ -2672,8 +2721,8 @@ function vhqRenderRoom(roomId, opts = {}) {
   if (evidence) {
     const ev = room.evidence ? `Evidence: ${room.evidence}` : "Evidence: —";
     const lv = room.lastVerified
-      ? ` · last_verified: ${room.lastVerified}`
-      : " · last_verified: insufficient_data";
+      ? ` · registry: ${room.lastVerified} (not live-verified)`
+      : " · registry / not live-verified";
     evidence.textContent = ev + lv;
   }
   if (owner) owner.textContent = `Owner: ${room.owner || "—"}`;
@@ -2823,22 +2872,21 @@ function vhqRenderPulse() {
 }
 
 function vhqRenderFloorCards() {
-  const floors = ["P3", "P2", "P1", "P0", "MAG"];
-  floors.forEach((floor) => {
-    const grid =
-      document.querySelector(`[data-vhq-floor-grid="${floor}"]`) ||
-      document.querySelector(`.vhq-floor-band[data-floor="${floor}"] .vhq-room-grid`);
+  VHQ_FIRM_STAGES.forEach((stage) => {
+    const grid = document.querySelector(
+      `.vhq-stage-band[data-firm-stage="${stage}"] .vhq-room-grid`
+    );
     if (!grid) return;
     vhqClear(grid);
     vhqRoomsList()
-      .filter((r) => r.floor === floor && r.floorCard !== false)
+      .filter((r) => (r.firmStage || VHQ_FLOOR_TO_STAGE[r.floor]) === stage && r.floorCard !== false)
       .forEach((room) => {
         const btn = document.createElement("button");
         btn.type = "button";
         btn.className = "vhq-room vhq-room-card" + (room.mvp ? " vhq-room--mvp" : "");
         btn.dataset.room = room.id;
         btn.dataset.status = room.status;
-        btn.dataset.firmStage = room.firmStage || "";
+        btn.dataset.firmStage = room.firmStage || stage;
         const name = vhqEl("span", "vhq-room__name", room.label);
         const badge = vhqEl("span", "vhq-room__badge", `[${room.status}]`);
         badge.dataset.status = room.status;
@@ -2847,7 +2895,7 @@ function vhqRenderFloorCards() {
         grid.appendChild(btn);
       });
   });
-  vhqSetFirmStageFilter(vhqCurrentFirmStage);
+  vhqSetFirmStageFilter(vhqCurrentFirmStage || "direct", { browseOnly: true });
 }
 
 let _vhqOpsBusCache = { events: [], fetchedAt: 0 };
@@ -3023,7 +3071,7 @@ function vhqBindVaultWorkView() {
   const room = VHQ_ROOMS["approval-vault"];
   const eyebrow = document.getElementById("vhq-work-vault-eyebrow");
   if (eyebrow && room) {
-    eyebrow.textContent = `${room.label} · [${room.status}] · ${room.evidence || "EV-W6-001"}`;
+    eyebrow.textContent = `${room.label} · [${room.status}] · owner ${room.owner || "—"} · ${room.evidence || "EV-W6-001"}`;
   }
   const banners = document.getElementById("vhq-work-vault-banners");
   if (banners) {
@@ -3298,11 +3346,12 @@ function vhqBindWorkViews() {
   if (mktMeta && mkt) {
     vhqClear(mktMeta);
     const rows = [
-      ["Status", `${mkt.status} — campaign state not verified`],
+      ["Status", `${mkt.status} — campaign state not verified · observe-only`],
       ["Evidence", mkt.evidence || "—"],
       ["Explanation", mkt.sotLabel || ""],
       ["Campaign KPIs", "insufficient_data"],
-      ["Primary action", "Observe Marketing tab only — no publish / Ads from HQ"],
+      ["Ads / paid", "FREEZE do 2026-08-06 · €0 · no Ads CTA from HQ"],
+      ["Primary action", "Observe only — no publish / Ads from HQ"],
     ];
     rows.forEach(([dt, dd]) => {
       const wrap = document.createElement("div");
@@ -4083,7 +4132,7 @@ function vhqApplyUrlState(raw, opts = {}) {
       } else {
         vhqOpenShell("mission-control");
       }
-      vhqShowFloorBrowse(vhqCurrentFloor || "P3", { historyMode: "none" });
+      vhqShowStageBrowse(vhqCurrentFirmStage || "direct", { historyMode: "none" });
       vhqNavState = "world";
       return;
     }
@@ -4177,11 +4226,6 @@ function bindVhqShell() {
   document.getElementById("vhq-teleport")?.addEventListener("change", (e) => {
     if (!e.target.value) return;
     vhqRenderRoom(e.target.value, { historyMode: "push" });
-  });
-  document.querySelectorAll(".vhq-floor-btn").forEach((btn) => {
-    btn.addEventListener("click", () => {
-      vhqSelectFloor(btn.dataset.floor);
-    });
   });
   vhqBindFirmChain();
   if (typeof vhqRenderAllManifestSurfaces === "function") {

@@ -46,9 +46,12 @@ Wymiary zależne od brakującego SoT (Order Desk) nie dostają fake PASS — zos
 
 ### S2 Escape / safety — **PASS maintain**
 
-- [x] Esc: room → MC → Console  
+- [x] Esc: room → MC (**stay HQ** — FIRM-IA + VF-VHQ-FINAL-00)  
+- [x] Console = Tools / Sign in only (not Esc parent) — **SUPERSEDES** legacy `Esc → Console`  
 - [x] Sign in never blocked  
-- [ ] **Regression:** Esc ladder in each DI gate dogfood  
+- [ ] **Regression:** Esc ladder must not reintroduce Console parent  
+
+
 
 ### S3 Approval discipline — target 5
 

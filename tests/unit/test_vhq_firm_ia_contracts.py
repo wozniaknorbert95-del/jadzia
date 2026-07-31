@@ -81,7 +81,7 @@ def test_firm_stage_on_room_manifest():
 
 def test_room_panel_renders_firm_role_and_unlock_hint_copy():
     assert 'vhqEl("p", "vhq-firm-role", room.firmRole)' in APP
-    assert 'vhqEl("p", "hint vhq-unlock-hint", room.unlockHint)' in APP
+    assert 'vhqEl("p", "hint vhq-unlock-hint", unlock)' in APP
 
 
 def test_deliver_rooms_keep_unlock_hints_without_fake_live_claims():
@@ -95,21 +95,19 @@ def test_deliver_rooms_keep_unlock_hints_without_fake_live_claims():
 
 
 def test_firm_chain_strip_and_floor_labels_present_in_html():
+    """Firm Chain strip remains; floor tabrow SUPERSEDED by VF-VHQ-FINAL-00 F7."""
     assert 'id="vhq-firm-chain"' in HTML
     assert 'data-firm-stage="demand"' in HTML and "1 Popyt" in HTML
     assert 'data-firm-stage="sell"' in HTML and "2 Sprzeda" in HTML
     assert 'data-firm-stage="deliver"' in HTML and "3 Realizacja" in HTML
     assert 'data-firm-stage="direct"' in HTML and "4 Sterowanie" in HTML
 
-    assert '>P3 Sterowanie</button>' in HTML
-    assert '>P2 Wiedza / ryzyko</button>' in HTML
-    assert '>P1 Popyt / sprzeda' in HTML
-    assert '>P0 Realizacja</button>' in HTML
-
-    assert "P3 — Sterowanie" in HTML
-    assert "P2 — Wiedza / ryzyko" in HTML
-    assert "P1 — Popyt / sprzeda" in HTML
-    assert "P0 — Realizacja" in HTML
+    # FINAL F7: no dual P0–P3/MAG tabrow
+    assert 'id="vhq-floors"' not in HTML
+    assert ">P3 Sterowanie</button>" not in HTML
+    assert "vhq-stage-band" in HTML
+    assert "4 — Sterowanie" in HTML or "4 Sterowanie" in HTML
+    assert "3 — Realizacja" in HTML
 
 
 def test_firm_chain_css_and_js_contracts_present():
@@ -119,11 +117,11 @@ def test_firm_chain_css_and_js_contracts_present():
     assert ".vhq-room-card[data-firm-stage].is-dim" in CSS
 
     assert 'const VHQ_FIRM_STAGES = ["demand", "sell", "deliver", "direct"];' in APP
-    assert "function vhqSetFirmStageFilter(stage)" in APP
+    assert "function vhqSetFirmStageFilter(stage" in APP
     assert 'document.querySelectorAll(".vhq-firm-stage")' in APP
     assert 'document.querySelectorAll(".vhq-room-card[data-firm-stage]")' in APP
-    assert 'card.classList.toggle("is-dim", stage && !match);' in APP
     assert "function vhqBindFirmChain()" in APP
     assert "vhqBindFirmChain();" in APP
     assert "vhqSetFirmStageFilter(room.firmStage" in APP
     assert "btn.dataset.firmStage = room.firmStage" in APP
+    assert "function vhqShowStageBrowse" in APP
