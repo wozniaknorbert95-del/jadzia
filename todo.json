@@ -95,7 +95,7 @@
     "vhq_w7_blast": "docs/archive/handoffs/2026-07-31-VF-VHQ-W7-DOGFOOD-BLAST.md",
     "vhq_w7_dogfood": "docs/archive/handoffs/2026-07-31-VF-VHQ-W7-DOGFOOD-FOUNDER-DOGFOOD.md",
     "vhq_w7_close": "docs/archive/handoffs/2026-07-31-VF-VHQ-W7-DOGFOOD-CLOSE.md",
-    "unblocked": [],
+    "unblocked": ["VF-ORDER-DESK-SOT-00"],
     "parked": ["MKT-ASSET-00", "VF-CAMPUS-W4", "VF-VHQ-3D-PARKED", "VF-PARK-PROCUREMENT", "VF-PARK-DISPATCH", "VF-PARK-PRINTPACK-SAAS", "VF-PARK-FINANCE-AGENT"],
     "founder_override": "2026-07-27 VHQ = primary operational dashboard; Commander = control/data/audit/action engine; no content duplication — reorganize into MC + Work Views",
     "campus_prod_tip_legacy_ux_audit": "a49644c / runtime 06212d7 / cache vhq-w61a (superseded by P2-SNR tip 7e34940)",
