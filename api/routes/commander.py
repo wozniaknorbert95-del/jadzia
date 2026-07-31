@@ -18,7 +18,11 @@ from agent.commander.audit import list_audit
 from agent.commander.deeplink import mint_deeplink, verify_deeplink_token
 from agent.commander.graduation import graduation_status, record_feedback
 from agent.commander.publish import bulk_approve_guardrail, publish_calendar_entry, unpublish_calendar_entry
-from agent.commander.queue import build_priorities_today, build_queue
+from agent.commander.queue import (
+    build_director_brief_from_queue,
+    build_priorities_today,
+    build_queue,
+)
 from agent.commander.settings import get_settings, update_settings
 from agent.commander.sla import (
     dtl_ingest_fetched_at,
@@ -114,8 +118,18 @@ async def get_commander_queue(
 async def get_priorities_today(
     _auth=Depends(require_scope("commander:read")),
 ) -> dict:
-    items = build_priorities_today(max_items=3)
-    return {"priorities": items, "total": len(items)}
+    """Director Brief: one NBA primary + up to 2 secondary priorities (DI-S5)."""
+    brief = build_director_brief_from_queue(max_secondary=2)
+    nba = brief.get("nba")
+    secondary = brief.get("secondary") or []
+    # Compat: priorities = primary-first flat list (NBA + secondary).
+    flat = build_priorities_today(max_items=3)
+    return {
+        "nba": nba,
+        "priorities": flat,
+        "secondary": secondary,
+        "total": len(flat),
+    }
 
 
 @router.get("/api/v1/commander/audit-log/verify")

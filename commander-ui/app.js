@@ -175,11 +175,71 @@ function homeSkeleton(rows = 2) {
   }</div>`;
 }
 
+function renderNba(nba) {
+  const el = document.getElementById("vhq-nba");
+  if (!el) return;
+  if (!nba) {
+    el.innerHTML =
+      "<p class=\"state-empty\">No ranked Director action — queue calm or only hygiene. Check secondary / queue.</p>";
+    return;
+  }
+  const cta = nba.cta || {};
+  const cls = `vhq-nba severity-${escHtml(nba.severity || "ACTION")}`;
+  let ctaHtml = "";
+  if (cta.action === "lead_ack" && cta.target) {
+    ctaHtml = `<button type="button" class="primary" data-lead-disp="${escHtml(cta.target)}" data-disp="acked">${escHtml(cta.label || "Potwierdź lead")}</button>`;
+  } else if (cta.action === "ticket_ack" && cta.target) {
+    ctaHtml = `<button type="button" class="primary" data-ticket-disp="${escHtml(cta.target)}" data-disp="acked">${escHtml(cta.label || "Potwierdź ticket")}</button>`;
+  } else {
+    ctaHtml = `<button type="button" class="primary" id="vhq-nba-cta-queue">${escHtml(cta.label || "Focus queue")}</button>`;
+  }
+  el.innerHTML = `
+    <article class="${cls}" aria-label="Director: do this now">
+      <header class="vhq-nba__head">
+        <strong>${escHtml(nba.title || "")}</strong>
+        <span class="badge badge-nba">NBA</span>
+        <span class="badge">${escHtml(nba.severity || "")}</span>
+        <span class="badge ${escHtml(nba.sla_status || "")}">${escHtml(nba.sla_status || "")}</span>
+        <span class="badge">${escHtml(nba.approval_class || "L2")}</span>
+      </header>
+      <p class="vhq-nba__why"><span class="muted">Why now</span> ${escHtml(nba.why_now || "")}</p>
+      <dl class="meta vhq-nba__meta">
+        <dt>Owner</dt><dd>${escHtml(nba.owner || "")}</dd>
+        <dt>Evidence</dt><dd>${escHtml(nba.evidence_ts || "")}</dd>
+        <dt>Cost of inaction</dt><dd>${escHtml(nba.cost_of_inaction || "")}</dd>
+        <dt>Score</dt><dd>${escHtml(String(nba.nba_score ?? ""))}</dd>
+      </dl>
+      <div class="actions vhq-nba__cta">${ctaHtml}</div>
+    </article>`;
+  bindDispositionButtons(
+    el,
+    "[data-lead-disp]",
+    (btn) => btn.dataset.leadDisp,
+    "/api/v1/commander/leads",
+    "Lead",
+  );
+  bindDispositionButtons(
+    el,
+    "[data-ticket-disp]",
+    (btn) => btn.dataset.ticketDisp,
+    "/api/v1/commander/tickets",
+    "Ticket",
+  );
+  const qBtn = document.getElementById("vhq-nba-cta-queue");
+  if (qBtn) {
+    qBtn.onclick = () => {
+      document.getElementById("queue-list")?.scrollIntoView({ behavior: "smooth", block: "start" });
+    };
+  }
+}
+
 function renderPriorities(items) {
   const el = document.getElementById("priorities");
-  el.innerHTML = items.length
-    ? items.map((p) => approvalCard(p)).join("")
-    : "<p class=\"state-empty\">Brak priorytetów na dziś — spokój. Sprawdź kolejkę poniżej lub mapę systemu.</p>";
+  if (!el) return;
+  const secondary = (items || []).filter((p) => !p.nba_primary);
+  el.innerHTML = secondary.length
+    ? secondary.map((p) => approvalCard(p)).join("")
+    : "<p class=\"state-empty\">Brak secondary — primary NBA powyżej lub spokój. Sprawdź kolejkę.</p>";
 }
 
 function leadDispositionActions(item) {
@@ -331,7 +391,12 @@ async function loadHome() {
     chipsEl = document.getElementById("home-ops-chips");
     summaryEl = document.getElementById("home-ops-summary");
     if (!prioEl || !queueEl) return;
-    renderPriorities(prio.priorities || []);
+    const nba =
+      prio.nba ||
+      (prio.priorities || []).find((p) => p.nba_primary) ||
+      null;
+    renderNba(nba);
+    renderPriorities(prio.secondary || prio.priorities || []);
     renderQueue(queue.items || []);
     prioEl.removeAttribute("aria-busy");
     queueEl.removeAttribute("aria-busy");
@@ -340,9 +405,13 @@ async function loadHome() {
     prioEl = document.getElementById("priorities");
     queueEl = document.getElementById("queue-list");
     summaryEl = document.getElementById("home-ops-summary");
+    const nbaEl = document.getElementById("vhq-nba");
     if (prioEl) prioEl.removeAttribute("aria-busy");
     if (queueEl) queueEl.removeAttribute("aria-busy");
     if (typeof vhqUpdateSessionBanner === "function") vhqUpdateSessionBanner();
+    if (nbaEl) {
+      nbaEl.innerHTML = `<p class="state-error">Nie udało się pobrać NBA.</p>`;
+    }
     if (prioEl) {
       prioEl.innerHTML = `<p class="state-error">Nie udało się pobrać priorytetów. <button type="button" class="primary" id="home-retry">Spróbuj ponownie</button></p>`;
     }

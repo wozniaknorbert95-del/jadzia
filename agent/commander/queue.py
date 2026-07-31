@@ -5,7 +5,7 @@ from __future__ import annotations
 import json
 import logging
 from datetime import datetime, timezone
-from typing import Dict, List, Optional
+from typing import Any, Dict, List, Optional
 
 from agent.commander.constants import QUEUE_SEVERITY
 from agent.commander.sla import freshness_status, sla_status_for_age_hours, _parse_ts
@@ -311,9 +311,19 @@ def build_queue(severity_filter: Optional[str] = None) -> List[Dict]:
     return items
 
 
+def build_director_brief_from_queue(*, max_secondary: int = 2) -> Dict[str, Any]:
+    """DI-S5: one ranked NBA + secondary priorities from live queue."""
+    from agent.commander.nba import build_director_brief
+
+    return build_director_brief(build_queue(), max_secondary=max_secondary)
+
+
 def build_priorities_today(max_items: int = 3) -> List[Dict]:
-    queue = build_queue()
-    critical = [q for q in queue if q["severity"] == "CRITICAL"]
-    action = [q for q in queue if q["severity"] == "ACTION"]
-    merged = critical + action
-    return merged[:max_items]
+    """Ranked CRITICAL/ACTION (NBA-first). Max items includes primary."""
+    secondary_n = max(0, max_items - 1)
+    brief = build_director_brief_from_queue(max_secondary=secondary_n)
+    out: List[Dict] = []
+    if brief.get("nba"):
+        out.append(brief["nba"])
+    out.extend(brief.get("secondary") or [])
+    return out[:max_items]

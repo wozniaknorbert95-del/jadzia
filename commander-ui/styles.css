@@ -1572,6 +1572,37 @@ body[data-vhq-primary="1"]:not(.vhq-legacy) .view-home--console .vhq-home-slot:e
   text-transform: uppercase;
   color: var(--muted);
 }
+.vhq-nba-host { min-height: 0; }
+.vhq-nba {
+  border: 1px solid var(--accent);
+  border-radius: var(--radius);
+  padding: 0.85rem 1rem;
+  background: color-mix(in srgb, var(--accent) 8%, var(--surface));
+}
+.vhq-nba__head {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem 0.5rem;
+  align-items: center;
+  margin-bottom: 0.45rem;
+}
+.vhq-nba__head strong {
+  flex: 1 1 12rem;
+  font-size: 1.05rem;
+  color: var(--text-strong);
+}
+.badge-nba {
+  border-color: var(--accent);
+  color: var(--accent);
+}
+.vhq-nba__why {
+  margin: 0 0 0.5rem;
+  color: var(--text);
+  line-height: 1.35;
+}
+.vhq-nba__why .muted { color: var(--muted); margin-right: 0.35rem; }
+.vhq-nba__meta { margin: 0 0 0.65rem; }
+.vhq-nba__cta { margin-top: 0.25rem; }
 .vhq-mount {
   min-height: 0;
 }
