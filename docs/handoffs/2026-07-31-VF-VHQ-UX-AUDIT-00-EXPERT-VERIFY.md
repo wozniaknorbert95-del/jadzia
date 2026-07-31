@@ -79,10 +79,8 @@ Nie jest jeszcze **wysokiej jakości decision instrument** — SNR (E1/E2) obni�
 ## 3. Recommended next (1 path)
 
 **Nie** otwierać 3D / Order LIVE / MKT.  
-**Tak** — osobny mały gate **P2-SNR-00** (tylko jeśli Founder GO):  
-1) stłumić / schować CEO stub z CRITICAL surface albo oznaczyć `STUB` poza Decision Rail,  
-2) degenerować chroniczne freshness red do secondary chrome,  
-3) zostawić EV-W2-010 honesty.
+**Tak** — research gotowy; następny krok = plan **P2-SNR-00** (osobne GO).  
+SoT research: `docs/handoffs/2026-07-31-VF-VHQ-DECISION-INSTRUMENT-RESEARCH.md`
 
 Bez GO: **idle** — audyt UX zamknięty Pass.
 
