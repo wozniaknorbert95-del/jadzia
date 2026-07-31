@@ -22,14 +22,14 @@ Wymiary zależne od brakującego SoT (Order Desk) nie dostają fake PASS — zos
 |----|--------|--------|-------------------|---------------------|-------------|
 | S1 | Trust / honesty | 5 | 5 | **5** | Regression only |
 | S2 | Escape / safety | 5 | 5 | **5** | Regression only |
-| S3 | Approval discipline | 5 | 4.5 | **4.5** | `VF-VHQ-DI-S3-APPROVAL` |
+| S3 | Approval discipline | 5 | 4.5 | **4.5** | `VF-VHQ-DI-S3-APPROVAL` ← ACTIVE |
 | S4 | Signal-to-noise | 5 | 1.5 | **5** (S4 CLOSE 2026-07-31) | — |
 | S5 | Ranked next action | 5 | 2 | **5** (S5 CLOSE 2026-07-31) | — |
-| S6 | Money/risk narrative | 5 | 2 | **2** | `VF-VHQ-DI-S6-MONEY` ← ACTIVE |
+| S6 | Money/risk narrative | 5 | 2 | **5** (S6 CLOSE 2026-07-31) | — |
 | S7 | Closed commercial loop | 5 | 1.5 | **1.5** | `VF-VHQ-DI-S7-LOOP` (needs Order SoT) |
-| S8 | ≤30s decision quality | 5 | 2.5 | **~4.0** | Composite — closes when S4–S6 PASS |
+| S8 | ≤30s decision quality | 5 | 2.5 | **~4.5** | Composite — closes when S4–S6 PASS + S8 dogfood |
 
-**Prod S5 evidence:** 1 NBA card (Sales CTA #10) · secondary fb_post · fields complete · tip `81372dd` · `?v=vhq-w63a`
+**Prod S6 evidence:** Money/risk PARTIAL · leads 1/0/1 · top risk Sales CTA · EV-W2-010 · no euro · tip `0d1407f` · `?v=vhq-w64a`
 
 ---
 
@@ -82,12 +82,12 @@ Wymiary zależne od brakującego SoT (Order Desk) nie dostają fake PASS — zos
 
 ### S6 Money/risk narrative — target 5
 
-| # | DoD |
-|---|-----|
-| S6.1 | Q1 answers from **real** Wizard/lead/quote signals (or honest `insufficient_data` + one verify CTA) |
-| S6.2 | No vanity totals; no fake € green |
-| S6.3 | Top risk blocker named with owner when present |
-| S6.4 | Dogfood screenshot + event IDs |
+| # | DoD | Status |
+|---|-----|--------|
+| S6.1 | Q1 from real lead signals (or `insufficient_data` + CTA) | DONE |
+| S6.2 | No vanity totals; no fake euro green | DONE |
+| S6.3 | Top risk blocker named with owner when present | DONE |
+| S6.4 | Dogfood + event IDs | DONE (`evidence-vhq-di-s6/`) |
 
 ### S7 Closed commercial loop — target 5
 

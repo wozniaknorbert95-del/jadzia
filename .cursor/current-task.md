@@ -1,9 +1,10 @@
-# DEPLOY_READY: VF-VHQ-DI-S6-MONEY
+# NEXT: VF-VHQ-DI-S3-APPROVAL
 
-**Code:** `agent/commander/money_narrative.py` · `GET /money-risk` · `#vhq-money-risk` · cache **`vhq-w64a`**  
-**pytest:** 30/30  
-**Honesty:** lead counts + top_risk + Order PARKED — **no vanity euro**
+**S6:** CLOSED+DEPLOY PASS · tip `0d1407f` · cache `vhq-w64a` · S6=5  
+**Close:** `docs/handoffs/2026-07-31-VF-VHQ-DI-S6-MONEY-CLOSE.md`
 
-## Commander
+## Start S3
 
-**`GO DEPLOY`** → dogfood → S6=5 → S3-APPROVAL  
+`/vhq-decision-instrument` → L2 approve vs parent honesty · Vault strip · L3 STOP visible  
+
+**STOP:** no silent L3 · no Ads/Mollie · no MKT  
