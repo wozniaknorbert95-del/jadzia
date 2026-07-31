@@ -8,7 +8,7 @@ founder_go: true
 pytest_ops_bus: "10/10 PASS"
 commit: "06212d7"
 deploy: true
-deploy_tip: "03f3bac"
+deploy_tip: "da1b2d6"
 w6_closed: true
 w6_deployed: true
 evidence_dir: "docs/handoffs/evidence-vhq-w60-dogfood/"
@@ -17,7 +17,7 @@ prod_evidence: "docs/handoffs/evidence-vhq-w60-prod-dogfood/"
 
 # VF-VHQ-W6-DIRECTOR-APPROVALS — CLOSE
 
-**Status: CLOSED + DEPLOYED** · runtime **`06212d7`** · docs tip **`03f3bac`** · cache **`vhq-w60a`**.
+**Status: CLOSED + DEPLOYED** · runtime **`06212d7`** · docs tip **`da1b2d6`** · cache **`vhq-w60a`** · maturity **PARTIAL**.
 
 ## Delivered
 

@@ -1,18 +1,16 @@
-# VF-VHQ-W6 — CLOSED + DEPLOYED
+# PRE-W7-SOT-HYGIENE — CLOSED
 
-**Gate:** `VF-VHQ-W6-DIRECTOR-APPROVALS` · `completed`  
-**Tip:** `03f3bac` · runtime `06212d7` · **Cache:** `vhq-w60a`  
-**Deploy:** `docs/handoffs/2026-07-31-DEPLOY-VHQ-W6-00-CLOSE.md`
+**Gate:** `PRE-W7-SOT-HYGIENE` · `completed`  
+**Tip baseline:** `da1b2d6` · runtime `06212d7` · cache `vhq-w60a`  
+**CLOSE:** `docs/handoffs/2026-07-31-PRE-W7-SOT-HYGIENE-CLOSE.md`
 
 ## Done
 
-- Approval Vault Work View + L2 Approve/Reject + L3/L4 STOP  
-- Prod JWT dogfood PASS · Order PARKED EV-W2-010  
-- pytest 10/10  
+F1–F6 SoT tip/gate/PROGRAM/ARCH + S1 companion-only. Docs only.
 
 ## Next
 
-- Park **VF-VHQ-W7-DOGFOOD** until explicit GO  
-- Optional: COM-AI-50 before publish ≥2026-08-02  
+**W7 parked** until exact `GO VF-VHQ-W7-DOGFOOD`.  
+URL: `https://api.zzpackage.flexgrafik.nl/commander/?v=vhq-w60a` + JWT.
 
-**STOP:** no MKT · no Order LIVE · no silent L3/L4  
+**STOP:** no MKT · no Order LIVE · no silent L3/L4 · no 3D  

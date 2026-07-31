@@ -2,12 +2,14 @@
 status: "[ACTIVE]"
 title: "FlexGrafik Virtual HQ — Architecture (experience layer)"
 gate: "VF-VHQ-PLAN-00"
-updated: "2026-07-27"
+updated: "2026-07-31"
 owner: "Norbert Wozniak (Dowódca) — Accountable"
 foundation: "docs/ops/FLEXGRAFIK-CAMPUS-PROGRAM.md · FLEXGRAFIK-CAMPUS-MAP.md · Commander campus-w03"
 inspiration_only: "https://store.talknbuy.com/pl/ — spatial discoverability; NO copy of code/assets/branding"
 runtime_changes_allowed: false
-prod_tip_at_plan: "3487ec0"
+prod_tip: "da1b2d6"
+runtime_commit: "06212d7"
+cache_asset: "vhq-w60a"
 w1_shell: "completed 2026-07-27 · local cache vhq-w01b · Founder CLOSE"
 ---
 
@@ -17,8 +19,8 @@ w1_shell: "completed 2026-07-27 · local cache vhq-w01b · Founder CLOSE"
 
 | Layer | Role | Status |
 |-------|------|--------|
-| **Virtual HQ** | **Primary operational dashboard** — World / Work / Command experience | W1–W6 CLOSED+DEPLOY · cache `vhq-w60a` · tip `03f3bac` · runtime `06212d7` |
-| **Commander (jadzia)** | **Underlying control, data, audit and action engine** — queues, JWT, Marketing, Analytics, Agents, Audit, Settings | LIVE tip `03f3bac` · runtime `06212d7` · `?v=vhq-w60a` · ops_bus_events + Approval Vault |
+| **Virtual HQ** | **Primary operational dashboard** — World / Work / Command experience | W1–W6 CLOSED+DEPLOY · cache `vhq-w60a` · tip `da1b2d6` · runtime `06212d7` |
+| **Commander (jadzia)** | **Underlying control, data, audit and action engine** — queues, JWT, Marketing, Analytics, Agents, Audit, Settings | LIVE tip `da1b2d6` · runtime `06212d7` · `?v=vhq-w60a` · ops_bus_events + Approval Vault (PARTIAL) |
 | **Campus W1–W3** | Truthful map hops, evidence badges, 5 Truth Cards | DONE — foundation absorbed into VHQ path |
 | **Agent OS / VCMS** | Build + Govern brains — hop destinations, not merged into jadzia | PARTIAL post-auth |
 
@@ -280,18 +282,18 @@ Field legend: `approval` = max level for primary action in that room; `MVP` = no
 | visual metaphor | sealed vault / stamp desk |
 | business purpose | Pending human approvals + audit trail |
 | Director question | What waits for my stamp? |
-| primary action | Open Audyt + pending_approval list |
+| primary action | Open Approval Vault Work View (`?vhq=approval-vault`) · pending `approval_needed` |
 | human owner | Dowódca / Ops |
 | AI/agent role | propose only; never auto-approve L3/L4 |
-| source of truth | Commander Audyt · handoffs · calendar `pending_approval` |
-| current status | **PARTIAL** (path Settings→Audyt; chain needs session) |
-| data shown | pending items + evidence hash refs |
-| approval level | L2–L4 by item class |
-| inputs | proposals from MKT, OS, deploy packs |
-| outputs | approved / rejected + audit event |
+| source of truth | `ops_bus_events` (filter `approval_state=pending` + `type=approval_needed`) · Audyt = secondary chain |
+| current status | **PARTIAL** (thin Ops Bus Vault path DEPLOYED; not full approval OS) |
+| data shown | pending companion cards + evidence IDs · L3/L4 STOP (no Approve) |
+| approval level | L2–L4 by item class · L2 Approve flips **companion only** (parent may stay pending) |
+| inputs | Ops Bus emit companions from cash-spine / STOP paths |
+| outputs | approved / rejected on companion + audit · no side effects |
 | next | source room of proposal |
-| MVP | **now** (thin: deep-link + list) |
-| evidence | EV-W2-009 class |
+| MVP | **now** (thin: Vault Work View + MC strip) |
+| evidence | EV-W6-001 class · EV-W2-009 historical Audyt thin path |
 
 #### ai-agent-health
 | Field | Value |
