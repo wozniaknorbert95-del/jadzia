@@ -1,16 +1,16 @@
-# PRE-W7-SOT-HYGIENE — CLOSED
+# VF-VHQ-W7-DOGFOOD — CLOSED PASS
 
-**Gate:** `PRE-W7-SOT-HYGIENE` · `completed`  
-**Tip:** `014c791` · runtime `06212d7` · cache `vhq-w60a`  
-**CLOSE:** `docs/handoffs/2026-07-31-PRE-W7-SOT-HYGIENE-CLOSE.md`
+**Gate:** `VF-VHQ-W7-DOGFOOD` · `completed`  
+**Cache:** `vhq-w60a` · runtime `06212d7`  
+**CLOSE:** `docs/handoffs/2026-07-31-VF-VHQ-W7-DOGFOOD-CLOSE.md`  
+**Timer:** 994 ms ≤30s  
 
 ## Done
 
-F1–F6 SoT tip/gate/PROGRAM/ARCH + S1 companion-only. Docs only.
+Q1–Q7 PASS · honest gaps · Order PARKED EV-W2-010 · Vault PARTIAL · 3D still parked  
 
 ## Next
 
-**W7 parked** until exact `GO VF-VHQ-W7-DOGFOOD`.  
-URL: `https://api.zzpackage.flexgrafik.nl/commander/?v=vhq-w60a` + JWT.
+Idle / COM-AI-50 optional · **no 3D** without separate unpark GO  
 
-**STOP:** no MKT · no Order LIVE · no silent L3/L4 · no 3D  
+**STOP:** no MKT · no Order LIVE · no silent L3/L4  
