@@ -1,12 +1,11 @@
-# HANDOFF → next session: VF-VHQ-DI-S4-SNR-FINISH
+# DEPLOY_READY: VF-VHQ-DI-S4-SNR-FINISH
 
-**Prod tip:** `6fced59` · cache `vhq-w62a` · P2-SNR verified LIVE  
-**Handoff:** `docs/handoffs/2026-07-31-SESSION-HANDOFF-DI-SCORECARD-NEXT.md`  
-**Scorecard:** `docs/ops/VHQ-DECISION-INSTRUMENT-SCORECARD.md`  
-**Workflow:** `/vhq-decision-instrument`
+**Status:** code on origin after ship · **AWAIT GO DEPLOY**  
+**PRECLOSE:** `docs/handoffs/2026-07-31-VF-VHQ-DI-S4-SNR-FINISH-PRECLOSE.md`  
+**pytest:** 10/10 · cache `vhq-w62a` (no UI bump)
 
-## Start next session
+## Commander
 
-`@vibe-init` → BLAST S4 → demote `analytics_stale` from Decide-now → tests → GO DEPLOY → dogfood → S4=5  
+Say **`GO DEPLOY`** → agent: backup DB → pull → restart → dogfood → S4=5  
 
-**STOP:** no MKT · no Order LIVE · no 3D · no fake KPI  
+**STOP:** no scorecard bump without dogfood · no MKT  

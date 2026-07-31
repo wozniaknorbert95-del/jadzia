@@ -17,7 +17,8 @@ QUEUE_SEVERITY: Dict[str, Severity] = {
     "cs_followup": "ACTION",
     "weekly_brief_ready": "INFO",
     "ceo_stub": "INFO",
-    "analytics_stale": "ACTION",
+    # DI-S4: chronic GA4/data-quality — hygiene/INFO, not Decide-now ACTION.
+    "analytics_stale": "INFO",
 }
 
 QUEUE_SLA_HOURS: Dict[str, float] = {

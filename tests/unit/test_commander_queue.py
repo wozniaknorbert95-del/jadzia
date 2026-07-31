@@ -58,6 +58,33 @@ def test_queue_ceo_stub_is_info_not_decide_now(temp_db):
     assert not any(p.get("queue_type") == "ceo_stub" for p in prio)
 
 
+def test_analytics_stale_is_info_not_decide_now(temp_db):
+    """DI-S4: chronic GA4 stale must not occupy Decide-now ACTION rail."""
+    from datetime import datetime, timedelta, timezone
+
+    from agent.commander.queue import build_priorities_today, build_queue
+    from agent.db import db_save_analytics_snapshot
+
+    stale_at = (datetime.now(timezone.utc) - timedelta(hours=6)).replace(
+        microsecond=0
+    ).isoformat()
+    assert db_save_analytics_snapshot({
+        "period": "7d",
+        "generated_at": stale_at,
+        "sync_status": "ok",
+        "sources": {"ga4": True},
+        "errors": [],
+    })
+
+    stale = [i for i in build_queue() if i.get("queue_type") == "analytics_stale"]
+    assert len(stale) == 1
+    assert stale[0]["severity"] == "INFO"
+    assert stale[0]["source"] == "analytics"
+
+    prio = build_priorities_today()
+    assert not any(p.get("queue_type") == "analytics_stale" for p in prio)
+
+
 def test_queue_publish_failed(temp_db):
     import json
 
