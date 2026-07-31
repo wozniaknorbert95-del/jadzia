@@ -1,16 +1,20 @@
 {
   "project": "Jadzia-Core",
-  "last_updated": "2026-07-31 (S3 CLOSED+DEPLOY PASS · tip 2623ae2 · next S8-VERIFY)",
+  "last_updated": "2026-07-31 (DI closeout S3–S6+S8=5 · S7 blocked_sot · tip 9bfa71b)",
   "status": "active",
   "plan": "docs/ops/VHQ-DECISION-INSTRUMENT-SCORECARD.md",
-  "active_gate": "VF-VHQ-DI-S8-VERIFY",
+  "active_gate": null,
   "active_plan": "docs/ops/VHQ-DECISION-INSTRUMENT-SCORECARD.md",
   "runtime_changes_allowed": false,
   "todo_schema": "todo.schema.json",
   "gate_machine": {
-    "active": "VF-VHQ-DI-S8-VERIFY",
-    "active_state": "di_scorecard_in_progress",
-    "decision_instrument": "ACTIVE · SoT docs/ops/VHQ-DECISION-INSTRUMENT-SCORECARD.md · S3–S6=5 · next S8-VERIFY · S7 blocked_sot",
+    "active": null,
+    "active_state": "di_scorecard_agent_closeout_done",
+    "decision_instrument": "CLOSEOUT agent-capable DONE · S1–S6+S8=5 · S7 blocked_sot until Order SoT · tip 9bfa71b / vhq-w65a",
+    "vhq_di_s8": "completed · CLOSED PASS tip 9bfa71b · cache vhq-w65a · S8=5",
+    "vhq_di_s8_blast": "docs/handoffs/2026-07-31-VF-VHQ-DI-S8-VERIFY-BLAST.md",
+    "vhq_di_s8_close": "docs/handoffs/2026-07-31-VF-VHQ-DI-S8-VERIFY-CLOSE.md",
+    "vhq_di_s8_evidence": "docs/handoffs/evidence-vhq-di-s8/",
     "vhq_di_s3": "completed · CLOSED+DEPLOY PASS tip 2623ae2 · cache vhq-w65a · S3=5",
     "vhq_di_s3_blast": "docs/handoffs/2026-07-31-VF-VHQ-DI-S3-APPROVAL-BLAST.md",
     "vhq_di_s3_close": "docs/handoffs/2026-07-31-VF-VHQ-DI-S3-APPROVAL-CLOSE.md",
@@ -243,9 +247,7 @@
     "proposed_next": "After W7 PASS: 3D remains parked until explicit unpark GO. Optional COM-AI-50. No MKT."
   },
   "standing_go_closeout": false,
-  "closeout_queue": [
-    "VF-VHQ-DI-S8-VERIFY"
-  ],
+  "closeout_queue": [],
   "closeout_blocked": [
     {
       "gate": "VF-VHQ-DI-S7-LOOP",
@@ -254,8 +256,8 @@
     }
   ],
   "closeout_expires": "2026-08-15",
-  "next_human": "Optional COM-AI-50 ≥2026-08-02. Order SoT later for S7. 3D parked. Nie ruszaj MKT.",
-  "next_agent": "Execute /vhq-decision-instrument on VF-VHQ-DI-S8-VERIFY (≤30s Q3+Q6 dogfood composite after S3–S6=5). S7 blocked_sot. No fake PASS.",
+  "next_human": "S7 Order Desk SoT GO when ready (EV-W2-010 unpark evidence). Optional COM-AI-50 ≥2026-08-02. 3D parked. Nie ruszaj MKT.",
+  "next_agent": "Idle / observe. DI agent closeout DONE. Only S7 with Order SoT GO. No fake S7 PASS. No MKT. No 3D.",
   "budget_freeze_until": "2026-08-06",
   "budget_freeze_note": "Dowódca 2026-07-27: zero ad spend 10 dni — MKT work PARKED by Founder override",
   "agent_rule": "1-1-1. DI scorecard gates only. /vhq-decision-instrument. Preserve EV-W2-010. No Order LIVE without SoT. No silent L3/L4. No MKT. No 3D. Deploy only with GO DEPLOY. No fake PASS.",

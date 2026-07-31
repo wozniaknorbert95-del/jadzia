@@ -1,10 +1,9 @@
-# NEXT: VF-VHQ-DI-S3-APPROVAL
+# DI SCORECARD — agent closeout DONE
 
-**S6:** CLOSED+DEPLOY PASS · tip `0d1407f` · cache `vhq-w64a` · S6=5  
-**Close:** `docs/handoffs/2026-07-31-VF-VHQ-DI-S6-MONEY-CLOSE.md`
+**Tip:** `9bfa71b` · cache `vhq-w65a` · S1–S6 + S8 = **5**  
+**Blocked:** S7-LOOP until Order Desk SoT (EV-W2-010)
 
-## Start S3
+## Human-only next
 
-`/vhq-decision-instrument` → L2 approve vs parent honesty · Vault strip · L3 STOP visible  
-
-**STOP:** no silent L3 · no Ads/Mollie · no MKT  
+Order Desk SoT GO → `/vhq-decision-instrument` on `VF-VHQ-DI-S7-LOOP`  
+Until then: observe · no fake LIVE · no MKT · no 3D  

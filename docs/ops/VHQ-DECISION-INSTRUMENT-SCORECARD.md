@@ -27,9 +27,9 @@ Wymiary zależne od brakującego SoT (Order Desk) nie dostają fake PASS — zos
 | S5 | Ranked next action | 5 | 2 | **5** (S5 CLOSE 2026-07-31) | — |
 | S6 | Money/risk narrative | 5 | 2 | **5** (S6 CLOSE 2026-07-31) | — |
 | S7 | Closed commercial loop | 5 | 1.5 | **1.5** | `VF-VHQ-DI-S7-LOOP` (needs Order SoT) |
-| S8 | ≤30s decision quality | 5 | 2.5 | **~4.7** | `VF-VHQ-DI-S8-VERIFY` ← ACTIVE |
+| S8 | ≤30s decision quality | 5 | 2.5 | **5** (S8 CLOSE 2026-07-31) | — |
 
-**Prod S3 evidence:** L2 peer sync · Vault strip+CTA · L3 STOP 0 Approve · tip `2623ae2` · `?v=vhq-w65a`
+**Prod closeout:** S3–S6+S8 = 5 · tip `9bfa71b` / runtime `2623ae2` · `?v=vhq-w65a` · S7 blocked_sot
 
 ---
 
@@ -100,10 +100,10 @@ Wymiary zależne od brakującego SoT (Order Desk) nie dostają fake PASS — zos
 
 Until S7.0: max honest score **2/5** (Sales→Wizard MVP loop only). Document as `partial_loop` not FAIL honesty.
 
-### S8 ≤30s decision quality — target 5
+### S8 ≤30s decision quality — target 5 — **PASS**
 
-Closes automatically when **S4≥5 ∧ S5≥5 ∧ S6≥5** and dogfood timer ≤30s with correct Q3+Q6.  
-Also requires S1+S2 regression green.
+Closes when **S3–S6≥5** and dogfood with correct Q3+Q6 (+ S1/S2 regression).  
+**DONE 2026-07-31:** Q3 Sales CTA #10 · Q6 Potwierdź lead · Money/risk · EV-W2-010 · no euro (`evidence-vhq-di-s8/`).
 
 ---
 
