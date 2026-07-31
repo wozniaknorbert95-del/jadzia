@@ -95,11 +95,17 @@
                 </details>
               </div>
             </header>
+            <nav id="vhq-firm-chain" class="vhq-firm-chain" aria-label="Firm value chain">
+              <button type="button" class="vhq-firm-stage" data-firm-stage="demand" aria-current="false">1 Popyt</button>
+              <button type="button" class="vhq-firm-stage" data-firm-stage="sell" aria-current="false">2 Sprzedaż</button>
+              <button type="button" class="vhq-firm-stage" data-firm-stage="deliver" aria-current="false">3 Realizacja</button>
+              <button type="button" class="vhq-firm-stage" data-firm-stage="direct" aria-current="false">4 Sterowanie</button>
+            </nav>
             <nav class="vhq-floors" id="vhq-floors" aria-label="Floor navigation" role="tablist">
-              <button type="button" role="tab" class="vhq-floor-btn active" data-floor="P3" aria-selected="true">P3 Director</button>
-              <button type="button" role="tab" class="vhq-floor-btn" data-floor="P2" aria-selected="false">P2 Intelligence</button>
-              <button type="button" role="tab" class="vhq-floor-btn" data-floor="P1" aria-selected="false">P1 Commercial</button>
-              <button type="button" role="tab" class="vhq-floor-btn" data-floor="P0" aria-selected="false">P0 Operations</button>
+              <button type="button" role="tab" class="vhq-floor-btn active" data-floor="P3" aria-selected="true">P3 Sterowanie</button>
+              <button type="button" role="tab" class="vhq-floor-btn" data-floor="P2" aria-selected="false">P2 Wiedza / ryzyko</button>
+              <button type="button" role="tab" class="vhq-floor-btn" data-floor="P1" aria-selected="false">P1 Popyt / sprzedaż</button>
+              <button type="button" role="tab" class="vhq-floor-btn" data-floor="P0" aria-selected="false">P0 Realizacja</button>
               <button type="button" role="tab" class="vhq-floor-btn" data-floor="MAG" aria-selected="false">MAG Network</button>
             </nav>
           </div>
@@ -278,22 +284,22 @@
             <div class="vhq-building" id="vhq-building" aria-label="Virtual HQ building map">
               <!-- floors filled / enhanced by CSS; room buttons are the interactive map -->
               <section class="vhq-floor-band" data-floor="P3" aria-labelledby="vhq-floor-p3">
-                <h3 id="vhq-floor-p3" class="vhq-floor-band__title">P3 — Director</h3>
+                <h3 id="vhq-floor-p3" class="vhq-floor-band__title">P3 — Sterowanie</h3>
                 <div class="vhq-room-grid">
                 </div>
               </section>
               <section class="vhq-floor-band" data-floor="P2" aria-labelledby="vhq-floor-p2" hidden>
-                <h3 id="vhq-floor-p2" class="vhq-floor-band__title">P2 — Intelligence &amp; Governance</h3>
+                <h3 id="vhq-floor-p2" class="vhq-floor-band__title">P2 — Wiedza / ryzyko</h3>
                 <div class="vhq-room-grid">
                 </div>
               </section>
               <section class="vhq-floor-band" data-floor="P1" aria-labelledby="vhq-floor-p1" hidden>
-                <h3 id="vhq-floor-p1" class="vhq-floor-band__title">P1 — Commercial</h3>
+                <h3 id="vhq-floor-p1" class="vhq-floor-band__title">P1 — Popyt / sprzedaż</h3>
                 <div class="vhq-room-grid">
                 </div>
               </section>
               <section class="vhq-floor-band" data-floor="P0" aria-labelledby="vhq-floor-p0" hidden>
-                <h3 id="vhq-floor-p0" class="vhq-floor-band__title">P0 — Operations</h3>
+                <h3 id="vhq-floor-p0" class="vhq-floor-band__title">P0 — Realizacja</h3>
                 <div class="vhq-room-grid">
                 </div>
               </section>

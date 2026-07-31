@@ -2426,9 +2426,11 @@ let vhqOpen = false;
 let vhqLastFocus = null;
 let vhqCurrentRoom = "mission-control";
 let vhqCurrentFloor = "P3";
+let vhqCurrentFirmStage = null;
 let vhqFocusinGuard = null;
 let vhqNavState = "mc";
 let vhqApplyingHistory = false;
+const VHQ_FIRM_STAGES = ["demand", "sell", "deliver", "direct"];
 
 /** W3.1 primary shell flag. Override: ?vhq_shell=legacy|primary */
 function vhqIsPrimary() {
@@ -2522,6 +2524,32 @@ function vhqSetFloor(floor) {
   });
 }
 
+function vhqSetFirmStageFilter(stage) {
+  stage = VHQ_FIRM_STAGES.includes(stage) ? stage : null;
+  vhqCurrentFirmStage = stage;
+  document.querySelectorAll(".vhq-firm-stage").forEach((btn) => {
+    const on = btn.dataset.firmStage === stage;
+    btn.classList.toggle("is-active", on);
+    btn.setAttribute("aria-current", on ? "true" : "false");
+  });
+  document.querySelectorAll(".vhq-room-card[data-firm-stage]").forEach((card) => {
+    const match = !stage || card.dataset.firmStage === stage;
+    card.classList.toggle("is-dim", stage && !match);
+  });
+}
+
+function vhqBindFirmChain() {
+  document.querySelectorAll(".vhq-firm-stage").forEach((btn) => {
+    if (btn.dataset.vhqFirmBound === "1") return;
+    btn.dataset.vhqFirmBound = "1";
+    btn.addEventListener("click", () => {
+      const stage = btn.dataset.firmStage;
+      const already = btn.classList.contains("is-active");
+      vhqSetFirmStageFilter(already ? null : stage);
+    });
+  });
+}
+
 function vhqClearRoomHighlights() {
   document.querySelectorAll(".vhq-room").forEach((btn) => {
     btn.removeAttribute("aria-current");
@@ -2606,6 +2634,7 @@ function vhqRenderRoom(roomId, opts = {}) {
   if (!room) return;
   vhqCurrentRoom = resolved;
   vhqSetFloor(room.floor);
+  vhqSetFirmStageFilter(room.firmStage || null);
 
   const loc = document.getElementById("vhq-location");
   if (loc) loc.textContent = `HQ › ${room.floor} › ${room.label}`;
@@ -2806,9 +2835,10 @@ function vhqRenderFloorCards() {
       .forEach((room) => {
         const btn = document.createElement("button");
         btn.type = "button";
-        btn.className = "vhq-room" + (room.mvp ? " vhq-room--mvp" : "");
+        btn.className = "vhq-room vhq-room-card" + (room.mvp ? " vhq-room--mvp" : "");
         btn.dataset.room = room.id;
         btn.dataset.status = room.status;
+        btn.dataset.firmStage = room.firmStage || "";
         const name = vhqEl("span", "vhq-room__name", room.label);
         const badge = vhqEl("span", "vhq-room__badge", `[${room.status}]`);
         badge.dataset.status = room.status;
@@ -2817,6 +2847,7 @@ function vhqRenderFloorCards() {
         grid.appendChild(btn);
       });
   });
+  vhqSetFirmStageFilter(vhqCurrentFirmStage);
 }
 
 let _vhqOpsBusCache = { events: [], fetchedAt: 0 };
@@ -4152,6 +4183,7 @@ function bindVhqShell() {
       vhqSelectFloor(btn.dataset.floor);
     });
   });
+  vhqBindFirmChain();
   if (typeof vhqRenderAllManifestSurfaces === "function") {
     vhqRenderAllManifestSurfaces();
   }

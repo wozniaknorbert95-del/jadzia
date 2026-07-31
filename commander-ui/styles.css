@@ -1370,6 +1370,29 @@ body[data-vhq-primary="1"]:not(.vhq-legacy) .view-home--console .vhq-home-slot:e
   gap: 0.35rem;
   margin-bottom: 0.75rem;
 }
+.vhq-firm-chain {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+  padding: 0.35rem 0.75rem;
+}
+.vhq-firm-stage {
+  min-height: var(--touch);
+  color: var(--text);
+  border: 1px solid var(--border-strong);
+}
+.vhq-firm-stage:hover:not(:disabled) {
+  background: var(--surface-2);
+  border-color: var(--muted);
+  color: var(--text);
+}
+.vhq-firm-stage.is-active,
+.vhq-firm-stage[aria-current="true"] {
+  font-weight: 700;
+  color: var(--accent);
+  border-color: var(--accent);
+  background: var(--accent-glow);
+}
 .vhq-floor-btn {
   min-height: var(--touch);
   font-size: 11px;
@@ -1449,6 +1472,10 @@ body[data-vhq-primary="1"]:not(.vhq-legacy) .view-home--console .vhq-home-slot:e
 .vhq-room[aria-current="true"] {
   border-color: var(--accent);
   box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--accent) 40%, transparent);
+}
+.vhq-room-card[data-firm-stage].is-dim,
+.vhq-room[data-firm-stage].is-dim {
+  opacity: 0.45;
 }
 .vhq-room--focal {
   border-width: 2px;

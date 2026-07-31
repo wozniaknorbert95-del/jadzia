@@ -4,6 +4,7 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[2]
 APP = (ROOT / "commander-ui" / "app.js").read_text(encoding="utf-8")
 HTML = (ROOT / "commander-ui" / "index.html").read_text(encoding="utf-8")
+CSS = (ROOT / "commander-ui" / "styles.css").read_text(encoding="utf-8")
 
 EXPECTED_FIRM_STAGES = {
     "mission-control": "direct",
@@ -91,3 +92,38 @@ def test_deliver_rooms_keep_unlock_hints_without_fake_live_claims():
     assert 'status: "PARKED"' in chunk
     assert "EV-W2-010" in chunk
     assert "unlockHint" in chunk
+
+
+def test_firm_chain_strip_and_floor_labels_present_in_html():
+    assert 'id="vhq-firm-chain"' in HTML
+    assert 'data-firm-stage="demand"' in HTML and "1 Popyt" in HTML
+    assert 'data-firm-stage="sell"' in HTML and "2 Sprzeda" in HTML
+    assert 'data-firm-stage="deliver"' in HTML and "3 Realizacja" in HTML
+    assert 'data-firm-stage="direct"' in HTML and "4 Sterowanie" in HTML
+
+    assert '>P3 Sterowanie</button>' in HTML
+    assert '>P2 Wiedza / ryzyko</button>' in HTML
+    assert '>P1 Popyt / sprzeda' in HTML
+    assert '>P0 Realizacja</button>' in HTML
+
+    assert "P3 — Sterowanie" in HTML
+    assert "P2 — Wiedza / ryzyko" in HTML
+    assert "P1 — Popyt / sprzeda" in HTML
+    assert "P0 — Realizacja" in HTML
+
+
+def test_firm_chain_css_and_js_contracts_present():
+    assert ".vhq-firm-chain" in CSS
+    assert ".vhq-firm-stage" in CSS
+    assert ".vhq-firm-stage.is-active" in CSS
+    assert ".vhq-room-card[data-firm-stage].is-dim" in CSS
+
+    assert 'const VHQ_FIRM_STAGES = ["demand", "sell", "deliver", "direct"];' in APP
+    assert "function vhqSetFirmStageFilter(stage)" in APP
+    assert 'document.querySelectorAll(".vhq-firm-stage")' in APP
+    assert 'document.querySelectorAll(".vhq-room-card[data-firm-stage]")' in APP
+    assert 'card.classList.toggle("is-dim", stage && !match);' in APP
+    assert "function vhqBindFirmChain()" in APP
+    assert "vhqBindFirmChain();" in APP
+    assert "vhqSetFirmStageFilter(room.firmStage" in APP
+    assert "btn.dataset.firmStage = room.firmStage" in APP
