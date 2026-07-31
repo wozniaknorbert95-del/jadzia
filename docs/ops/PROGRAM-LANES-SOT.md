@@ -3,7 +3,7 @@ status: "[APPENDIX]"
 title: "Program lanes — DONE vs WAITING (ściąga, nie plan)"
 updated: "2026-07-31"
 owner: "Dowódca + agent"
-tip: "adafd83"
+tip: "faca1b6"
 cache: "vhq-w66a"
 parent_program: "docs/ops/FLEXGRAFIK-VIRTUAL-HQ-PROGRAM.md"
 todo: "todo.json"
@@ -17,7 +17,7 @@ Wygrywa: **Knowledge Index** → **`todo.json`** → **VHQ-PROGRAM** → DI scor
 Ten plik = krótka mapa ADHD.
 
 **Prod VHQ:** https://api.zzpackage.flexgrafik.nl/commander/?v=vhq-w66a  
-**Tip of record:** `adafd83` · cache `vhq-w66a` (FIRM-IA DEPLOY PASS)
+**Tip of record:** `faca1b6` (docs) · runtime `adafd83` · cache `vhq-w66a` (FIRM-IA DEPLOY PASS)
 
 ---
 
@@ -39,7 +39,7 @@ DONE (A) → NEXT (B Growth, po GO) → later (C Order/S7 gdy desk istnieje)
 ## DONE
 
 - DI S3–S6+S8 = 5
-- VF-VHQ-FIRM-IA-00 — **DEPLOY PASS** tip `adafd83` / `vhq-w66a`
+- VF-VHQ-FIRM-IA-00 — **DEPLOY PASS** runtime `adafd83` / docs `faca1b6` / `vhq-w66a`
 - VHQ W1–W7 · Ops Bus · Vault L2 · INC-SSH ok
 - MVP honesty: Sales→Wizard→follow-up (`partial_loop`)
 
