@@ -448,8 +448,51 @@ def _init_schema(conn: sqlite3.Connection):
     _init_marketing_dtl_schema(conn)
     _init_marketing_f1_schema(conn)
     _init_marketing_governance_schema(conn)
+    _init_ops_bus_schema(conn)
 
     conn.commit()
+
+
+def _init_ops_bus_schema(conn: sqlite3.Connection) -> None:
+    """VF-VHQ-W5 typed Operations Bus events (not agent chat / not brain_events)."""
+    conn.execute("""
+        CREATE TABLE IF NOT EXISTS ops_bus_events (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            event_id TEXT NOT NULL UNIQUE,
+            event_type TEXT NOT NULL
+                CHECK (event_type IN (
+                    'lead_qualified','wizard_started','order_created','approval_needed'
+                )),
+            source_room TEXT NOT NULL,
+            dest_room TEXT NOT NULL,
+            payload_ref TEXT NOT NULL,
+            payload_json TEXT NOT NULL DEFAULT '{}',
+            approval_level TEXT NOT NULL DEFAULT 'L0'
+                CHECK (approval_level IN ('L0','L1','L2','L3','L4')),
+            approval_state TEXT NOT NULL DEFAULT 'none'
+                CHECK (approval_state IN ('none','pending','approved','rejected')),
+            evidence_id TEXT,
+            correlation_id TEXT NOT NULL,
+            causation_event_id TEXT,
+            source_system TEXT NOT NULL,
+            source_event_id TEXT NOT NULL,
+            actor_id TEXT,
+            created_at TEXT NOT NULL,
+            UNIQUE (event_type, source_event_id)
+        )
+    """)
+    conn.execute("""
+        CREATE INDEX IF NOT EXISTS idx_ops_bus_corr
+        ON ops_bus_events(correlation_id, id)
+    """)
+    conn.execute("""
+        CREATE INDEX IF NOT EXISTS idx_ops_bus_type_created
+        ON ops_bus_events(event_type, created_at DESC)
+    """)
+    conn.execute("""
+        CREATE INDEX IF NOT EXISTS idx_ops_bus_approval
+        ON ops_bus_events(approval_state, approval_level)
+    """)
 
 
 def _init_inspire_offerte_schema(conn: sqlite3.Connection) -> None:
@@ -3650,3 +3693,142 @@ def db_offerte_update_notify(
         (notify_team, notify_client, offerte_id),
     )
     conn.commit()
+
+# ============================================================================
+# VF-VHQ-W5 - Operations Bus
+# ============================================================================
+
+
+def _row_to_ops_bus_dict(row: sqlite3.Row) -> Dict:
+    item = dict(row)
+    try:
+        item["payload"] = json.loads(item.get("payload_json") or "{}")
+    except (TypeError, json.JSONDecodeError):
+        item["payload"] = {}
+    return item
+
+
+def db_ops_bus_insert(row: Dict) -> Optional[int]:
+    """Insert typed ops bus event. Returns row id or None on conflict/failure."""
+    conn = get_connection()
+    payload_json = row.get("payload_json")
+    if isinstance(payload_json, dict):
+        payload_json = json.dumps(payload_json, separators=(",", ":"), sort_keys=True)
+    elif payload_json is None:
+        payload_json = "{}"
+    try:
+        cursor = conn.execute(
+            """
+            INSERT INTO ops_bus_events (
+                event_id, event_type, source_room, dest_room,
+                payload_ref, payload_json, approval_level, approval_state,
+                evidence_id, correlation_id, causation_event_id,
+                source_system, source_event_id, actor_id, created_at
+            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+            """,
+            (
+                row["event_id"],
+                row["event_type"],
+                row["source_room"],
+                row["dest_room"],
+                row["payload_ref"],
+                payload_json,
+                row.get("approval_level") or "L0",
+                row.get("approval_state") or "none",
+                row.get("evidence_id"),
+                row["correlation_id"],
+                row.get("causation_event_id"),
+                row["source_system"],
+                row["source_event_id"],
+                row.get("actor_id"),
+                row.get("created_at") or _utc_now_iso(),
+            ),
+        )
+        conn.commit()
+        return int(cursor.lastrowid)
+    except sqlite3.IntegrityError:
+        conn.rollback()
+        return None
+    except Exception as e:
+        conn.rollback()
+        import logging
+
+        logging.getLogger(__name__).error("[DB] ops_bus insert failed: %s", e)
+        return None
+
+
+def db_ops_bus_get_by_source(event_type: str, source_event_id: str) -> Optional[Dict]:
+    conn = get_connection()
+    row = conn.execute(
+        """
+        SELECT * FROM ops_bus_events
+        WHERE event_type = ? AND source_event_id = ?
+        """,
+        (event_type, source_event_id),
+    ).fetchone()
+    return _row_to_ops_bus_dict(row) if row else None
+
+
+def db_ops_bus_get_by_event_id(event_id: str) -> Optional[Dict]:
+    conn = get_connection()
+    row = conn.execute(
+        "SELECT * FROM ops_bus_events WHERE event_id = ?",
+        (event_id,),
+    ).fetchone()
+    return _row_to_ops_bus_dict(row) if row else None
+
+
+def db_ops_bus_list(
+    *,
+    event_type: Optional[str] = None,
+    correlation_id: Optional[str] = None,
+    approval_state: Optional[str] = None,
+    limit: int = 50,
+) -> List[Dict]:
+    conn = get_connection()
+    clauses: List[str] = []
+    params: List[Any] = []
+    if event_type:
+        clauses.append("event_type = ?")
+        params.append(event_type)
+    if correlation_id:
+        clauses.append("correlation_id = ?")
+        params.append(correlation_id)
+    if approval_state:
+        clauses.append("approval_state = ?")
+        params.append(approval_state)
+    where = ("WHERE " + " AND ".join(clauses)) if clauses else ""
+    lim = max(1, min(int(limit), 200))
+    rows = conn.execute(
+        f"""
+        SELECT * FROM ops_bus_events
+        {where}
+        ORDER BY id DESC
+        LIMIT ?
+        """,
+        (*params, lim),
+    ).fetchall()
+    return [_row_to_ops_bus_dict(r) for r in rows]
+
+
+def db_ops_bus_set_approval_state(event_id: str, approval_state: str) -> bool:
+    """Update approval_state only (L2 HITL stub - no side effects)."""
+    allowed = {"pending", "approved", "rejected", "none"}
+    if approval_state not in allowed:
+        return False
+    conn = get_connection()
+    try:
+        cur = conn.execute(
+            """
+            UPDATE ops_bus_events
+            SET approval_state = ?
+            WHERE event_id = ?
+            """,
+            (approval_state, event_id),
+        )
+        conn.commit()
+        return cur.rowcount > 0
+    except Exception:
+        conn.rollback()
+        return False
+

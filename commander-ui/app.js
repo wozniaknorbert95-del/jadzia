@@ -2577,6 +2577,75 @@ function vhqRenderFloorCards() {
   });
 }
 
+let _vhqOpsBusCache = { events: [], fetchedAt: 0 };
+
+async function vhqFetchOpsBusEvents(limit = 40) {
+  if (!getToken()) {
+    _vhqOpsBusCache = { events: [], fetchedAt: Date.now() };
+    return [];
+  }
+  try {
+    const data = await api(`/api/v1/commander/ops-bus/events?limit=${limit}`);
+    const events = Array.isArray(data.events) ? data.events : [];
+    _vhqOpsBusCache = { events, fetchedAt: Date.now() };
+    return events;
+  } catch {
+    return _vhqOpsBusCache.events || [];
+  }
+}
+
+function vhqRenderBusHandoffCards(root, events) {
+  if (!root) return;
+  vhqClear(root);
+  if (!events || !events.length) {
+    root.hidden = true;
+    return;
+  }
+  root.hidden = false;
+  root.appendChild(vhqEl("h4", null, "Operations Bus (typed)"));
+  const list = document.createElement("ul");
+  list.className = "vhq-bus-handoff-list";
+  events.slice(0, 8).forEach((ev) => {
+    const li = document.createElement("li");
+    li.className = "vhq-bus-handoff-card";
+    li.dataset.state = ev.approval_state || "none";
+    const type = ev.event_type || "?";
+    const from = ev.source_room || "?";
+    const to = ev.dest_room || "?";
+    const level = ev.approval_level || "L0";
+    const state = ev.approval_state || "none";
+    const evid = ev.evidence_id ? ` · ${ev.evidence_id}` : "";
+    li.textContent = `${type}: ${from} → ${to} [${level}/${state}]${evid}`;
+    list.appendChild(li);
+  });
+  root.appendChild(list);
+  root.appendChild(
+    vhqEl("p", "hint", "Typed handoffs only — no agent chat as workflow.")
+  );
+}
+
+function vhqBindWizardCtaBeacon() {
+  document.querySelectorAll(".vhq-cta-wizard").forEach((el) => {
+    if (el.dataset.vhqBusBound === "1") return;
+    el.dataset.vhqBusBound = "1";
+    el.addEventListener("click", () => {
+      if (!getToken()) return;
+      api("/api/v1/commander/ops-bus/ingest", {
+        method: "POST",
+        body: {
+          event_type: "wizard_started",
+          source_room: "wizard-quote",
+          dest_room: "sales-room",
+          wizard_deeplink: el.getAttribute("href") || "https://zzpackage.flexgrafik.nl/wizard/",
+          payload: { beacon: "commander_ui" },
+        },
+      }).catch(() => {
+        /* best-effort beacon */
+      });
+    });
+  });
+}
+
 function vhqRenderOpsFlow() {
   const line = document.getElementById("vhq-flow-line");
   if (!line) return;
@@ -2606,6 +2675,13 @@ function vhqRenderOpsFlow() {
     breakHint.textContent = order.evidence
       ? `Break visible: ${breakText} · ${order.evidence}`
       : `Break visible: ${breakText}`;
+    const hops = (_vhqOpsBusCache.events || []).filter((e) =>
+      ["lead_qualified", "wizard_started", "order_created"].includes(e.event_type)
+    );
+    if (hops.length) {
+      const last = hops[0];
+      breakHint.textContent += ` · last bus: ${last.event_type} (${last.approval_level}/${last.approval_state})`;
+    }
   }
 }
 
@@ -2724,6 +2800,13 @@ function vhqBindWorkViews() {
       )
     );
   }
+  const wizBusEvents = (_vhqOpsBusCache.events || []).filter((e) =>
+    ["lead_qualified", "wizard_started", "order_created", "approval_needed"].includes(
+      e.event_type
+    )
+  );
+  vhqRenderBusHandoffCards(document.getElementById("vhq-work-wizard-bus"), wizBusEvents);
+  vhqBindWizardCtaBeacon();
   const wizOrderBtn = document.getElementById("vhq-wizard-order-parked");
   if (wizOrderBtn && order) {
     wizOrderBtn.textContent = order.evidence
@@ -3065,6 +3148,48 @@ function vhqRenderAllManifestSurfaces() {
   vhqRenderSettingsMap();
   vhqRenderTruthCards();
   vhqRenderTeleportOptions();
+  vhqRefreshOpsBusSurfaces();
+}
+
+async function vhqRefreshOpsBusSurfaces() {
+  await vhqFetchOpsBusEvents(40);
+  vhqRenderOpsFlow();
+  const wizBusEvents = (_vhqOpsBusCache.events || []).filter((e) =>
+    ["lead_qualified", "wizard_started", "order_created", "approval_needed"].includes(
+      e.event_type
+    )
+  );
+  vhqRenderBusHandoffCards(document.getElementById("vhq-work-wizard-bus"), wizBusEvents);
+  const orderEvents = (_vhqOpsBusCache.events || []).filter(
+    (e) => e.event_type === "order_created"
+  );
+  const orderBus = document.getElementById("vhq-work-order-bus");
+  if (orderBus) {
+    vhqClear(orderBus);
+    if (!orderEvents.length) {
+      orderBus.hidden = true;
+    } else {
+      orderBus.hidden = false;
+      orderBus.appendChild(vhqEl("h4", null, "Bus trail (INT-002 ingest)"));
+      orderBus.appendChild(
+        vhqEl(
+          "p",
+          "hint",
+          "Events below are WooCommerce mirrors — not an operational Order Desk. Desk remains PARKED · EV-W2-010."
+        )
+      );
+      const ul = document.createElement("ul");
+      ul.className = "vhq-bus-handoff-list";
+      orderEvents.slice(0, 10).forEach((ev) => {
+        const li = document.createElement("li");
+        li.className = "vhq-bus-handoff-card";
+        li.textContent = `order_created · ${ev.payload_ref} · ${ev.approval_level}/${ev.approval_state} · ${ev.evidence_id || "EV-W5-003"}`;
+        ul.appendChild(li);
+      });
+      orderBus.appendChild(ul);
+    }
+  }
+  vhqBindWizardCtaBeacon();
 }
 
 /**

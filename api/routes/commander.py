@@ -215,6 +215,38 @@ async def post_lead_disposition(
         after={"disposition": body.disposition},
         risk_tier="sensitive",
     )
+    if body.disposition == "acked":
+        lead = db_get_lead_by_id(lead_id) or {}
+        try:
+            from agent.ops_bus import emit_ops_bus_event
+
+            emit_ops_bus_event(
+                event_type="lead_qualified",
+                source_room="sales-room",
+                dest_room="wizard-quote",
+                payload_ref=str(lead_id),
+                source_system="jadzia",
+                source_event_id=f"lead_disp:{lead_id}:acked",
+                correlation_id=f"corr:lead:{lead_id}",
+                payload={
+                    "lead_id": lead_id,
+                    "game_score": lead.get("game_score"),
+                    "consent_status": lead.get("consent_status"),
+                    "source": lead.get("source"),
+                    "disposition": "acked",
+                    "qualified_by": "human",
+                },
+                approval_level="L1",
+                actor_id=actor_id,
+                actor_role=actor_role,
+                evidence_id="EV-W5-001",
+            )
+        except Exception as exc:
+            logger.warning(
+                "[OpsBus] lead_qualified emit failed lead_id=%s: %s",
+                lead_id,
+                exc,
+            )
     return {"lead_id": lead_id, "disposition": body.disposition, "ok": True}
 
 

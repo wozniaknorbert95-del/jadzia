@@ -1699,6 +1699,35 @@ body[data-vhq-primary="1"]:not(.vhq-legacy) .view-home--console .vhq-home-slot:e
   color: var(--warn, #c9a227);
   font-weight: 600;
 }
+.vhq-bus-trail {
+  margin: 0.75rem 0;
+  padding: 0.65rem 0.75rem;
+  border: 1px dashed var(--border);
+  border-radius: var(--radius);
+}
+.vhq-bus-trail h4 {
+  margin: 0 0 0.4rem;
+  font-size: 0.9rem;
+}
+.vhq-bus-handoff-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 0.35rem;
+}
+.vhq-bus-handoff-card {
+  font-size: 0.85rem;
+  padding: 0.4rem 0.5rem;
+  border-left: 3px solid var(--border);
+  background: transparent;
+}
+.vhq-bus-handoff-card[data-state="pending"] {
+  border-left-color: var(--warn, #c9a227);
+}
+.vhq-bus-handoff-card[data-state="approved"] {
+  border-left-color: var(--ok, #6dcea8);
+}
 .vhq-work-actions {
   display: flex;
   flex-wrap: wrap;

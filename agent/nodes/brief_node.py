@@ -375,7 +375,81 @@ def spawn_brief_sales_cta_tickets(
                 lead_id or "-",
                 rec.get("code"),
             )
+            _emit_sales_cta_ops_bus(
+                ticket_id=int(ticket_id),
+                lead_id=lead_id,
+                wizard_deeplink=str(rec.get("wizard_deeplink") or ""),
+                cta_sku=str(rec.get("cta_sku") or ""),
+            )
     return created
+
+
+def _emit_sales_cta_ops_bus(
+    *,
+    ticket_id: int,
+    lead_id: int,
+    wizard_deeplink: str,
+    cta_sku: str,
+) -> None:
+    """VF-VHQ-W5: typed lead_qualified + wizard_started from sales CTA spawn."""
+    if not lead_id:
+        return
+    try:
+        from agent.db import db_get_lead_by_id
+        from agent.ops_bus import emit_ops_bus_event
+
+        lead = db_get_lead_by_id(lead_id) or {}
+        corr = f"corr:lead:{lead_id}"
+        q = emit_ops_bus_event(
+            event_type="lead_qualified",
+            source_room="sales-room",
+            dest_room="wizard-quote",
+            payload_ref=str(lead_id),
+            source_system="jadzia",
+            source_event_id=f"sales_cta:{ticket_id}",
+            correlation_id=corr,
+            payload={
+                "lead_id": lead_id,
+                "game_score": lead.get("game_score"),
+                "consent_status": lead.get("consent_status"),
+                "source": lead.get("source"),
+                "ticket_id": ticket_id,
+                "qualified_by": "approved_rule",
+                "cta_sku": cta_sku or None,
+            },
+            approval_level="L1",
+            actor_id="brief_node",
+            actor_role="system",
+            evidence_id="EV-W5-001",
+        )
+        if wizard_deeplink:
+            emit_ops_bus_event(
+                event_type="wizard_started",
+                source_room="wizard-quote",
+                dest_room="sales-room",
+                payload_ref=str(lead_id),
+                source_system="jadzia",
+                source_event_id=f"wiz_cta:{ticket_id}",
+                correlation_id=corr,
+                causation_event_id=q.event_id,
+                payload={
+                    "lead_id": lead_id,
+                    "wizard_deeplink": wizard_deeplink,
+                    "beacon": "sales_cta",
+                    "ticket_id": ticket_id,
+                },
+                approval_level="L0",
+                actor_id="brief_node",
+                actor_role="system",
+                evidence_id="EV-W5-002",
+            )
+    except Exception as exc:
+        logger.warning(
+            "[OpsBus] sales_cta emit failed ticket_id=%s lead_id=%s: %s",
+            ticket_id,
+            lead_id,
+            exc,
+        )
 
 
 def send_weekly_brief() -> bool:
