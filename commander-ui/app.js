@@ -1514,14 +1514,14 @@ const VHQ_ROOMS = {
     floor: "P3",
     purpose: "Pending human approvals and audit trail",
     status: "PARTIAL",
-    evidence: "EV-W2-009",
-    lastVerified: "2026-07-27T14:24:30Z",
+    evidence: "EV-W6-001",
+    lastVerified: "2026-07-31T08:45:00Z",
     owner: "Dowódca / Ops",
-    sotLabel: "Commander Audyt (secondary)",
+    sotLabel: "ops_bus_events · approval_needed pending",
     sotHref: null,
     limitation:
-      "Path Settings→Audyt verified PARTIAL; hash-chain detail needs authenticated session. No autonomous finance.",
-    action: { type: "view", target: "audit", label: "Open Audyt" },
+      "L2 Approve/Reject flips state only (no deploy/publish/charge). L3/L4 STOP display — Founder GO required. No Mollie/Ads.",
+    action: { type: "room", target: "approval-vault", label: "Open Approval Vault" },
     mvp: true,
     pulse: false,
     truthPilot: false,
@@ -2704,12 +2704,201 @@ function vhqRenderCriticalPin() {
   if (btn) btn.setAttribute("data-vhq-room", room.id);
 }
 
+async function vhqFetchPendingApprovals() {
+  if (!getToken()) return { events: [], total: 0, enabled: true, authed: false };
+  try {
+    const data = await api(
+      "/api/v1/commander/ops-bus/events?approval_state=pending&type=approval_needed&limit=40"
+    );
+    const events = Array.isArray(data.events) ? data.events : [];
+    return {
+      events,
+      total: typeof data.total === "number" ? data.total : events.length,
+      enabled: data.enabled !== false,
+      authed: true,
+    };
+  } catch {
+    return { events: [], total: 0, enabled: true, authed: true, error: true };
+  }
+}
+
 function vhqRenderVaultStrip() {
   const strip = document.querySelector(".vhq-vault-strip .hint[data-vhq-vault-status]");
   const vault = vhqRoomsList().find((r) => r.briefVault) || VHQ_ROOMS["approval-vault"];
-  if (strip && vault) {
-    strip.textContent = `[${vault.status}] · ${vault.evidence || "—"} · No invented pending count. Real path only.`;
+  if (!strip || !vault) return;
+  strip.textContent = `[${vault.status}] · ${vault.evidence || "—"} · pending — · Real path only.`;
+  vhqFetchPendingApprovals().then((res) => {
+    if (!strip.isConnected) return;
+    if (!res.authed) {
+      strip.textContent = `[${vault.status}] · ${vault.evidence || "—"} · pending — (sign in) · No invented count.`;
+      return;
+    }
+    if (res.enabled === false) {
+      strip.textContent = `[${vault.status}] · ops_bus off · pending —`;
+      return;
+    }
+    if (res.error) {
+      strip.textContent = `[${vault.status}] · ${vault.evidence || "—"} · pending — (load failed)`;
+      return;
+    }
+    const n = res.total;
+    strip.textContent = `[${vault.status}] · ${vault.evidence || "—"} · pending ${n} · EV-W6-001 · Open Vault for L2 stamps.`;
+  });
+}
+
+function vhqBindVaultWorkView() {
+  const room = VHQ_ROOMS["approval-vault"];
+  const eyebrow = document.getElementById("vhq-work-vault-eyebrow");
+  if (eyebrow && room) {
+    eyebrow.textContent = `${room.label} · [${room.status}] · ${room.evidence || "EV-W6-001"}`;
   }
+  const banners = document.getElementById("vhq-work-vault-banners");
+  if (banners) {
+    vhqClear(banners);
+    banners.appendChild(
+      vhqEl(
+        "p",
+        "vhq-honesty-banner",
+        "Policy: L2 state flip only · L3/L4 Founder GO required · Hard STOP Ads/Mollie/Gate D · EV-W6-004"
+      )
+    );
+  }
+  const auditBtn = document.getElementById("vhq-vault-open-audit");
+  if (auditBtn && auditBtn.dataset.bound !== "1") {
+    auditBtn.dataset.bound = "1";
+    auditBtn.addEventListener("click", () => {
+      vhqRunAction({ type: "view", target: "audit" });
+    });
+  }
+  vhqRenderVaultPending().catch((e) => toast(e.message || "Vault load failed", "err"));
+}
+
+async function vhqRenderVaultPending() {
+  const root = document.getElementById("vhq-work-vault-pending");
+  const sessionHint = document.getElementById("vhq-work-vault-session");
+  if (!root) return;
+  vhqClear(root);
+  if (sessionHint) {
+    sessionHint.hidden = true;
+    sessionHint.textContent = "";
+  }
+  if (!getToken()) {
+    if (sessionHint) {
+      sessionHint.hidden = false;
+      sessionHint.textContent =
+        "Session required — Sign in to load pending Ops Bus approvals. No invented pending board.";
+    }
+    root.appendChild(vhqEl("p", "hint", "Brak sesji · insufficient_data for pending list."));
+    return;
+  }
+  const res = await vhqFetchPendingApprovals();
+  if (res.enabled === false) {
+    root.appendChild(vhqEl("p", "hint", "Ops Bus disabled · pending list empty."));
+    return;
+  }
+  if (res.error) {
+    root.appendChild(vhqEl("p", "hint", "Could not load pending approvals · retry after Sign in."));
+    return;
+  }
+  if (!res.events.length) {
+    root.appendChild(
+      vhqEl("p", "hint", "Brak pending · insufficient_data · EV-W6-001 (honest empty).")
+    );
+    return;
+  }
+  const list = document.createElement("ul");
+  list.className = "vhq-vault-card-list";
+  res.events.forEach((ev) => {
+    list.appendChild(vhqBuildApprovalCard(ev));
+  });
+  root.appendChild(list);
+}
+
+function vhqBuildApprovalCard(ev) {
+  const li = document.createElement("li");
+  li.className = "vhq-vault-card";
+  const level = ev.approval_level || "L0";
+  const isL2 = level === "L2";
+  const isStop = level === "L3" || level === "L4";
+  li.dataset.level = level;
+  if (isStop) li.dataset.stop = "1";
+
+  const payload = ev.payload || {};
+  const parentType = payload.parent_type || "—";
+  const from = ev.source_room || "?";
+  const to = ev.dest_room || "approval-vault";
+  const evid = ev.evidence_id || "—";
+  const corr = ev.correlation_id || "—";
+
+  li.appendChild(
+    vhqEl(
+      "p",
+      "vhq-vault-card__title",
+      `${ev.event_type || "approval_needed"} · ${level}/${ev.approval_state || "pending"}`
+    )
+  );
+  li.appendChild(
+    vhqEl("p", "hint", `${from} → ${to} · parent ${parentType} · ${evid} · corr ${corr}`)
+  );
+
+  if (isStop) {
+    li.appendChild(
+      vhqEl(
+        "p",
+        "vhq-vault-card__stop",
+        `${level} STOP · Founder GO required · silent approve forbidden · Ads/Mollie/Gate D/deploy class · EV-W6-004`
+      )
+    );
+  }
+
+  const actions = document.createElement("div");
+  actions.className = "vhq-vault-card__actions";
+
+  if (isL2 && (ev.approval_state || "pending") === "pending") {
+    const approveBtn = document.createElement("button");
+    approveBtn.type = "button";
+    approveBtn.className = "primary";
+    approveBtn.textContent = "Approve (L2)";
+    approveBtn.addEventListener("click", () => {
+      vhqVaultDecide(ev.event_id, "approved").catch((e) => toast(e.message, "err"));
+    });
+    const rejectBtn = document.createElement("button");
+    rejectBtn.type = "button";
+    rejectBtn.className = "secondary";
+    rejectBtn.textContent = "Reject (L2)";
+    rejectBtn.addEventListener("click", () => {
+      vhqVaultDecide(ev.event_id, "rejected").catch((e) => toast(e.message, "err"));
+    });
+    actions.appendChild(approveBtn);
+    actions.appendChild(rejectBtn);
+  }
+
+  if (from && VHQ_ROOMS[from]) {
+    const srcBtn = document.createElement("button");
+    srcBtn.type = "button";
+    srcBtn.className = "secondary";
+    srcBtn.textContent = `Open source · ${from}`;
+    srcBtn.setAttribute("data-vhq-room", from);
+    actions.appendChild(srcBtn);
+  }
+
+  li.appendChild(actions);
+  return li;
+}
+
+async function vhqVaultDecide(eventId, state) {
+  const label = state === "approved" ? "Approve" : "Reject";
+  const confirmed = await confirmAction(
+    `${label} this L2 Ops Bus approval? State flip only — no deploy, publish, Ads, or Mollie.`
+  );
+  if (!confirmed || !confirmed.ok) return;
+  await api(`/api/v1/commander/ops-bus/events/${encodeURIComponent(eventId)}/approval`, {
+    method: "POST",
+    body: { state },
+  });
+  toast(`L2 ${state} · EV-W6-00${state === "approved" ? "2" : "3"} · no side effects`, "ok");
+  await vhqRenderVaultPending();
+  vhqRenderVaultStrip();
 }
 
 function vhqRenderHandoffStrip(root) {
@@ -3357,6 +3546,21 @@ function vhqApplyRoomChrome(roomId) {
         workTitle.focus();
       }
     }
+  } else if (roomId === "approval-vault") {
+    vhqSetMode("work");
+    vhqRestoreAllSlots();
+    vhqShowWorkPanel("approval-vault");
+    vhqBindVaultWorkView();
+    vhqUpdateWorkSessionBanner();
+    const workTitle = document.getElementById("vhq-work-vault-title");
+    if (workTitle) {
+      workTitle.setAttribute("tabindex", "-1");
+      try {
+        workTitle.focus({ preventScroll: true });
+      } catch (_) {
+        workTitle.focus();
+      }
+    }
   } else {
     vhqSetMode("world");
     vhqRestoreAllSlots();
@@ -3542,6 +3746,10 @@ function vhqRunAction(action) {
   if (!action) return;
   if (action.type === "external") {
     window.open(action.href, "_blank", "noopener,noreferrer");
+    return;
+  }
+  if (action.type === "room" && action.target) {
+    vhqRenderRoom(action.target, { historyMode: "push" });
     return;
   }
   if (action.type === "view") {

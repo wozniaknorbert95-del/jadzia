@@ -1728,6 +1728,46 @@ body[data-vhq-primary="1"]:not(.vhq-legacy) .view-home--console .vhq-home-slot:e
 .vhq-bus-handoff-card[data-state="approved"] {
   border-left-color: var(--ok, #6dcea8);
 }
+.vhq-vault-pending {
+  margin: 0.75rem 0 1rem;
+}
+.vhq-vault-card-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 0.65rem;
+}
+.vhq-vault-card {
+  border: 1px solid var(--border);
+  border-left: 3px solid var(--warn, #c9a227);
+  padding: 0.65rem 0.75rem;
+  display: grid;
+  gap: 0.35rem;
+}
+.vhq-vault-card[data-stop="1"] {
+  border-left-color: var(--danger, #d64545);
+}
+.vhq-vault-card__title {
+  margin: 0;
+  font-weight: 600;
+  font-size: 0.95rem;
+}
+.vhq-vault-card__stop {
+  margin: 0;
+  font-size: 0.85rem;
+  color: var(--danger, #d64545);
+}
+.vhq-vault-card__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  margin-top: 0.25rem;
+}
+.vhq-vault-card__actions .primary,
+.vhq-vault-card__actions .secondary {
+  min-height: 40px;
+}
 .vhq-work-actions {
   display: flex;
   flex-wrap: wrap;

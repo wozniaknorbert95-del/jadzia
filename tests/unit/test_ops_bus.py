@@ -385,3 +385,63 @@ def test_ops_bus_api_flag_off_empty(client, temp_db):
     assert body["enabled"] is False
     assert body["events"] == []
     set_ops_bus_enabled(True)
+
+
+def test_ops_bus_vault_pending_filter_and_l2_companion_approve(client, temp_db):
+    """W6 vault contract: pending approval_needed list + L2 companion approve."""
+    from agent.db import db_ops_bus_list, get_connection
+    from agent.ops_bus import emit_ops_bus_event
+
+    get_connection()
+    parent = emit_ops_bus_event(
+        event_type="lead_qualified",
+        source_room="sales-room",
+        dest_room="wizard-quote",
+        payload_ref="w6-1",
+        source_system="test",
+        source_event_id="w6-vault:1",
+        correlation_id="corr:w6:1",
+        payload={"lead_id": 901},
+        approval_level="L2",
+        actor_id="test",
+    )
+    assert parent.ok and parent.approval_needed_id
+
+    with jwt_env():
+        pending = client.get(
+            "/api/v1/commander/ops-bus/events",
+            headers=_auth_headers(),
+            params={
+                "approval_state": "pending",
+                "type": "approval_needed",
+                "limit": 40,
+            },
+        )
+        assert pending.status_code == 200
+        body = pending.json()
+        assert body["enabled"] is True
+        ids = {e["event_id"] for e in body["events"]}
+        assert parent.approval_needed_id in ids
+        # companions only — not the parent lead_qualified row
+        assert parent.event_id not in ids
+
+        appr = client.post(
+            f"/api/v1/commander/ops-bus/events/{parent.approval_needed_id}/approval",
+            headers=_auth_headers(),
+            json={"state": "approved"},
+        )
+        assert appr.status_code == 200
+        assert appr.json()["side_effects"] is False
+
+        after = client.get(
+            "/api/v1/commander/ops-bus/events",
+            headers=_auth_headers(),
+            params={"approval_state": "pending", "type": "approval_needed"},
+        )
+        assert parent.approval_needed_id not in {
+            e["event_id"] for e in after.json()["events"]
+        }
+
+    companions = db_ops_bus_list(event_type="approval_needed", limit=20)
+    row = next(c for c in companions if c["event_id"] == parent.approval_needed_id)
+    assert row["approval_state"] == "approved"
