@@ -3857,8 +3857,8 @@ function vhqTrapTab(e) {
 
 function vhqClose(opts = {}) {
   if (vhqIsPrimary()) {
-    // Esc ladder B handled by vhqEscLadder; Close button → Console
-    vhqGoConsole({ focusAuth: false, historyMode: opts.historyMode || "push" });
+    // Close / dismiss stays in HQ - use Tools CTA for Console
+    vhqGoMissionControl({ historyMode: opts.historyMode || "push" });
     return;
   }
   const shell = document.getElementById("vhq-shell");
@@ -3890,7 +3890,7 @@ function vhqEscLadder() {
     vhqClose();
     return;
   }
-  // B: room → Mission Control → Operations Console
+  // Esc ladder ends at Mission Control (HQ home)
   const onHq = document.getElementById("view-hq") && !document.getElementById("view-hq").hidden;
   if (!onHq || !vhqOpen) {
     return;
@@ -3903,7 +3903,7 @@ function vhqEscLadder() {
     vhqGoMissionControl({ historyMode: "push" });
     return;
   }
-  vhqGoConsole({ focusAuth: false, historyMode: "push" });
+  return;
 }
 
 function vhqOpenShell(roomId) {
@@ -4030,7 +4030,7 @@ function bindVhqShell() {
 
   enter.addEventListener("click", () => vhqGoMissionControl({ historyMode: "push" }));
   document.getElementById("vhq-close")?.addEventListener("click", () => {
-    vhqGoConsole({ focusAuth: false, historyMode: "push" });
+    vhqClose({ historyMode: "push" });
   });
   document.getElementById("vhq-to-console")?.addEventListener("click", () => {
     vhqGoConsole({ focusAuth: false, historyMode: "push" });
