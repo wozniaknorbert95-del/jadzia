@@ -10,7 +10,7 @@ evidence:
   vcms_scan: "Conflicts: 0 @ 2026-07-27"
   prod_tip: "4cf66fe"
   commander: "https://api.zzpackage.flexgrafik.nl/commander/?v=mkt-dash08"
-  health: "degraded (ssh_connection=error, worker_loop_alive=true, sqlite=true)"
+  health: "healthy (ssh_connection=ok, worker_loop_alive=true, sqlite=true) · INC-SSH-RECOVERY-00 CLOSED 2026-07-31"
 budget_freeze_until: "2026-08-06"
 ---
 

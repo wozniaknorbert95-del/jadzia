@@ -1504,7 +1504,7 @@ const VHQ_ROOMS = {
       { id: "KPI-CEO-COLD-OPEN", value: "insufficient_data", note: "no timed dogfood in this window" },
       {
         id: "Worker health",
-        value: "DEGRADED · ssh_connection=error · EV-W2-011 · INC-SSH-RECOVERY-00",
+        value: "healthy · ssh_connection=ok · INC-SSH-RECOVERY-00 CLOSED 2026-07-31",
       },
     ],
   },
@@ -1539,25 +1539,24 @@ const VHQ_ROOMS = {
     label: "Agent Operations",
     floor: "P3",
     purpose: "Agent / worker health overview (System Health / AI Health sub-area)",
-    status: "DEGRADED",
+    status: "PARTIAL",
     evidence: "EV-W2-011",
-    lastVerified: "2026-07-27T14:22:43Z",
+    lastVerified: "2026-07-31T06:00:00Z",
     owner: "Ops/COI",
     sotLabel: "Worker health · Design Agent health · Agent OS · VCMS",
     sotHref: null,
-    limitation: "SSH DEGRADED is pre-existing (INC-SSH-RECOVERY-00). OS/VCMS post-auth remain PARTIAL.",
+    limitation:
+      "Worker SSH recovered (INC-SSH-RECOVERY-00 CLOSED 2026-07-31 · ssh_connection=ok). OS/VCMS post-auth remain PARTIAL.",
     action: { type: "view", target: "agents", label: "Open Agenci tab" },
     mvp: true,
     pulse: true,
     truthPilot: false,
     floorCard: true,
-    criticalPin: true,
-    criticalDetail:
-      "INC-SSH-RECOVERY-00 · static verified Campus evidence. Not a live session health probe — worker health refresh needs JWT / Agent Operations.",
+    criticalPin: false,
     links: [
       { text: "Sub-area: System Health / AI Health", href: null },
       {
-        text: "[DEGRADED] Worker SSH · ssh_connection=error · EV-W2-011 · INC-SSH-RECOVERY-00",
+        text: "[LIVE] Worker SSH · ssh_connection=ok · INC-SSH-RECOVERY-00 CLOSED",
         href: null,
       },
       {

@@ -1,10 +1,10 @@
-# VF-VHQ-W4 — LIVE
+# INC-SSH-RECOVERY-00 CLOSED · W4 LIVE
 
-**Tip:** `f5ba5bc` (runtime UI `b6d0d36`)  
-**Cache:** `vhq-w40b`  
-**Prod:** https://api.zzpackage.flexgrafik.nl/commander/?v=vhq-w40b  
+**SSH:** `ssh_connection=ok` · worker `healthy`  
+**Cache:** `vhq-w40c`  
+**Prod:** https://api.zzpackage.flexgrafik.nl/commander/?v=vhq-w40c  
 
-CLOSE: `docs/handoffs/2026-07-31-VF-VHQ-W4-ROOMS-OPERATIONS-CLOSE.md`  
-DEPLOY: `docs/handoffs/2026-07-31-DEPLOY-VHQ-W4-00-CLOSE.md`  
+**Founder stamp (5 min):** pack `docs/handoffs/2026-07-31-VF-VHQ-W4-ROOMS-OPERATIONS-FOUNDER-DOGFOOD.md`  
+**INC CLOSE:** `docs/handoffs/2026-07-31-INC-SSH-RECOVERY-00-CLOSE.md`  
 
-**Next:** W5 parked until Founder GO. No MKT.
+W5 parked. No MKT.
