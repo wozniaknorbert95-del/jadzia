@@ -1,14 +1,15 @@
-# IDLE — SoT hygiene DONE · DI DONE
+# VF-VHQ-FIRM-IA-00 — Firm IA + single shell
 
-**Kanon:** Knowledge Index → `todo.json` → `FLEXGRAFIK-VIRTUAL-HQ-PROGRAM.md`  
-**Tip:** `ebe38db` · runtime `2623ae2` · cache `vhq-w65a`  
-**Appendix:** `docs/ops/PROGRAM-LANES-SOT.md` (ściąga)
+**Kanon:** Spec → plan → todo.json → VHQ-PROGRAM  
+**Tip:** pending commit · runtime `2623ae2` · cache target `vhq-w66a`  
+**Spec:** `docs/superpowers/specs/2026-07-31-vhq-firm-ia-design.md`  
+**BLAST:** `docs/handoffs/2026-07-31-VF-VHQ-FIRM-IA-00-BLAST.md`
 
-## DONE
-DI S3–S6+S8 · VF-SOT-HYGIENE-00 · Campus SUPERSEDED · handoffs archive
+## ACTIVE
+Gate BLAST done · WP-A Shell primacy next · preserve EV-W2-010 · no DI reopen
 
-## NEXT (human GO)
-COM-AI-50 ≥2026-08-02 → Growth · nie Order Desk / S7
+## STOP
+Order LIVE · S7 fake PASS · 3D · Ads · Mollie · 6th tab · new APIs · DI S3–S8 reopen · MKT dirty stage
 
 ## Agent
-Idle / observe · no fake S7 · no MKT dirty stage · deploy only with GO
+1-1-1 VF-VHQ-FIRM-IA-00 · WP-A→B→C · deploy only GO DEPLOY
