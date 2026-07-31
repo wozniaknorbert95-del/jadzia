@@ -34,7 +34,7 @@
     "vhq_di_s3_close": "docs/handoffs/2026-07-31-VF-VHQ-DI-S3-APPROVAL-CLOSE.md",
     "vhq_di_s3_deploy": "docs/handoffs/2026-07-31-DEPLOY-VHQ-DI-S3-00-CLOSE.md",
     "vhq_di_s3_evidence": "docs/archive/handoffs/evidence-vhq-di-s3/",
-    "prod_tip": "faca1b6 docs DEPLOY CLOSE / runtime adafd83 / cache vhq-w66a (FIRM-IA DEPLOY PASS)",
+    "prod_tip": "184289c docs FINAL PRECLOSE / runtime adafd83 (prod still w66a) / cache target vhq-w67a · ready_for_go_deploy",
     "vhq_firm_ia_blast": "docs/handoffs/2026-07-31-VF-VHQ-FIRM-IA-00-BLAST.md",
     "vhq_firm_ia_close": "docs/handoffs/2026-07-31-VF-VHQ-FIRM-IA-00-CLOSE.md",
     "vhq_firm_ia": "completed · DEPLOY PASS tip adafd83 · cache vhq-w66a · Esc HQ home · Firm Chain LIVE",
