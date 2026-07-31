@@ -4,11 +4,12 @@ title: "VF-VHQ-UX-AUDIT-00 — Deep UX audit report"
 updated: "2026-07-31"
 gate: "VF-VHQ-UX-AUDIT-00"
 persona: "Dowódca / Director — time pressure; phone+desktop; first-time lens"
-surface: "https://api.zzpackage.flexgrafik.nl/commander/?v=vhq-w60a"
+surface: "https://api.zzpackage.flexgrafik.nl/commander/?v=vhq-w60a → post-deploy ?v=vhq-w61a"
 runtime_at_audit: "06212d7"
 cache_at_audit: "vhq-w60a"
 phase_b_cache: "vhq-w61a"
-verdict: "Conditional Pass"
+verdict: "Pass"
+post_deploy_verify: "docs/handoffs/2026-07-31-VF-VHQ-UX-AUDIT-00-EXPERT-VERIFY.md"
 evidence_dir: "docs/handoffs/evidence-vhq-ux-audit/"
 ---
 
@@ -16,9 +17,9 @@ evidence_dir: "docs/handoffs/evidence-vhq-ux-audit/"
 
 ## Verdict
 
-**Conditional Pass**
+**Pass** (post-deploy supersede)
 
-Phase A on prod `vhq-w60a` found **1 Critical + 2 High** that block Program §1 (“understand / control without guessing”) under real interaction. Phase B ships minimal UI fixes under `commander-ui/**` + cache **`vhq-w61a`**. Prod re-walk of fixed slices is **blocked until GO DEPLOY** (Zasada 11). Not a fake PASS on live tip.
+Phase A on prod `vhq-w60a` found **1 Critical + 2 High**. Phase B fixed them (`vhq-w61a` · tip `a49644c`). Fresh prod verify + expert analysis: `docs/handoffs/2026-07-31-VF-VHQ-UX-AUDIT-00-EXPERT-VERIFY.md` — UX hard gates **Pass**; mission maturity still limited by SNR (CEO stubs / chronic freshness), not by shell bugs.
 
 ## Preflight (T1)
 
@@ -89,13 +90,13 @@ Allowlist noise: Chrome verbose “Password field is not contained in a form” 
 
 ## Program goal scorecard
 
-| Facet | Audit |
-|-------|--------|
-| Understand ≤30s with interaction | **Blocked on cold-open** until F1 deploy (manual `loadHome` proves data) |
-| Control L1/L2 | Vault/Sales paths present; strip CTA mismatch (F2) |
-| Improve without guessing | Order PARKED / pins UNVERIFIED honest |
-| ARCH principles | Teleport+Esc OK; phone MC first OK structurally; honest status OK |
+| Facet | Audit (Phase A) | Post-deploy verify |
+|-------|-----------------|--------------------|
+| Understand ≤30s with interaction | Blocked on cold-open F1 | **PASS** — rail loads |
+| Control L1/L2 | Strip CTA mismatch F2 | **PASS** — Open Vault; L3 STOP honest |
+| Improve without guessing | Order PARKED / pins honest | **PASS honesty** |
+| ARCH principles | Teleport+Esc OK | **PASS** + viewports 768/1024/375 |
 
 ## Phase B note
 
-Cache bump **`vhq-w61a`**. Deploy **not** performed (needs exact `GO DEPLOY`).
+Cache **`vhq-w61a`** deployed. Expert verify: see EXPERT-VERIFY.md.
