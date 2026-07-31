@@ -1,6 +1,11 @@
-# COI-CMD-OPS-GUIDE-01 — COMPLETE
+# VF-VHQ-W4-ROOMS-OPERATIONS — CLOSED · SHIPPING
 
-**CLOSE:** `docs/handoffs/2026-07-18-coi-cmd-ops-guide-01-CLOSE.md`  
-**Handbook:** `flex-vcms/docs/study/coi-commander-ops-handbook.md`  
-**Next:** idle / non-MBA vibe-init · optional VCMS Deploy-VPS GO  
-**PARK:** Gate D, Mollie, mint/recover, OS merge
+**Gate:** completed  
+**Cache:** `vhq-w40b`  
+**CLOSE:** `docs/handoffs/2026-07-31-VF-VHQ-W4-ROOMS-OPERATIONS-CLOSE.md`  
+**Founder GO:** verify + commit + deploy (this session)
+
+## Next
+
+Push → VPS deploy → prod dogfood `?v=vhq-w40b`  
+W5 parked.

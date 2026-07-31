@@ -1767,6 +1767,11 @@ body[data-vhq-primary="1"]:not(.vhq-legacy) .view-home--console .vhq-home-slot:e
   color: #9cbcda;
   background: rgba(107, 140, 174, 0.12);
 }
+.vhq-honesty-banner[data-status="PLANNED"] {
+  border-color: #7a7a8c;
+  color: #b0b0c0;
+  background: rgba(122, 122, 140, 0.12);
+}
 body.vhq-open.vhq-mode-command .vhq-building,
 body.vhq-open.vhq-mode-command .vhq-panel {
   display: none;

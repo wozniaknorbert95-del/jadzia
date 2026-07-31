@@ -1,5 +1,5 @@
 /* COI Commander shell SW — cache static UI only; never cache /api/ */
-const CACHE = "coi-commander-shell-v1";
+const CACHE = "coi-commander-shell-vhq-w40b";
 const SHELL = [
   "./",
   "./index.html",
