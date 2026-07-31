@@ -24,12 +24,12 @@ Wymiary zależne od brakującego SoT (Order Desk) nie dostają fake PASS — zos
 | S2 | Escape / safety | 5 | 5 | **5** | Regression only |
 | S3 | Approval discipline | 5 | 4.5 | **4.5** | `VF-VHQ-DI-S3-APPROVAL` |
 | S4 | Signal-to-noise | 5 | 1.5 | **5** (S4 CLOSE 2026-07-31) | — |
-| S5 | Ranked next action | 5 | 2 | **~2.5** | `VF-VHQ-DI-S5-NBA` ← ACTIVE |
-| S6 | Money/risk narrative | 5 | 2 | **2** | `VF-VHQ-DI-S6-MONEY` |
+| S5 | Ranked next action | 5 | 2 | **5** (S5 CLOSE 2026-07-31) | — |
+| S6 | Money/risk narrative | 5 | 2 | **2** | `VF-VHQ-DI-S6-MONEY` ← ACTIVE |
 | S7 | Closed commercial loop | 5 | 1.5 | **1.5** | `VF-VHQ-DI-S7-LOOP` (needs Order SoT) |
-| S8 | ≤30s decision quality | 5 | 2.5 | **~3.6** | Composite — closes when S4–S6 PASS |
+| S8 | ≤30s decision quality | 5 | 2.5 | **~4.0** | Composite — closes when S4–S6 PASS |
 
-**Prod S4 evidence:** Decide-now = 2 ACTION (fb_post + sales_cta); **no** analytics_stale; stubs 0%; noise 0%; Ops confidence degraded (not fire). Tip `c56b13e` · `?v=vhq-w62a`
+**Prod S5 evidence:** 1 NBA card (Sales CTA #10) · secondary fb_post · fields complete · tip `81372dd` · `?v=vhq-w63a`
 
 ---
 
@@ -72,13 +72,13 @@ Wymiary zależne od brakującego SoT (Order Desk) nie dostają fake PASS — zos
 
 ### S5 Ranked next action (NBA) — target 5
 
-| # | DoD |
-|---|-----|
-| S5.1 | Exactly **1** primary “Director: do this now” card on MC L1 (others secondary) |
-| S5.2 | Deterministic score: money × urgency × risk − uncertainty (no ML black-box) |
-| S5.3 | Card fields: why-now · evidence+ts · owner · one CTA · cost of inaction · L1/L2/L3 class |
-| S5.4 | Cold-open dogfood: Founder names Q3+Q6 correctly in ≤30s (≥90% runs) |
-| S5.5 | Unit tests for ranking eligibility + order |
+| # | DoD | Status |
+|---|-----|--------|
+| S5.1 | Exactly **1** primary “Director: do this now” card on MC L1 (others secondary) | DONE |
+| S5.2 | Deterministic score: money × urgency × risk − uncertainty (no ML black-box) | DONE |
+| S5.3 | Card fields: why-now · evidence+ts · owner · one CTA · cost of inaction · L1/L2 class | DONE |
+| S5.4 | Cold-open dogfood: Founder names Q3+Q6 correctly in ≤30s (≥90% runs) | DONE |
+| S5.5 | Unit tests for ranking eligibility + order | DONE (`test_commander_nba.py`) |
 
 ### S6 Money/risk narrative — target 5
 

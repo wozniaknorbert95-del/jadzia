@@ -1,11 +1,10 @@
-# DEPLOY_READY: VF-VHQ-DI-S5-NBA
+# NEXT: VF-VHQ-DI-S6-MONEY
 
-**BLAST/PRECLOSE:** `docs/handoffs/2026-07-31-VF-VHQ-DI-S5-NBA-*.md`  
-**Code:** `agent/commander/nba.py` · API `nba` · UI `#vhq-nba` · cache **`vhq-w63a`**  
-**pytest:** 27/27 (nba+queue+escalation+api)
+**S5:** CLOSED+DEPLOY PASS · tip `81372dd` · cache `vhq-w63a` · S5=5  
+**Close:** `docs/handoffs/2026-07-31-VF-VHQ-DI-S5-NBA-CLOSE.md`
 
-## Commander
+## Start S6
 
-**`GO DEPLOY`** → dogfood 1 NBA card ≤30s → S5=5 → S6  
+`/vhq-decision-instrument` → money/risk narrative from real signals OR honest `insufficient_data` + one verify CTA  
 
-**STOP:** no MKT · no Order LIVE · no fake €  
+**STOP:** no fake € · no Order LIVE · no MKT · no 3D  
