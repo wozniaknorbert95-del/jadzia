@@ -6,6 +6,7 @@ gate: "VF-VHQ-W7-DOGFOOD"
 cache: "vhq-w60a"
 runtime_commit: "06212d7"
 vps_tip_at_dogfood: "f98c7b6"
+prod_tip: "7dc996d"
 founder_go: true
 runtime_changes: false
 w7_closed: true
