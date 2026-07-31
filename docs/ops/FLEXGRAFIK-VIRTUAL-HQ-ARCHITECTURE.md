@@ -7,7 +7,7 @@ owner: "Norbert Wozniak (Dowódca) — Accountable"
 foundation: "docs/ops/FLEXGRAFIK-CAMPUS-PROGRAM.md · FLEXGRAFIK-CAMPUS-MAP.md · Commander campus-w03"
 inspiration_only: "https://store.talknbuy.com/pl/ — spatial discoverability; NO copy of code/assets/branding"
 runtime_changes_allowed: false
-prod_tip: "da1b2d6"
+prod_tip: "014c791"
 runtime_commit: "06212d7"
 cache_asset: "vhq-w60a"
 w1_shell: "completed 2026-07-27 · local cache vhq-w01b · Founder CLOSE"
@@ -19,8 +19,8 @@ w1_shell: "completed 2026-07-27 · local cache vhq-w01b · Founder CLOSE"
 
 | Layer | Role | Status |
 |-------|------|--------|
-| **Virtual HQ** | **Primary operational dashboard** — World / Work / Command experience | W1–W6 CLOSED+DEPLOY · cache `vhq-w60a` · tip `da1b2d6` · runtime `06212d7` |
-| **Commander (jadzia)** | **Underlying control, data, audit and action engine** — queues, JWT, Marketing, Analytics, Agents, Audit, Settings | LIVE tip `da1b2d6` · runtime `06212d7` · `?v=vhq-w60a` · ops_bus_events + Approval Vault (PARTIAL) |
+| **Virtual HQ** | **Primary operational dashboard** — World / Work / Command experience | W1–W6 CLOSED+DEPLOY · cache `vhq-w60a` · tip `014c791` · runtime `06212d7` |
+| **Commander (jadzia)** | **Underlying control, data, audit and action engine** — queues, JWT, Marketing, Analytics, Agents, Audit, Settings | LIVE tip `014c791` · runtime `06212d7` · `?v=vhq-w60a` · ops_bus_events + Approval Vault (PARTIAL) |
 | **Campus W1–W3** | Truthful map hops, evidence badges, 5 Truth Cards | DONE — foundation absorbed into VHQ path |
 | **Agent OS / VCMS** | Build + Govern brains — hop destinations, not merged into jadzia | PARTIAL post-auth |
 

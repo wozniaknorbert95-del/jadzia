@@ -8,7 +8,7 @@ architecture: "docs/ops/FLEXGRAFIK-VIRTUAL-HQ-ARCHITECTURE.md"
 campus_foundation: "docs/ops/FLEXGRAFIK-CAMPUS-PROGRAM.md"
 runtime_changes_allowed: false
 budget_freeze_until: "2026-08-06"
-prod_tip: "da1b2d6"
+prod_tip: "014c791"
 runtime_commit: "06212d7"
 cache_asset: "vhq-w60a"
 inspiration_only: "Talk&Buy store — spatial UX inspiration; no copy"
@@ -62,7 +62,7 @@ W1-SHELL: **CLOSED** (local `vhq-w01b`). W2+ not auto-activated.
 | **W1 Navigate** | Floor·room hop labels on Mission Control map; no 6th tab |
 | **W2 Trust** | Hop Contracts + honest LIVE/PARTIAL/UNVERIFIED/PARKED badges + evidence IDs |
 | **W3 Truth Cards** | 5 read-only cards: status + SoT + primary action + insufficient_data rule |
-| **Deploy** | Prod tip **`da1b2d6`** · runtime **`06212d7`** · cache URL **`vhq-w60a`** · W6 Approval Vault **path DEPLOYED** · room maturity **PARTIAL** |
+| **Deploy** | Prod tip **`014c791`** · runtime **`06212d7`** · cache URL **`vhq-w60a`** · W6 Approval Vault **path DEPLOYED** · room maturity **PARTIAL** |
 
 Campus = **truthful control foundation**. It is **not** the interactive Virtual HQ product vision.
 
@@ -80,11 +80,11 @@ Campus = **truthful control foundation**. It is **not** the interactive Virtual 
 
 ---
 
-## 5. Evidence Baseline (reconciled 2026-07-31 · W6 path DEPLOYED · tip `da1b2d6` · cache `vhq-w60a`)
+## 5. Evidence Baseline (reconciled 2026-07-31 · W6 path DEPLOYED · tip `014c791` · cache `vhq-w60a`)
 
 | System / room | Current reality | SoT | Status | Evidence | Can appear in HQ? |
 |---------------|-----------------|-----|--------|----------|-------------------|
-| Mission Control | Commander Home LIVE | `commander/?v=vhq-w60a` | **LIVE** | EV-W2-001 · tip da1b2d6 | **Yes — MVP core** |
+| Mission Control | Commander Home LIVE | `commander/?v=vhq-w60a` | **LIVE** | EV-W2-001 · tip 014c791 | **Yes — MVP core** |
 | Boardroom | docs strategy | flexgrafik-meta master-plan | PARTIAL | docs | Yes — later |
 | Approval Vault | Ops Bus Vault Work View (`?vhq=approval-vault`) · pending `approval_needed` | `ops_bus_events` · Audyt secondary | **PARTIAL** | EV-W6-001 · EV-W2-009 historical | Yes — MVP thin |
 | AI / Agent Health | DA OK · worker SSH ok (INC-SSH CLOSED 2026-07-31) | health APIs · Agenci | **PARTIAL** (OS/VCMS post-auth) | EV-W2-006 · INC-SSH-RECOVERY-00 CLOSE | Yes — MVP |
@@ -120,7 +120,7 @@ Campus = **truthful control foundation**. It is **not** the interactive Virtual 
 
 **Out of MVP:** full P0 production spine UI, 3D, Ads, Mollie, all rooms polished, full Ops Bus catalog beyond cash spine.  
 **W5 LIVE (2026-07-31):** typed cash-spine bus `lead_qualified` → `wizard_started` → `order_created` + audit/L2–L3 STOP · tip `67700ff` · cache `vhq-w50a` · Order Desk remains PARKED EV-W2-010.  
-**W6 (2026-07-31):** Approval Vault **path DEPLOYED** · room maturity **PARTIAL** · tip `da1b2d6` · runtime `06212d7` · cache `vhq-w60a` · L2 Approve flips **companion** `approval_needed` only (parent may stay pending) · L3/L4 STOP · Order Desk remains PARKED EV-W2-010.
+**W6 (2026-07-31):** Approval Vault **path DEPLOYED** · room maturity **PARTIAL** · tip `014c791` · runtime `06212d7` · cache `vhq-w60a` · L2 Approve flips **companion** `approval_needed` only (parent may stay pending) · L3/L4 STOP · Order Desk remains PARKED EV-W2-010.
 
 ---
 
@@ -135,7 +135,7 @@ Campus = **truthful control foundation**. It is **not** the interactive Virtual 
 | **VF-VHQ-W3-ROOMS-COMMERCIAL** | Work Views: Wizard/Sales/Marketing pins honest | UI + deeplinks | W2 |
 | **VF-VHQ-W4-ROOMS-OPERATIONS** | PARKED/PLANNED ops shells + Order Desk path when SoT exists | UI (+ data if SoT) | W2; Order LIVE needs SoT |
 | **VF-VHQ-W5-OPERATIONS-BUS** | Typed events/tasks + audit (no agent chat) — **CLOSED+DEPLOY tip `67700ff` / `vhq-w50a`** | data integration | W2+ schemas |
-| **VF-VHQ-W6-DIRECTOR-APPROVALS** | Approval Vault L2–L4 UX — **CLOSED+DEPLOY tip `da1b2d6` / runtime `06212d7` / `vhq-w60a`** · maturity PARTIAL | UI + action risk | W5 + GO per class |
+| **VF-VHQ-W6-DIRECTOR-APPROVALS** | Approval Vault L2–L4 UX — **CLOSED+DEPLOY tip `014c791` / runtime `06212d7` / `vhq-w60a`** · maturity PARTIAL | UI + action risk | W5 + GO per class |
 | **VF-VHQ-W7-DOGFOOD** | Director ≤30s dogfood + evidence | verify | W2 min; prefer W6 |
 | **VF-VHQ-3D-PARKED** | True 3D | parked forever until unpark | W7 PASS + Founder |
 
@@ -147,7 +147,7 @@ Campus = **truthful control foundation**. It is **not** the interactive Virtual 
 
 | Dependency | Impact |
 |------------|--------|
-| Commander tip `da1b2d6` · runtime `06212d7` · cache `vhq-w60a` · ops_bus_events + Approval Vault (PARTIAL) | MVP data surface + W5/W6 |
+| Commander tip `014c791` · runtime `06212d7` · cache `vhq-w60a` · ops_bus_events + Approval Vault (PARTIAL) | MVP data surface + W5/W6 |
 | JWT session | queue / audit / analytics freshness |
 | INC-SSH-RECOVERY-00 | **CLOSED** 2026-07-31 — prod `ssh_connection=ok` |
 | Order Desk SoT | blocks LIVE ops room |

@@ -4,6 +4,7 @@ title: "PRE-W7-SOT-HYGIENE — F1–F6 + S1 CLOSED"
 updated: "2026-07-31"
 gate: "PRE-W7-SOT-HYGIENE"
 baseline_tip: "da1b2d6"
+prod_tip: "014c791"
 runtime_commit: "06212d7"
 cache_asset: "vhq-w60a"
 runtime_changes_allowed: false
@@ -23,7 +24,7 @@ verify: "docs/handoffs/2026-07-31-PRE-W7-DEEP-VERIFY-REPORT.md"
 | Runtime feature | `06212d7` |
 | Cache | `vhq-w60a` |
 | Baseline tip (pre-hygiene commit) | `da1b2d6` |
-| Tip after hygiene push | stamped in `todo.campus_prod_tip` / commit SHA |
+| Tip after hygiene push | **`014c791`** |
 
 ## DoD table
 

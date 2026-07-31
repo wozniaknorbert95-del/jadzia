@@ -1,7 +1,7 @@
 # PRE-W7-SOT-HYGIENE — CLOSED
 
 **Gate:** `PRE-W7-SOT-HYGIENE` · `completed`  
-**Tip baseline:** `da1b2d6` · runtime `06212d7` · cache `vhq-w60a`  
+**Tip:** `014c791` · runtime `06212d7` · cache `vhq-w60a`  
 **CLOSE:** `docs/handoffs/2026-07-31-PRE-W7-SOT-HYGIENE-CLOSE.md`
 
 ## Done
