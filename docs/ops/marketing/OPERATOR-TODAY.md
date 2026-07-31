@@ -21,8 +21,11 @@ budget_freeze_until: "2026-08-06"
 | **S7 / Order Desk** | **PARKED** EV-W2-010 |
 | **Budget freeze** | do **2026-08-06** · €0 paid |
 
-## Twój ruch (HITL)
+## Twój ruch
 
-1. Observe prod F7 (jedna oś 1–4)  
-2. Optional: COM-AI ACCEPT copy w `COM-AI-50-READY-PACK.md`  
-3. Order Desk = osobny projekt — nie dziś  
+**Kolejna sesja (agent):** `VF-ORDER-DESK-SOT-00` discovery — brief `docs/handoffs/2026-07-31-SESSION-NEXT-ORDER-DESK-SOT.md`  
+
+**HITL równolegle (10 min):** COM-AI ACCEPT/EDIT copy w `COM-AI-50-READY-PACK.md` · organic ≥2026-08-02  
+
+**STOP:** Order LIVE bez SoT · Ads w freeze · fake S7  
+

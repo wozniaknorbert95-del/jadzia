@@ -1,14 +1,12 @@
-# IDLE — VF-VHQ-FINAL-00 DEPLOY PASS
+# NEXT SESSION — VF-ORDER-DESK-SOT-00 (discovery)
 
-**Seal:** `FINISHED_PARTIAL_LOOP` · cache `vhq-w67a`  
-**CLOSE:** `docs/handoffs/2026-07-31-DEPLOY-VHQ-FINAL-00-CLOSE.md`  
-**Prod:** https://api.zzpackage.flexgrafik.nl/commander/?v=vhq-w67a
+**Baseline VERIFY PASS:** FINAL · `vhq-w67a` · seal `FINISHED_PARTIAL_LOOP`  
+**Brief:** `docs/handoffs/2026-07-31-SESSION-NEXT-ORDER-DESK-SOT.md`  
+**Spec:** `docs/superpowers/specs/2026-07-31-order-desk-sot-discovery-design.md`  
+**BLAST (activate on start):** `docs/handoffs/2026-07-31-VF-ORDER-DESK-SOT-00-BLAST.md`
 
-## ACTIVE
-`active_gate` = null · observe-only
-
-## NEXT (human)
-COM-AI-50 resume (ACCEPT copy) · Order Desk SoT osobno · Ads freeze do 2026-08-06
+## Parallel HITL
+COM-AI-50 ACCEPT copy · `docs/ops/marketing/COM-AI-50-READY-PACK.md` · organic ≥2026-08-02
 
 ## STOP
-Order LIVE · S7 fake · Ads · Mollie · deploy bez GO · stage dirty `MKT/`
+Order LIVE · fake S7 · Mollie · Ads · reopen FINAL nav · stage dirty `MKT/`

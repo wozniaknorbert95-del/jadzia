@@ -1,6 +1,6 @@
 {
   "project": "Jadzia-Core",
-  "last_updated": "2026-07-31 (VF-VHQ-FINAL-00 DEPLOY PASS · vhq-w67a · FINISHED_PARTIAL_LOOP)",
+  "last_updated": "2026-07-31 (FINAL VERIFY PASS · next=VF-ORDER-DESK-SOT-00 discovery)",
   "status": "active",
   "plan": "docs/ops/FLEXGRAFIK-VIRTUAL-HQ-PROGRAM.md",
   "active_gate": null,
@@ -14,6 +14,10 @@
     "vhq_final_preclose": "docs/handoffs/2026-07-31-VF-VHQ-FINAL-00-PRECLOSE.md",
     "vhq_final_deploy": "docs/handoffs/2026-07-31-DEPLOY-VHQ-FINAL-00-CLOSE.md",
     "dashboard_seal": "FINISHED_PARTIAL_LOOP",
+    "vhq_final_verify": "docs/handoffs/2026-07-31-VERIFY-VHQ-FINAL-00-POSTDEPLOY.md",
+    "session_next": "docs/handoffs/2026-07-31-SESSION-NEXT-ORDER-DESK-SOT.md",
+    "order_desk_sot_blast": "docs/handoffs/2026-07-31-VF-ORDER-DESK-SOT-00-BLAST.md",
+    "order_desk_sot_spec": "docs/superpowers/specs/2026-07-31-order-desk-sot-discovery-design.md",
     "session_close": "docs/handoffs/2026-07-31-DEPLOY-VHQ-FINAL-00-CLOSE.md",
     "vhq_final_blast": "docs/handoffs/2026-07-31-VF-VHQ-FINAL-00-BLAST.md",
     "vhq_final_spec": "docs/superpowers/specs/2026-07-31-vhq-final-dashboard-design.md",
@@ -34,8 +38,8 @@
     "vhq_di_s8_evidence": "docs/archive/handoffs/evidence-vhq-di-s8/",
     "vhq_di_s3": "completed · CLOSED+DEPLOY PASS tip 2623ae2 · cache vhq-w65a · S3=5",
     "vhq_di_s3_blast": "docs/archive/handoffs/2026-07-31-VF-VHQ-DI-S3-APPROVAL-BLAST.md",
-    "vhq_di_s3_close": "docs/handoffs/2026-07-31-VF-VHQ-DI-S3-APPROVAL-CLOSE.md",
-    "vhq_di_s3_deploy": "docs/handoffs/2026-07-31-DEPLOY-VHQ-DI-S3-00-CLOSE.md",
+    "vhq_di_s3_close": "docs/archive/handoffs/2026-07-31-VF-VHQ-DI-S3-APPROVAL-CLOSE.md",
+    "vhq_di_s3_deploy": "docs/archive/handoffs/2026-07-31-DEPLOY-VHQ-DI-S3-00-CLOSE.md",
     "vhq_di_s3_evidence": "docs/archive/handoffs/evidence-vhq-di-s3/",
     "prod_tip": "c870cbd / cache vhq-w67a / dashboard_seal FINISHED_PARTIAL_LOOP (FINAL DEPLOY PASS)",
     "vhq_firm_ia_blast": "docs/handoffs/2026-07-31-VF-VHQ-FIRM-IA-00-BLAST.md",
@@ -268,7 +272,7 @@
     },
     "proposed_next_gate": null,
     "proposed_next_gate_active": false,
-    "proposed_next": "After Founder GO: COM-AI-50 / Growth. S7/Order + 3D parked. Appendix: PROGRAM-LANES-SOT.md"
+    "proposed_next": "VF-ORDER-DESK-SOT-00 discovery (docs). Parallel HITL: COM-AI ACCEPT. Appendix: PROGRAM-LANES-SOT.md"
   },
   "standing_go_closeout": false,
   "closeout_queue": [],
@@ -280,11 +284,11 @@
     }
   ],
   "closeout_expires": "2026-08-15",
-  "next_human": "Observe prod FINAL vhq-w67a. Optional: resume COM-AI-50 ACCEPT copy. Order Desk/S7 = osobny projekt. Ads freeze do 2026-08-06.",
-  "next_agent": "Idle after FINAL DEPLOY PASS. Observe-only unless new gate. No Order LIVE. No fake S7. Deploy only with GO DEPLOY.",
+  "next_human": "Next session: (1) GO VF-ORDER-DESK-SOT-00 discovery OR (2) ACCEPT COM-AI copy in pack. Ads freeze do 2026-08-06. Prod observe vhq-w67a.",
+  "next_agent": "On session start: activate VF-ORDER-DESK-SOT-00 per docs/handoffs/2026-07-31-SESSION-NEXT-ORDER-DESK-SOT.md. Docs-only. No Order LIVE. No reopen FINAL.",
   "budget_freeze_until": "2026-08-06",
   "budget_freeze_note": "Dowódca 2026-07-27: zero ad spend 10 dni — MKT assets PARKED; Growth = organic/COM-AI first, paid after freeze",
-  "agent_rule": "FINAL DEPLOYED vhq-w67a · seal FINISHED_PARTIAL_LOOP. Preserve EV-W2-010. No Order LIVE. Deploy only with GO DEPLOY.",
+  "agent_rule": "FINAL sealed vhq-w67a. Next 1-1-1=VF-ORDER-DESK-SOT-00 discovery (docs). Preserve EV-W2-010. No Order LIVE. Deploy only with GO DEPLOY.",
   "sprints": {
     "remediation": "completed",
     "coi_phase_a": "deploy_complete",
@@ -2073,7 +2077,20 @@
       "checklist": "docs/handoffs/2026-07-31-DEPLOY-VHQ-FINAL-00-CLOSE.md",
       "evidence_required": "docs/handoffs/evidence-vhq-final-prod/DOGFOOD.md",
       "runtime_changes_allowed": true,
-      "note": "2026-07-31 DEPLOY PASS · vhq-w67a · dashboard_seal FINISHED_PARTIAL_LOOP · S7 remains blocked_sot."
+      "note": "2026-07-31 DEPLOY+VERIFY PASS · vhq-w67a · dashboard_seal FINISHED_PARTIAL_LOOP · S7 remains blocked_sot."
+    },
+    {
+      "id": "VF-ORDER-DESK-SOT-00",
+      "sprint": "Order Desk SoT",
+      "task": "Discovery: order lifecycle SoT + exception matrix + unpark checklist EV-W2-010 (docs only)",
+      "status": "unblocked",
+      "priority": "critical",
+      "owner": "agent",
+      "depends_on": ["VF-VHQ-FINAL-00"],
+      "checklist": "docs/superpowers/plans/2026-07-31-order-desk-sot-discovery.md",
+      "evidence_required": "D1–D5 Founder accept",
+      "runtime_changes_allowed": false,
+      "note": "2026-07-31 BLAST ready. Activate next session. No Order LIVE. No Mollie."
     },
     {
       "id": "INC-SSH-RECOVERY-00",

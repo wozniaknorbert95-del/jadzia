@@ -25,9 +25,10 @@ Wygrywa: **Knowledge Index** → **`todo.json`** → **VHQ-PROGRAM** → DI scor
 | # | Pas | Stan |
 |---|-----|------|
 | A | VHQ Decision Instrument (S1–S6 + S8) | **DONE** |
-| A2 | VHQ Final Dashboard (nav F7 + Finish Cards) | **DONE · DEPLOY PASS** |
-| B | Growth / Demand (COM-AI → organic → paid) | **NEXT (human)** parked pack ready |
-| C | Order Desk / S7 | **PARKED** (`blocked_sot` · EV-W2-010) |
+| A2 | VHQ Final Dashboard (nav F7 + Finish Cards) | **DONE · VERIFY PASS** |
+| C0 | Order Desk SoT discovery | **NEXT SESSION** `VF-ORDER-DESK-SOT-00` |
+| B | Growth / Demand (COM-AI → organic → paid) | **HITL parallel** ACCEPT copy |
+| C | Order Desk / S7 build | **PARKED** until SoT accept (`blocked_sot`) |
 | D | 3D · MKT-ASSET · Ads freeze · Campus residual | **PARKED** |
 
 ## STOP
