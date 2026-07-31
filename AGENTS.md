@@ -6,8 +6,11 @@
 - **Knowledge SoT**: `docs/ops/KNOWLEDGE-SYSTEM-INDEX.md` (ECO-POLISH-01 CLOSE — Docs IA policy)
 - **Process catalog**: `docs/ops/PROCESS-CATALOG.md`
 - **Scorecard**: `docs/ops/SCORECARD-AI-OS-ZALICZENIE.md` — **#1–9 LIVE**
-- **VHQ Decision Instrument scorecard**: `docs/ops/VHQ-DECISION-INSTRUMENT-SCORECARD.md` · workflow `/vhq-decision-instrument`
-- **Canonical brain**: `brain.md` · **backlog**: `todo.json`
+- **VHQ Program (ACTIVE)**: `docs/ops/FLEXGRAFIK-VIRTUAL-HQ-PROGRAM.md`
+- **Campus Program**: SUPERSEDED — `docs/ops/FLEXGRAFIK-CAMPUS-PROGRAM.md` (foundation only)
+- **VHQ Decision Instrument scorecard**: `docs/ops/VHQ-DECISION-INSTRUMENT-SCORECARD.md` · workflow `/vhq-decision-instrument` (agent closeout DONE; S7 parked)
+- **Lanes appendix**: `docs/ops/PROGRAM-LANES-SOT.md` (not `todo.plan`)
+- **Canonical brain**: `brain.md` · **backlog / active_gate**: `todo.json`
 - **Prod tip SoT:** VPS `/opt/jadzia` `git rev-parse --short HEAD`
 - **Deploy**: `.agents/workflows/jadzia-deploy.md`
 - **Post-coding**: `.agents/workflows/post-coding.md` (fresh GO for VPS)

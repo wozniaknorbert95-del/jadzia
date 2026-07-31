@@ -6,11 +6,13 @@ updated: "2026-07-31"
 owner: "Norbert Wozniak (Dowódca) — Accountable"
 architecture: "docs/ops/FLEXGRAFIK-VIRTUAL-HQ-ARCHITECTURE.md"
 campus_foundation: "docs/ops/FLEXGRAFIK-CAMPUS-PROGRAM.md"
+lanes_appendix: "docs/ops/PROGRAM-LANES-SOT.md"
+scorecard: "docs/ops/VHQ-DECISION-INSTRUMENT-SCORECARD.md"
 runtime_changes_allowed: false
 budget_freeze_until: "2026-08-06"
-prod_tip: "014c791"
-runtime_commit: "06212d7"
-cache_asset: "vhq-w60a"
+prod_tip: "0264f5d"
+runtime_commit: "2623ae2"
+cache_asset: "vhq-w65a"
 inspiration_only: "Talk&Buy store — spatial UX inspiration; no copy"
 ---
 
@@ -139,7 +141,7 @@ Campus = **truthful control foundation**. It is **not** the interactive Virtual 
 | **VF-VHQ-W7-DOGFOOD** | Director ≤30s dogfood + evidence — **CLOSED PASS 2026-07-31** · 994ms · `vhq-w60a` | verify | W2 min; prefer W6 |
 | **VF-VHQ-UX-AUDIT-00** | Interaction UX audit + P0/P1 fix — **CLOSED+DEPLOY PASS 2026-07-31** · tip `a49644c` · cache `vhq-w61a` | verify → UI | W7 |
 | **VF-VHQ-P2-SNR-00** | Decision Rail SNR Wave 1 — **CLOSED+DEPLOY PASS 2026-07-31** · tip `7e34940` · cache `vhq-w62a` | API+UI | UX-AUDIT |
-| **VHQ-DI scorecard** | Decision Instrument S1–S8 → 5/5 — SoT `docs/ops/VHQ-DECISION-INSTRUMENT-SCORECARD.md` · next `VF-VHQ-DI-S4-SNR-FINISH` | program | P2-SNR |
+| **VHQ-DI scorecard** | Decision Instrument S1–S6+S8 = **5 DONE** · S7 parked — SoT `docs/ops/VHQ-DECISION-INSTRUMENT-SCORECARD.md` · lanes `docs/ops/PROGRAM-LANES-SOT.md` · next = Growth (not S7) | program | DI closeout tip `0264f5d` |
 | **VF-VHQ-3D-PARKED** | True 3D | parked forever until unpark | W7 PASS + Founder |
 
 **Campus W4** stays **parked** (UNIT-ECONOMICS hint / Order deep-link residual). Product path = VHQ gates.

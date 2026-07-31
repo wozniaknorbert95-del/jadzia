@@ -1,24 +1,29 @@
 ---
-status: "[ACTIVE]"
-title: "FlexGrafik Virtual Campus — Program SoT (VF-CAMPUS-PLAN-00)"
+status: "[SUPERSEDED]"
+title: "FlexGrafik Virtual Campus — Program (historical foundation)"
 gate: "VF-CAMPUS-PLAN-00"
-updated: "2026-07-27"
+updated: "2026-07-31"
 owner: "Norbert Wozniak (Dowódca) — Accountable"
+superseded_by: "docs/ops/FLEXGRAFIK-VIRTUAL-HQ-PROGRAM.md"
 audit_source: "AUDYT_VF-CAMPUS-PLAN-00_2026-07-27.md"
 map_sot: "docs/ops/FLEXGRAFIK-CAMPUS-MAP.md"
 runtime_changes_allowed: false
 budget_freeze_until: "2026-08-06"
 com_ai_50_from: "2026-08-02"
-founder_override: "2026-07-27 — Campus W1 priority; MKT-ASSET-00 parked_by_founder"
-active_gate_pointer: "VF-CAMPUS-W3"
+founder_override: "2026-07-27 — product path is VHQ; Campus = foundation only"
+active_gate_pointer: null
 w2_status: "completed"
 w3_status: "completed"
-w3_close: "docs/handoffs/2026-07-27-VF-CAMPUS-W3-CLOSE.md"
-proposed_next_gate: "VF-CAMPUS-W4"
+w3_close: "docs/archive/handoffs/2026-07-27-VF-CAMPUS-W3-CLOSE.md"
+proposed_next_gate: null
 proposed_next_gate_active: false
 ---
 
-# FlexGrafik Virtual Campus — Program (v2)
+# FlexGrafik Virtual Campus — Program (v2) — SUPERSEDED
+
+> **2026-07-31:** Ten dokument jest **foundation / historia**.  
+> **Aktywny program produktu:** [`FLEXGRAFIK-VIRTUAL-HQ-PROGRAM.md`](./FLEXGRAFIK-VIRTUAL-HQ-PROGRAM.md).  
+> **Ster sesji:** `todo.json`. Nie ustawiaj `active_gate` na `VF-CAMPUS-*`.
 
 ## 0. Boundary (P6)
 

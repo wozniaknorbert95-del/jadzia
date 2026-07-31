@@ -1,39 +1,31 @@
 ---
 status: "[ACTIVE]"
 title: "Marketing OS — START TUTAJ (operator)"
-updated: "2026-07-27 (VF-CAMPUS-W2 CLOSED · next commit W2 status fixes)"
+updated: "2026-07-31 (SoT hygiene · VHQ tip of record)"
 budget_freeze_until: "2026-08-06"
 ---
 
 # START TUTAJ — jedna ścieżka (ADHD)
 
-> **FOUNDER OVERRIDE:** Campus / Mission Control **only**. Marketing **PARKED**.
+> **Ster:** `todo.json` · **Produkt:** `docs/ops/FLEXGRAFIK-VIRTUAL-HQ-PROGRAM.md`  
+> Campus tipy / `campus-*` / `df3d59a` = **STALE**. Lanes = tylko ściąga.
 
-**Prod Commander:** https://api.zzpackage.flexgrafik.nl/commander/?v=campus-w01  
-**Prod tip:** VPS **`cc9aa0f`** · cache **`campus-w01`** (W2 badge fixes = source only until deploy)  
-**VF-CAMPUS-W2:** **CLOSED** · evidence EV-W2-001..011 · residuals PARTIAL/UNVERIFIED/SSH DEGRADED  
-**W3:** unblocked · **not active**  
-**Next (HITL):** `commit W2 status fixes` → deploy → prod verify → `GO VF-CAMPUS-W3`  
+**Prod VHQ:** https://api.zzpackage.flexgrafik.nl/commander/?v=vhq-w65a · tip **`0264f5d`** / runtime **`2623ae2`**  
+**Active gate:** `null` (SoT hygiene DONE · DI DONE)  
+**Next (HITL):** COM-AI-50 przed organic **≥2026-08-02** → Growth po GO  
 **MKT-ASSET-00:** parked_by_founder  
-**STOP:** Ads · Mollie · fake LIVE · auto W3 · auto deploy
+**STOP:** Ads w freeze · fake Order LIVE · Mollie jako unlock S7 · auto deploy · stage dirty `MKT/`
 
 | Co | Status |
 |----|--------|
-| **Budget freeze** | **ACTIVE** do **2026-08-06** · €0 paid |
-| **Deploy VPS** | **LIVE** `@cc9aa0f` · campus-w01 · health degraded SSH (pre-existing) |
-| **GTM-1PAGER** | **LOCKED** — organic priority w freeze |
-| **Meta paid €10/d** | **PARK** — nie publish |
-| **FB organic** | **ACTIVE** — Commander HITL |
-| **FREE-TIKTOK** | deploy → S6 token → S7 E2E |
-| L0 InitiateCheckout | PASS |
-| Agent | observe · **zero Ads create** |
+| **VHQ DI (S3–S6+S8)** | **DONE** · vhq-w65a |
+| **S7 / Order Desk** | **PARKED** EV-W2-010 |
+| **Budget freeze** | do **2026-08-06** · €0 paid |
+| **Campus program** | **SUPERSEDED** |
 
-## Twoje parks (HITL)
+## Parks (HITL)
 
-1. **H-Campus** — W2 Trust **CLOSED** · next `commit W2 status fixes` → deploy → verify → `GO VF-CAMPUS-W3`
-2. **H-Asset-Materials / MKT** — **PARKED by Founder** (Campus override)
-3. **H-Meta paid** — **PARK do 2026-08-06**
-4. **H-Deploy** — last tip `@cc9aa0f` · W2 badge HTML not on prod until next deploy GO
-5. **H-Purchase** — Mollie GO (poza Campus scope)
-
-**Zakaz w sesjach Campus:** marketing assets · Ads · Mollie · fake PASS · 6th tab.
+1. **H-COM-AI-50** — przed organic ≥2026-08-02  
+2. **H-Growth** — po Founder GO  
+3. **H-MKT-ASSET / paid** — parked / freeze  
+4. **H-Order Desk / S7** — parked (osobny projekt)

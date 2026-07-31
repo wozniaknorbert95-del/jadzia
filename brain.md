@@ -2,8 +2,8 @@
 status: "[ACTIVE]"
 title: "Jadzia-Core Brain (Canonical)"
 owner: "Norbert Wozniak"
-updated: "2026-07-18"
-readiness_overall: "~93% operational spine (REV Gate C + strategy HITL drafts; Gate D parked)"
+updated: "2026-07-31"
+readiness_overall: "VHQ DI agent closeout DONE (S3–S6+S8=5); S7 Order Desk parked; SoT hygiene DONE"
 ---
 
 ## 1) Misja modułu
@@ -106,30 +106,33 @@ Pełne kontrakty: `flexgrafik-meta/docs/core/integration-contracts.md`
 
 ## 7) Source of Truth
 
+**Hierarchia (Knowledge Index):** meta rules → **`todo.json`** → ops programs → handoffs (ephemeral).
+
+- **Knowledge Index:** `docs/ops/KNOWLEDGE-SYSTEM-INDEX.md`
+- **Control plane / backlog:** `todo.json` (`active_gate`, `next_*`)
+- **Product program (ACTIVE):** `docs/ops/FLEXGRAFIK-VIRTUAL-HQ-PROGRAM.md`
+- **Campus program:** `SUPERSEDED` — `docs/ops/FLEXGRAFIK-CAMPUS-PROGRAM.md` (foundation only)
+- **DI scorecard:** `docs/ops/VHQ-DECISION-INSTRUMENT-SCORECARD.md` (S3–S6+S8 DONE; S7 parked)
+- **Lanes appendix:** `docs/ops/PROGRAM-LANES-SOT.md` (ściąga — nie plan)
 - **Module spec (COI):** `flexgrafik-meta/docs/core/modules/module-jadzia-core.md`
 - **Charter:** `flexgrafik-meta/docs/core/jadzia-operating-charter.md`
-- **Strategia makro:** `flexgrafik-meta/docs/core/master-plan.md`
-- **Globalne zasady:** `flex-vcms/docs/core/global-rules.md`
-- **Workflow:** `.agents/workflows/README.md` (L0-L4)
-- **Backlog:** `todo.json`
+- **Globalne zasady:** `flexgrafik-meta/docs/core/global-rules.md` (VCMS = pointer)
+- **Workflow:** `.agents/workflows/README.md` → start `/vibe-init`
 - **PRD:** `docs/PRD-core.md`
-- **Active plan:** `docs/handoffs/2026-07-18-coi-cmd-ops-guide-01-CLOSE.md` — ops handbook in VCMS study; Gate D parked
+- **Prod tip:** `0264f5d` docs / runtime `2623ae2` / cache `vhq-w65a`
+- **Handoffs LIVE:** `docs/handoffs/` (≤15; cold → `docs/archive/handoffs/`)
 
-- **Parked DA track:** `feat/da-insire-enterprise` (+14 vs master) — merge w osobnej sesji
-- **QUEUE-CLEAN:** completed 2026-07-17 — Home bez E2E `deploy02-*` / `int004-e2e-*`
-- **Prior closure:** `docs/handoffs/2026-07-09-coi-marketing-session-HANDOFF.md`
+## 8) Workflow Framework (v2.2)
 
-## 8) Workflow Framework (v2.0)
-
-Golden Path: **L0 Triage → L1 Design → L2 Execute → L3 Validate → L4 Release**
+Golden Path: **L0 Triage → L3 Validate → L3.5 Post-coding → L4 Handoff/Deploy**
 
 | Layer | Komenda | Cel |
 |-------|---------|-----|
 | L0 | `/vibe-init` | Triage, klasyfikacja |
-| L1 | `/blast` | Feature — kontrakt techniczny |
-| L1 | `/blueprint` | Refactor — mapowanie |
-| L2 | `/implement` | Kod |
 | L3 | `/jadzia-test` | Pytest + smoke |
+| L3–L4 | `/vhq-decision-instrument` | DI scorecard (idle — closeout DONE) |
+| L3.5 | `/post-coding` | Validate → ship pack |
+| L4 | `/jadzia-deploy` | VPS tylko z GO |
 | L4 | `/handoff` | Zamknięcie sesji |
 
 ## 9) Guardrails

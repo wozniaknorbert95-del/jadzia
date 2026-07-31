@@ -1,7 +1,7 @@
 # Knowledge System Index — FlexGrafik
 
 **Status:** LIVE (ECO-POLISH-01) — SoT w jadzia + mirror pointery w meta i VCMS  
-**Date:** 2026-07-19  
+**Date:** 2026-07-31 (VHQ primary · Campus SUPERSEDED · SoT hygiene)  
 **Cel:** Jedna hierarchy SoT — zero sprzecznych kanonów.
 
 ## Hierarchy (od najwyższego)
@@ -63,14 +63,18 @@
 
 ## Linki kluczowe
 
-- Scorecard: [SCORECARD-AI-OS-ZALICZENIE.md](./SCORECARD-AI-OS-ZALICZENIE.md)
+- **VHQ Program (ACTIVE product):** [FLEXGRAFIK-VIRTUAL-HQ-PROGRAM.md](./FLEXGRAFIK-VIRTUAL-HQ-PROGRAM.md)
+- **Campus Program:** [FLEXGRAFIK-CAMPUS-PROGRAM.md](./FLEXGRAFIK-CAMPUS-PROGRAM.md) — **SUPERSEDED** (foundation only)
+- **VHQ DI scorecard:** [VHQ-DECISION-INSTRUMENT-SCORECARD.md](./VHQ-DECISION-INSTRUMENT-SCORECARD.md)
+- **Lanes appendix (not plan):** [PROGRAM-LANES-SOT.md](./PROGRAM-LANES-SOT.md)
+- Scorecard AI OS: [SCORECARD-AI-OS-ZALICZENIE.md](./SCORECARD-AI-OS-ZALICZENIE.md)
 - Process catalog: [PROCESS-CATALOG.md](./PROCESS-CATALOG.md)
 - OPS AI: [OPS-AI-SCORECARD.md](./OPS-AI-SCORECARD.md)
 - AI MBA spine: [../learning/AI-MBA-FLEXGRAFIK-SPINE.md](../learning/AI-MBA-FLEXGRAFIK-SPINE.md)
 - Phone hub ADR: [../design/coi-commander/adr/D0.6-phone-hub-not-merge.md](../design/coi-commander/adr/D0.6-phone-hub-not-merge.md)
-- Operator playbook (cmd): `Flex-vcms/flex-vcms/docs/study/coi-commander-ops-handbook.md`
+- Operator playbook: [JADZIA-OPERATOR-PLAYBOOK.md](./JADZIA-OPERATOR-PLAYBOOK.md)
 - Design folder pointer: [../design/coi-commander/OPERATOR-PLAYBOOK.md](../design/coi-commander/OPERATOR-PLAYBOOK.md)
-- **Marketing OS (FG):** [marketing/README.md](./marketing/README.md) · **GTM SoT:** [marketing/GTM-1PAGER.md](./marketing/GTM-1PAGER.md) — unit economics, L0–L5; QuietForge marketing → `services/docs/strategy/` only
+- **Marketing OS (FG):** [marketing/README.md](./marketing/README.md) · **GTM SoT:** [marketing/GTM-1PAGER.md](./marketing/GTM-1PAGER.md) · day start: [marketing/OPERATOR-TODAY.md](./marketing/OPERATOR-TODAY.md)
 
 ## Docs IA + Archive policy (ECO-POLISH-01)
 
@@ -90,7 +94,9 @@
 
 1. Meta konstytucja wygrywa nad lokalnym brain przy sprzeczności zasad.  
 2. `todo.json` wygrywa nad handoffem przy active_gate.  
-3. ADR D0.x wygrywa nad komentarzem w UI.  
-4. Handoff aktualizuje scorecard status, nie odwrotnie bez dowodu.  
-5. VCMS `global-rules` pointer nie może wrócić do pełnej kopii bez decyzji Dowódcy.
-6. Archive off-nav; rolling handoffs ≤15 — nie wracaj PH4/journal/lab do LIVE sidebar.
+3. **VHQ-PROGRAM** wygrywa nad Campus-PROGRAM (Campus = SUPERSEDED foundation).  
+4. **PROGRAM-LANES** jest appendix — nigdy nie nadpisuje `todo.plan` / active_gate.  
+5. ADR D0.x wygrywa nad komentarzem w UI.  
+6. Handoff aktualizuje scorecard status, nie odwrotnie bez dowodu.  
+7. VCMS `global-rules` pointer nie może wrócić do pełnej kopii bez decyzji Dowódcy.
+8. Archive off-nav; rolling handoffs ≤15 — cold → `docs/archive/handoffs/`.

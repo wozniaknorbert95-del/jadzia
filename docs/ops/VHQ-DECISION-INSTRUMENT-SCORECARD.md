@@ -29,7 +29,8 @@ Wymiary zależne od brakującego SoT (Order Desk) nie dostają fake PASS — zos
 | S7 | Closed commercial loop | 5 | 1.5 | **1.5** | `VF-VHQ-DI-S7-LOOP` (needs Order SoT) |
 | S8 | ≤30s decision quality | 5 | 2.5 | **5** (S8 CLOSE 2026-07-31) | — |
 
-**Prod closeout:** S3–S6+S8 = 5 · tip `9bfa71b` / runtime `2623ae2` · `?v=vhq-w65a` · S7 blocked_sot
+**Prod closeout:** S3–S6+S8 = 5 · tip `0264f5d` / runtime `2623ae2` · `?v=vhq-w65a` · S7 parked `blocked_sot` (not next)  
+**Lanes appendix (not plan):** `docs/ops/PROGRAM-LANES-SOT.md` · **Program SoT:** `docs/ops/FLEXGRAFIK-VIRTUAL-HQ-PROGRAM.md`
 
 ---
 

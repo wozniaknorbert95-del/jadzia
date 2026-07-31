@@ -1,123 +1,130 @@
 {
   "project": "Jadzia-Core",
-  "last_updated": "2026-07-31 (DI closeout S3–S6+S8=5 · S7 blocked_sot · tip 9bfa71b)",
+  "last_updated": "2026-07-31 (VF-SOT-HYGIENE-00 CLOSE · one canon VHQ · tip 0264f5d)",
   "status": "active",
-  "plan": "docs/ops/VHQ-DECISION-INSTRUMENT-SCORECARD.md",
+  "plan": "docs/ops/FLEXGRAFIK-VIRTUAL-HQ-PROGRAM.md",
   "active_gate": null,
-  "active_plan": "docs/ops/VHQ-DECISION-INSTRUMENT-SCORECARD.md",
+  "active_plan": "docs/ops/FLEXGRAFIK-VIRTUAL-HQ-PROGRAM.md",
   "runtime_changes_allowed": false,
   "todo_schema": "todo.schema.json",
   "gate_machine": {
     "active": null,
-    "active_state": "di_scorecard_agent_closeout_done",
-    "decision_instrument": "CLOSEOUT agent-capable DONE · S1–S6+S8=5 · S7 blocked_sot until Order SoT · tip 9bfa71b / vhq-w65a",
-    "vhq_di_s8": "completed · CLOSED PASS tip 9bfa71b · cache vhq-w65a · S8=5",
-    "vhq_di_s8_blast": "docs/handoffs/2026-07-31-VF-VHQ-DI-S8-VERIFY-BLAST.md",
+    "active_state": "sot_hygiene_done_idle",
+    "program_lanes_appendix": "docs/ops/PROGRAM-LANES-SOT.md",
+    "vhq_program": "docs/ops/FLEXGRAFIK-VIRTUAL-HQ-PROGRAM.md",
+    "campus_program": "SUPERSEDED → docs/ops/FLEXGRAFIK-CAMPUS-PROGRAM.md (foundation only)",
+    "sot_hygiene": "completed · CLOSE docs/handoffs/2026-07-31-VF-SOT-HYGIENE-00-CLOSE.md",
+    "decision_instrument": "CLOSEOUT agent-capable DONE · S1–S6+S8=5 · S7 parked blocked_sot · tip 0264f5d / runtime 2623ae2 / vhq-w65a",
+    "vhq_di_s8": "completed · CLOSED PASS tip 0264f5d · cache vhq-w65a · S8=5",
+    "vhq_di_s8_blast": "docs/archive/handoffs/2026-07-31-VF-VHQ-DI-S8-VERIFY-BLAST.md",
     "vhq_di_s8_close": "docs/handoffs/2026-07-31-VF-VHQ-DI-S8-VERIFY-CLOSE.md",
-    "vhq_di_s8_evidence": "docs/handoffs/evidence-vhq-di-s8/",
+    "vhq_di_s8_evidence": "docs/archive/handoffs/evidence-vhq-di-s8/",
     "vhq_di_s3": "completed · CLOSED+DEPLOY PASS tip 2623ae2 · cache vhq-w65a · S3=5",
-    "vhq_di_s3_blast": "docs/handoffs/2026-07-31-VF-VHQ-DI-S3-APPROVAL-BLAST.md",
+    "vhq_di_s3_blast": "docs/archive/handoffs/2026-07-31-VF-VHQ-DI-S3-APPROVAL-BLAST.md",
     "vhq_di_s3_close": "docs/handoffs/2026-07-31-VF-VHQ-DI-S3-APPROVAL-CLOSE.md",
     "vhq_di_s3_deploy": "docs/handoffs/2026-07-31-DEPLOY-VHQ-DI-S3-00-CLOSE.md",
-    "vhq_di_s3_evidence": "docs/handoffs/evidence-vhq-di-s3/",
-    "campus_prod_tip": "2623ae2 / cache vhq-w65a (DI-S3 CLOSED · next S8-VERIFY)",
+    "vhq_di_s3_evidence": "docs/archive/handoffs/evidence-vhq-di-s3/",
+    "prod_tip": "0264f5d docs / runtime 2623ae2 / cache vhq-w65a (DI DONE · SoT hygiene DONE · idle)",
+    "campus_prod_tip": "superseded alias → prod_tip",
     "vhq_di_s6": "completed · CLOSED+DEPLOY PASS tip 0d1407f / feature f77989c · cache vhq-w64a · S6=5",
-    "vhq_di_s6_blast": "docs/handoffs/2026-07-31-VF-VHQ-DI-S6-MONEY-BLAST.md",
-    "vhq_di_s6_preclose": "docs/handoffs/2026-07-31-VF-VHQ-DI-S6-MONEY-PRECLOSE.md",
+    "vhq_di_s6_blast": "docs/archive/handoffs/2026-07-31-VF-VHQ-DI-S6-MONEY-BLAST.md",
+    "vhq_di_s6_preclose": "docs/archive/handoffs/2026-07-31-VF-VHQ-DI-S6-MONEY-PRECLOSE.md",
     "vhq_di_s6_close": "docs/handoffs/2026-07-31-VF-VHQ-DI-S6-MONEY-CLOSE.md",
     "vhq_di_s6_deploy": "docs/handoffs/2026-07-31-DEPLOY-VHQ-DI-S6-00-CLOSE.md",
-    "vhq_di_s6_evidence": "docs/handoffs/evidence-vhq-di-s6/",
+    "vhq_di_s6_evidence": "docs/archive/handoffs/evidence-vhq-di-s6/",
     "vhq_di_s6_tip": "f77989c",
     "vhq_di_s5": "completed · CLOSED+DEPLOY PASS tip 81372dd / feature a044612 · cache vhq-w63a · S5=5",
-    "vhq_di_s5_blast": "docs/handoffs/2026-07-31-VF-VHQ-DI-S5-NBA-BLAST.md",
-    "vhq_di_s5_preclose": "docs/handoffs/2026-07-31-VF-VHQ-DI-S5-NBA-PRECLOSE.md",
+    "vhq_di_s5_blast": "docs/archive/handoffs/2026-07-31-VF-VHQ-DI-S5-NBA-BLAST.md",
+    "vhq_di_s5_preclose": "docs/archive/handoffs/2026-07-31-VF-VHQ-DI-S5-NBA-PRECLOSE.md",
     "vhq_di_s5_close": "docs/handoffs/2026-07-31-VF-VHQ-DI-S5-NBA-CLOSE.md",
     "vhq_di_s5_deploy": "docs/handoffs/2026-07-31-DEPLOY-VHQ-DI-S5-00-CLOSE.md",
-    "vhq_di_s5_evidence": "docs/handoffs/evidence-vhq-di-s5/",
+    "vhq_di_s5_evidence": "docs/archive/handoffs/evidence-vhq-di-s5/",
     "vhq_di_s5_tip": "a044612",
     "decision_instrument_scorecard": "docs/ops/VHQ-DECISION-INSTRUMENT-SCORECARD.md",
     "decision_instrument_workflow": ".agents/workflows/vhq-decision-instrument.md",
     "vhq_di_s4": "completed · CLOSED+DEPLOY PASS tip c56b13e / feature 35259b4 · cache vhq-w62a · S4=5",
-    "vhq_di_s4_blast": "docs/handoffs/2026-07-31-VF-VHQ-DI-S4-SNR-FINISH-BLAST.md",
-    "vhq_di_s4_preclose": "docs/handoffs/2026-07-31-VF-VHQ-DI-S4-SNR-FINISH-PRECLOSE.md",
+    "vhq_di_s4_blast": "docs/archive/handoffs/2026-07-31-VF-VHQ-DI-S4-SNR-FINISH-BLAST.md",
+    "vhq_di_s4_preclose": "docs/archive/handoffs/2026-07-31-VF-VHQ-DI-S4-SNR-FINISH-PRECLOSE.md",
     "vhq_di_s4_close": "docs/handoffs/2026-07-31-VF-VHQ-DI-S4-SNR-FINISH-CLOSE.md",
     "vhq_di_s4_deploy": "docs/handoffs/2026-07-31-DEPLOY-VHQ-DI-S4-00-CLOSE.md",
-    "vhq_di_s4_evidence": "docs/handoffs/evidence-vhq-di-s4/",
+    "vhq_di_s4_evidence": "docs/archive/handoffs/evidence-vhq-di-s4/",
     "vhq_di_s4_tip": "35259b4",
     "vhq_p2_snr": "completed · CLOSED+DEPLOY PASS tip 7e34940 · cache vhq-w62a · superseded residual by S4",
-    "vhq_p2_snr_blast": "docs/handoffs/2026-07-31-VF-VHQ-P2-SNR-00-BLAST.md",
-    "vhq_p2_snr_close": "docs/handoffs/2026-07-31-VF-VHQ-P2-SNR-00-CLOSE.md",
-    "vhq_p2_snr_deploy": "docs/handoffs/2026-07-31-DEPLOY-VHQ-P2-SNR-00-CLOSE.md",
-    "vhq_p2_snr_evidence": "docs/handoffs/evidence-vhq-p2-snr/",
-    "vhq_p2_snr_prod_evidence": "docs/handoffs/evidence-vhq-p2-snr-prod/",
+    "vhq_p2_snr_blast": "docs/archive/handoffs/2026-07-31-VF-VHQ-P2-SNR-00-BLAST.md",
+    "vhq_p2_snr_close": "docs/archive/handoffs/2026-07-31-VF-VHQ-P2-SNR-00-CLOSE.md",
+    "vhq_p2_snr_deploy": "docs/archive/handoffs/2026-07-31-DEPLOY-VHQ-P2-SNR-00-CLOSE.md",
+    "vhq_p2_snr_evidence": "docs/archive/handoffs/evidence-vhq-p2-snr/",
+    "vhq_p2_snr_prod_evidence": "docs/archive/handoffs/evidence-vhq-p2-snr-prod/",
     "vhq_ux_audit": "completed · CLOSED+DEPLOY PASS · tip a49644c · cache vhq-w61a · F1–F3 prod re-walk PASS · P2 backlog parked",
-    "vhq_ux_audit_blast": "docs/handoffs/2026-07-31-VF-VHQ-UX-AUDIT-00-BLAST.md",
-    "vhq_ux_audit_report": "docs/handoffs/2026-07-31-VF-VHQ-UX-AUDIT-00-REPORT.md",
-    "vhq_ux_audit_close": "docs/handoffs/2026-07-31-VF-VHQ-UX-AUDIT-00-CLOSE.md",
-    "vhq_ux_audit_deploy": "docs/handoffs/2026-07-31-DEPLOY-VHQ-UX-AUDIT-00-CLOSE.md",
-    "vhq_ux_audit_evidence": "docs/handoffs/evidence-vhq-ux-audit/",
-    "vhq_ux_audit_prod_evidence": "docs/handoffs/evidence-vhq-ux-audit-prod/",
-    "pre_w7_hygiene": "completed · CLOSE docs/handoffs/2026-07-31-PRE-W7-SOT-HYGIENE-CLOSE.md · F1–F6 + S1 PASS",
-    "pre_w7_hygiene_close": "docs/handoffs/2026-07-31-PRE-W7-SOT-HYGIENE-CLOSE.md",
+    "vhq_ux_audit_blast": "docs/archive/handoffs/2026-07-31-VF-VHQ-UX-AUDIT-00-BLAST.md",
+    "vhq_ux_audit_report": "docs/archive/handoffs/2026-07-31-VF-VHQ-UX-AUDIT-00-REPORT.md",
+    "vhq_ux_audit_close": "docs/archive/handoffs/2026-07-31-VF-VHQ-UX-AUDIT-00-CLOSE.md",
+    "vhq_ux_audit_deploy": "docs/archive/handoffs/2026-07-31-DEPLOY-VHQ-UX-AUDIT-00-CLOSE.md",
+    "vhq_ux_audit_evidence": "docs/archive/handoffs/evidence-vhq-ux-audit/",
+    "vhq_ux_audit_prod_evidence": "docs/archive/handoffs/evidence-vhq-ux-audit-prod/",
+    "pre_w7_hygiene": "completed · CLOSE docs/archive/handoffs/2026-07-31-PRE-W7-SOT-HYGIENE-CLOSE.md · F1–F6 + S1 PASS",
+    "pre_w7_hygiene_close": "docs/archive/handoffs/2026-07-31-PRE-W7-SOT-HYGIENE-CLOSE.md",
     "vhq_w6": "completed · CLOSED+DEPLOY PASS · runtime 06212d7 · tip 014c791 · cache vhq-w60a · pytest 10/10 · EV-W2-010 preserved · Vault path DEPLOYED / maturity PARTIAL",
-    "vhq_w6_blast": "docs/handoffs/2026-07-31-VF-VHQ-W6-DIRECTOR-APPROVALS-BLAST.md",
-    "vhq_w6_preclose": "docs/handoffs/2026-07-31-VF-VHQ-W6-DIRECTOR-APPROVALS-PRECLOSE.md",
-    "vhq_w6_close": "docs/handoffs/2026-07-31-VF-VHQ-W6-DIRECTOR-APPROVALS-CLOSE.md",
-    "vhq_w6_deploy": "docs/handoffs/2026-07-31-DEPLOY-VHQ-W6-00-CLOSE.md",
-    "pre_w7_hygiene_blast": "docs/handoffs/2026-07-31-PRE-W7-SOT-HYGIENE-BLAST.md",
-    "pre_w7_verify": "docs/handoffs/2026-07-31-PRE-W7-DEEP-VERIFY-REPORT.md",
+    "vhq_w6_blast": "docs/archive/handoffs/2026-07-31-VF-VHQ-W6-DIRECTOR-APPROVALS-BLAST.md",
+    "vhq_w6_preclose": "docs/archive/handoffs/2026-07-31-VF-VHQ-W6-DIRECTOR-APPROVALS-PRECLOSE.md",
+    "vhq_w6_close": "docs/archive/handoffs/2026-07-31-VF-VHQ-W6-DIRECTOR-APPROVALS-CLOSE.md",
+    "vhq_w6_deploy": "docs/archive/handoffs/2026-07-31-DEPLOY-VHQ-W6-00-CLOSE.md",
+    "pre_w7_hygiene_blast": "docs/archive/handoffs/2026-07-31-PRE-W7-SOT-HYGIENE-BLAST.md",
+    "pre_w7_verify": "docs/archive/handoffs/2026-07-31-PRE-W7-DEEP-VERIFY-REPORT.md",
     "vhq_w7": "completed · CLOSED PASS · ≤30s 994ms · evidence-vhq-w7-dogfood/ · cache vhq-w60a · runtime 06212d7 · 3D remains parked",
-    "vhq_w7_blast": "docs/handoffs/2026-07-31-VF-VHQ-W7-DOGFOOD-BLAST.md",
-    "vhq_w7_dogfood": "docs/handoffs/2026-07-31-VF-VHQ-W7-DOGFOOD-FOUNDER-DOGFOOD.md",
-    "vhq_w7_close": "docs/handoffs/2026-07-31-VF-VHQ-W7-DOGFOOD-CLOSE.md",
+    "vhq_w7_blast": "docs/archive/handoffs/2026-07-31-VF-VHQ-W7-DOGFOOD-BLAST.md",
+    "vhq_w7_dogfood": "docs/archive/handoffs/2026-07-31-VF-VHQ-W7-DOGFOOD-FOUNDER-DOGFOOD.md",
+    "vhq_w7_close": "docs/archive/handoffs/2026-07-31-VF-VHQ-W7-DOGFOOD-CLOSE.md",
     "unblocked": ["COM-AI-50-READY"],
     "parked": ["MKT-ASSET-00", "VF-CAMPUS-W4", "VF-VHQ-3D-PARKED", "VF-PARK-PROCUREMENT", "VF-PARK-DISPATCH", "VF-PARK-PRINTPACK-SAAS", "VF-PARK-FINANCE-AGENT"],
     "founder_override": "2026-07-27 VHQ = primary operational dashboard; Commander = control/data/audit/action engine; no content duplication — reorganize into MC + Work Views",
     "campus_prod_tip_legacy_ux_audit": "a49644c / runtime 06212d7 / cache vhq-w61a (superseded by P2-SNR tip 7e34940)",
-    "pre_w6_jwt_dogfood": "completed · docs/handoffs/2026-07-31-PRE-W6-JWT-DOGFOOD-CLOSE.md · evidence-vhq-w50-prod-jwt-dogfood/",
+    "pre_w6_jwt_dogfood": "completed · docs/archive/handoffs/2026-07-31-PRE-W6-JWT-DOGFOOD-CLOSE.md · evidence-vhq-w50-prod-jwt-dogfood/",
     "inc_ssh": "completed · CLOSE docs/handoffs/2026-07-31-INC-SSH-RECOVERY-00-CLOSE.md · ssh_connection=ok",
-    "session_close": "docs/handoffs/2026-07-31-SESSION-HANDOFF-DI-SCORECARD-NEXT.md",
-    "session_handoff_di": "docs/handoffs/2026-07-31-SESSION-HANDOFF-DI-SCORECARD-NEXT.md",
+    "session_close": "docs/handoffs/2026-07-31-VF-SOT-HYGIENE-00-CLOSE.md",
+    "session_handoff_di": "docs/archive/handoffs/2026-07-31-SESSION-HANDOFF-DI-SCORECARD-NEXT.md",
+    "session_handoff_lanes": "docs/archive/handoffs/2026-07-31-PROGRAM-LANES-SOT-CLOSE.md",
+    "l0_deep_audit": "docs/handoffs/2026-07-31-L0-VIBE-INIT-DEEP-AUDIT.md",
     "w5_prep": "superseded — CLOSED+DEPLOYED",
     "vhq_w5": "completed · DEPLOY PASS · docs tip 476d1bf · runtime 174603e · cache vhq-w50a · ops_bus_events LIVE · EV-W2-010 preserved · ssh ok",
-    "vhq_w5_blast": "docs/handoffs/2026-07-31-VF-VHQ-W5-OPERATIONS-BUS-BLAST.md",
-    "vhq_w5_preclose": "docs/handoffs/2026-07-31-VF-VHQ-W5-OPERATIONS-BUS-PRECLOSE.md",
-    "vhq_w5_dogfood": "docs/handoffs/2026-07-31-VF-VHQ-W5-OPERATIONS-BUS-FOUNDER-DOGFOOD.md",
-    "vhq_w5_close": "docs/handoffs/2026-07-31-VF-VHQ-W5-OPERATIONS-BUS-CLOSE.md",
-    "vhq_w5_deploy": "docs/handoffs/2026-07-31-DEPLOY-VHQ-W5-00-CLOSE.md",
-    "vhq_w5_sot_report": "docs/handoffs/2026-07-31-VF-VHQ-W5-SOT-CONSISTENCY-REPORT.md",
-    "vhq_w5_session_close": "docs/handoffs/2026-07-31-SESSION-CLOSE-W5-VERIFY-PRECLOSE.md",
-    "telegram_fix": "docs/handoffs/2026-07-27-FIX-TELEGRAM-COMMANDER-AUTOPUSH.md",
+    "vhq_w5_blast": "docs/archive/handoffs/2026-07-31-VF-VHQ-W5-OPERATIONS-BUS-BLAST.md",
+    "vhq_w5_preclose": "docs/archive/handoffs/2026-07-31-VF-VHQ-W5-OPERATIONS-BUS-PRECLOSE.md",
+    "vhq_w5_dogfood": "docs/archive/handoffs/2026-07-31-VF-VHQ-W5-OPERATIONS-BUS-FOUNDER-DOGFOOD.md",
+    "vhq_w5_close": "docs/archive/handoffs/2026-07-31-VF-VHQ-W5-OPERATIONS-BUS-CLOSE.md",
+    "vhq_w5_deploy": "docs/archive/handoffs/2026-07-31-DEPLOY-VHQ-W5-00-CLOSE.md",
+    "vhq_w5_sot_report": "docs/archive/handoffs/2026-07-31-VF-VHQ-W5-SOT-CONSISTENCY-REPORT.md",
+    "vhq_w5_session_close": "docs/archive/handoffs/2026-07-31-SESSION-CLOSE-W5-VERIFY-PRECLOSE.md",
+    "telegram_fix": "docs/archive/handoffs/2026-07-27-FIX-TELEGRAM-COMMANDER-AUTOPUSH.md",
     "telegram_autopush": "0",
     "campus_w4": "parked residual — product path is VF-VHQ-*",
     "vhq_w4": "completed · CLOSE+DEPLOY+stamp PASS · tip b6d0d36 · honesty 5ba9f8d · docs tip 6375ab1 · cache vhq-w40c · EV-W2-010 preserved",
-    "vhq_w4_deploy": "docs/handoffs/2026-07-31-DEPLOY-VHQ-W4-00-CLOSE.md",
-    "vhq_w4_preclose": "docs/handoffs/2026-07-31-VF-VHQ-W4-ROOMS-OPERATIONS-PRECLOSE.md",
-    "vhq_w4_founder_dogfood": "docs/handoffs/2026-07-31-VF-VHQ-W4-ROOMS-OPERATIONS-FOUNDER-DOGFOOD.md",
-    "vhq_w4_close": "docs/handoffs/2026-07-31-VF-VHQ-W4-ROOMS-OPERATIONS-CLOSE.md",
+    "vhq_w4_deploy": "docs/archive/handoffs/2026-07-31-DEPLOY-VHQ-W4-00-CLOSE.md",
+    "vhq_w4_preclose": "docs/archive/handoffs/2026-07-31-VF-VHQ-W4-ROOMS-OPERATIONS-PRECLOSE.md",
+    "vhq_w4_founder_dogfood": "docs/archive/handoffs/2026-07-31-VF-VHQ-W4-ROOMS-OPERATIONS-FOUNDER-DOGFOOD.md",
+    "vhq_w4_close": "docs/archive/handoffs/2026-07-31-VF-VHQ-W4-ROOMS-OPERATIONS-CLOSE.md",
     "vhq_w4_tomorrow": "superseded — CLOSED",
     "vhq_plan": "completed",
     "vhq_design": "completed commit 0323dd6",
     "vhq_w1": "completed · commits b0a28b2 + f6fce10 · cache vhq-w01b",
-    "vhq_w1_close": "docs/handoffs/2026-07-27-VF-VHQ-W1-SHELL-CLOSE.md",
+    "vhq_w1_close": "docs/archive/handoffs/2026-07-27-VF-VHQ-W1-SHELL-CLOSE.md",
     "vhq_w2": "completed · commits 4545c6e + db32212 · cache vhq-w02b · DEPLOY-VHQ-W2-00 PASS",
-    "vhq_w2_preclose": "docs/handoffs/2026-07-27-VF-VHQ-W2-MISSION-CONTROL-PRECLOSE.md",
-    "vhq_w2_polish_preclose": "docs/handoffs/2026-07-27-VF-VHQ-W2-DIRECTOR-POLISH-PRECLOSE.md",
-    "vhq_w2_close": "docs/handoffs/2026-07-27-VF-VHQ-W2-MISSION-CONTROL-CLOSE.md",
+    "vhq_w2_preclose": "docs/archive/handoffs/2026-07-27-VF-VHQ-W2-MISSION-CONTROL-PRECLOSE.md",
+    "vhq_w2_polish_preclose": "docs/archive/handoffs/2026-07-27-VF-VHQ-W2-DIRECTOR-POLISH-PRECLOSE.md",
+    "vhq_w2_close": "docs/archive/handoffs/2026-07-27-VF-VHQ-W2-MISSION-CONTROL-CLOSE.md",
     "vhq_w3": "completed · cache vhq-w03b · Founder CLOSE 2026-07-27 · tip b237fd5",
-    "vhq_w3_preclose": "docs/handoffs/2026-07-27-VF-VHQ-W3-ROOMS-COMMERCIAL-PRECLOSE.md",
-    "vhq_w3_dogfood_truth": "docs/handoffs/2026-07-27-VF-VHQ-W3-FOUNDER-DOGFOOD-TRUTH.md",
-    "vhq_w3_close": "docs/handoffs/2026-07-27-VF-VHQ-W3-ROOMS-COMMERCIAL-CLOSE.md",
+    "vhq_w3_preclose": "docs/archive/handoffs/2026-07-27-VF-VHQ-W3-ROOMS-COMMERCIAL-PRECLOSE.md",
+    "vhq_w3_dogfood_truth": "docs/archive/handoffs/2026-07-27-VF-VHQ-W3-FOUNDER-DOGFOOD-TRUTH.md",
+    "vhq_w3_close": "docs/archive/handoffs/2026-07-27-VF-VHQ-W3-ROOMS-COMMERCIAL-CLOSE.md",
     "vhq_w31": "completed · cache vhq-w31b · Founder CLOSE 2026-07-27 · uncommitted local",
-    "vhq_w31_preclose": "docs/handoffs/2026-07-27-VF-VHQ-W3.1-PRIMARY-SHELL-PRECLOSE.md",
-    "vhq_w31_dogfood": "docs/handoffs/2026-07-27-VF-VHQ-W3.1-FINAL-REDOGFOOD.md",
-    "vhq_w31_legacy_fix": "docs/handoffs/2026-07-27-VF-VHQ-W3.1-LEGACY-ROLLBACK-FIX.md",
-    "vhq_w31_close": "docs/handoffs/2026-07-27-VF-VHQ-W3.1-PRIMARY-SHELL-CLOSE.md",
+    "vhq_w31_preclose": "docs/archive/handoffs/2026-07-27-VF-VHQ-W3.1-PRIMARY-SHELL-PRECLOSE.md",
+    "vhq_w31_dogfood": "docs/archive/handoffs/2026-07-27-VF-VHQ-W3.1-FINAL-REDOGFOOD.md",
+    "vhq_w31_legacy_fix": "docs/archive/handoffs/2026-07-27-VF-VHQ-W3.1-LEGACY-ROLLBACK-FIX.md",
+    "vhq_w31_close": "docs/archive/handoffs/2026-07-27-VF-VHQ-W3.1-PRIMARY-SHELL-CLOSE.md",
     "vhq_w32": "completed · cache vhq-w32a · Founder CLOSE + DEPLOY PASS tip de08060",
-    "vhq_w32_preclose": "docs/handoffs/2026-07-27-VF-VHQ-W3.2-CONSOLE-CLEANUP-PRECLOSE.md",
-    "vhq_w32_dogfood": "docs/handoffs/2026-07-27-VF-VHQ-W3.2-FOUNDER-DOGFOOD.md",
-    "vhq_w32_close": "docs/handoffs/2026-07-27-VF-VHQ-W3.2-CONSOLE-CLEANUP-CLOSE.md",
-    "vhq_w32_deploy": "docs/handoffs/2026-07-27-DEPLOY-VHQ-W3.2-CLOSE.md",
+    "vhq_w32_preclose": "docs/archive/handoffs/2026-07-27-VF-VHQ-W3.2-CONSOLE-CLEANUP-PRECLOSE.md",
+    "vhq_w32_dogfood": "docs/archive/handoffs/2026-07-27-VF-VHQ-W3.2-FOUNDER-DOGFOOD.md",
+    "vhq_w32_close": "docs/archive/handoffs/2026-07-27-VF-VHQ-W3.2-CONSOLE-CLEANUP-CLOSE.md",
+    "vhq_w32_deploy": "docs/archive/handoffs/2026-07-27-DEPLOY-VHQ-W3.2-CLOSE.md",
     "mvp_rooms": ["mission-control", "approval-vault", "ai-agent-health", "sales-room", "wizard-quote", "marketing-studio"],
     "mvp_room_labels": {
       "ai-agent-health": "Agent Operations",
@@ -242,9 +249,9 @@
       "D6": "W2 local on W1 commits — no separate W1 deploy",
       "D7": "W2 activated"
     },
-    "proposed_next_gate": "VF-VHQ-3D-PARKED",
+    "proposed_next_gate": null,
     "proposed_next_gate_active": false,
-    "proposed_next": "After W7 PASS: 3D remains parked until explicit unpark GO. Optional COM-AI-50. No MKT."
+    "proposed_next": "After Founder GO: COM-AI-50 / Growth. S7/Order + 3D parked. Appendix: PROGRAM-LANES-SOT.md"
   },
   "standing_go_closeout": false,
   "closeout_queue": [],
@@ -252,15 +259,15 @@
     {
       "gate": "VF-VHQ-DI-S7-LOOP",
       "status": "blocked_sot",
-      "reason": "Order Desk SoT missing (EV-W2-010). Max honest S7=2/5 until unpark GO + evidence."
+      "reason": "PARKED — Order Desk SoT missing (EV-W2-010). NOT next. Mollie test ≠ unlock."
     }
   ],
   "closeout_expires": "2026-08-15",
-  "next_human": "S7 Order Desk SoT GO when ready (EV-W2-010 unpark evidence). Optional COM-AI-50 ≥2026-08-02. 3D parked. Nie ruszaj MKT.",
-  "next_agent": "Idle / observe. DI agent closeout DONE. Only S7 with Order SoT GO. No fake S7 PASS. No MKT. No 3D.",
+  "next_human": "SoT hygiene DONE. Opcjonalnie: COM-AI-50 przed organic ≥2026-08-02, potem Growth GO. S7/Order parked. Ads freeze do 2026-08-06. Kanon: todo + VHQ-PROGRAM.",
+  "next_agent": "Idle / observe. SoT hygiene DONE. DI DONE. No reopen S4–S8. No S7 without Order Desk SoT GO. No fake LIVE. No MKT dirty stage. No 3D. Deploy only with GO DEPLOY.",
   "budget_freeze_until": "2026-08-06",
-  "budget_freeze_note": "Dowódca 2026-07-27: zero ad spend 10 dni — MKT work PARKED by Founder override",
-  "agent_rule": "1-1-1. DI scorecard gates only. /vhq-decision-instrument. Preserve EV-W2-010. No Order LIVE without SoT. No silent L3/L4. No MKT. No 3D. Deploy only with GO DEPLOY. No fake PASS.",
+  "budget_freeze_note": "Dowódca 2026-07-27: zero ad spend 10 dni — MKT assets PARKED; Growth = organic/COM-AI first, paid after freeze",
+  "agent_rule": "1-1-1. Kanon: Knowledge Index → todo.json → FLEXGRAFIK-VIRTUAL-HQ-PROGRAM.md → DI scorecard. Lanes=appendix only. Preserve EV-W2-010. No Order LIVE without SoT. No silent L3/L4. No MKT dirty stage. No 3D. Deploy only with GO DEPLOY.",
   "sprints": {
     "remediation": "completed",
     "coi_phase_a": "deploy_complete",
@@ -292,7 +299,7 @@
       "status": "completed",
       "priority": "critical",
       "owner": "agent",
-      "checklist": "docs/handoffs/2026-07-18-rev-demand-01-CLOSE.md",
+      "checklist": "docs/archive/handoffs/2026-07-18-rev-demand-01-CLOSE.md",
       "note": "2026-07-18 DONE F0–F4. Chain 02a/02/03 LIVE. Parks preserved."
     },
     {
@@ -302,7 +309,7 @@
       "status": "completed",
       "priority": "critical",
       "owner": "agent",
-      "checklist": "docs/handoffs/2026-07-18-rev-demand-01a-DOGFOOD.md",
+      "checklist": "docs/archive/handoffs/2026-07-18-rev-demand-01a-DOGFOOD.md",
       "note": "Local/code PASS; VPS click via playbook after deploy"
     },
     {
@@ -357,7 +364,7 @@
       "status": "completed",
       "priority": "medium",
       "owner": "agent",
-      "checklist": "docs/handoffs/2026-07-18-rev-demand-04-CLOSE.md",
+      "checklist": "docs/archive/handoffs/2026-07-18-rev-demand-04-CLOSE.md",
       "note": "LIVE 2026-07-18: brief_sales_cta + queue sales_cta + disposition UI. Parks untouched."
     },
     {
@@ -376,7 +383,7 @@
       "status": "completed",
       "priority": "critical",
       "owner": "agent",
-      "checklist": "docs/handoffs/2026-07-18-coi-cmd-mobile-02-CLOSE.md",
+      "checklist": "docs/archive/handoffs/2026-07-18-coi-cmd-mobile-02-CLOSE.md",
       "note": "LIVE 81347e8 FEATURE abba339. Code-exchange login + PWA. VPS SMOKE_OK. Human phone Ack optional."
     },
     {
@@ -386,7 +393,7 @@
       "status": "completed",
       "priority": "critical",
       "owner": "agent",
-      "checklist": "docs/handoffs/2026-07-18-coi-cmd-map-01-CLOSE.md",
+      "checklist": "docs/archive/handoffs/2026-07-18-coi-cmd-map-01-CLOSE.md",
       "note": "LIVE tip d643b72. ADR amend + Home/Settings map. No merge Agent OS/VCMS."
     },
     {
@@ -416,7 +423,7 @@
       "status": "completed",
       "priority": "high",
       "owner": "agent",
-      "checklist": "docs/handoffs/2026-07-18-coi-mba-01-CLOSE.md",
+      "checklist": "docs/archive/handoffs/mba-2026-07-18/2026-07-18-coi-mba-01-CLOSE.md",
       "note": "DONE 2026-07-18: Agent column truth-repair + W08-knowledge-hygiene.md. Dowódca untouched."
     },
     {
@@ -426,7 +433,7 @@
       "status": "completed",
       "priority": "high",
       "owner": "agent",
-      "checklist": "docs/handoffs/2026-07-18-coi-mba-02-CLOSE.md",
+      "checklist": "docs/archive/handoffs/mba-2026-07-18/2026-07-18-coi-mba-02-CLOSE.md",
       "note": "DONE 2026-07-18: W09-sales-path-dogfood.md + spine tydz.9 Agent [x]."
     },
     {
@@ -436,7 +443,7 @@
       "status": "completed",
       "priority": "high",
       "owner": "agent",
-      "checklist": "docs/handoffs/2026-07-18-coi-mba-03-CLOSE.md",
+      "checklist": "docs/archive/handoffs/mba-2026-07-18/2026-07-18-coi-mba-03-CLOSE.md",
       "note": "DONE 2026-07-18: W10-marketing-hitl.md + spine tydz.10 Agent [x]. Dowódca untouched."
     },
     {
@@ -446,7 +453,7 @@
       "status": "completed",
       "priority": "high",
       "owner": "agent",
-      "checklist": "docs/handoffs/2026-07-18-coi-mba-04-CLOSE.md",
+      "checklist": "docs/archive/handoffs/mba-2026-07-18/2026-07-18-coi-mba-04-CLOSE.md",
       "note": "DONE 2026-07-18: W11-board-brief-hitl.md + spine tydz.11 Agent [x]. Dowódca untouched."
     },
     {
@@ -456,7 +463,7 @@
       "status": "completed",
       "priority": "high",
       "owner": "agent",
-      "checklist": "docs/handoffs/2026-07-18-coi-mba-05-CLOSE.md",
+      "checklist": "docs/archive/handoffs/mba-2026-07-18/2026-07-18-coi-mba-05-CLOSE.md",
       "note": "DONE 2026-07-18: W12-ops-ai-interim.md + spine tydz.12 Agent [x]. Dowódca untouched. No VPS re-measure."
     },
     {
@@ -466,7 +473,7 @@
       "status": "completed",
       "priority": "high",
       "owner": "agent",
-      "checklist": "docs/handoffs/2026-07-18-coi-mba-06-CLOSE.md",
+      "checklist": "docs/archive/handoffs/mba-2026-07-18/2026-07-18-coi-mba-06-CLOSE.md",
       "note": "DONE 2026-07-18: W13-q1-gate-review.md + spine tydz.13 Agent [x]. Q1 Agent CLOSE; Dowódca untouched."
     },
     {
@@ -476,7 +483,7 @@
       "status": "completed",
       "priority": "high",
       "owner": "agent",
-      "checklist": "docs/handoffs/2026-07-18-coi-mba-07-CLOSE.md",
+      "checklist": "docs/archive/handoffs/mba-2026-07-18/2026-07-18-coi-mba-07-CLOSE.md",
       "note": "DONE 2026-07-18: W14-hitl-vs-hotl.md + spine tydz.14 Agent [x]. Q2 start; Dowódca untouched; no live graduate."
     },
     {
@@ -486,7 +493,7 @@
       "status": "completed",
       "priority": "high",
       "owner": "agent",
-      "checklist": "docs/handoffs/2026-07-18-coi-mba-08-CLOSE.md",
+      "checklist": "docs/archive/handoffs/mba-2026-07-18/2026-07-18-coi-mba-08-CLOSE.md",
       "note": "DONE 2026-07-18: W15-sales-agent-deep.md + spine tydz.15 Agent [x]. Dowódca untouched."
     },
     {
@@ -496,7 +503,7 @@
       "status": "completed",
       "priority": "high",
       "owner": "agent",
-      "checklist": "docs/handoffs/2026-07-18-coi-mba-09-CLOSE.md",
+      "checklist": "docs/archive/handoffs/mba-2026-07-18/2026-07-18-coi-mba-09-CLOSE.md",
       "note": "DONE 2026-07-18: W16-marketing-agent-depth.md + spine tydz.16 Agent [x]. Dowódca untouched; no live FB."
     },
     {
@@ -506,7 +513,7 @@
       "status": "completed",
       "priority": "high",
       "owner": "agent",
-      "checklist": "docs/handoffs/2026-07-18-coi-mba-10-CLOSE.md",
+      "checklist": "docs/archive/handoffs/mba-2026-07-18/2026-07-18-coi-mba-10-CLOSE.md",
       "note": "DONE 2026-07-18: W17-pm-agent-os-ritual.md. Dowódca untouched; no OS merge."
     },
     {
@@ -516,7 +523,7 @@
       "status": "completed",
       "priority": "high",
       "owner": "agent",
-      "checklist": "docs/handoffs/2026-07-18-coi-mba-11-CLOSE.md",
+      "checklist": "docs/archive/handoffs/mba-2026-07-18/2026-07-18-coi-mba-11-CLOSE.md",
       "note": "DONE 2026-07-18: W18-cs-blast.md. Dowódca untouched; no CS re-implement."
     },
     {
@@ -526,7 +533,7 @@
       "status": "completed",
       "priority": "high",
       "owner": "agent",
-      "checklist": "docs/handoffs/2026-07-18-coi-mba-12-CLOSE.md",
+      "checklist": "docs/archive/handoffs/mba-2026-07-18/2026-07-18-coi-mba-12-CLOSE.md",
       "note": "DONE 2026-07-18: W19-cs-implement.md. Dowódca untouched; no auto-trigger."
     },
     {
@@ -536,7 +543,7 @@
       "status": "completed",
       "priority": "high",
       "owner": "agent",
-      "checklist": "docs/handoffs/2026-07-18-coi-mba-13-CLOSE.md",
+      "checklist": "docs/archive/handoffs/mba-2026-07-18/2026-07-18-coi-mba-13-CLOSE.md",
       "note": "DONE 2026-07-18: W20-board-assistant-depth.md + spine tydz.20 Agent [x]. Dowódca untouched."
     },
     {
@@ -546,7 +553,7 @@
       "status": "completed",
       "priority": "high",
       "owner": "agent",
-      "checklist": "docs/handoffs/2026-07-18-coi-mba-14-CLOSE.md",
+      "checklist": "docs/archive/handoffs/mba-2026-07-18/2026-07-18-coi-mba-14-CLOSE.md",
       "note": "DONE 2026-07-18: W21-delegat-escalation.md + spine tydz.21 Agent [x]. Dowódca untouched; no secrets/smoke."
     },
     {
@@ -556,7 +563,7 @@
       "status": "completed",
       "priority": "high",
       "owner": "agent",
-      "checklist": "docs/handoffs/2026-07-18-coi-mba-15-CLOSE.md",
+      "checklist": "docs/archive/handoffs/mba-2026-07-18/2026-07-18-coi-mba-15-CLOSE.md",
       "note": "DONE 2026-07-18: W22-authz-scopes.md + spine tydz.22 Agent [x]. Dowódca untouched."
     },
     {
@@ -566,7 +573,7 @@
       "status": "completed",
       "priority": "high",
       "owner": "agent",
-      "checklist": "docs/handoffs/2026-07-18-coi-mba-16-CLOSE.md",
+      "checklist": "docs/archive/handoffs/mba-2026-07-18/2026-07-18-coi-mba-16-CLOSE.md",
       "note": "DONE 2026-07-18: W23-audit-chain.md + spine tydz.23 Agent [x]."
     },
     {
@@ -576,7 +583,7 @@
       "status": "completed",
       "priority": "high",
       "owner": "agent",
-      "checklist": "docs/handoffs/2026-07-18-coi-mba-17-CLOSE.md",
+      "checklist": "docs/archive/handoffs/mba-2026-07-18/2026-07-18-coi-mba-17-CLOSE.md",
       "note": "DONE 2026-07-18: W24-cross-role-handoff.md + spine tydz.24 Agent [x]."
     },
     {
@@ -586,7 +593,7 @@
       "status": "completed",
       "priority": "high",
       "owner": "agent",
-      "checklist": "docs/handoffs/2026-07-18-coi-mba-18-CLOSE.md",
+      "checklist": "docs/archive/handoffs/mba-2026-07-18/2026-07-18-coi-mba-18-CLOSE.md",
       "note": "DONE 2026-07-18: W25-q2-ops-ai-push.md + spine tydz.25 Agent [x]."
     },
     {
@@ -596,7 +603,7 @@
       "status": "completed",
       "priority": "high",
       "owner": "agent",
-      "checklist": "docs/handoffs/2026-07-18-coi-mba-19-CLOSE.md",
+      "checklist": "docs/archive/handoffs/mba-2026-07-18/2026-07-18-coi-mba-19-CLOSE.md",
       "note": "DONE 2026-07-18: W26-q2-gate-review.md + Q2 Agent CLOSE. Checkpoint before Q3."
     },
     {
@@ -606,7 +613,7 @@
       "status": "completed",
       "priority": "high",
       "owner": "agent",
-      "checklist": "docs/handoffs/2026-07-18-coi-mba-YEAR-Agent-CLOSE.md",
+      "checklist": "docs/archive/handoffs/mba-2026-07-18/2026-07-18-coi-mba-YEAR-Agent-CLOSE.md",
       "note": "DONE 2026-07-18: W27–W52 week files; spine Agent YEAR; Dowódca untouched; Gate D parked. GO kompleksowo."
     },
     {
@@ -616,7 +623,7 @@
       "status": "completed",
       "priority": "critical",
       "owner": "agent",
-      "checklist": "docs/handoffs/2026-07-18-session-CLOSE-mba-FINAL.md",
+      "checklist": "docs/archive/handoffs/mba-2026-07-18/2026-07-18-session-CLOSE-mba-FINAL.md",
       "note": "DONE 2026-07-18: W00–W52 complete; INDEX; mint gitignored; Dowódca untouched."
     },
     {
@@ -636,7 +643,7 @@
       "status": "completed",
       "priority": "critical",
       "owner": "agent",
-      "checklist": "docs/handoffs/2026-07-18-coi-know-01-BLAST.md",
+      "checklist": "docs/archive/handoffs/2026-07-18-coi-know-01-BLAST.md",
       "note": "Pointer-only mirrors; scorecard #2 LIVE. No full scorecard paste."
     },
     {
@@ -683,7 +690,7 @@
       "status": "completed",
       "priority": "critical",
       "owner": "agent",
-      "checklist": "docs/handoffs/2026-07-18-coi-cmd-ux-polish-01-CLOSE.md",
+      "checklist": "docs/archive/handoffs/2026-07-18-coi-cmd-ux-polish-01-CLOSE.md",
       "note": "2026-07-18 LIVE tip 2ddc942. Dogfood P1–P6 + prod cold-open PASS. Cache-bust polish01b."
     },
     {
@@ -693,7 +700,7 @@
       "status": "completed",
       "priority": "high",
       "owner": "agent",
-      "checklist": "docs/handoffs/2026-07-18-coi-cmd-ops-guide-01-CLOSE.md",
+      "checklist": "docs/archive/handoffs/2026-07-18-coi-cmd-ops-guide-01-CLOSE.md",
       "note": "2026-07-18 DONE. Handbook + study-index Ops + docs/index NAUKA in flex-vcms. VCMS prod deploy optional GO."
     },
     {
@@ -723,7 +730,7 @@
       "status": "completed",
       "priority": "critical",
       "owner": "agent",
-      "checklist": "docs/handoffs/2026-07-18-coi-proc-02-CLOSE.md",
+      "checklist": "docs/archive/handoffs/2026-07-18-coi-proc-02-CLOSE.md",
       "note": "PASS 2026-07-18: VCMS ai-os-processes + meta process-catalog-index. Scorecard #8 LIVE."
     },
     {
@@ -733,7 +740,7 @@
       "status": "completed",
       "priority": "critical",
       "owner": "agent",
-      "checklist": "docs/handoffs/2026-07-18-ai-os-CLOSEOUT.md",
+      "checklist": "docs/archive/handoffs/2026-07-18-ai-os-CLOSEOUT.md",
       "note": "PASS 2026-07-18: all 9 LIVE; standing_go_closeout false"
     },
     {
@@ -763,7 +770,7 @@
       "status": "completed",
       "priority": "high",
       "owner": "agent",
-      "checklist": "docs/handoffs/2026-07-18-coi-pm-01-CLOSE.md",
+      "checklist": "docs/archive/handoffs/2026-07-18-coi-pm-01-CLOSE.md",
       "note": "PASS 2026-07-18: os-api approve task-4f6a23d8→DONE. UI Basic Auth agent 401."
     },
     {
@@ -783,7 +790,7 @@
       "status": "completed",
       "priority": "critical",
       "owner": "agent",
-      "checklist": "docs/handoffs/2026-07-18-coi-cs-01-BLAST.md",
+      "checklist": "docs/archive/handoffs/2026-07-18-coi-cs-01-BLAST.md",
       "note": "Spawn+queue; superseded surface by COI-CS-02"
     },
     {
@@ -793,7 +800,7 @@
       "status": "completed",
       "priority": "critical",
       "owner": "agent",
-      "checklist": "docs/handoffs/2026-07-18-coi-cs-02-BLAST.md",
+      "checklist": "docs/archive/handoffs/2026-07-18-coi-cs-02-BLAST.md",
       "note": "LIVE tip 0a54bc7. Dogfood ORD-CS02 spawn→Ack #13. Scorecard #6 LIVE. Auto-trigger later."
     },
     {
@@ -803,7 +810,7 @@
       "status": "completed",
       "priority": "critical",
       "owner": "agent",
-      "checklist": "docs/handoffs/2026-07-18-coi-readiness-Aplus-CLOSE.md",
+      "checklist": "docs/archive/handoffs/2026-07-18-coi-readiness-Aplus-CLOSE.md",
       "note": "2026-07-18 DONE: brief_node spawn_brief_hitl_tickets + tests PASS; strategy ~65%; no auto-act"
     },
     {
@@ -823,7 +830,7 @@
       "status": "completed",
       "priority": "critical",
       "owner": "agent",
-      "checklist": "docs/handoffs/2026-06-26-deploy-int-002-proof.md",
+      "checklist": "docs/archive/handoffs/2026-06-26-deploy-int-002-proof.md",
       "note": "WC order 3149 via wp_cli_synthetic; webhook OK; Mollie UI optional follow-up"
     },
     {
@@ -833,7 +840,7 @@
       "status": "completed",
       "priority": "high",
       "owner": "agent",
-      "checklist": "docs/handoffs/2026-06-26-deploy-int-004-proof.md",
+      "checklist": "docs/archive/handoffs/2026-06-26-deploy-int-004-proof.md",
       "note": "PR#119 merged 917b630; GHA 28249495347; E2E int004-e2e-20260626175956@flexgrafik.nl; duplicate PASS"
     },
     {
@@ -843,7 +850,7 @@
       "status": "completed",
       "priority": "high",
       "owner": "agent",
-      "checklist": "docs/handoffs/2026-06-26-deploy-int-009-proof.md",
+      "checklist": "docs/archive/handoffs/2026-06-26-deploy-int-009-proof.md",
       "plan": "docs/plans/PLAN-DEPLOY-INT-009.md",
       "note": "GA4 zzpackage verified 2026-06-27: sync_status success, sources.zzpackage sessions=23"
     },
@@ -1116,7 +1123,7 @@
       "status": "completed",
       "priority": "high",
       "owner": "agent",
-      "checklist": "docs/handoffs/2026-07-01-b3-fb-publish-e2e.md",
+      "checklist": "docs/archive/handoffs/2026-07-01-b3-fb-publish-e2e.md",
       "note": "PASS 2026-07-01 entry_id=7 fb_post_id=491325420727745_122179053746613375"
     },
     {
@@ -1267,7 +1274,7 @@
       "status": "completed",
       "priority": "high",
       "owner": "agent",
-      "checklist": "docs/handoffs/2026-07-08-spine-closure-f2-proof.md"
+      "checklist": "docs/archive/handoffs/2026-07-08-spine-closure-f2-proof.md"
     },
     {
       "id": "SC85-F4-01",
@@ -1294,7 +1301,7 @@
       "status": "completed",
       "priority": "high",
       "owner": "agent",
-      "checklist": "docs/handoffs/2026-07-08-spine-closure-f4-operator-school.md"
+      "checklist": "docs/archive/handoffs/2026-07-08-spine-closure-f4-operator-school.md"
     },
     {
       "id": "COI-CMD-F0",
@@ -1338,7 +1345,7 @@
       "status": "completed",
       "priority": "critical",
       "owner": "human",
-      "checklist": "docs/handoffs/2026-07-09-coi-commander-deploy-PROOF.md",
+      "checklist": "docs/archive/handoffs/2026-07-09-coi-commander-deploy-PROOF.md",
       "note": "master f24cf5e @ api.zzpackage.flexgrafik.nl/commander/ — smoke 10/10"
     },
     {
@@ -1348,7 +1355,7 @@
       "status": "completed",
       "priority": "high",
       "owner": "human",
-      "checklist": "docs/handoffs/2026-07-09-coi-commander-workshop-PROOF.md",
+      "checklist": "docs/archive/handoffs/2026-07-09-coi-commander-workshop-PROOF.md",
       "note": "2026-07-09: JWT, TG ticket+link fix, delegat wozniaknorbert95@gmail.com"
     },
     {
@@ -1376,7 +1383,7 @@
       "status": "completed",
       "priority": "critical",
       "owner": "agent",
-      "checklist": "docs/handoffs/2026-07-09-coi-commander-v3-CLOSURE-PROOF.md"
+      "checklist": "docs/archive/handoffs/2026-07-09-coi-commander-v3-CLOSURE-PROOF.md"
     },
     {
       "id": "COI-CMD-MERGE-MASTER",
@@ -1385,7 +1392,7 @@
       "status": "completed",
       "priority": "critical",
       "owner": "agent",
-      "checklist": "docs/handoffs/2026-07-09-coi-commander-master-merge-PROOF.md",
+      "checklist": "docs/archive/handoffs/2026-07-09-coi-commander-master-merge-PROOF.md",
       "note": "master f24cf5e; VPS active; smoke 10/10"
     },
     {
@@ -1395,7 +1402,7 @@
       "status": "completed",
       "priority": "medium",
       "owner": "agent",
-      "checklist": "docs/handoffs/2026-07-17-coi-cmd-smtp-01-CLOSE.md",
+      "checklist": "docs/archive/handoffs/2026-07-17-coi-cmd-smtp-01-CLOSE.md",
       "note": "2026-07-17 CLOSED: smoke PASS + inbox OK + git sync; playbook docs/ops/SMTP-DELEGAT-ESCALATION.md"
     },
     {
@@ -1405,7 +1412,7 @@
       "status": "completed",
       "priority": "medium",
       "owner": "human",
-      "checklist": "docs/handoffs/2026-07-18-ops-fb-hygiene-READY-for-human.md",
+      "checklist": "docs/archive/handoffs/2026-07-18-ops-fb-hygiene-READY-for-human.md",
       "note": "2026-07-18 COMPLETED — Dowódca confirmed done; no agent FB work this slice."
     },
     {
@@ -1415,7 +1422,7 @@
       "status": "completed",
       "priority": "critical",
       "owner": "agent",
-      "checklist": "docs/handoffs/2026-07-17-restore-footing.md",
+      "checklist": "docs/archive/handoffs/2026-07-17-restore-footing.md",
       "note": "Prod 2026-07-17: deleted 3 E2E leads; kept jan@bouw.com + bob@gamil.com; VPS @ 33e58b9"
     },
     {
@@ -1426,7 +1433,7 @@
       "priority": "critical",
       "owner": "agent",
       "checklist": "docs/superpowers/plans/2026-07-09-coi-content-intake-m1.md",
-      "note": "Prod @ d40d0d8; GDrive folder 1SYueUiXAtu9hn1tAtTUJsR-NLZZFnsGW; 22 unit tests pass; handoff docs/handoffs/2026-07-09-coi-content-intake-m1-PROOF.md"
+      "note": "Prod @ d40d0d8; GDrive folder 1SYueUiXAtu9hn1tAtTUJsR-NLZZFnsGW; 22 unit tests pass; handoff docs/archive/handoffs/2026-07-09-coi-content-intake-m1-PROOF.md"
     },
     {
       "id": "COI-MARKETING-PUBLISH-B",
@@ -1435,7 +1442,7 @@
       "status": "completed",
       "priority": "critical",
       "owner": "agent",
-      "note": "Prod @ 1036d6e; handoff docs/handoffs/2026-07-09-coi-marketing-publish-B-PROOF.md"
+      "note": "Prod @ 1036d6e; handoff docs/archive/handoffs/2026-07-09-coi-marketing-publish-B-PROOF.md"
     },
     {
       "id": "COI-CONTENT-INTAKE-M2",
@@ -1444,8 +1451,8 @@
       "status": "completed",
       "priority": "high",
       "owner": "agent",
-      "checklist": "docs/handoffs/2026-07-17-coi-content-intake-m2-PROOF.md",
-      "note": "Prod @ c7338c9; MIME gate PASS; Graph /videos reached; live fb_post_id BLOCKED expired token 2026-07-09; handoff docs/handoffs/2026-07-17-coi-content-intake-m2-DEPLOY-PROOF.md"
+      "checklist": "docs/archive/handoffs/2026-07-17-coi-content-intake-m2-PROOF.md",
+      "note": "Prod @ c7338c9; MIME gate PASS; Graph /videos reached; live fb_post_id BLOCKED expired token 2026-07-09; handoff docs/archive/handoffs/2026-07-17-coi-content-intake-m2-DEPLOY-PROOF.md"
     },
     {
       "id": "FB-TOKEN-ROTATION",
@@ -1454,7 +1461,7 @@
       "status": "completed",
       "priority": "critical",
       "owner": "human",
-      "checklist": "docs/handoffs/2026-07-17-fb-long-lived-token-PROOF.md",
+      "checklist": "docs/archive/handoffs/2026-07-17-fb-long-lived-token-PROOF.md",
       "note": "2026-07-17: PAGE expires_at=0; text+photo smoke PASS; App credentials on VPS"
     },
     {
@@ -1464,7 +1471,7 @@
       "status": "completed",
       "priority": "high",
       "owner": "agent",
-      "checklist": "docs/handoffs/2026-07-17-coi-content-intake-m2-video-E2E-PROOF.md",
+      "checklist": "docs/archive/handoffs/2026-07-17-coi-content-intake-m2-video-E2E-PROOF.md",
       "note": "2026-07-17 PASS entry_id=21 fb_post_id=1483779380183430 GDrive 1uKNDev26FnFmmZN6G5CHYmds3OX7I_fq"
     },
     {
@@ -1474,7 +1481,7 @@
       "status": "completed",
       "priority": "high",
       "owner": "agent",
-      "checklist": "docs/handoffs/2026-07-17-da-insire-enterprise-merge-PROOF.md",
+      "checklist": "docs/archive/handoffs/2026-07-17-da-insire-enterprise-merge-PROOF.md",
       "note": "Merged+deployed 2026-07-17 @ 46e4fc2; smoke PASS; stash dropped (superseded)"
     },
     {
@@ -1484,7 +1491,7 @@
       "status": "completed",
       "priority": "critical",
       "owner": "agent",
-      "checklist": "docs/handoffs/2026-07-19-MKT-BRAIN-PRO-F0-CLOSE.md",
+      "checklist": "docs/archive/handoffs/2026-07-19-MKT-BRAIN-PRO-F0-CLOSE.md",
       "note": "PASS 2026-07-19 tip f28a938; pytest 9/9; VPS ingest margin 36/36; GA4 env missing on VPS (honest RED flag). Interval 3600s. Observe 7d."
     },
     {
@@ -1494,7 +1501,7 @@
       "status": "completed",
       "priority": "critical",
       "owner": "agent",
-      "checklist": "docs/handoffs/2026-07-19-MKT-BRAIN-PRO-F1-CLOSE.md",
+      "checklist": "docs/archive/handoffs/2026-07-19-MKT-BRAIN-PRO-F1-CLOSE.md",
       "note": "PASS 2026-07-19 tip 9314ddc; pytest 7/7 F1; VPS cycle tg_sent=1 shadow LIVE. Human: 14d shadow review before propose."
     },
     {
@@ -1504,7 +1511,7 @@
       "status": "completed",
       "priority": "high",
       "owner": "agent",
-      "checklist": "docs/handoffs/2026-07-19-MKT-BRAIN-PRO-F2-CLOSE.md",
+      "checklist": "docs/archive/handoffs/2026-07-19-MKT-BRAIN-PRO-F2-CLOSE.md",
       "note": "PASS core 2026-07-19 tip 269248b; Chroma deferred F2b; Act gated MB_MODE+CB_SHADOW."
     },
     {
@@ -1514,7 +1521,7 @@
       "status": "completed",
       "priority": "medium",
       "owner": "agent",
-      "checklist": "docs/handoffs/2026-07-19-MKT-BRAIN-PRO-F3-CLOSE.md",
+      "checklist": "docs/archive/handoffs/2026-07-19-MKT-BRAIN-PRO-F3-CLOSE.md",
       "note": "PASS LIVE 2026-07-19 tip 723a702; smoke degraded+recover; VCMS scan→Brain Bus HTTP 200; BRAIN_BUS_SECRET on VPS."
     },
     {
@@ -1524,7 +1531,7 @@
       "status": "completed",
       "priority": "high",
       "owner": "agent",
-      "checklist": "docs/handoffs/2026-07-19-MKT-BRAIN-PRO-F2b-CLOSE.md",
+      "checklist": "docs/archive/handoffs/2026-07-19-MKT-BRAIN-PRO-F2b-CLOSE.md",
       "note": "PASS LIVE 2026-07-19 tip 3c4af26; chroma sync=7; cycle memory=chroma; eval-pack OK; F4 blocked."
     },
     {
@@ -1534,7 +1541,7 @@
       "status": "completed",
       "priority": "high",
       "owner": "agent",
-      "checklist": "docs/handoffs/2026-07-19-MKT-BRAIN-PRO-ORG-CEO-CLOSE.md",
+      "checklist": "docs/archive/handoffs/2026-07-19-MKT-BRAIN-PRO-ORG-CEO-CLOSE.md",
       "note": "PASS LIVE 2026-07-19 tip b9060ba; dtl facebook_organic degraded OK; CEO brief bus on; F4 blocked."
     },
     {
@@ -1554,7 +1561,7 @@
       "status": "completed",
       "priority": "critical",
       "owner": "agent",
-      "checklist": "docs/handoffs/2026-07-19-MKT-BRAIN-PRO-PREFLIGHT-CLOSE.md",
+      "checklist": "docs/archive/handoffs/2026-07-19-MKT-BRAIN-PRO-PREFLIGHT-CLOSE.md",
       "note": "PASS 2026-07-19 pytest 5/5; VPS READY_FOR_GO tip ab1ed04; API propose-preflight. MB_MODE shadow. #1 Meta untouched."
     },
     {
@@ -1564,7 +1571,7 @@
       "status": "completed",
       "priority": "high",
       "owner": "agent",
-      "checklist": "docs/handoffs/2026-07-19-MKT-BRAIN-PRO-F4-PROPOSE-CLOSE.md",
+      "checklist": "docs/archive/handoffs/2026-07-19-MKT-BRAIN-PRO-F4-PROPOSE-CLOSE.md",
       "note": "PASS LIVE 2026-07-19 tip 4ad1e99; MB_MODE=propose; breakers []; cycle tg=1; F4 smoke ticket_only executed=false; Ads create PARK."
     },
     {
@@ -1574,7 +1581,7 @@
       "status": "completed",
       "priority": "critical",
       "owner": "agent",
-      "checklist": "docs/handoffs/2026-07-19-MKT-BRAIN-PRO-F4b-CLOSE.md",
+      "checklist": "docs/archive/handoffs/2026-07-19-MKT-BRAIN-PRO-F4b-CLOSE.md",
       "note": "PASS LIVE 2026-07-19 tip 0ae8244; pytest 14; VPS smoke paste v1 commander#15 cached; Ads create PARK; #1 Meta HOLD."
     },
     {
@@ -1584,7 +1591,7 @@
       "status": "completed",
       "priority": "high",
       "owner": "agent",
-      "checklist": "docs/handoffs/2026-07-19-MKT-BRAIN-PRO-DH-AMBER-CLOSE.md",
+      "checklist": "docs/archive/handoffs/2026-07-19-MKT-BRAIN-PRO-DH-AMBER-CLOSE.md",
       "note": "Root cause was legacy l0_pixel_events amber lumping IC+Purchase. Split flags; L0_IC_VERIFIED=1; report.drivers + conscious_parks. Progress SoT ~82% overall."
     },
     {
@@ -1594,7 +1601,7 @@
       "status": "completed",
       "priority": "high",
       "owner": "agent",
-      "checklist": "docs/handoffs/2026-07-19-MKT-BRAIN-PRO-PROGRAM-CLOSE.md",
+      "checklist": "docs/archive/handoffs/2026-07-19-MKT-BRAIN-PRO-PROGRAM-CLOSE.md",
       "note": "PASS LIVE 2026-07-19 tip 3c2fc6e; has_read_insights=false until Graph HITL; agent-half READY."
     },
     {
@@ -1604,7 +1611,7 @@
       "status": "completed",
       "priority": "high",
       "owner": "agent",
-      "checklist": "docs/handoffs/2026-07-19-MKT-BRAIN-PRO-PROGRAM-CLOSE.md",
+      "checklist": "docs/archive/handoffs/2026-07-19-MKT-BRAIN-PRO-PROGRAM-CLOSE.md",
       "note": "PASS LIVE tip 3c2fc6e; spend/cpl null; GET weekly-draft week 2026-W29 leads=7."
     },
     {
@@ -1614,7 +1621,7 @@
       "status": "completed",
       "priority": "high",
       "owner": "agent",
-      "checklist": "docs/handoffs/2026-07-19-MKT-BRAIN-PRO-PROGRAM-CLOSE.md",
+      "checklist": "docs/archive/handoffs/2026-07-19-MKT-BRAIN-PRO-PROGRAM-CLOSE.md",
       "note": "Agent debt CLOSED. Cap: Meta HOLD, Purchase, Graph read_insights, WA, F4 extras. next_agent=observe-only."
     },
     {
@@ -1624,7 +1631,7 @@
       "status": "completed",
       "priority": "high",
       "owner": "agent",
-      "checklist": "docs/handoffs/2026-07-19-CMD-MKT-DASH-01.md",
+      "checklist": "docs/archive/handoffs/2026-07-19-CMD-MKT-DASH-01.md",
       "note": "LIVE tip 1f7001a / cache mkt-dash01; superseded polish tip 660c5f8 mkt-dash02."
     },
     {
@@ -1634,7 +1641,7 @@
       "status": "completed",
       "priority": "high",
       "owner": "agent",
-      "checklist": "docs/handoffs/2026-07-19-CMD-MKT-DASH-02.md",
+      "checklist": "docs/archive/handoffs/2026-07-19-CMD-MKT-DASH-02.md",
       "note": "LIVE tip 660c5f8 tip-sync 29043cb; VCMS PR #41 MERGED; dogfood full dashboard PASS."
     },
     {
@@ -1644,7 +1651,7 @@
       "status": "completed",
       "priority": "critical",
       "owner": "agent",
-      "checklist": "docs/handoffs/2026-07-21-JADZIA-CORE-AUDIT-CLOSE.md",
+      "checklist": "docs/archive/handoffs/2026-07-21-JADZIA-CORE-AUDIT-CLOSE.md",
       "note": "AUDIT COMPLETE: repo gate FAIL; production UNVERIFIED; no deploy. Next 1-1-1 task AUD-REM-CI-01. VPS evidence READY_FOR_HUMAN after fresh GO."
     },
     {
@@ -1654,7 +1661,7 @@
       "status": "pending",
       "priority": "critical",
       "owner": "agent",
-      "checklist": "docs/handoffs/2026-07-21-AUDIT-REMEDIATION-PROGRAM-HANDOFF.md",
+      "checklist": "docs/archive/handoffs/2026-07-21-AUDIT-REMEDIATION-PROGRAM-HANDOFF.md",
       "note": "READY. Sequential only; no mega-diff. Final production status remains UNVERIFIED until AUD-REM-VPS-VERIFY-01 after fresh GO."
     },
     {
@@ -1664,7 +1671,7 @@
       "status": "completed",
       "priority": "critical",
       "owner": "agent",
-      "checklist": "docs/handoffs/2026-07-21-AUD-REM-CI-01-CLOSE.md",
+      "checklist": "docs/archive/handoffs/2026-07-21-AUD-REM-CI-01-CLOSE.md",
       "note": "LOCAL PASS 2026-07-21: 609 passed, 17 skipped, 1 xfailed; real coverage.xml 63%; canonical full blocking ci.yml; GitHub Actions pending explicit commit/push. No deploy."
     },
     {
@@ -1674,7 +1681,7 @@
       "status": "completed",
       "priority": "high",
       "owner": "agent",
-      "checklist": "docs/handoffs/2026-07-21-AUD-REM-QUALITY-01-CLOSE.md",
+      "checklist": "docs/archive/handoffs/2026-07-21-AUD-REM-QUALITY-01-CLOSE.md",
       "note": "LOCAL PASS 2026-07-21: scoped Ruff/Black/Mypy 0 errors; Commander UI smoke and workflow contract; full pytest 611 passed, 17 skipped, 1 xfailed; real coverage.xml 63%. Repo-wide debt remains explicit; GitHub Actions pending explicit commit/push."
     },
     {
@@ -1684,7 +1691,7 @@
       "status": "completed",
       "priority": "critical",
       "owner": "agent",
-      "checklist": "docs/handoffs/2026-07-21-AUD-REM-CALLBACK-01-CLOSE.md",
+      "checklist": "docs/archive/handoffs/2026-07-21-AUD-REM-CALLBACK-01-CLOSE.md",
       "note": "LOCAL PASS 2026-07-21: allowlisted HTTPS callback guard, public-DNS validation, redirects blocked and logs redacted; SSRF negative tests 16/16; full pytest 624 passed, 17 skipped, 1 xfailed; real coverage.xml 63%. GitHub Actions pending explicit commit/push."
     },
     {
@@ -1694,7 +1701,7 @@
       "status": "completed",
       "priority": "critical",
       "owner": "agent",
-      "checklist": "docs/handoffs/2026-07-21-AUD-REM-SSH-01-CLOSE.md",
+      "checklist": "docs/archive/handoffs/2026-07-21-AUD-REM-SSH-01-CLOSE.md",
       "note": "LOCAL PASS 2026-07-21: known-host RejectPolicy, optional SHA256 host-key pinning, safe archive extraction and quoted list-files; SSH negative tests 11/11; full pytest 630 passed, 17 skipped, 1 xfailed. Host-key evidence remains human/VPS-gated; no connection/deploy."
     },
     {
@@ -1704,7 +1711,7 @@
       "status": "completed",
       "priority": "critical",
       "owner": "agent",
-      "checklist": "docs/handoffs/2026-07-21-AUD-REM-DEPS-01-CLOSE.md",
+      "checklist": "docs/archive/handoffs/2026-07-21-AUD-REM-DEPS-01-CLOSE.md",
       "note": "LOCAL PASS 2026-07-21: pyproject declarations + uv.lock/hashed pip export for CPython 3.11; ChromaDB removed pending a fixed release and SQL fallback retained; clean install 85 runtime packages; pip-audit clean; CI blocks lock, audit and gitleaks. GitHub Actions unverified until explicit commit/push; no deploy."
     },
     {
@@ -1714,7 +1721,7 @@
       "status": "completed",
       "priority": "critical",
       "owner": "agent",
-      "checklist": "docs/handoffs/2026-07-21-AUD-REM-INGRESS-01-CLOSE.md",
+      "checklist": "docs/archive/handoffs/2026-07-21-AUD-REM-INGRESS-01-CLOSE.md",
       "note": "LOCAL PASS 2026-07-21: bounded widget/Telegram/Brain Bus bodies, SQLite-backed rate/replay controls, server-issued widget UUID sessions, native Telegram secret validation, Brain Bus correlation idempotency and production docs-off policy; 643 passed, 17 skipped, 1 xfailed. Re-verify ingress 7/7. GitHub Actions unverified until explicit commit/push; no deploy."
     },
     {
@@ -1724,7 +1731,7 @@
       "status": "completed",
       "priority": "critical",
       "owner": "agent",
-      "checklist": "docs/handoffs/2026-07-21-AUD-REM-GIT-DEPLOY-01-CLOSE.md",
+      "checklist": "docs/archive/handoffs/2026-07-21-AUD-REM-GIT-DEPLOY-01-CLOSE.md",
       "note": "DONE 2026-07-21: PR #9 https://github.com/wozniaknorbert95-del/jadzia/pull/9 tip f519036; Actions all green (lint/secrets/test/typecheck/security). Codecov optional; Bandit scoped high-only. NO VPS — merge + fresh deploy GO next."
     },
     {
@@ -1788,7 +1795,7 @@
       "status": "completed",
       "priority": "critical",
       "owner": "agent",
-      "checklist": "docs/handoffs/2026-07-21-AUD-REM-DEPLOY-PIPELINE-CLOSE.md",
+      "checklist": "docs/archive/handoffs/2026-07-21-AUD-REM-DEPLOY-PIPELINE-CLOSE.md",
       "note": "PASS @3604f60 2026-07-21T17:37:31Z — health healthy, WAL, docs404, TG401, widget session E2E, SSH pin+key under secrets."
     },
     {
@@ -1798,7 +1805,7 @@
       "status": "completed",
       "priority": "critical",
       "owner": "agent",
-      "checklist": "docs/handoffs/2026-07-21-AUD-REM-DEPLOY-PIPELINE-CLOSE.md",
+      "checklist": "docs/archive/handoffs/2026-07-21-AUD-REM-DEPLOY-PIPELINE-CLOSE.md",
       "note": "DONE: merge#10+#3, GO deploy, py311 hashed lock, env HITL, WP widget live, audyt production PASS."
     },
     {
@@ -1838,7 +1845,7 @@
       "status": "completed",
       "priority": "critical",
       "owner": "agent",
-      "checklist": "docs/handoffs/2026-07-22-CMD-DASH-COMPLETE-01-CLOSE.md",
+      "checklist": "docs/archive/handoffs/2026-07-22-CMD-DASH-COMPLETE-01-CLOSE.md",
       "note": "COMPLETE A-D LIVE tip 9b30dec mkt-dash05 browser dogfood PASS"
     },
     {
@@ -1848,7 +1855,7 @@
       "status": "completed",
       "priority": "critical",
       "owner": "agent",
-      "checklist": "docs/handoffs/2026-07-22-CMD-DASH-COMPLETE-01-WAVE-A-HANDOFF.md",
+      "checklist": "docs/archive/handoffs/2026-07-22-CMD-DASH-COMPLETE-01-WAVE-A-HANDOFF.md",
       "note": "DONE Wave A: live Decision Rail; H-Meta static removed; cache mkt-dash04."
     },
     {
@@ -1858,7 +1865,7 @@
       "status": "completed",
       "priority": "critical",
       "owner": "agent",
-      "checklist": "docs/handoffs/2026-07-22-CMD-DASH-COMPLETE-01-WAVE-A-HANDOFF.md",
+      "checklist": "docs/archive/handoffs/2026-07-22-CMD-DASH-COMPLETE-01-WAVE-A-HANDOFF.md",
       "note": "DONE Wave A: sev-chip/exec-rail + forensic L2. Hard STOP execute held."
     },
     {
@@ -1898,7 +1905,7 @@
       "status": "completed",
       "priority": "critical",
       "owner": "agent",
-      "checklist": "docs/handoffs/2026-07-22-CMD-DASH-UX-POLISH-01-CLOSE.md",
+      "checklist": "docs/archive/handoffs/2026-07-22-CMD-DASH-UX-POLISH-01-CLOSE.md",
       "note": "Conditional Pass High=0; LIVE via DEPLOY @ 4aea17c mkt-dash06"
     },
     {
@@ -1908,7 +1915,7 @@
       "status": "completed",
       "priority": "critical",
       "owner": "agent",
-      "checklist": "docs/handoffs/2026-07-22-CMD-DASH-UX-POLISH-01-DEPLOY-CLOSE.md",
+      "checklist": "docs/archive/handoffs/2026-07-22-CMD-DASH-UX-POLISH-01-DEPLOY-CLOSE.md",
       "note": "LIVE VPS 4aea17c · VERIFY_OK · dogfood H1/H2/touch44/Audyt PASS · tip-sync done"
     },
     {
@@ -1918,7 +1925,7 @@
       "status": "completed",
       "priority": "critical",
       "owner": "agent",
-      "checklist": "docs/handoffs/2026-07-22-OPS-FRESHNESS-01-CLOSE.md",
+      "checklist": "docs/archive/handoffs/2026-07-22-OPS-FRESHNESS-01-CLOSE.md",
       "note": "RCA wrong clocks; LIVE VPS c210578 mkt-dash07 · dogfood Freshness/ORDERS/LEADS/WORKER OK"
     },
     {
@@ -1928,7 +1935,7 @@
       "status": "completed",
       "priority": "critical",
       "owner": "agent",
-      "checklist": "docs/handoffs/2026-07-22-OPS-FRESHNESS-01-DEPLOY-CLOSE.md",
+      "checklist": "docs/archive/handoffs/2026-07-22-OPS-FRESHNESS-01-DEPLOY-CLOSE.md",
       "note": "LIVE c210578 · DTL interval 3600 · VERIFY_OK · dogfood PASS"
     },
     {
@@ -1938,7 +1945,7 @@
       "status": "completed",
       "priority": "high",
       "owner": "agent",
-      "checklist": "docs/handoffs/2026-07-25-OPS-FB-TOKEN-01-CLOSE.md",
+      "checklist": "docs/archive/handoffs/2026-07-25-OPS-FB-TOKEN-01-CLOSE.md",
       "note": "LIVE 2026-07-25 · has_read_insights=true · expires_at=0 · Token OK (Page) · no secrets in git"
     },
     {
@@ -1988,7 +1995,7 @@
       "status": "completed",
       "priority": "critical",
       "owner": "agent",
-      "checklist": "docs/handoffs/2026-07-27-DEPLOY-FREEZE-CLOSE.md",
+      "checklist": "docs/archive/handoffs/2026-07-27-DEPLOY-FREEZE-CLOSE.md",
       "note": "2026-07-27 LIVE tip 4cf66fe. Health degraded SSH pre-existing. output/secrets dirs restored."
     },
     {
@@ -2055,7 +2062,7 @@
       "priority": "critical",
       "owner": "agent",
       "depends_on": ["VF-CAMPUS-PLAN-00"],
-      "checklist": "docs/handoffs/2026-07-27-VF-CAMPUS-W1-CLOSE.md",
+      "checklist": "docs/archive/handoffs/2026-07-27-VF-CAMPUS-W1-CLOSE.md",
       "runtime_changes_allowed": true,
       "note": "2026-07-27 CLOSED. Pre-close verify PASS (local dogfood :8765). Evidence in handoff. active_gate not auto-advanced. Next propose DEPLOY-CAMPUS-W1-00."
     },
@@ -2067,7 +2074,7 @@
       "priority": "critical",
       "owner": "agent",
       "depends_on": ["VF-CAMPUS-W1"],
-      "checklist": "docs/handoffs/2026-07-27-DEPLOY-CAMPUS-W1-00-CLOSE.md",
+      "checklist": "docs/archive/handoffs/2026-07-27-DEPLOY-CAMPUS-W1-00-CLOSE.md",
       "runtime_changes_allowed": true,
       "note": "2026-07-27 DONE. VPS tip cc9aa0f · campus-w01 on prod HTTP 200 · jadzia active. Health degraded SSH pre-existing."
     },
@@ -2079,7 +2086,7 @@
       "priority": "high",
       "owner": "agent",
       "depends_on": ["VF-CAMPUS-W1", "DEPLOY-CAMPUS-W1-00"],
-      "checklist": "docs/handoffs/2026-07-27-VF-CAMPUS-W2-CLOSE.md",
+      "checklist": "docs/archive/handoffs/2026-07-27-VF-CAMPUS-W2-CLOSE.md",
       "runtime_changes_allowed": false,
       "note": "2026-07-27 CLOSED. Trust wave + F1-F7 status fixes. Evidence EV-W2-001..011; window 2026-07-27T14:22:44Z~14:26Z. Residuals: OS/VCMS PARTIAL post-auth; Knowledge UNVERIFIED; Analytics finance UNVERIFIED; Compliance chain needs session; SSH DEGRADED INC-SSH-RECOVERY-00. W3 unblocked not active. No commit/deploy in CLOSE."
     },
@@ -2092,7 +2099,7 @@
       "owner": "agent",
       "depends_on": ["VF-CAMPUS-W1"],
       "evidence_required": "HTTP chain + JSON status=ok",
-      "checklist": "docs/handoffs/2026-07-27-VF-CAMPUS-W2-CLOSE.md",
+      "checklist": "docs/archive/handoffs/2026-07-27-VF-CAMPUS-W2-CLOSE.md",
       "note": "2026-07-27 CLOSED with W2. EV-W2-006 GET health status=ok 2026-07-27T14:22:45Z. LIVE technical readiness probe — NOT Production desk."
     },
     {
@@ -2103,7 +2110,7 @@
       "priority": "high",
       "owner": "agent",
       "depends_on": ["VF-CAMPUS-W2"],
-      "checklist": "docs/handoffs/2026-07-27-VF-CAMPUS-W3-CLOSE.md",
+      "checklist": "docs/archive/handoffs/2026-07-27-VF-CAMPUS-W3-CLOSE.md",
       "runtime_changes_allowed": false,
       "note": "2026-07-27 CLOSED. Pilot cards: MC LIVE EV-W2-001; Wizard LIVE EV-W2-005; Marketing UNVERIFIED EV-W3-001; Order Desk PARKED EV-W2-010; Finance/Analytics UNVERIFIED EV-W2-008. Cache campus-w03b. F1-F7 fixes PASS. W4 proposed not active. No commit/deploy in CLOSE."
     },
@@ -2126,8 +2133,8 @@
       "priority": "critical",
       "owner": "agent",
       "depends_on": ["VF-CAMPUS-W3"],
-      "checklist": "docs/handoffs/2026-07-27-VF-VHQ-PLAN-00-CLOSE.md",
-      "allowed_paths": ["docs/ops/FLEXGRAFIK-VIRTUAL-HQ-PROGRAM.md", "docs/ops/FLEXGRAFIK-VIRTUAL-HQ-ARCHITECTURE.md", "docs/handoffs/2026-07-27-VF-VHQ-PLAN-00-CLOSE.md", "todo.json"],
+      "checklist": "docs/archive/handoffs/2026-07-27-VF-VHQ-PLAN-00-CLOSE.md",
+      "allowed_paths": ["docs/ops/FLEXGRAFIK-VIRTUAL-HQ-PROGRAM.md", "docs/ops/FLEXGRAFIK-VIRTUAL-HQ-ARCHITECTURE.md", "docs/archive/handoffs/2026-07-27-VF-VHQ-PLAN-00-CLOSE.md", "todo.json"],
       "runtime_changes_allowed": false,
       "risk_class": "docs-only",
       "stop_conditions": ["no commander-ui", "no app.js", "no deploy", "no commit required", "no MKT edits", "no W4 Campus auto"],
@@ -2148,7 +2155,7 @@
       "stop_conditions": ["no runtime UI", "no deploy", "no Ads", "no secrets", "no W1 auto"],
       "evidence_required": "wireframes + schema draft + SVG blueprint + component/interaction specs",
       "dod": "Founder-accepted DESIGN pack; W1-SHELL proposed not auto-active",
-      "checklist": "docs/handoffs/2026-07-27-VF-VHQ-DESIGN-00-CLOSE.md",
+      "checklist": "docs/archive/handoffs/2026-07-27-VF-VHQ-DESIGN-00-CLOSE.md",
       "note": "2026-07-27 CLOSED under Founder GO. Pack in docs/design/*. W1-SHELL proposed_next not active. No commander-ui."
     },
     {
@@ -2165,7 +2172,7 @@
       "stop_conditions": ["no 6th tab", "no 3D", "no fake agents", "no MKT publish", "deploy needs GO", "no W2 auto"],
       "evidence_required": "local dogfood World View + teleport; status labels match registry",
       "dod": "Shell renders floors/MVP rooms; PARKED/UNVERIFIED honest; Commander 5 tabs intact; opaque overlay; floor filter no auto-open; focus trap; Esc restore",
-      "checklist": "docs/handoffs/2026-07-27-VF-VHQ-W1-SHELL-CLOSE.md",
+      "checklist": "docs/archive/handoffs/2026-07-27-VF-VHQ-W1-SHELL-CLOSE.md",
       "note": "2026-07-27 CLOSED under Founder GO (polish approved). Cache vhq-w01b. Uncommitted local. W2 remains parked / not auto-activated. Preserve: opaque overlay, floor filter, focus trap, Esc→vhq-enter, honest status/evidence, no 6th tab."
     },
     {
@@ -2182,7 +2189,7 @@
       "stop_conditions": ["no fake KPI", "no write actions beyond existing L1", "no Ads", "no auth lockout", "no 6th tab", "no W3 auto"],
       "evidence_required": "≤30s Director loop checklist PASS with evidence IDs",
       "dod": "Seven questions answerable from Command View using real SoT or explicit insufficient_data; cold-open HQ→MC; Operations Console escape; no DOM clone; SSH DEGRADED in Brief; mobile Navigate HQ; focal=aria-current",
-      "checklist": "docs/handoffs/2026-07-27-VF-VHQ-W2-MISSION-CONTROL-CLOSE.md",
+      "checklist": "docs/archive/handoffs/2026-07-27-VF-VHQ-W2-MISSION-CONTROL-CLOSE.md",
       "note": "2026-07-27 CLOSED under Founder GO (Director Polish approved). Cache vhq-w02b. Uncommitted local. W3 remains parked / not auto-activated."
     },
     {
@@ -2199,7 +2206,7 @@
       "stop_conditions": ["no Ads execute", "no fake campaign LIVE", "MKT dirty not auto-committed", "no Order Desk LIVE", "no W4 auto"],
       "evidence_required": "Wizard LIVE hop; Sales disposition path; Marketing UNVERIFIED/PARKED label",
       "dod": "Commercial MVP rooms usable without inventing desks",
-      "checklist": "docs/handoffs/2026-07-27-VF-VHQ-W3-ROOMS-COMMERCIAL-CLOSE.md",
+      "checklist": "docs/archive/handoffs/2026-07-27-VF-VHQ-W3-ROOMS-COMMERCIAL-CLOSE.md",
       "note": "2026-07-27 CLOSED under Founder GO. Cache vhq-w03b. Preserve Sales LIVE EV-W2-007 · Wizard LIVE EV-W2-005 · Marketing UNVERIFIED — campaign state not verified · EV-W3-001. W4 remains parked / not auto-activated."
     },
     {
@@ -2216,7 +2223,7 @@
       "stop_conditions": ["no 6th tab", "no W4 auto", "no Ads/Mollie", "no MKT dirty commit", "deploy needs GO", "legacy rollback must work"],
       "evidence_required": "primary + legacy final re-dogfood PASS; portal rollback visible; Esc ladder; Sign in JWT",
       "dod": "HQ is primary #view-hq view; Console secondary; 5 tabs; single queue; Esc room→MC→Console; history; ?vhq_shell=legacy portal rollback usable; Sign in→JWT",
-      "checklist": "docs/handoffs/2026-07-27-VF-VHQ-W3.1-PRIMARY-SHELL-CLOSE.md",
+      "checklist": "docs/archive/handoffs/2026-07-27-VF-VHQ-W3.1-PRIMARY-SHELL-CLOSE.md",
       "note": "2026-07-27 CLOSED under Founder GO after primary+legacy final re-dogfood. Cache vhq-w31b. Uncommitted local. W4 remains parked. Next: COMMIT W3.1 ONLY → DEPLOY-VHQ-PRIMARY-SHELL → prod dogfood."
     },
     {
@@ -2233,7 +2240,7 @@
       "stop_conditions": ["no 6th tab", "no W4 auto", "no Ads/Mollie", "no MKT dirty commit", "deploy needs GO", "preserve primary+legacy", "no second status SoT"],
       "evidence_required": "Founder dogfood A–L PASS; vhqManifestPropagationTest 5/5; 13 screenshots; no VHQ_PULSE",
       "dod": "VHQ_ROOMS sole SoT; HQ primary; Console secondary collapsed Technical/Legacy; Return to HQ first; one queue; 5 tabs; primary+legacy; Marketing UNVERIFIED EV-W3-001; Order PARKED EV-W2-010; SSH DEGRADED EV-W2-011",
-      "checklist": "docs/handoffs/2026-07-27-VF-VHQ-W3.2-CONSOLE-CLEANUP-CLOSE.md",
+      "checklist": "docs/archive/handoffs/2026-07-27-VF-VHQ-W3.2-CONSOLE-CLEANUP-CLOSE.md",
       "note": "2026-07-27 CLOSED under Founder GO after dogfood READY FOR FOUNDER CLOSE. Cache vhq-w32a. Uncommitted local. W4 remains parked. Next: COMMIT W3.2 ONLY (exclude MKT) → deploy GO → prod dogfood."
     },
     {
@@ -2261,7 +2268,7 @@
         "Zero: new API · MKT touch · Ads/Mollie · 6th tab · INT-002 desk",
         "Local dogfood PASS + Founder CLOSE + commit/deploy GO"
       ],
-      "checklist": "docs/handoffs/2026-07-31-VF-VHQ-W4-ROOMS-OPERATIONS-CLOSE.md",
+      "checklist": "docs/archive/handoffs/2026-07-31-VF-VHQ-W4-ROOMS-OPERATIONS-CLOSE.md",
       "note": "2026-07-31 CLOSED under Founder GO (verify+commit+deploy). Cache vhq-w40b. EV-W2-010 preserved. P1 polish: flow/Wizard EV, SW bump, focus. No INT-002 desk. MKT excluded."
     },
     {
@@ -2286,14 +2293,14 @@
         "tests/unit/test_ops_bus.py",
         "todo.json",
         ".cursor/current-task.md",
-        "docs/handoffs/2026-07-31-VF-VHQ-W5-OPERATIONS-BUS-*.md",
-        "docs/handoffs/2026-07-31-SESSION-CLOSE-W5-*.md",
-        "docs/handoffs/evidence-vhq-w50-dogfood/**"
+        "docs/archive/handoffs/2026-07-31-VF-VHQ-W5-OPERATIONS-BUS-*.md",
+        "docs/archive/handoffs/2026-07-31-SESSION-CLOSE-W5-*.md",
+        "docs/archive/handoffs/evidence-vhq-w50-dogfood/**"
       ],
       "stop_conditions": ["no free-form agent chat bus", "no silent L3/L4", "schema + evidence required", "no W5 implement without Founder GO", "no MKT dirty", "no Ads/Mollie", "deploy needs GO", "preserve EV-W2-010"],
       "evidence_required": "event catalog MVP + audit rows + EV-W5-001..005 + sales_cta emit test",
       "dod": "At least lead→wizard→order_created path typed with approval hooks",
-      "checklist": "docs/handoffs/2026-07-31-VF-VHQ-W5-OPERATIONS-BUS-CLOSE.md",
+      "checklist": "docs/archive/handoffs/2026-07-31-VF-VHQ-W5-OPERATIONS-BUS-CLOSE.md",
       "note": "2026-07-31 CLOSED+DEPLOY tip 67700ff / vhq-w50a. Runtime 174603e. ops_bus_events LIVE. Evidence local+prod. SoT report filed. W6 parked until GO."
     },
     {
@@ -2312,14 +2319,14 @@
         "tests/unit/test_ops_bus.py",
         "todo.json",
         ".cursor/current-task.md",
-        "docs/handoffs/2026-07-31-VF-VHQ-W6-DIRECTOR-APPROVALS-*.md",
-        "docs/handoffs/evidence-vhq-w60-dogfood/**"
+        "docs/archive/handoffs/2026-07-31-VF-VHQ-W6-DIRECTOR-APPROVALS-*.md",
+        "docs/archive/handoffs/evidence-vhq-w60-dogfood/**"
       ],
       "stop_conditions": ["no auto-approve L3/L4", "Gate D/Ads/Mollie still hard STOP", "Zasada 11 for deploy class", "no MKT dirty", "preserve EV-W2-010"],
       "evidence_required": "approve/reject flow + audit evidence IDs · EV-W6-001..005",
       "dod": "Director can clear pending approvals without guessing source room",
-      "checklist": "docs/handoffs/2026-07-31-VF-VHQ-W6-DIRECTOR-APPROVALS-CLOSE.md",
-      "note": "2026-07-31 CLOSED+DEPLOY PASS · runtime 06212d7 · tip 014c791 · cache vhq-w60a · Vault L2 companion-only + L3 STOP · evidence-vhq-w60-dogfood/ + prod · docs/handoffs/2026-07-31-DEPLOY-VHQ-W6-00-CLOSE.md"
+      "checklist": "docs/archive/handoffs/2026-07-31-VF-VHQ-W6-DIRECTOR-APPROVALS-CLOSE.md",
+      "note": "2026-07-31 CLOSED+DEPLOY PASS · runtime 06212d7 · tip 014c791 · cache vhq-w60a · Vault L2 companion-only + L3 STOP · evidence-vhq-w60-dogfood/ + prod · docs/archive/handoffs/2026-07-31-DEPLOY-VHQ-W6-00-CLOSE.md"
     },
     {
       "id": "VF-VHQ-W7-DOGFOOD",
@@ -2334,7 +2341,7 @@
       "stop_conditions": ["no scope creep mid-dogfood", "fail closed on missing evidence"],
       "evidence_required": "dogfood checklist PASS with timestamps + screenshots/notes",
       "dod": "Founder PASS on 7 questions + honest gaps; unlock decision on 3D remains parked",
-      "checklist": "docs/handoffs/2026-07-31-VF-VHQ-W7-DOGFOOD-CLOSE.md",
+      "checklist": "docs/archive/handoffs/2026-07-31-VF-VHQ-W7-DOGFOOD-CLOSE.md",
       "note": "2026-07-31 CLOSED PASS · ≤30s 994ms · evidence-vhq-w7-dogfood/ · cache vhq-w60a · 3D remains parked"
     },
     {
@@ -2405,7 +2412,7 @@
       "status": "completed",
       "priority": "critical",
       "owner": "agent",
-      "checklist": "docs/handoffs/2026-07-25-META-FREE-90-CLOSE.md",
+      "checklist": "docs/archive/handoffs/2026-07-25-META-FREE-90-CLOSE.md",
       "note": "S2–S4 PASS LIVE"
     },
     {
@@ -2425,7 +2432,7 @@
       "status": "completed",
       "priority": "high",
       "owner": "agent",
-      "checklist": "docs/handoffs/2026-07-25-META-FREE-90-CLOSE.md",
+      "checklist": "docs/archive/handoffs/2026-07-25-META-FREE-90-CLOSE.md",
       "note": "S7+S8 PASS · smoke cancelled"
     },
     {
@@ -2445,7 +2452,7 @@
       "status": "completed",
       "priority": "critical",
       "owner": "agent",
-      "checklist": "docs/handoffs/2026-07-25-META-FREE-90-CLOSE.md",
+      "checklist": "docs/archive/handoffs/2026-07-25-META-FREE-90-CLOSE.md",
       "note": "S10 PASS. Gate CLOSE 9/10 2026-07-25 — Ads HOLD until final"
     },
     {
@@ -2455,7 +2462,7 @@
       "status": "completed",
       "priority": "critical",
       "owner": "agent",
-      "checklist": "docs/handoffs/2026-07-22-OPS-AGENT-SLA-01-DEPLOY-CLOSE.md",
+      "checklist": "docs/archive/handoffs/2026-07-22-OPS-AGENT-SLA-01-DEPLOY-CLOSE.md",
       "note": "LIVE @ 6e4a637 mkt-dash08 · sla_bad 0 · Ops OK dogfood"
     },
     {
@@ -2465,7 +2472,7 @@
       "status": "completed",
       "priority": "critical",
       "owner": "agent",
-      "checklist": "docs/handoffs/2026-07-22-OPS-AGENT-SLA-01-DEPLOY-CLOSE.md",
+      "checklist": "docs/archive/handoffs/2026-07-22-OPS-AGENT-SLA-01-DEPLOY-CLOSE.md",
       "note": "VERIFY_OK · dogfood Ops OK · SLA 0"
     }
   ]

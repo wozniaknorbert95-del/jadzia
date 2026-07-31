@@ -4,7 +4,7 @@ title: "FlexGrafik Virtual HQ — Architecture (experience layer)"
 gate: "VF-VHQ-PLAN-00"
 updated: "2026-07-31"
 owner: "Norbert Wozniak (Dowódca) — Accountable"
-foundation: "docs/ops/FLEXGRAFIK-CAMPUS-PROGRAM.md · FLEXGRAFIK-CAMPUS-MAP.md · Commander campus-w03"
+foundation: "docs/ops/FLEXGRAFIK-CAMPUS-PROGRAM.md (SUPERSEDED) · FLEXGRAFIK-CAMPUS-MAP.md · prod cache vhq-w65a"
 inspiration_only: "https://store.talknbuy.com/pl/ — spatial discoverability; NO copy of code/assets/branding"
 runtime_changes_allowed: false
 prod_tip: "014c791"
