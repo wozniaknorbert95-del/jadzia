@@ -17,8 +17,8 @@ w1_shell: "completed 2026-07-27 · local cache vhq-w01b · Founder CLOSE"
 
 | Layer | Role | Status |
 |-------|------|--------|
-| **Virtual HQ** | **Primary operational dashboard** — World / Work / Command experience | W1–W5 CLOSED+DEPLOY · cache `vhq-w50a` · tip `94268f7` |
-| **Commander (jadzia)** | **Underlying control, data, audit and action engine** — queues, JWT, Marketing, Analytics, Agents, Audit, Settings | LIVE tip `94268f7` · `?v=vhq-w50a` · ops_bus_events |
+| **Virtual HQ** | **Primary operational dashboard** — World / Work / Command experience | W1–W6 CLOSED+DEPLOY · cache `vhq-w60a` · tip `06212d7` |
+| **Commander (jadzia)** | **Underlying control, data, audit and action engine** — queues, JWT, Marketing, Analytics, Agents, Audit, Settings | LIVE tip `06212d7` · `?v=vhq-w60a` · ops_bus_events + Approval Vault |
 | **Campus W1–W3** | Truthful map hops, evidence badges, 5 Truth Cards | DONE — foundation absorbed into VHQ path |
 | **Agent OS / VCMS** | Build + Govern brains — hop destinations, not merged into jadzia | PARTIAL post-auth |
 
@@ -241,7 +241,7 @@ Field legend: `approval` = max level for primary action in that room; `MVP` = no
 | primary action | Confirm / snooze / close CRITICAL+ACTION queue |
 | human owner | Ops/COI (Dowódca Accountable) |
 | AI/agent role | COI brief · queue ranking · MB propose (read) |
-| source of truth | Commander Home `https://api.zzpackage.flexgrafik.nl/commander/?v=vhq-w50a` · `jadzia.db` · `ops_bus_events` |
+| source of truth | Commander Home `https://api.zzpackage.flexgrafik.nl/commander/?v=vhq-w60a` · `jadzia.db` · `ops_bus_events` |
 | current status | **LIVE** |
 | data shown | queue tickets, worker health strip, Truth Cards, evidence IDs |
 | approval level | L1 (disposition) · L2/L3 for escalations |

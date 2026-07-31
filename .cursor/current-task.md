@@ -1,16 +1,18 @@
-# VF-VHQ-W6 — CLOSED local · deploy GO
+# VF-VHQ-W6 — CLOSED + DEPLOYED
 
-**Gate:** `VF-VHQ-W6-DIRECTOR-APPROVALS` · `completed` (local)  
-**Cache:** `vhq-w60a`  
-**CLOSE:** `docs/handoffs/2026-07-31-VF-VHQ-W6-DIRECTOR-APPROVALS-CLOSE.md`  
+**Gate:** `VF-VHQ-W6-DIRECTOR-APPROVALS` · `completed`  
+**Tip:** `06212d7` · **Cache:** `vhq-w60a`  
+**Deploy:** `docs/handoffs/2026-07-31-DEPLOY-VHQ-W6-00-CLOSE.md`
 
 ## Done
 
 - Approval Vault Work View + L2 Approve/Reject + L3/L4 STOP  
-- MC pending strip · pytest 10/10 · dogfood PASS · EV-W2-010  
+- Prod JWT dogfood PASS · Order PARKED EV-W2-010  
+- pytest 10/10  
 
 ## Next
 
-- COMMIT allowlist · DEPLOY (Founder GO) · prod dogfood  
+- Park **VF-VHQ-W7-DOGFOOD** until explicit GO  
+- Optional: COM-AI-50 before publish ≥2026-08-02  
 
 **STOP:** no MKT · no Order LIVE · no silent L3/L4  

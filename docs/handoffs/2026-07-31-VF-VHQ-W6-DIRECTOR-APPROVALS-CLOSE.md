@@ -1,21 +1,23 @@
 ---
-status: "[CLOSE]"
+status: "[CLOSED]"
 title: "VF-VHQ-W6-DIRECTOR-APPROVALS — CLOSE"
 updated: "2026-07-31"
 gate: "VF-VHQ-W6-DIRECTOR-APPROVALS"
 cache: "vhq-w60a"
 founder_go: true
 pytest_ops_bus: "10/10 PASS"
-commit: pending
-deploy: pending
+commit: "06212d7"
+deploy: true
+deploy_tip: "06212d7"
 w6_closed: true
+w6_deployed: true
 evidence_dir: "docs/handoffs/evidence-vhq-w60-dogfood/"
+prod_evidence: "docs/handoffs/evidence-vhq-w60-prod-dogfood/"
 ---
 
 # VF-VHQ-W6-DIRECTOR-APPROVALS — CLOSE
 
-**Status: CLOSED** (local) after JWT dogfood PASS.  
-Deploy in same session under Founder **GO** (implement + go).
+**Status: CLOSED + DEPLOYED** · tip **`06212d7`** · cache **`vhq-w60a`**.
 
 ## Delivered
 
@@ -29,10 +31,12 @@ Deploy in same session under Founder **GO** (implement + go).
 
 ## Evidence
 
-`docs/handoffs/evidence-vhq-w60-dogfood/`
+- Local: `docs/handoffs/evidence-vhq-w60-dogfood/`
+- Prod: `docs/handoffs/evidence-vhq-w60-prod-dogfood/`
+- Deploy: `docs/handoffs/2026-07-31-DEPLOY-VHQ-W6-00-CLOSE.md`
 
 ## STOP held
 
 No Ads/Mollie · no silent L3/L4 · no Order LIVE · no MKT
 
-CLOSE_VERDICT: **CLOSED** · deploy next
+CLOSE_VERDICT: **CLOSED + DEPLOY PASS**
