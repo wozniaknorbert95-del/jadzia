@@ -18,6 +18,7 @@ from agent.commander.audit import list_audit
 from agent.commander.deeplink import mint_deeplink, verify_deeplink_token
 from agent.commander.graduation import graduation_status, record_feedback
 from agent.commander.publish import bulk_approve_guardrail, publish_calendar_entry, unpublish_calendar_entry
+from agent.commander.money_narrative import build_money_risk_narrative
 from agent.commander.queue import (
     build_director_brief_from_queue,
     build_priorities_today,
@@ -130,6 +131,14 @@ async def get_priorities_today(
         "secondary": secondary,
         "total": len(flat),
     }
+
+
+@router.get("/api/v1/commander/money-risk")
+async def get_money_risk_narrative(
+    _auth=Depends(require_scope("commander:read")),
+) -> dict:
+    """DI-S6: honest money/risk narrative (no vanity euro on L1)."""
+    return build_money_risk_narrative()
 
 
 @router.get("/api/v1/commander/audit-log/verify")

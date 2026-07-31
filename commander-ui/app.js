@@ -175,6 +175,57 @@ function homeSkeleton(rows = 2) {
   }</div>`;
 }
 
+function renderMoneyRisk(n) {
+  const el = document.getElementById("vhq-money-risk");
+  if (!el) return;
+  if (!n) {
+    el.innerHTML =
+      "<p class=\"state-empty\">Money/risk narrative unavailable — refresh after sign-in.</p>";
+    return;
+  }
+  const pipe = n.pipeline || {};
+  const desk = pipe.order_desk || {};
+  const risk = n.top_risk;
+  const cta = n.cta || {};
+  const status = n.status || "insufficient_data";
+  let ctaHtml = "";
+  if (cta.action === "open_wizard" && cta.target) {
+    ctaHtml = `<a class="buttonish primary" href="${escHtml(cta.target)}" target="_blank" rel="noopener noreferrer">${escHtml(cta.label || "Open Wizard")}</a>`;
+  } else {
+    ctaHtml = `<button type="button" class="primary" id="vhq-money-cta-queue">${escHtml(cta.label || "Focus queue")}</button>`;
+  }
+  const riskHtml = risk
+    ? `<p class="vhq-money-risk__blocker"><span class="muted">Top risk</span> ${escHtml(risk.title || "")} · <strong>${escHtml(risk.owner || "")}</strong> · ${escHtml(risk.approval_class || "")}</p>`
+    : `<p class="vhq-money-risk__blocker muted">No ranked commercial risk blocker.</p>`;
+  const events = (n.event_ids || []).map((e) => escHtml(e)).join(" · ");
+  el.innerHTML = `
+    <article class="vhq-money-risk status-${escHtml(status)}" aria-label="Money and risk narrative">
+      <header class="vhq-money-risk__head">
+        <span class="badge">${escHtml(status)}</span>
+        <span class="badge">${escHtml(desk.status || "PARKED")}</span>
+        <span class="badge">${escHtml(desk.evidence || "EV-W2-010")}</span>
+      </header>
+      <p class="vhq-money-risk__q1">${escHtml(n.q1 || "")}</p>
+      <dl class="meta vhq-money-risk__meta">
+        <dt>Open leads</dt><dd>${escHtml(String(pipe.open_leads ?? "—"))}</dd>
+        <dt>Hot</dt><dd>${escHtml(String(pipe.hot_leads ?? "—"))}</dd>
+        <dt>CTA-band</dt><dd>${escHtml(String(pipe.cta_band_leads ?? "—"))}</dd>
+        <dt>Wizard sessions</dt><dd>${pipe.wizard_sessions == null ? "insufficient_data" : escHtml(String(pipe.wizard_sessions))}</dd>
+        <dt>GA4 freshness</dt><dd>${escHtml((n.freshness && n.freshness.ga4) || "—")}</dd>
+      </dl>
+      ${riskHtml}
+      <p class="hint vhq-money-risk__honesty">${escHtml((n.honesty || []).join(" · "))}</p>
+      <p class="hint">Events: ${events || "—"}</p>
+      <div class="actions">${ctaHtml}</div>
+    </article>`;
+  const qBtn = document.getElementById("vhq-money-cta-queue");
+  if (qBtn) {
+    qBtn.onclick = () => {
+      document.getElementById("queue-list")?.scrollIntoView({ behavior: "smooth", block: "start" });
+    };
+  }
+}
+
 function renderNba(nba) {
   const el = document.getElementById("vhq-nba");
   if (!el) return;
@@ -381,9 +432,11 @@ async function loadHome() {
   let prio;
   let queue;
   try {
-    [prio, queue] = await Promise.all([
+    let money;
+    [prio, queue, money] = await Promise.all([
       api("/api/v1/commander/priorities/today"),
       api("/api/v1/commander/queue"),
+      api("/api/v1/commander/money-risk").catch(() => null),
     ]);
     // Re-query after await — VHQ cold-open may remount slot nodes mid-flight.
     prioEl = document.getElementById("priorities");
@@ -395,6 +448,7 @@ async function loadHome() {
       prio.nba ||
       (prio.priorities || []).find((p) => p.nba_primary) ||
       null;
+    renderMoneyRisk(money);
     renderNba(nba);
     renderPriorities(prio.secondary || prio.priorities || []);
     renderQueue(queue.items || []);
