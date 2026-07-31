@@ -1,11 +1,10 @@
-# DEPLOY_READY: VF-VHQ-DI-S4-SNR-FINISH
+# NEXT: VF-VHQ-DI-S5-NBA
 
-**Status:** code on origin after ship · **AWAIT GO DEPLOY**  
-**PRECLOSE:** `docs/handoffs/2026-07-31-VF-VHQ-DI-S4-SNR-FINISH-PRECLOSE.md`  
-**pytest:** 10/10 · cache `vhq-w62a` (no UI bump)
+**S4:** CLOSED+DEPLOY PASS · tip `c56b13e` · scorecard S4=5  
+**Close:** `docs/handoffs/2026-07-31-VF-VHQ-DI-S4-SNR-FINISH-CLOSE.md`  
 
-## Commander
+## Start S5
 
-Say **`GO DEPLOY`** → agent: backup DB → pull → restart → dogfood → S4=5  
+`/vhq-decision-instrument` → BLAST 1 primary Director NBA card · deterministic rank · tests  
 
-**STOP:** no scorecard bump without dogfood · no MKT  
+**STOP:** no MKT · no Order LIVE · no 3D · no fake KPI  

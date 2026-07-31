@@ -23,14 +23,13 @@ Wymiary zależne od brakującego SoT (Order Desk) nie dostają fake PASS — zos
 | S1 | Trust / honesty | 5 | 5 | **5** | Regression only |
 | S2 | Escape / safety | 5 | 5 | **5** | Regression only |
 | S3 | Approval discipline | 5 | 4.5 | **4.5** | `VF-VHQ-DI-S3-APPROVAL` |
-| S4 | Signal-to-noise | 5 | 1.5 | **~3.8** (prod dogfood) | `VF-VHQ-DI-S4-SNR-FINISH` |
-| S5 | Ranked next action | 5 | 2 | **~2.5** | `VF-VHQ-DI-S5-NBA` |
+| S4 | Signal-to-noise | 5 | 1.5 | **5** (S4 CLOSE 2026-07-31) | — |
+| S5 | Ranked next action | 5 | 2 | **~2.5** | `VF-VHQ-DI-S5-NBA` ← ACTIVE |
 | S6 | Money/risk narrative | 5 | 2 | **2** | `VF-VHQ-DI-S6-MONEY` |
 | S7 | Closed commercial loop | 5 | 1.5 | **1.5** | `VF-VHQ-DI-S7-LOOP` (needs Order SoT) |
-| S8 | ≤30s decision quality | 5 | 2.5 | **~3.4** | Composite — closes when S4–S6 PASS |
+| S8 | ≤30s decision quality | 5 | 2.5 | **~3.6** | Composite — closes when S4–S6 PASS |
 
-**Prod W1 evidence:** Decide-now = ACTION cards only (no CEO stub); Ops `OK · data confidence degraded`; STUB hygiene visible.  
-URL: `https://api.zzpackage.flexgrafik.nl/commander/?v=vhq-w62a`
+**Prod S4 evidence:** Decide-now = 2 ACTION (fb_post + sales_cta); **no** analytics_stale; stubs 0%; noise 0%; Ops confidence degraded (not fire). Tip `c56b13e` · `?v=vhq-w62a`
 
 ---
 
@@ -63,13 +62,13 @@ URL: `https://api.zzpackage.flexgrafik.nl/commander/?v=vhq-w62a`
 
 ### S4 Signal-to-noise — target 5 (finish after W1)
 
-| # | DoD |
-|---|-----|
-| S4.1 | Decide-now contamination by stubs = **0%** (W1 DONE) |
-| S4.2 | Chronic freshness/GA4 never sole Ops UWAGA (W1 DONE) |
-| S4.3 | `analytics_stale` / chronic data-quality **not** in Decide-now CRITICAL/ACTION primary rail — Context/hygiene only OR single aggregated “Data confidence” card |
-| S4.4 | Noise ratio non-actionable / Decide-now surface **&lt;10%** on prod dogfood |
-| S4.5 | pytest + prod JWT dogfood evidence |
+| # | DoD | Status |
+|---|-----|--------|
+| S4.1 | Decide-now contamination by stubs = **0%** | DONE |
+| S4.2 | Chronic freshness/GA4 never sole Ops UWAGA | DONE |
+| S4.3 | `analytics_stale` not in Decide-now CRITICAL/ACTION (INFO hygiene) | DONE |
+| S4.4 | Noise ratio non-actionable / Decide-now **&lt;10%** | DONE (0%) |
+| S4.5 | pytest + prod JWT dogfood evidence | DONE (`evidence-vhq-di-s4/`) |
 
 ### S5 Ranked next action (NBA) — target 5
 
