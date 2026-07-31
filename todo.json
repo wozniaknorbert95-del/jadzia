@@ -13,7 +13,7 @@
     "unblocked": ["COM-AI-50-READY"],
     "parked": ["MKT-ASSET-00", "VF-CAMPUS-W4", "VF-VHQ-W5-OPERATIONS-BUS", "VF-VHQ-W6-DIRECTOR-APPROVALS", "VF-VHQ-W7-DOGFOOD", "VF-VHQ-3D-PARKED", "VF-PARK-PROCUREMENT", "VF-PARK-DISPATCH", "VF-PARK-PRINTPACK-SAAS", "VF-PARK-FINANCE-AGENT"],
     "founder_override": "2026-07-27 VHQ = primary operational dashboard; Commander = control/data/audit/action engine; no content duplication — reorganize into MC + Work Views",
-    "campus_prod_tip": "pending_inc_deploy / vhq-w40c (SSH ok · W4 LIVE · TELEGRAM_AUTOPUSH=0)",
+    "campus_prod_tip": "5ba9f8d / vhq-w40c (SSH ok · INC CLOSED · W4 LIVE · TELEGRAM_AUTOPUSH=0)",
     "inc_ssh": "completed · CLOSE docs/handoffs/2026-07-31-INC-SSH-RECOVERY-00-CLOSE.md · ssh_connection=ok",
     "session_close": "docs/handoffs/2026-07-27-SESSION-CLOSE-TOMORROW-W4.md",
     "telegram_fix": "docs/handoffs/2026-07-27-FIX-TELEGRAM-COMMANDER-AUTOPUSH.md",
