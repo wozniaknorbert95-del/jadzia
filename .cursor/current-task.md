@@ -1,11 +1,10 @@
-# VF-VHQ-W4-ROOMS-OPERATIONS — CLOSED · SHIPPING
+# VF-VHQ-W4 — LIVE
 
-**Gate:** completed  
+**Tip:** `f5ba5bc` (runtime UI `b6d0d36`)  
 **Cache:** `vhq-w40b`  
-**CLOSE:** `docs/handoffs/2026-07-31-VF-VHQ-W4-ROOMS-OPERATIONS-CLOSE.md`  
-**Founder GO:** verify + commit + deploy (this session)
+**Prod:** https://api.zzpackage.flexgrafik.nl/commander/?v=vhq-w40b  
 
-## Next
+CLOSE: `docs/handoffs/2026-07-31-VF-VHQ-W4-ROOMS-OPERATIONS-CLOSE.md`  
+DEPLOY: `docs/handoffs/2026-07-31-DEPLOY-VHQ-W4-00-CLOSE.md`  
 
-Push → VPS deploy → prod dogfood `?v=vhq-w40b`  
-W5 parked.
+**Next:** W5 parked until Founder GO. No MKT.
