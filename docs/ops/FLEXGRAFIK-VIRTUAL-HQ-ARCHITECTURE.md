@@ -17,8 +17,8 @@ w1_shell: "completed 2026-07-27 · local cache vhq-w01b · Founder CLOSE"
 
 | Layer | Role | Status |
 |-------|------|--------|
-| **Virtual HQ** | **Primary operational dashboard** — World / Work / Command experience | W1–W6 CLOSED+DEPLOY · cache `vhq-w60a` · tip `06212d7` |
-| **Commander (jadzia)** | **Underlying control, data, audit and action engine** — queues, JWT, Marketing, Analytics, Agents, Audit, Settings | LIVE tip `06212d7` · `?v=vhq-w60a` · ops_bus_events + Approval Vault |
+| **Virtual HQ** | **Primary operational dashboard** — World / Work / Command experience | W1–W6 CLOSED+DEPLOY · cache `vhq-w60a` · tip `03f3bac` · runtime `06212d7` |
+| **Commander (jadzia)** | **Underlying control, data, audit and action engine** — queues, JWT, Marketing, Analytics, Agents, Audit, Settings | LIVE tip `03f3bac` · runtime `06212d7` · `?v=vhq-w60a` · ops_bus_events + Approval Vault |
 | **Campus W1–W3** | Truthful map hops, evidence badges, 5 Truth Cards | DONE — foundation absorbed into VHQ path |
 | **Agent OS / VCMS** | Build + Govern brains — hop destinations, not merged into jadzia | PARTIAL post-auth |
 

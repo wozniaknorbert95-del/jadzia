@@ -1,7 +1,7 @@
 # VF-VHQ-W6 — CLOSED + DEPLOYED
 
 **Gate:** `VF-VHQ-W6-DIRECTOR-APPROVALS` · `completed`  
-**Tip:** `06212d7` · **Cache:** `vhq-w60a`  
+**Tip:** `03f3bac` · runtime `06212d7` · **Cache:** `vhq-w60a`  
 **Deploy:** `docs/handoffs/2026-07-31-DEPLOY-VHQ-W6-00-CLOSE.md`
 
 ## Done
