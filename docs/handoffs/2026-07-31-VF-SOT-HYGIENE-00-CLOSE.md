@@ -3,7 +3,7 @@ status: "[CLOSED]"
 title: "VF-SOT-HYGIENE-00 — one canon · archive handoffs"
 updated: "2026-07-31"
 verdict: "CLOSED PASS"
-prod_tip: "0264f5d"
+prod_tip: "983ab39"
 runtime_tip: "2623ae2"
 cache: "vhq-w65a"
 active_gate: null

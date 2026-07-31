@@ -1,6 +1,6 @@
 {
   "project": "Jadzia-Core",
-  "last_updated": "2026-07-31 (VF-SOT-HYGIENE-00 CLOSE · one canon VHQ · tip 0264f5d)",
+  "last_updated": "2026-07-31 (VF-SOT-HYGIENE-00 CLOSE · one canon VHQ · tip 983ab39)",
   "status": "active",
   "plan": "docs/ops/FLEXGRAFIK-VIRTUAL-HQ-PROGRAM.md",
   "active_gate": null,
@@ -24,7 +24,7 @@
     "vhq_di_s3_close": "docs/handoffs/2026-07-31-VF-VHQ-DI-S3-APPROVAL-CLOSE.md",
     "vhq_di_s3_deploy": "docs/handoffs/2026-07-31-DEPLOY-VHQ-DI-S3-00-CLOSE.md",
     "vhq_di_s3_evidence": "docs/archive/handoffs/evidence-vhq-di-s3/",
-    "prod_tip": "0264f5d docs / runtime 2623ae2 / cache vhq-w65a (DI DONE · SoT hygiene DONE · idle)",
+    "prod_tip": "983ab39 docs SoT hygiene / runtime 2623ae2 / cache vhq-w65a (DI DONE · idle)",
     "campus_prod_tip": "superseded alias → prod_tip",
     "vhq_di_s6": "completed · CLOSED+DEPLOY PASS tip 0d1407f / feature f77989c · cache vhq-w64a · S6=5",
     "vhq_di_s6_blast": "docs/archive/handoffs/2026-07-31-VF-VHQ-DI-S6-MONEY-BLAST.md",
