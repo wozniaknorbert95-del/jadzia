@@ -1,15 +1,12 @@
-# IDLE — after VF-VHQ-FIRM-IA-00 DEPLOY PASS
+# COM-AI-50-READY — prep (ready_for_human)
 
-**Kanon:** Knowledge Index → todo.json → VHQ-PROGRAM  
-**Tip:** `faca1b6` (docs) · runtime `adafd83` · cache `vhq-w66a`  
-**Deploy CLOSE:** `docs/handoffs/2026-07-31-DEPLOY-VHQ-FIRM-IA-00-CLOSE.md`  
-**Prod:** https://api.zzpackage.flexgrafik.nl/commander/?v=vhq-w66a
+**Kanon:** todo.json → COM-AI-50-READY-PACK.md  
+**BLAST:** `docs/handoffs/2026-07-31-COM-AI-50-READY-BLAST.md`  
+**Pack:** `docs/ops/marketing/COM-AI-50-READY-PACK.md`  
+**VHQ tip:** runtime `adafd83` · cache `vhq-w66a`
 
 ## ACTIVE
-`active_gate` = null · observe-only
-
-## NEXT (human GO)
-Growth / COM-AI-50 (≥2026-08-02) · S7/Order parked EV-W2-010 · Ads freeze do 2026-08-06
+Agent inventory DONE · czekamy na Founder ACCEPT/EDIT disclosure NL
 
 ## STOP
-Order LIVE · S7 fake PASS · 3D · Ads · Mollie · deploy bez GO · stage dirty `MKT/`
+Organic <2026-08-02 · Ads · Order LIVE · fake COMPLETE · widget runtime bez GO DEPLOY · stage dirty `MKT/`

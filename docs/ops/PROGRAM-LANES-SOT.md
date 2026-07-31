@@ -26,7 +26,7 @@ Ten plik = krótka mapa ADHD.
 | # | Pas | Stan |
 |---|-----|------|
 | A | VHQ Decision Instrument (S1–S6 + S8) | **DONE** |
-| B | Growth / Demand (COM-AI → organic → paid po freeze) | **NEXT (human GO)** |
+| B | Growth / Demand (COM-AI → organic → paid po freeze) | **ACTIVE** COM-AI-50-READY · ready_for_human |
 | C | Order Desk / S7 | **PARKED** (`blocked_sot` · EV-W2-010) |
 | D | 3D · MKT-ASSET · Ads freeze · Campus residual | **PARKED** |
 
@@ -46,7 +46,7 @@ DONE (A) → NEXT (B Growth, po GO) → later (C Order/S7 gdy desk istnieje)
 ## PARKED / CZEKA
 
 - S7 / Order Desk — brak biurka SoT (nie brak płatności)
-- COM-AI-50 — `unblocked`, human przed organic ≥2026-08-02
+- COM-AI-50 — **ACTIVE** pack `docs/ops/marketing/COM-AI-50-READY-PACK.md` · Founder ACCEPT copy · organic ≥2026-08-02
 - Ads — freeze do 2026-08-06
 - MKT-ASSET / 3D — osobne GO
 
