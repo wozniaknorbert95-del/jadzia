@@ -340,6 +340,22 @@ button.ghost:hover:not(:disabled) {
 .severity-ACTION { border-left: 2px solid var(--action); }
 .severity-INFO { border-left: 2px solid var(--muted); }
 
+.approval-card--stub {
+  opacity: 0.78;
+  border-left-color: var(--muted);
+}
+.badge-stub {
+  background: transparent;
+  border: 1px solid var(--muted);
+  color: var(--muted);
+  font-size: 0.7rem;
+  letter-spacing: 0.04em;
+}
+.queue-hygiene-label {
+  margin: 0.75rem 0 0.35rem;
+  font-size: 0.8rem;
+}
+
 .badge {
   display: inline-block;
   font-size: 10px;

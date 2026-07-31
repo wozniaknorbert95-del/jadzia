@@ -143,11 +143,19 @@ function confirmAction(message, requireReason = false) {
   });
 }
 
+function isCeoStubItem(item) {
+  return item?.queue_type === "ceo_stub" || item?.source === "brain_bus_ceo";
+}
+
 function approvalCard(item, actionsHtml = "") {
+  const stub = isCeoStubItem(item);
+  const stubClass = stub ? " approval-card--stub" : "";
+  const stubBadge = stub ? `<span class="badge badge-stub">STUB</span>` : "";
   return `
-    <article class="card approval-card severity-${item.severity}" role="listitem">
+    <article class="card approval-card severity-${item.severity}${stubClass}" role="listitem">
       <header class="card-header">
         <strong>${item.title}</strong>
+        ${stubBadge}
         <span class="badge">${item.severity}</span>
         <span class="badge ${item.sla_status}">${item.sla_status}</span>
       </header>
@@ -223,11 +231,30 @@ function bindDispositionButtons(root, selector, idFromBtn, pathPrefix, label) {
 }
 
 function renderQueue(items) {
-  const filtered = items.filter((i) => i.severity !== "INFO");
+  const list = items || [];
+  const stubs = list.filter((i) => isCeoStubItem(i));
+  const actionable = list.filter((i) => i.severity !== "INFO" && !isCeoStubItem(i));
   const el = document.getElementById("queue-list");
-  el.innerHTML = filtered.length
-    ? filtered.map((q) => approvalCard(q, queueItemActions(q))).join("")
-    : "<p class=\"state-empty\">Kolejka pusta — brak CRITICAL/ACTION. Możesz utworzyć follow-up CS poniżej.</p>";
+  const parts = [];
+  if (actionable.length) {
+    parts.push(...actionable.map((q) => approvalCard(q, queueItemActions(q))));
+  }
+  if (stubs.length) {
+    parts.push(
+      `<p class="queue-hygiene-label hint">Hygiene · ${stubs.length} CEO stub(s) — not Decide-now</p>`,
+    );
+    parts.push(...stubs.map((q) => approvalCard(q, "")));
+  }
+  if (!parts.length) {
+    el.innerHTML =
+      "<p class=\"state-empty\">Kolejka pusta — brak CRITICAL/ACTION. Możesz utworzyć follow-up CS poniżej.</p>";
+  } else if (!actionable.length && stubs.length) {
+    el.innerHTML =
+      `<p class="state-empty">Brak CRITICAL/ACTION · ${stubs.length} stub hygiene poniżej.</p>` +
+      parts.join("");
+  } else {
+    el.innerHTML = parts.join("");
+  }
   bindDispositionButtons(
     el,
     "[data-lead-disp]",
@@ -374,18 +401,23 @@ async function loadHome() {
     const up = typeof opsHealth?.uptime_seconds === "number"
       ? ` · up ${Math.round(opsHealth.uptime_seconds)}s`
       : "";
-    const worst = worstSev(opsSev, sshSev, sqlSev, loopSev, freshSev, slaSev, gaSev);
+    // P2-SNR-00: freshness/GA4 are confidence chips — not Ops fire headline.
+    const worstOps = worstSev(opsSev, sshSev, sqlSev, loopSev, slaSev);
     const attention = [];
-    if (freshSev === "critical" || freshSev === "warn") attention.push(`freshness ${pipelineFresh}`);
     if (slaSev === "critical") attention.push(`SLA bad ${slaBad}`);
     if (opsSev === "critical" || opsSev === "warn") attention.push(`ops ${opsHealth?.status || "—"}`);
     if (sshSev === "critical") attention.push("SSH");
     if (sqlSev === "critical") attention.push("SQLite");
     if (loopSev === "critical") attention.push("loop");
-    if (gaSev === "warn" || gaSev === "critical") attention.push(`GA4 ${fresh}`);
-    summaryEl.textContent = worst === "ok" || worst === "neutral"
-      ? `Ops: OK${up}`
-      : `Ops: UWAGA — ${attention.slice(0, 3).join(" · ") || worst}${up}`;
+    const confBits = [];
+    if (freshSev === "critical" || freshSev === "warn") confBits.push(`freshness ${pipelineFresh}`);
+    if (gaSev === "warn" || gaSev === "critical") confBits.push(`GA4 ${fresh}`);
+    const confNote = confBits.length
+      ? ` · data confidence degraded (${confBits.slice(0, 2).join(" · ")})`
+      : "";
+    summaryEl.textContent = worstOps === "ok" || worstOps === "neutral"
+      ? `Ops: OK${up}${confNote}`
+      : `Ops: UWAGA — ${attention.slice(0, 3).join(" · ") || worstOps}${up}${confNote}`;
   }
   document.getElementById("delegat-banner").hidden = !!settings.delegat_configured;
   bindSystemMapHops();

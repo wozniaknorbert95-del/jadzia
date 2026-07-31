@@ -75,6 +75,33 @@ def test_escalation_dedup(temp_db, monkeypatch):
     assert n2 == 0
 
 
+def test_escalation_skips_info_severity(temp_db, monkeypatch):
+    """P2-SNR-00: INFO (ceo_stub hygiene) must not Telegram SLA breach."""
+    from agent.commander.escalation import check_sla_escalations
+
+    sent = []
+    monkeypatch.setattr(
+        "agent.commander.escalation._send_telegram",
+        lambda msg, chat_id=None: sent.append(msg),
+    )
+    monkeypatch.setattr("agent.commander.escalation._silent_agents", lambda: [])
+    monkeypatch.setattr(
+        "agent.commander.escalation.build_queue",
+        lambda: [
+            {
+                "id": "ticket-ceo-stub",
+                "severity": "INFO",
+                "title": "[CEO stub] Priority",
+                "age_hours": 200,
+                "sla_status": "red",
+            }
+        ],
+    )
+    n = check_sla_escalations()
+    assert n == 0
+    assert sent == []
+
+
 def test_send_delegat_email_skipped_without_host(monkeypatch):
     from agent.commander.escalation import _send_delegat_email
 

@@ -16,6 +16,7 @@ QUEUE_SEVERITY: Dict[str, Severity] = {
     "sales_cta": "ACTION",
     "cs_followup": "ACTION",
     "weekly_brief_ready": "INFO",
+    "ceo_stub": "INFO",
     "analytics_stale": "ACTION",
 }
 
@@ -29,6 +30,7 @@ QUEUE_SLA_HOURS: Dict[str, float] = {
     "sales_cta": 4,
     "cs_followup": 48,
     "weekly_brief_ready": 48,
+    "ceo_stub": 168,
 }
 
 FRESHNESS_SLA_SECONDS: Dict[str, Tuple[int, int]] = {

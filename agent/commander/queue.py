@@ -115,6 +115,25 @@ def build_queue(severity_filter: Optional[str] = None) -> List[Dict]:
             items.append(item)
             continue
 
+        if ticket_source == "brain_bus_ceo":
+            # Hygiene / brief context — never Decide-now CRITICAL (P2-SNR-00).
+            items.append(
+                _queue_item(
+                    item_id=f"ticket-{ticket['id']}",
+                    queue_type="ceo_stub",
+                    title=ticket["title"],
+                    severity=QUEUE_SEVERITY["ceo_stub"],
+                    created_at=ticket["created_at"],
+                    payload={
+                        "ticket_id": ticket["id"],
+                        "description": ticket["description"],
+                    },
+                    source=ticket_source,
+                    escalation_reason="CEO stub hygiene (weekly brief) — not a Decide-now CRITICAL",
+                )
+            )
+            continue
+
         qtype = "wp_ticket"
         items.append(
             _queue_item(

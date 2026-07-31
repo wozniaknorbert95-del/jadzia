@@ -38,6 +38,26 @@ def test_queue_wp_ticket(temp_db):
     assert "wp_ticket" in types
 
 
+def test_queue_ceo_stub_is_info_not_decide_now(temp_db):
+    """P2-SNR-00: brain_bus_ceo must not own Decide-now CRITICAL."""
+    from agent.commander.queue import build_priorities_today, build_queue
+    from agent.db import db_commander_create_ticket
+
+    db_commander_create_ticket(
+        "[CEO stub] Priority · 2026-W31",
+        "Pending wp_ticket",
+        "brain_bus_ceo",
+        severity="MEDIUM",
+    )
+    stubs = [i for i in build_queue() if i.get("source") == "brain_bus_ceo"]
+    assert len(stubs) >= 1
+    assert stubs[0]["queue_type"] == "ceo_stub"
+    assert stubs[0]["severity"] == "INFO"
+    prio = build_priorities_today()
+    assert not any(p.get("source") == "brain_bus_ceo" for p in prio)
+    assert not any(p.get("queue_type") == "ceo_stub" for p in prio)
+
+
 def test_queue_publish_failed(temp_db):
     import json
 

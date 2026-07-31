@@ -99,6 +99,8 @@ def check_sla_escalations() -> int:
     escalated = 0
 
     for item in build_queue():
+        if item.get("severity") == "INFO":
+            continue
         if item.get("sla_status") != "red":
             continue
         key = f"escalated:{item['id']}"
