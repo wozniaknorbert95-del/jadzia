@@ -1,10 +1,7 @@
-# INC-SSH-RECOVERY-00 CLOSED · W4 LIVE
+# IDLE — W4 stamped · INC-SSH CLOSED
 
+**Tip:** `63b5e22` · cache `vhq-w40c`  
 **SSH:** `ssh_connection=ok` · worker `healthy`  
-**Cache:** `vhq-w40c`  
-**Prod:** https://api.zzpackage.flexgrafik.nl/commander/?v=vhq-w40c  
+**Stamp:** PASS (Founder delegated)
 
-**Founder stamp (5 min):** pack `docs/handoffs/2026-07-31-VF-VHQ-W4-ROOMS-OPERATIONS-FOUNDER-DOGFOOD.md`  
-**INC CLOSE:** `docs/handoffs/2026-07-31-INC-SSH-RECOVERY-00-CLOSE.md`  
-
-W5 parked. No MKT.
+**Next:** W5 only with explicit Founder GO. No MKT.

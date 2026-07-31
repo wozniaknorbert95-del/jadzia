@@ -30,4 +30,5 @@ runtime_ui_tip: "b6d0d36"
 | 11 | Legacy `?vhq_shell=legacy` loads | **PASS** (navigated) |
 | 12 | No Ads/Mollie from ops surfaces | **PASS** |
 
-Founder stamp pack: `docs/handoffs/2026-07-31-VF-VHQ-W4-ROOMS-OPERATIONS-FOUNDER-DOGFOOD.md` (`founder_stamp: pending`)
+Founder stamp pack: `docs/handoffs/2026-07-31-VF-VHQ-W4-ROOMS-OPERATIONS-FOUNDER-DOGFOOD.md` (`founder_stamp: PASS` · delegated 2026-07-31)  
+Re-dogfood @ `vhq-w40c` + Agent Ops PARTIAL / ssh ok: **PASS**
