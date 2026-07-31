@@ -31,6 +31,7 @@ Classify the request into one of the following paths:
 | Known fix, critical outage, trivial change | **HOTFIX** | `L2: /implement` | Fast-track to execution. |
 | DB Schema change (SQLite) | **MIGRATE** | `L2: /implement` + backup | Inline migration in `agent/db.py`; path `data/jadzia.db`. |
 | Push to Production | **DEPLOY** | `L3: /jadzia-test` $\to$ `L4: /jadzia-deploy` | Release pipeline. |
+| Scorecard S1–S8 / Decision Instrument / DI gate | **DI** | `/vhq-decision-instrument` | Scorecard SoT → 5/5 with tests. |
 | Production DOWN / Critical Failure | **CRITICAL** | `L-CRIT: /panic` | Emergency restoration. |
 | Perf issues, Slow queries, Latency | **PERF** | `L2: /profile` | Performance engineering. |
 | New Library / Package | **DEP** | `L1: /dep-audit` | Dependency gatekeeping. |

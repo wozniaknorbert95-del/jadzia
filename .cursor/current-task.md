@@ -1,10 +1,20 @@
-# DEPLOY_READY — VF-VHQ-P2-SNR-00
+# VF-VHQ-DI-S4-SNR-FINISH — next (scorecard → 5/5)
 
-**Tip:** `4c1ab56` · cache `vhq-w62a`  
-**Verify:** pytest 9/9 · local E2E PASS · `docs/handoffs/evidence-vhq-p2-snr/VERIFY-DEPLOY-READY.md`
+**Prod tip:** `7e34940` · cache `vhq-w62a` · P2-SNR DEPLOYED  
+**Scorecard SoT:** `docs/ops/VHQ-DECISION-INSTRUMENT-SCORECARD.md`  
+**Workflow:** `/vhq-decision-instrument`
 
-## Next
+## Queue (closeout)
 
-Napisz **`GO DEPLOY`** → VPS pull/restart + prod dogfood `?v=vhq-w62a`  
+1. **S4** SNR-FINISH — analytics_stale / noise &lt;10% ← ACTIVE  
+2. S5 NBA — ranked next action  
+3. S6 MONEY — money/risk narrative  
+4. S3 APPROVAL — L2 maturity → 5  
+5. S8 VERIFY — composite ≤30s  
+6. S7 LOOP — **blocked_sot** until Order Desk SoT  
 
-**STOP:** no MKT · no 3D · no Order LIVE  
+## Next agent
+
+BLAST S4 → tests → demote chronic data-quality from Decide-now → pytest → GO DEPLOY → dogfood → bump scorecard S4=5  
+
+**STOP:** no fake KPI · no Order LIVE · no 3D · no MKT  

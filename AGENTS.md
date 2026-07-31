@@ -6,6 +6,7 @@
 - **Knowledge SoT**: `docs/ops/KNOWLEDGE-SYSTEM-INDEX.md` (ECO-POLISH-01 CLOSE — Docs IA policy)
 - **Process catalog**: `docs/ops/PROCESS-CATALOG.md`
 - **Scorecard**: `docs/ops/SCORECARD-AI-OS-ZALICZENIE.md` — **#1–9 LIVE**
+- **VHQ Decision Instrument scorecard**: `docs/ops/VHQ-DECISION-INSTRUMENT-SCORECARD.md` · workflow `/vhq-decision-instrument`
 - **Canonical brain**: `brain.md` · **backlog**: `todo.json`
 - **Prod tip SoT:** VPS `/opt/jadzia` `git rev-parse --short HEAD`
 - **Deploy**: `.agents/workflows/jadzia-deploy.md`

@@ -8,6 +8,7 @@ Professional operating system for agents on jadzia-core: state-based pipeline, 1
 | :--- | :--- | :--- | :--- |
 | `vibe-init.md` | `/vibe-init` | L0 | Triage + context |
 | `jadzia-test.md` | `/jadzia-test` | L3 | Pytest + smoke |
+| `vhq-decision-instrument.md` | `/vhq-decision-instrument` | L3–L4 | Scorecard S1–S8 → 5/5 (tests + dogfood) |
 | `post-coding.md` | `/post-coding` | L3.5 | Validate→ship→evidence |
 | `jadzia-deploy.md` | `/jadzia-deploy` | L4 | VPS release (or pack if no GO) |
 | `handoff.md` | `/handoff` | L4 | State sync |
@@ -19,6 +20,12 @@ Non-golden workflows (blast, blueprint, migrate, debug, …) live in `.agents/ar
 
 ```text
 L0 TRIAGE → L3 VALIDATE → L3.5 POST-CODING → L4 HANDOFF
+```
+
+**Decision Instrument program** (when `todo.closeout_queue` has `VF-VHQ-DI-*`):
+
+```text
+L0 → /vhq-decision-instrument (one S* gate) → /jadzia-test → /post-coding → GO DEPLOY → dogfood → scorecard bump → next S*
 ```
 
 Skipping stages only for `HOTFIX` / `PANIC`. During AI OS closeout, `/post-coding` may include deploy when `standing_go_closeout` is true.

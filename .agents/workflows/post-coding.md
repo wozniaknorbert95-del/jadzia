@@ -24,6 +24,7 @@ Deploy is **inside** this stage when `todo.standing_go_closeout === true` or GO 
 ### 2. Validate
 
 - Scoped pytest / smoke for touched surface.
+- If gate is `VF-VHQ-DI-*`: follow `/vhq-decision-instrument` test matrix + scorecard DoD; do **not** bump scorecard without dogfood evidence.
 - FAIL → `/debug`, do **not** ship.
 
 ### 3. Ship

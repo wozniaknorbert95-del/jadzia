@@ -3,18 +3,21 @@ status: "[CLOSED]"
 title: "VF-VHQ-P2-SNR-00 — Wave 1 SNR CLOSE"
 updated: "2026-07-31"
 gate: "VF-VHQ-P2-SNR-00"
-verdict: "CLOSED PASS · DEPLOY_READY"
+verdict: "CLOSED+DEPLOY PASS"
 tip: "4c1ab56"
+docs_tip: "7e34940"
 cache_asset: "vhq-w62a"
 evidence_dir: "docs/handoffs/evidence-vhq-p2-snr/"
-deploy: "DEPLOY_READY — await GO DEPLOY"
+prod_evidence: "docs/handoffs/evidence-vhq-p2-snr-prod/"
+deploy_close: "docs/handoffs/2026-07-31-DEPLOY-VHQ-P2-SNR-00-CLOSE.md"
+deploy: "DONE · 7e34940 · prod dogfood PASS"
 ---
 
 # VF-VHQ-P2-SNR-00 — CLOSE
 
 ## Verdict
 
-**CLOSED PASS · DEPLOY_READY.** Tip **`4c1ab56`** · cache **`vhq-w62a`**. Re-verify 2026-07-31: pytest 9/9 + local E2E PASS. **VPS only after `GO DEPLOY`.**
+**CLOSED+DEPLOY PASS.** Tip **`4c1ab56`** / docs **`7e34940`** · cache **`vhq-w62a`**. Prod dogfood D3–D6 PASS.
 
 ## Delivered
 
@@ -34,13 +37,12 @@ deploy: "DEPLOY_READY — await GO DEPLOY"
 
 ## Explicit non-actions
 
-- No VPS deploy until exact `GO DEPLOY`  
-- No W2 NBA · W3 Order · 3D · Ads · Mollie · MKT  
+- No W2 NBA in this gate · Order LIVE · 3D · Ads · Mollie · MKT  
 - Stub publisher / DB TTL unchanged  
 
 ## Next
 
-1. Founder: **`GO DEPLOY`** → tip `4c1ab56` / `?v=vhq-w62a` · prod dogfood D3–D6  
-2. Else idle · W2 only with new GO  
+Scorecard program: `docs/ops/VHQ-DECISION-INSTRUMENT-SCORECARD.md`  
+Next gate: **`VF-VHQ-DI-S4-SNR-FINISH`** (analytics_stale out of Decide-now)
 
-CLOSE_VERDICT: **CLOSED PASS · DEPLOY_READY** · 3D **PARKED**
+CLOSE_VERDICT: **CLOSED+DEPLOY PASS** · 3D **PARKED**
