@@ -5,6 +5,42 @@ ROOT = Path(__file__).resolve().parents[2]
 APP = (ROOT / "commander-ui" / "app.js").read_text(encoding="utf-8")
 HTML = (ROOT / "commander-ui" / "index.html").read_text(encoding="utf-8")
 
+EXPECTED_FIRM_STAGES = {
+    "mission-control": "direct",
+    "approval-vault": "direct",
+    "ai-agent-health": "direct",
+    "boardroom": "direct",
+    "analytics-finance": "direct",
+    "compliance-audit": "direct",
+    "knowledge-library": "direct",
+    "data-ai-lab": "direct",
+    "vcms-os-zone": "direct",
+    "reception": "demand",
+    "sales-room": "sell",
+    "wizard-quote": "sell",
+    "marketing-studio": "demand",
+    "client-support": "sell",
+    "design-studio": "sell",
+    "design-agent-probe": "direct",
+    "order-desk": "deliver",
+    "production-control": "deliver",
+    "preflight-quality": "deliver",
+    "dispatch-returns": "deliver",
+    "supplier-dock": "deliver",
+    "asset-warehouse": "deliver",
+    "partner-production-network": "deliver",
+}
+
+DELIVER_UNLOCK_ROOMS = [
+    "order-desk",
+    "production-control",
+    "preflight-quality",
+    "dispatch-returns",
+    "supplier-dock",
+    "asset-warehouse",
+    "partner-production-network",
+]
+
 
 def test_esc_ladder_does_not_parent_to_console():
     # After fix: vhqEscLadder must not call vhqGoConsole when on MC
@@ -29,24 +65,29 @@ def test_tools_cta_not_operations_console_label():
     assert "Tools / Sign in" in HTML or "Narzędzia / Logowanie" in HTML
 
 
-def test_firm_stage_on_core_rooms():
-    for room_id, stage in [
-        ("marketing-studio", "demand"),
-        ("sales-room", "sell"),
-        ("wizard-quote", "sell"),
-        ("order-desk", "deliver"),
-        ("mission-control", "direct"),
-    ]:
+def _room_chunk(room_id: str, span: int = 1400) -> str:
+    idx = APP.index(f'"{room_id}":')
+    return APP[idx : idx + span]
+
+
+def test_firm_stage_on_room_manifest():
+    for room_id, stage in EXPECTED_FIRM_STAGES.items():
         assert f'"{room_id}"' in APP
-        # room block contains firmStage
-        idx = APP.index(f'"{room_id}":')
-        chunk = APP[idx : idx + 800]
+        chunk = _room_chunk(room_id)
         assert f'firmStage: "{stage}"' in chunk
+        assert "firmRole" in chunk
 
 
-def test_order_desk_still_parked_ev_w2_010():
-    idx = APP.index('"order-desk":')
-    chunk = APP[idx : idx + 1200]
+def test_room_panel_renders_firm_role_and_unlock_hint_copy():
+    assert 'vhqEl("p", "vhq-firm-role", room.firmRole)' in APP
+    assert 'vhqEl("p", "hint vhq-unlock-hint", room.unlockHint)' in APP
+
+
+def test_deliver_rooms_keep_unlock_hints_without_fake_live_claims():
+    for room_id in DELIVER_UNLOCK_ROOMS:
+        chunk = _room_chunk(room_id)
+        assert "unlockHint" in chunk
+    chunk = _room_chunk("order-desk")
     assert 'status: "PARKED"' in chunk
     assert "EV-W2-010" in chunk
     assert "unlockHint" in chunk
