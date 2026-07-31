@@ -22,14 +22,14 @@ Wymiary zależne od brakującego SoT (Order Desk) nie dostają fake PASS — zos
 |----|--------|--------|-------------------|---------------------|-------------|
 | S1 | Trust / honesty | 5 | 5 | **5** | Regression only |
 | S2 | Escape / safety | 5 | 5 | **5** | Regression only |
-| S3 | Approval discipline | 5 | 4.5 | **4.5** | `VF-VHQ-DI-S3-APPROVAL` ← ACTIVE |
+| S3 | Approval discipline | 5 | 4.5 | **5** (S3 CLOSE 2026-07-31) | — |
 | S4 | Signal-to-noise | 5 | 1.5 | **5** (S4 CLOSE 2026-07-31) | — |
 | S5 | Ranked next action | 5 | 2 | **5** (S5 CLOSE 2026-07-31) | — |
 | S6 | Money/risk narrative | 5 | 2 | **5** (S6 CLOSE 2026-07-31) | — |
 | S7 | Closed commercial loop | 5 | 1.5 | **1.5** | `VF-VHQ-DI-S7-LOOP` (needs Order SoT) |
-| S8 | ≤30s decision quality | 5 | 2.5 | **~4.5** | Composite — closes when S4–S6 PASS + S8 dogfood |
+| S8 | ≤30s decision quality | 5 | 2.5 | **~4.7** | `VF-VHQ-DI-S8-VERIFY` ← ACTIVE |
 
-**Prod S6 evidence:** Money/risk PARTIAL · leads 1/0/1 · top risk Sales CTA · EV-W2-010 · no euro · tip `0d1407f` · `?v=vhq-w64a`
+**Prod S3 evidence:** L2 peer sync · Vault strip+CTA · L3 STOP 0 Approve · tip `2623ae2` · `?v=vhq-w65a`
 
 ---
 
@@ -51,12 +51,12 @@ Wymiary zależne od brakującego SoT (Order Desk) nie dostają fake PASS — zos
 
 ### S3 Approval discipline — target 5
 
-| # | DoD |
-|---|-----|
-| S3.1 | L2 companion approve leaves UI consistent with parent state (no silent lie) OR honest PARTIAL banner with evidence ID |
-| S3.2 | L3/L4: 0 Approve buttons; STOP copy visible |
-| S3.3 | Vault strip: pending count matches typed bus; CTA opens Vault |
-| S3.4 | Unit/API tests for L2/L3 matrix green |
+| # | DoD | Status |
+|---|-----|--------|
+| S3.1 | L2 companion/parent approve syncs peer state (no silent pending lie) | DONE |
+| S3.2 | L3/L4: 0 Approve buttons; STOP copy visible | DONE |
+| S3.3 | Vault strip: pending count matches typed bus; CTA opens Vault | DONE |
+| S3.4 | Unit/API tests for L2/L3 matrix + peer sync | DONE |
 
 **STOP:** no silent L3 execute · no Ads/Mollie from Approve.
 
