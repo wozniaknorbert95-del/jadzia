@@ -2825,7 +2825,7 @@ function vhqUpdateSessionBanner() {
     banner.hidden = false;
     banner.dataset.state = "nosession";
     banner.textContent =
-      "Session required — Sign in / Open Operations Console to load priorities and queue. No fake KPI.";
+      "Session required — Sign in / Tools to load priorities and queue. No fake KPI.";
     if (signIn) signIn.hidden = false;
     return;
   }
@@ -3819,7 +3819,7 @@ function vhqUpdateWorkSessionBanner() {
     banner.hidden = false;
     banner.dataset.state = "nosession";
     banner.textContent =
-      "Session required — Sign in / Open Operations Console to load Sales queue. No fake leads.";
+      "Session required — Sign in / Tools to load Sales queue. No fake leads.";
     return;
   }
   banner.hidden = true;

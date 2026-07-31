@@ -10,10 +10,10 @@ lanes_appendix: "docs/ops/PROGRAM-LANES-SOT.md"
 scorecard: "docs/ops/VHQ-DECISION-INSTRUMENT-SCORECARD.md"
 runtime_changes_allowed: false
 budget_freeze_until: "2026-08-06"
-prod_tip: "runtime adafd83 / FINAL in flight"
-runtime_commit: "adafd83"
-cache_asset: "vhq-w67a (local PRECLOSE · prod pending GO DEPLOY)"
-active_gate_pointer: "VF-VHQ-FINAL-00"
+prod_tip: "FINAL DEPLOY PASS · cache vhq-w67a · seal FINISHED_PARTIAL_LOOP"
+runtime_commit: "prod tip of record via todo.gate_machine.prod_tip"
+cache_asset: "vhq-w67a"
+active_gate_pointer: null
 inspiration_only: "Talk&Buy store — spatial UX inspiration; no copy"
 ---
 

@@ -1,13 +1,14 @@
-# VF-VHQ-FINAL-00 — PRECLOSE · ready_for_go_deploy
+# IDLE — VF-VHQ-FINAL-00 DEPLOY PASS
 
-**Cache:** `vhq-w67a` · pytest 17/17  
-**PRECLOSE:** `docs/handoffs/2026-07-31-VF-VHQ-FINAL-00-PRECLOSE.md`
+**Seal:** `FINISHED_PARTIAL_LOOP` · cache `vhq-w67a`  
+**CLOSE:** `docs/handoffs/2026-07-31-DEPLOY-VHQ-FINAL-00-CLOSE.md`  
+**Prod:** https://api.zzpackage.flexgrafik.nl/commander/?v=vhq-w67a
 
-## DONE locally
-W0–W3 · F7 Firm Chain only · Finish Cards · Deliver honesty · W3 polish
+## ACTIVE
+`active_gate` = null · observe-only
 
-## NEXT HUMAN
-`GO DEPLOY VF-VHQ-FINAL-00`
+## NEXT (human)
+COM-AI-50 resume (ACCEPT copy) · Order Desk SoT osobno · Ads freeze do 2026-08-06
 
 ## STOP
-Order LIVE · fake S7 · Ads · deploy bez GO · stage dirty `MKT/`
+Order LIVE · S7 fake · Ads · Mollie · deploy bez GO · stage dirty `MKT/`
