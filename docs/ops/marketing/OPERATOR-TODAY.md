@@ -15,7 +15,10 @@ icp_role_week: "installateur"
 |-----|------|
 | Action Plan | [`../DEMAND-OS-ACTION-PLAN.md`](../DEMAND-OS-ACTION-PLAN.md) **ACCEPTED** |
 | TODO | [`../DEMAND-OS-TODO.md`](../DEMAND-OS-TODO.md) · next human: **W1-03** |
-| Shoot plan | [`../demand-os/set-now/TT-SHOOT-PLAN-W1.md`](../demand-os/set-now/TT-SHOOT-PLAN-W1.md) |
+| GO DAY 08-02 | [`../demand-os/set-now/GO-DAY-2026-08-02.md`](../demand-os/set-now/GO-DAY-2026-08-02.md) |
+| Captions NL | [`../demand-os/set-now/TT-CAPTIONS-W1.md`](../demand-os/set-now/TT-CAPTIONS-W1.md) |
+| Reply bank | [`../demand-os/set-now/REPLY-BANK-NL.md`](../demand-os/set-now/REPLY-BANK-NL.md) |
+| Kalendarz W32 | [`../demand-os/set-now/WEEK-CALENDAR-W32.md`](../demand-os/set-now/WEEK-CALENDAR-W32.md) |
 | STL / Sales | [`../demand-os/set-now/SALES-STL-OPS.md`](../demand-os/set-now/SALES-STL-OPS.md) |
 | Money Check | [`../demand-os/set-now/MONEY-CHECK-OPS.md`](../demand-os/set-now/MONEY-CHECK-OPS.md) · Pon **2026-08-03** |
 | Ledger | [`../demand-os/set-now/LEDGER.csv`](../demand-os/set-now/LEDGER.csv) |

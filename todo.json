@@ -1,6 +1,6 @@
 {
   "project": "Jadzia-Core",
-  "last_updated": "2026-08-01 (DEMAND-OS F0 prep agent COMPLETE · wait GO TIKTOK ORGANIC ≥2026-08-02 · NO deploy)",
+  "last_updated": "2026-08-01 (DEMAND-OS continuous prep · captions/GO-DAY/ledger-ops · next human 2026-08-02 · NO deploy)",
   "status": "active",
   "plan": "docs/ops/DEMAND-OS-ACTION-PLAN.md",
   "active_gate": "DEMAND-OS-SET-NOW-00",
@@ -9,7 +9,7 @@
   "todo_schema": "todo.schema.json",
   "gate_machine": {
     "active": "DEMAND-OS-SET-NOW-00",
-    "active_state": "demand_os_f0_prep_complete_wait_organic_publish",
+    "active_state": "demand_os_continuous_prep_go_day_2026_08_02",
     "vhq_final": "completed · DEPLOY PASS · cache vhq-w67a · dashboard_seal FINISHED_PARTIAL_LOOP",
     "vhq_final_preclose": "docs/handoffs/2026-07-31-VF-VHQ-FINAL-00-PRECLOSE.md",
     "vhq_final_deploy": "docs/handoffs/2026-07-31-DEPLOY-VHQ-FINAL-00-CLOSE.md",

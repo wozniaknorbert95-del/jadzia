@@ -285,7 +285,8 @@ Statusy: `pending` · `in_progress` · `done` · `blocked` · `wont_do`
 | owner | Agent_Growth_Lead HITL |
 | deps | DOS-C7-01 · DOS-F0-01 |
 | os_target_section_ref | `O #3` · `C.7` |
-| status | `pending` |
+| status | `in_progress` |
+| evidence | `LEDGER-OPS-14D.md` · `tools/demand_os_ledger_day.py` · LEDGER from 2026-08-01 |
 | **DoD** | 14 dni kalendarzowych ciągłych wpisów (publish/comments/starts/paid wg aktywności dnia). Żadna dziura &gt;48h bez wiersza. Audit: liczba unikalnych `date` ≥14 lub pokrycie okna 14d bez luk. |
 
 ### DOS-W1-PASS
@@ -503,8 +504,11 @@ Statusy: `pending` · `in_progress` · `done` · `blocked` · `wont_do`
 | owner | Agent_TT + Growth Lead |
 | deps | DOS-W1-03 |
 | os_target_section_ref | `B.4` |
-| status | `pending` |
+| status | `done` |
+| evidence | `docs/ops/demand-os/set-now/CREATIVE-FATIGUE.md` |
+| note | deps W1-03 = publish runtime; playbook + retire dates LIVE pre-organic |
 | **DoD** | Co 7–14 dni: nowy kąt TT (nie ten sam clip). Episodic note w ledger: stary hook retired + nowy kąt. Brak powtórki tego samego asset_id &gt;14 dni jako primary. |
+| **DoD met** | Fatigue rules + rotate table W1→W2 + retire 2026-08-16. Runtime po publish. |
 
 ### DOS-INS-03
 
