@@ -245,8 +245,8 @@ Statusy: `pending` · `in_progress` · `done` · `blocked` · `wont_do`
 | deps | DOS-C3-01 · DOS-C5-01 · DOS-W1-02 |
 | os_target_section_ref | `Agent_TT` · `J Wave1` · `C.3` |
 | status | `in_progress` |
-| evidence_prep | `GO-DAY-TODAY.md` · captions · Validator PASS publish_intended=Y · GO 2026-08-01 |
-| note | Founder GO: organic start **today** (not 2026-08-02). Awaiting `PUBLISHED tt_w31_install_01` then ≥2 more this week. |
+| evidence | `https://www.tiktok.com/@flexgrafik.nl/video/7669024279140388118` · LEDGER publish=Y |
+| note | **1/3 published** 2026-08-01. Need ≥2 more this week (install_02 · install_03). Privacy may be Only me until TT review clears → set Everyone. |
 | **DoD** | ≥3 TT publish / tydzień; każdy z dokładnie 1 CTA Wizard+UTM; `asset_id` w ledger; Validator PASS przed publish. Mierzalne w ledger `publish_Y/N` + `utm_link`. |
 
 ### DOS-W1-04
