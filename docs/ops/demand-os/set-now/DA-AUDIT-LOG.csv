@@ -1,0 +1,2 @@
+date,lead_id,source,t_lead_iso,t_wizard_push_iso,delta_h,wizard_pushed,offerte_only,verdict,notes
+2026-08-01,baseline_none,design_agent,,,,"N","N",PASS,No DA leads in window · DOS-INS-03 audit LIVE · dual cash = 0 FAIL

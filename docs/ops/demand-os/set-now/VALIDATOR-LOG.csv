@@ -1,0 +1,4 @@
+date,asset_id,channel,icp_role,decision,fail_rules,utm_ok,publish_intended,notes
+2026-07-31,tt_w31_install_01,tiktok,installateur,PASS,,Y,N,DRY-RUN draft shoot plan · 1 CTA Wizard+UTM · no HQ · Ads OFF · DOS-W1-05
+2026-07-31,tt_w31_install_02,tiktok,installateur,PASS,,Y,N,DRY-RUN planned asset · same ICP · new angle 50m · not shot yet
+2026-07-31,tt_w31_install_03,tiktok,installateur,PASS,,Y,N,DRY-RUN planned asset · Premium Vakman angle · not shot yet

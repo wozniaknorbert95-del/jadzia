@@ -1,0 +1,3 @@
+week,date,wizard_starts_utm_sum,paid_sum,top_1_hook_asset_id,validator_fail_count,compliance_pct,kill_vanity_decision,one_improvement,notes
+2026-W31,2026-08-01,0,0,tt_w31_install_01,0,100,NO dashboard build · NO HQ polish · NO Ads · NO Wave2 · NO ops desk,Validator-log before every publish (DOS-W1-05 LIVE),BASELINE pre-organic · DOS-W1-01 · organic starts 2026-08-02 · next Pon Money Check 2026-08-03
+2026-W32,2026-08-03,,,,,,,,"SLOT — fill Pon after first organic days · starts/paid/top hook/FAIL from LEDGER+VALIDATOR-LOG"

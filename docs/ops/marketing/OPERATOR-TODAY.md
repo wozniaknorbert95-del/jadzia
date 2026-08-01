@@ -1,31 +1,49 @@
 ---
-status: "[ACTIVE]"
-title: "Marketing OS — START TUTAJ (operator)"
-updated: "2026-07-31 (VF-VHQ-FINAL-00 DEPLOY PASS)"
+status: "[ACTIVE · F0 PREP DONE · GO TIKTOK ≥2026-08-02]"
+title: "Marketing OS — START TUTAJ"
+updated: "2026-08-01 (F0 prep complete · NO deploy · NO dashboard)"
 budget_freeze_until: "2026-08-06"
+icp_role_week: "installateur"
 ---
 
-# START TUTAJ — jedna ścieżka (ADHD)
+# START — Demand OS
 
-> **Ster:** `todo.json` · **Produkt:** `docs/ops/FLEXGRAFIK-VIRTUAL-HQ-PROGRAM.md`
+**NIE MA KLIENTÓW.** Agent prep Wave1 = **DONE**. Teraz Ty: publish.  
+`GO TIKTOK ORGANIC` ≥**2026-08-02** · **DOS-W1-03**.
 
-**Prod VHQ:** https://api.zzpackage.flexgrafik.nl/commander/?v=vhq-w67a  
-**Seal:** Director Dashboard **FINISHED_PARTIAL_LOOP** (Firm Chain only)  
-**Active gate:** `null`  
-**STOP:** Organic przed 2026-08-02 · Ads freeze · fake Order LIVE · auto deploy · stage dirty `MKT/`
+| SoT | Link |
+|-----|------|
+| Action Plan | [`../DEMAND-OS-ACTION-PLAN.md`](../DEMAND-OS-ACTION-PLAN.md) **ACCEPTED** |
+| TODO | [`../DEMAND-OS-TODO.md`](../DEMAND-OS-TODO.md) · next human: **W1-03** |
+| Shoot plan | [`../demand-os/set-now/TT-SHOOT-PLAN-W1.md`](../demand-os/set-now/TT-SHOOT-PLAN-W1.md) |
+| STL / Sales | [`../demand-os/set-now/SALES-STL-OPS.md`](../demand-os/set-now/SALES-STL-OPS.md) |
+| Money Check | [`../demand-os/set-now/MONEY-CHECK-OPS.md`](../demand-os/set-now/MONEY-CHECK-OPS.md) · Pon **2026-08-03** |
+| Ledger | [`../demand-os/set-now/LEDGER.csv`](../demand-os/set-now/LEDGER.csv) |
+| State | [`../demand-os/STATE.md`](../demand-os/STATE.md) |
 
-| Co | Status |
-|----|--------|
-| **VHQ FINAL** | **DEPLOY PASS** · vhq-w67a |
-| **COM-AI-50** | pack ready · resume po Founder ACCEPT |
-| **S7 / Order Desk** | **PARKED** EV-W2-010 |
-| **Budget freeze** | do **2026-08-06** · €0 paid |
+## UTM (kopiuj)
 
-## Twój ruch
+```
+https://zzpackage.flexgrafik.nl/wizard/?utm_source=tiktok&utm_medium=organic&utm_campaign=icp_installateur&utm_content=tt_w31_install_01
+```
 
-**Kolejna sesja (agent):** `VF-ORDER-DESK-SOT-00` discovery — brief `docs/handoffs/2026-07-31-SESSION-NEXT-ORDER-DESK-SOT.md`  
+## Dziś (do 2026-08-02) — prep only
 
-**HITL równolegle (10 min):** COM-AI ACCEPT/EDIT copy w `COM-AI-50-READY-PACK.md` · organic ≥2026-08-02  
+1. Kręć asset `tt_w31_install_01` (installateur · witte bus) — **nie** Ads
+2. Validator drill na draftcie ([`VALIDATOR-CHECKLIST.md`](../demand-os/set-now/VALIDATOR-CHECKLIST.md))
+3. STL: trzymaj telefon &lt;15 min ([`STL-CHECKLIST.md`](../demand-os/set-now/STL-CHECKLIST.md))
+4. Opcjonalnie: wpisz ≤5 grup FB w [`FB-ALLOWLIST.md`](../demand-os/set-now/FB-ALLOWLIST.md)
 
-**STOP:** Order LIVE bez SoT · Ads w freeze · fake S7  
+## Od 2026-08-02
 
+`GO TIKTOK ORGANIC` · ≥3 publish/tydz · ledger daily · Money Check Pon · Wave1 tylko 5 ról
+
+## Verify
+
+```bash
+python tools/demand_os_phase0_check.py
+```
+
+## STOP
+
+Ops desk · HQ · multi-CTA · 15 agentów · offerte-koniec · Ads do 2026-08-06 · kod produktu przed W1 PASS
