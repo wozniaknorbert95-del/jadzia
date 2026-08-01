@@ -1,0 +1,8 @@
+asset_id,channel,icp_role,status,utm_content,caption_file,validator,retire_after,notes
+tt_w31_install_01,tiktok,installateur,ready_to_publish,tt_w31_install_01,TT-CAPTIONS-W1.md,PASS_dryrun,2026-08-16,primary W32 #1
+tt_w31_install_02,tiktok,installateur,ready_to_shoot,tt_w31_install_02,TT-CAPTIONS-W1.md,PASS_dryrun,2026-08-16,W32 #2 50m
+tt_w31_install_03,tiktok,installateur,ready_to_shoot,tt_w31_install_03,TT-CAPTIONS-W1.md,PASS_dryrun,2026-08-16,W32 #3 Premium
+blog_w31_install_01,blog,installateur,draft_ready,blog_w31_install_01,BLOG-DRAFT-W1-NL.md,pending_hitl,,Wave3 cadence
+wa_w31_install_01,whatsapp,installateur,live_template,wa_w31_install_01,REPLY-BANK-NL.md,n/a,,STL template
+fb_w31_install_01,facebook,installateur,ready_template,fb_w31_install_01,REPLY-BANK-NL.md,n/a,,FB hunt W2
+da_w31_install_01,design_agent,installateur,live_template,da_w31_install_01,DA-WIZARD-NL.md,n/a,,kill dual cash
