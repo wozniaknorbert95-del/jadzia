@@ -17,7 +17,8 @@ last_result: "PASS"
 | organic_from | `2026-08-02` |
 | ads_freeze_until | `2026-08-06` |
 | build_unlocked | **false** |
-| deploy | **STOP** bez GO |
+| git_remote | **PUSHED** `origin/master` @ `c7b41b6` |
+| deploy_vps | **STOP** bez GO DEPLOY |
 | ledger_2w | `in_progress` |
 | next_money_check | `2026-08-03` |
 

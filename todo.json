@@ -1,6 +1,6 @@
 {
   "project": "Jadzia-Core",
-  "last_updated": "2026-08-01 (DEMAND-OS continuous prep · captions/GO-DAY/ledger-ops · next human 2026-08-02 · NO deploy)",
+  "last_updated": "2026-08-01 (DEMAND-OS pushed origin c7b41b6 · next human GO-DAY 2026-08-02 · NO VPS deploy)",
   "status": "active",
   "plan": "docs/ops/DEMAND-OS-ACTION-PLAN.md",
   "active_gate": "DEMAND-OS-SET-NOW-00",
