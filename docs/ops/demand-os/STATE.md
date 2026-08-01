@@ -1,40 +1,30 @@
 ---
-status: "[ACTIVE · CONTINUOUS PREP]"
+status: "[ACTIVE · GO TIKTOK ORGANIC LIVE]"
 title: "Demand OS — execution state machine"
 updated: "2026-08-01"
-gate: "DEMAND-OS-SET-NOW-00"
-last_step: "captions+reply+fatigue+ledger-ops+GO-DAY"
-last_result: "PASS"
+gate: "DEMAND-OS-F0-ORGANIC-00"
+last_step: "GO TIKTOK ORGANIC TODAY"
+last_result: "ARMED"
 ---
 
 # Demand OS — STATE
 
-**Nie zatrzymuj się na „wait”.** Agent produkuje prep aż organic; potem wspiera publish/ledger.
-
 | Pole | Wartość |
 |------|---------|
-| phase | `F0_PREP_PLUS` — continuous content ops |
-| organic_from | `2026-08-02` |
+| phase | `F0_ORGANIC_LIVE` |
+| organic_from | `2026-08-01` (**GO TODAY**) |
+| command | `GO TIKTOK ORGANIC` **ACTIVE** |
 | ads_freeze_until | `2026-08-06` |
 | build_unlocked | **false** |
-| git_remote | **PUSHED** `origin/master` @ `c7b41b6` |
-| deploy_vps | **STOP** bez GO DEPLOY |
-| ledger_2w | `in_progress` |
-| next_money_check | `2026-08-03` |
+| deploy_vps | **STOP** |
+| next_human | Publish **tt_w31_install_01** NOW → reply `PUBLISHED tt_w31_install_01` |
+| next_agent | On `PUBLISHED…`: set LEDGER publish=Y · Validator publish_intended=Y · advance W1-03 |
 
 ## next_action
 
 ```text
-IF today < 2026-08-02:
-  → keep enriching set-now pack (captions/replies/calendar) · ledger hygiene
-  → commit docs often · NO deploy · NO product code
-ELIF today >= 2026-08-02:
-  → execute GO-DAY checklist support · DOS-W1-03
-  → daily: python tools/demand_os_ledger_day.py + Validator rows
-ELIF DOS-W1-PASS:
-  → park GO BUILD demand-f1 (human)
+HUMAN NOW: open GO-DAY-TODAY.md → publish tt_w31_install_01
+AGENT: wait for PUBLISHED signal OR keep supporting captions #2/#3
+THEN: ledger daily · ≥3 TT this week · Money Check 2026-08-03
+NO: deploy · dashboard · Ads · code until W1-PASS
 ```
-
-## ready_for_human (nie blokuje agenta)
-
-`GO-DAY-2026-08-02.md` · publish TT · potem ledger 14d

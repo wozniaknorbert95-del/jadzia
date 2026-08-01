@@ -10,7 +10,7 @@ os_target: "docs/ops/SYSTEM-FIRM-OPERATING-SYSTEM-TARGET.md §C"
 
 | Plik | TODO | OS |
 |------|------|-----|
-| [`GO-DAY-2026-08-02.md`](./GO-DAY-2026-08-02.md) | **DOS-W1-03** | O #2 |
+| [`GO-DAY-TODAY.md`](./GO-DAY-TODAY.md) | **DOS-W1-03 LIVE DZIŚ** | O #2 |
 | [`TT-CAPTIONS-W1.md`](./TT-CAPTIONS-W1.md) | W1-03 | Agent_TT |
 | [`TT-SHOOT-PLAN-W1.md`](./TT-SHOOT-PLAN-W1.md) | W1-03 | Agent_TT |
 | [`REPLY-BANK-NL.md`](./REPLY-BANK-NL.md) | W1-03/04 | B.5/B.6 |

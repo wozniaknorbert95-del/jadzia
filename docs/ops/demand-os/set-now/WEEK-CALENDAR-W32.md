@@ -10,8 +10,8 @@ week: "2026-W32"
 
 | Dzień | Data | Praca | Asset / note |
 |-------|------|-------|--------------|
-| Sob | 08-01 | Prep DONE | captions · STL · Money Check baseline |
-| Niedz | 08-02 | **GO TIKTOK ORGANIC** | publish tt_w31_install_01 |
+| Sob | 08-01 | **GO TIKTOK ORGANIC DZIŚ** | publish tt_w31_install_01 NOW |
+| Niedz | 08-02 | TT #2 / engage | tt_w31_install_02 |
 | Pon | 08-03 | Money Check + episodic | MONEY-CHECK-LOG W32 |
 | Wt | 08-04 | ICP brief refresh / shoot 02 | tt_w31_install_02 |
 | Śr | 08-05 | TT publish #2 | install_02 |

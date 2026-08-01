@@ -244,8 +244,9 @@ Statusy: `pending` · `in_progress` · `done` · `blocked` · `wont_do`
 | owner | Agent_TT HITL |
 | deps | DOS-C3-01 · DOS-C5-01 · DOS-W1-02 |
 | os_target_section_ref | `Agent_TT` · `J Wave1` · `C.3` |
-| status | `ready_for_human` |
-| evidence_prep | `docs/ops/demand-os/set-now/TT-SHOOT-PLAN-W1.md` · Validator dry-run PASS |
+| status | `in_progress` |
+| evidence_prep | `GO-DAY-TODAY.md` · captions · Validator PASS publish_intended=Y · GO 2026-08-01 |
+| note | Founder GO: organic start **today** (not 2026-08-02). Awaiting `PUBLISHED tt_w31_install_01` then ≥2 more this week. |
 | **DoD** | ≥3 TT publish / tydzień; każdy z dokładnie 1 CTA Wizard+UTM; `asset_id` w ledger; Validator PASS przed publish. Mierzalne w ledger `publish_Y/N` + `utm_link`. |
 
 ### DOS-W1-04

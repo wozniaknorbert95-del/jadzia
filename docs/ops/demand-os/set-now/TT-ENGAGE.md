@@ -15,4 +15,4 @@ set_at: "2026-07-31"
 | CTA | dokładnie **1** (Wizard) — poza osobnym postem gry |
 | Zakaz | follow/unfollow masowy · HQ screenshot · multi-CTA · Ads w freeze |
 
-Publish start: ≥`2026-08-02` (`GO TIKTOK ORGANIC`).
+Publish start: **`2026-08-01` LIVE** (`GO TIKTOK ORGANIC` — Founder override).

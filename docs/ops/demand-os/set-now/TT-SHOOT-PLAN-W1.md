@@ -3,7 +3,7 @@ todo: DOS-W1-03 (prep)
 os_target_section_ref: "Agent_TT · C.3 · B.3"
 status: ready_for_human
 set_at: "2026-07-31"
-publish_after: "2026-08-02"
+publish_after: "2026-08-01"
 ---
 
 # TT Shoot Plan — W1 installateur
@@ -29,7 +29,7 @@ https://zzpackage.flexgrafik.nl/wizard/?utm_source=tiktok&utm_medium=organic&utm
 2. Wiersz w `LEDGER.csv` z `publish_Y/N=Y` po publikacji  
 3. Ads = OFF  
 
-## Cadence W1 (od 2026-08-02)
+## Cadence W1 (od 2026-08-01 GO)
 
 | # | asset_id | kąt |
 |---|----------|-----|
