@@ -2162,6 +2162,12 @@ body.vhq-open.vhq-mode-work .vhq-shell__body {
   border: 1px solid var(--warn, #e6a700);
 }
 
+.demand-desk-banner--prominent {
+  font-weight: 600;
+  margin: 0.5rem 0 0.75rem;
+  padding: 0.65rem 0.85rem;
+}
+
 .demand-desk-banner--err {
   background: rgba(220, 80, 80, 0.12);
   border: 1px solid var(--err, #dc5050);
@@ -2199,6 +2205,11 @@ body.vhq-open.vhq-mode-work .vhq-shell__body {
   font-size: 0.95rem;
   font-weight: 500;
   opacity: 0.9;
+}
+
+.demand-desk-stl--breach {
+  color: var(--warn, #e6a700);
+  font-weight: 600;
 }
 
 .demand-desk-dual-cash--warn {

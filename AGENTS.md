@@ -15,7 +15,7 @@
 - **Deploy**: `.agents/workflows/jadzia-deploy.md`
 - **Post-coding**: `.agents/workflows/post-coding.md` (fresh GO for VPS)
 - **Latest handoffs**: `docs/handoffs/` (≤15 rolling; MBA archived)
-- **Marketing OS**: fazy = `PROGRAM-PHASES.md` · **Etap 5b agent COMPLETE** (14/15 · Dowódca §8 prod) · Desk contract **SEALED v2.1.1** · marketing **PARKED_LAST** · Ads/VPS STOP
+- **Marketing OS**: fazy = `PROGRAM-PHASES.md` · **Etap 5f MASTER TODO ACTIVE** · SoT = `docs/ops/demand-os/MASTER-TODO-5F.md` · loop = `/demand-os-master-loop` · Desk contract **SEALED v2.1.1** · marketing **PARKED_LAST** · Ads/VPS STOP
 
 ## MBA
 

@@ -1,24 +1,24 @@
 ---
-status: "[ETAP 5b HARDENING · marketing PARKED_LAST]"
+status: "[ETAP 5f MASTER TODO · marketing PARKED_LAST]"
 title: "Marketing OS — START TUTAJ"
 updated: "2026-08-02"
 ---
 
 # START TUTAJ
 
-**Kolejność Dowódcy:** tool 100% = **backend + dashboard UX/UI** → dopiero potem marketing.
+**Kolejność Dowódcy:** tool 100% = **backend + dashboard UX/UI 100% per surface** → dopiero potem marketing.
 
 **Fazy:** [`../demand-os/PROGRAM-PHASES.md`](../demand-os/PROGRAM-PHASES.md)  
-**Teraz:** **Etap 5b** — hardening Biuro Popytu · spec [`../../superpowers/specs/2026-08-02-demand-desk-hardening-design.md`](../../superpowers/specs/2026-08-02-demand-desk-hardening-design.md)
+**Teraz:** **Etap 5f** — MASTER TODO · [`../demand-os/MASTER-TODO-5F.md`](../demand-os/MASTER-TODO-5F.md)
 
 ## Kolejka
 
 1. ~~Backend + contract~~ SEALED  
-2. ~~Dashboard build (Etap 5)~~ DEPLOYED @ 4f12428  
-3. **Dashboard hardening (Etap 5b)** ← ACTIVE  
-4. Marketing HITL — **PARKED_LAST**  
-5. Tuning na REAL — po HITL  
+2. ~~Dashboard build + IA + gap-close~~ 5c–5e DONE  
+3. **Dashboard 100% (Etap 5f)** ← ACTIVE · `5F-P0-01`  
+4. Dowódca §8 prod → Hard DoD 15/15  
+5. Marketing HITL — **PARKED_LAST**  
 
 ## STOP
 
-Live publish · Ads · VPS · marketing przed zamknięciem 5b
+Live publish · Ads · VPS · marketing przed SEAL 5f

@@ -17,6 +17,7 @@ surface: "commander-ui #view-demand-desk"
 - **API:** `GET /api/v1/commander/demand-os/status`
 - **Deep link:** `?view=demand-desk` (opcjonalny; default bez parametru)
 - **Cache:** `desk-dash06`
+- **Master TODO:** [`MASTER-TODO-5F.md`](./MASTER-TODO-5F.md) · active `5F-P0-01`
 
 ## Komponenty (reuse tokens)
 

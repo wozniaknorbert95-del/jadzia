@@ -1,16 +1,14 @@
-# CURRENT TASK — DEMAND OS F0 → ORGANIC
+# CURRENT TASK — Etap 5f MASTER TODO
 
-**SoT:** `docs/ops/SYSTEM-FIRM-OPERATING-SYSTEM-TARGET.md` v5  
-**Plan:** `docs/ops/DEMAND-OS-ACTION-PLAN.md`  
-**TODO:** `docs/ops/DEMAND-OS-TODO.md`  
-**State:** `docs/ops/demand-os/STATE.md`  
-**Commits:** `6dacd92` · `1d83581`+
+**Gate:** `DEMAND-OS-DESK-5F-00` **ACTIVE**  
+**Master TODO:** `docs/ops/demand-os/MASTER-TODO-5F.md`  
+**Active item:** `5F-P2-01` — Dowódca §8 phone smoke (human)  
+**UI cache:** `desk-dash08`
 
-## Teraz
+## Cel
 
-1. Human ≥**2026-08-02:** [`GO-DAY-2026-08-02.md`](../docs/ops/demand-os/set-now/GO-DAY-2026-08-02.md)
-2. Agent: `/demand-os-execute` · ledger daily · **NO deploy** · **NO dashboard**
+Human: 7/7 checkbox `DESK-PHONE-SMOKE-CHECKLIST.md` on prod `?cb=desk-dash08`.
 
 ## STOP
 
-HQ · ops desk · S7 · multi-CTA · Ads freeze · deploy bez GO
+Marketing live · fałszywy SEAL · commit set-now secrets

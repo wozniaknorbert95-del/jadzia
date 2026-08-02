@@ -1,18 +1,26 @@
 {
   "project": "Jadzia-Core",
-  "last_updated": "2026-08-02 (ETAP 5b AGENT COMPLETE · SEAL pending Dowódca §8 prod · marketing PARKED_LAST)",
+  "last_updated": "2026-08-02 (ETAP 5f P0 done · desk-dash07 · CURRENT=5F-P1-01)",
   "status": "active",
   "plan": "docs/ops/demand-os/PROGRAM-PHASES.md",
-  "active_gate": "DEMAND-OS-DESK-5B-00",
-  "active_plan": "docs/superpowers/specs/2026-08-02-demand-desk-hardening-design.md",
+  "active_gate": "DEMAND-OS-DESK-5F-00",
+  "active_plan": "docs/ops/demand-os/MASTER-TODO-5F.md",
+  "master_todo": "docs/ops/demand-os/MASTER-TODO-5F.md",
+  "master_workflow": ".agents/workflows/demand-os-master-loop.md",
+  "active_item": "5F-P2-01",
   "runtime_changes_allowed": false,
   "todo_schema": "todo.schema.json",
   "gate_machine": {
-    "active": "DEMAND-OS-DESK-5B-00",
-    "active_state": "etap5b_agent_complete_pending_dowodca_section8_prod",
+    "active": "DEMAND-OS-DESK-5F-00",
+    "active_state": "etap5f_master_todo_active_5f_p0_01",
+    "master_todo": "docs/ops/demand-os/MASTER-TODO-5F.md",
+    "master_workflow": ".agents/workflows/demand-os-master-loop.md",
+    "active_item": "5F-P2-01",
     "demand_desk_v21": "ACCEPTED · DEMAND-CONTROL-PANEL-DESIGN.md",
     "demand_desk_contract": "SEALED v2.1.1 · DESK-CONTRACT.md",
-    "demand_tool_100": "IN_PROGRESS · Etap 5b agent COMPLETE · 14/15 Hard DoD · Dowódca §8 prod · close docs/handoffs/2026-08-02-DEMAND-DESK-5B-CLOSE.md",
+    "demand_tool_100": "IN_PROGRESS · Etap 5f MASTER TODO · 14/15 Hard DoD · dashboard 100% per surface · Dowódca §8 prod pending",
+    "demand_desk_5b_close": "docs/handoffs/2026-08-02-DEMAND-DESK-5B-CLOSE.md",
+    "demand_desk_5e_close": "docs/handoffs/2026-08-02-DEMAND-DESK-5E-GAP-CLOSE.md",
     "demand_marketing": "PARKED_LAST · after tool+UI final polish",
     "vhq_final": "completed · DEPLOY PASS · cache vhq-w67a · dashboard_seal FINISHED_PARTIAL_LOOP",
     "vhq_final_preclose": "docs/handoffs/2026-07-31-VF-VHQ-FINAL-00-PRECLOSE.md",
@@ -53,7 +61,7 @@
     "demand_os_strategy": "ACCEPTED · docs/ops/strategy/STRATEGY-PACK.md",
     "demand_os_map": "docs/ops/SYSTEM-FIRM-OPERATING-MAP.md",
     "demand_os_plan": "ACCEPTED · Phase0 PASS agent-side · pack docs/ops/demand-os/set-now/ · runner /demand-os-execute",
-    "demand_os_plan_next": "PROGRAM SEALED · hub doctor maintain · marketing PARKED_LAST until GO MARKETING HITL · Ads PARK cash · NO VPS",
+    "demand_os_plan_next": "Etap 5f MASTER TODO · MASTER-TODO-5F.md · /demand-os-master-loop · marketing PARKED_LAST · NO VPS",
     "demand_os_hub_blast": "docs/handoffs/2026-08-01-DEMAND-OS-HUB-00-BLAST.md",
     "demand_os_tool_pass": "docs/ops/demand-os/TOOL-PASS.md",
     "demand_os_program_seal": "docs/ops/demand-os/PROGRAM-SEAL.md",
@@ -318,9 +326,9 @@
       "D6": "W2 local on W1 commits — no separate W1 deploy",
       "D7": "W2 activated"
     },
-    "proposed_next_gate": "DEMAND-OS-DESK-5B-00",
+    "proposed_next_gate": "DEMAND-OS-DESK-5F-00",
     "proposed_next_gate_active": true,
-    "proposed_next": "Etap 5b Biuro Popytu hardening S0–S7. Hard DoD 15/15. Marketing PARKED_LAST. NO VPS without GO."
+    "proposed_next": "Etap 5f MASTER TODO: P0→P1→SEAL per MASTER-TODO-5F.md. One task per loop. Marketing PARKED_LAST. NO VPS without GO."
   },
   "standing_go_closeout": false,
   "closeout_queue": [],
@@ -337,11 +345,11 @@
     }
   ],
   "closeout_expires": "2026-08-15",
-  "next_human": "Etap 5b: Dowódca §8 prod + phone smoke after deploy GO. Marketing PARKED until separate GO.",
-  "next_agent": "Execute Etap 5b hardening spec S0–S7. hub doctor maintain. NO live publish/hunt. NO VPS without GO.",
+  "next_human": "Etap 5f: Dowódca §8 prod phone smoke when P0+P1 done (5F-P2-01). Marketing PARKED until GO MARKETING HITL.",
+  "next_agent": "Deploy GO desk-dash07 → browser proof P1 tabs. CURRENT=5F-P1-01. NO fake SEAL.",
   "budget_freeze_until": "parked_cash",
   "budget_freeze_note": "2026-08-01 Dowódca: Ads PARK cash — organic only until budget + GO; not date-gated",
-  "agent_rule": "SoT egzekucji: docs/ops/SYSTEM-FIRM-OPERATING-SYSTEM-TARGET.md v5. Action: docs/ops/DEMAND-OS-ACTION-PLAN.md. Runner: /demand-os-execute. Problem: NIE MA KLIENTOW. Ops OUT. Deploy only GO DEPLOY.",
+  "agent_rule": "SoT egzekucji UI: docs/ops/demand-os/MASTER-TODO-5F.md. STATE: docs/ops/demand-os/STATE.md. Runner: /demand-os-master-loop (primary) · /demand-os-execute (legacy verify). One task per loop. Deploy only GO.",
   "sprints": {
     "remediation": "completed",
     "coi_phase_a": "deploy_complete",
@@ -366,6 +374,38 @@
     "audit_remediation_2026_07_21": "ready"
   },
   "tasks": [
+    {
+      "id": "DEMAND-OS-DESK-5F-00",
+      "sprint": "Demand OS — Etap 5f MASTER TODO",
+      "task": "Commander Dashboard 100% per surface (MASTER-TODO-5F P0→P1→SEAL)",
+      "status": "in_progress",
+      "priority": "critical",
+      "owner": "agent",
+      "checklist": "docs/ops/demand-os/MASTER-TODO-5F.md",
+      "workflow": ".agents/workflows/demand-os-master-loop.md",
+      "active_item": "5F-P2-01",
+      "note": "2026-08-02 ACTIVE. SoT=MASTER-TODO-5F.md. One task per loop. 14/15 Hard DoD. §8 human pending."
+    },
+    {
+      "id": "DEMAND-OS-DESK-5E-00",
+      "sprint": "Demand OS — Etap 5e gap-close",
+      "task": "Boot auth · Praca-first · desk-dash06",
+      "status": "completed",
+      "priority": "critical",
+      "owner": "agent",
+      "checklist": "docs/handoffs/2026-08-02-DEMAND-DESK-5E-GAP-CLOSE.md",
+      "note": "2026-08-02 DONE @ b6c0382. Superseded by 5F for remaining gaps."
+    },
+    {
+      "id": "DEMAND-OS-DESK-5B-00",
+      "sprint": "Demand OS — Etap 5b hardening",
+      "task": "Biuro Popytu dashboard hardening S0–S7",
+      "status": "completed",
+      "priority": "critical",
+      "owner": "agent",
+      "checklist": "docs/handoffs/2026-08-02-DEMAND-DESK-5B-CLOSE.md",
+      "note": "2026-08-02 agent COMPLETE 14/15. Superseded by 5f for surface 100%."
+    },
     {
       "id": "REV-DEMAND-01",
       "sprint": "Revenue Demand Engine",

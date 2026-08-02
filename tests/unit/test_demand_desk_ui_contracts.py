@@ -138,10 +138,51 @@ def test_desk_nav_desktop_and_more_sheet():
     assert 'id="more-to-demand-desk"' in HTML
 
 
-def test_cache_bust_desk_dash06():
-    assert HTML.count("desk-dash06") >= 2
-    assert "desk-dash05" not in HTML
-    assert "coi-commander-desk-dash06" in SW
+def test_cache_bust_desk_dash08():
+    assert HTML.count("desk-dash08") >= 2
+    assert "desk-dash07" not in HTML
+    assert "coi-commander-desk-dash08" in SW
+
+
+def test_vhq_lazy_manifest_deferred():
+    bind_start = APP.index("function bindVhqShell()")
+    bind_end = APP.index("bindVhqShell();", bind_start)
+    bind_body = APP[bind_start:bind_end]
+    assert "vhqRenderAllManifestSurfaces()" not in bind_body
+    assert "function vhqEnsureManifest()" in APP
+    assert "vhqEnsureManifest();" in APP
+
+
+def test_vhq_inert_when_hidden():
+    assert 'id="view-hq"' in HTML
+    hq = HTML[HTML.index('id="view-hq"'): HTML.index('id="view-home"')]
+    assert "inert" in hq
+    assert 'aria-hidden="true"' in hq
+
+
+def test_open_queue_clears_vhq_url():
+    assert "function clearVhqUrlParam()" in APP
+    assert "async function openQueueView()" in APP
+    assert "clearVhqUrlParam();" in APP.split("async function openDemandDeskView()")[1][:400]
+
+
+def test_render_queue_hides_ceo_stubs():
+    start = APP.index("function renderQueue(items)")
+    body = APP[start:start + 800]
+    assert "isCeoStubItem" in body
+    assert "queue-hygiene-label" not in body
+    assert "badge-stub" not in body
+
+
+def test_desk_fixture_banner_in_header():
+    header = HTML[HTML.index('id="desk-header"'): HTML.index('id="desk-ab-row"')]
+    assert 'id="desk-fixture-banner"' in header
+    assert "demand-desk-banner--prominent" in header
+
+
+def test_hunt_sent_optimistic_ui():
+    assert "desk-badge--sent" in APP
+    assert "CSS.escape(targetId)" in APP.split("async function deskHuntDry")[1][:600]
 
 
 def test_bootstrap_auth_defers_refresh_to_vhq_boot():

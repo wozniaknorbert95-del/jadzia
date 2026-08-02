@@ -13,7 +13,8 @@ Professional operating system for agents on jadzia-core: state-based pipeline, 1
 | `jadzia-deploy.md` | `/jadzia-deploy` | L4 | VPS release (or pack if no GO) |
 | `handoff.md` | `/handoff` | L4 | State sync |
 | `panic.md` | `/panic` | L-CRIT | Prod down |
-| `demand-os-execute.md` | `/demand-os-execute` | L2 ops | Demand Machine step runner (SET NOW→W1→build gates) |
+| `demand-os-master-loop.md` | `/demand-os-master-loop` | L2 ops | **PRIMARY** Etap 5f MASTER TODO — one task per loop |
+| `demand-os-execute.md` | `/demand-os-execute` | L2 ops | Legacy pytest/doctor verify during 5f |
 
 Non-golden workflows (blast, blueprint, migrate, debug, …) live in `.agents/archive/workflows/`.
 

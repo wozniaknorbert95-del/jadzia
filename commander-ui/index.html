@@ -14,7 +14,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" href="styles.css?v=desk-dash06" />
+  <link rel="stylesheet" href="styles.css?v=desk-dash08" />
 </head>
 <body data-vhq-w2="1" data-vhq-w3="1" data-vhq-w31="1" data-vhq-w32="1" data-vhq-w4="1" data-vhq-w5="1" data-vhq-primary="1">
   <a class="skip-link" href="#main">Przejdź do treści</a>
@@ -69,7 +69,7 @@
   </div>
 
   <main id="main" class="main" tabindex="-1">
-    <section id="view-hq" class="view" aria-labelledby="vhq-title" hidden>
+    <section id="view-hq" class="view" aria-labelledby="vhq-title" hidden inert aria-hidden="true">
       <div id="vhq-shell" class="vhq-shell" aria-labelledby="vhq-title">
           <div class="vhq-shell__chrome">
             <header class="vhq-shell__header">
@@ -315,7 +315,7 @@
               <div class="vhq-panel__actions" id="vhq-panel-actions"></div>
             </aside>
           </div>
-          <p class="vhq-shell__hint hint">Esc: room → Mission Control · Więcej → VHQ · Cache desk-dash06</p>
+          <p class="vhq-shell__hint hint">Esc: room → Mission Control · Więcej → VHQ · Cache desk-dash08</p>
         </div>
     </section>
 
@@ -395,6 +395,7 @@
           BRAK POŁĄCZENIA — sprawdź auth i API.
           <button type="button" id="desk-retry" class="desk-act-btn secondary">Ponów</button>
         </div>
+        <div id="desk-fixture-banner" class="demand-desk-banner demand-desk-banner--fixture demand-desk-banner--prominent" hidden role="alert" aria-live="polite"></div>
         <p id="desk-robota" class="demand-desk-robota" aria-live="polite">Ładowanie robota dnia…</p>
         <div class="demand-desk-header-meta">
           <span>ICP: <strong id="desk-icp">—</strong></span>
@@ -425,7 +426,6 @@
 
         <section id="desk-puls" class="panel demand-desk-section demand-desk-section--puls" aria-label="Puls kasy">
           <h3>Puls kasy</h3>
-          <div id="desk-fixture-banner" class="demand-desk-banner demand-desk-banner--fixture" hidden aria-live="polite"></div>
           <div class="kpi-grid demand-desk-kpis">
             <div class="kpi-tile"><span class="kpi-label">Starts UTM</span><span id="desk-kpi-starts" class="kpi-value">—</span></div>
             <div class="kpi-tile"><span class="kpi-label">WoW Δ</span><span id="desk-kpi-wow" class="kpi-value">—</span></div>
@@ -688,6 +688,6 @@
 
 
   <div id="toast" class="toast" role="status" aria-live="polite" hidden></div>
-  <script src="app.js?v=desk-dash06"></script>
+  <script src="app.js?v=desk-dash08"></script>
 </body>
 </html>

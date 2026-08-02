@@ -1,27 +1,31 @@
 ---
-status: "[ACTIVE · ETAP 5b]"
+status: "[ACTIVE · ETAP 5f]"
 updated: "2026-08-02"
-gate: "DEMAND-OS-DESK-5B-00"
-spec: "docs/superpowers/specs/2026-08-02-demand-desk-hardening-design.md"
+gate: "DEMAND-OS-DESK-5F-00"
+master_todo: "docs/ops/demand-os/MASTER-TODO-5F.md"
+workflow: ".agents/workflows/demand-os-master-loop.md"
 ---
 
 # Plan działania — teraz
 
-## Active
+## Active (jedyna prawda)
 
-**Etap 5b — Biuro Popytu Dashboard Hardening**
+**Etap 5f — Commander Dashboard 100%**
 
-Spec: [`2026-08-02-demand-desk-hardening-design.md`](../../superpowers/specs/2026-08-02-demand-desk-hardening-design.md)
+Master backlog: [`MASTER-TODO-5F.md`](./MASTER-TODO-5F.md)
 
-- Hard DoD 15/15 (audyt start: 12/15)
-- Prod data path (sanitized set-now)
-- Layout AB/CD + UI contract gaps
-- Tests unit/API/E2E
-- Dowódca §8 prod
+| Priorytet | Item | Status |
+|-----------|------|--------|
+| **NOW** | 5F-P0-01 VHQ lazy/off-DOM | open |
+| P0 | 5F-P0-02 … P0-06 | open |
+| P1 | Analityka · Agenci · Marketing · STL | open |
+| P2 | §8 Dowódca · SEAL | human / open |
+
+Loop: `/demand-os-master-loop`
 
 ## Done (nie cofać)
 
-- ACCEPT Desk v2.1 · Etap 1b Contract SEALED · Etap 5 build deployed @ 4f12428
+5e · 5d · 5c · 5b · contract SEALED · desk-dash06 @ b6c0382
 
 ## PARKED
 

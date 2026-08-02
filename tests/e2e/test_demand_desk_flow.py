@@ -11,11 +11,13 @@ APP = (ROOT / "commander-ui" / "app.js").read_text(encoding="utf-8")
 
 def test_kolejka_nav_uses_home_not_hq():
     assert 'data-view="home"' in HTML
-    assert 'vhqGoConsole' in APP
+    assert "openQueueView" in APP
     assert 'data-vhq-entry="1"' in HTML
 
 
-def test_vhq_enter_opens_desk():
+def test_e2e_queue_view_not_vhq_console():
+    assert "async function openQueueView()" in APP
+    assert 'view === "home"' in APP
     chunk = APP[APP.index("function bindVhqShell"): APP.index("function bindVhqShell") + 800]
     assert "openDemandDeskView" in chunk
 

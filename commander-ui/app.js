@@ -346,28 +346,13 @@ function bindDispositionButtons(root, selector, idFromBtn, pathPrefix, label) {
 
 function renderQueue(items) {
   const list = items || [];
-  const stubs = list.filter((i) => isCeoStubItem(i));
   const actionable = list.filter((i) => i.severity !== "INFO" && !isCeoStubItem(i));
   const el = document.getElementById("queue-list");
-  const parts = [];
-  if (actionable.length) {
-    parts.push(...actionable.map((q) => approvalCard(q, queueItemActions(q))));
-  }
-  if (stubs.length) {
-    parts.push(
-      `<p class="queue-hygiene-label hint">Hygiene · ${stubs.length} CEO stub(s) — not Decide-now</p>`,
-    );
-    parts.push(...stubs.map((q) => approvalCard(q, "")));
-  }
-  if (!parts.length) {
+  if (!actionable.length) {
     el.innerHTML =
       "<p class=\"state-empty\">Kolejka pusta — brak CRITICAL/ACTION. Możesz utworzyć follow-up CS poniżej.</p>";
-  } else if (!actionable.length && stubs.length) {
-    el.innerHTML =
-      `<p class="state-empty">Brak CRITICAL/ACTION · ${stubs.length} stub hygiene poniżej.</p>` +
-      parts.join("");
   } else {
-    el.innerHTML = parts.join("");
+    el.innerHTML = actionable.map((q) => approvalCard(q, queueItemActions(q))).join("");
   }
   bindDispositionButtons(
     el,
@@ -887,10 +872,22 @@ function renderMarketingDecisionRail({
 
 async function loadMarketing() {
   const draftBody = document.getElementById("weekly-draft-body");
-  if (draftBody) draftBody.textContent = "Ładowanie draftu…";
   const railSummary = document.getElementById("mkt-rail-summary");
+  const calEntries = document.getElementById("calendar-entries");
+  if (!getToken()) {
+    if (draftBody) draftBody.textContent = "Zaloguj się (/commander lub JWT), aby załadować draft.";
+    if (railSummary) railSummary.textContent = "Sesja wymagana.";
+    if (calEntries) {
+      calEntries.innerHTML = '<p class="state-empty">Zaloguj się, aby załadować kolejkę marketingu.</p>';
+    }
+    const forensicEl = document.getElementById("mkt-forensic-body");
+    if (forensicEl) forensicEl.innerHTML = '<p class="hint">Brak JWT — forensic niedostępny.</p>';
+    return;
+  }
+  if (draftBody) draftBody.textContent = "Ładowanie draftu…";
   if (railSummary) railSummary.textContent = "Ładowanie bramki MB…";
 
+  try {
   let calErr = null;
   const [
     cal,
@@ -1112,6 +1109,24 @@ async function loadMarketing() {
       loadMarketing();
     };
   });
+  } catch (e) {
+    if (railSummary) {
+      railSummary.textContent = "Błąd ładowania MB — odśwież lub sprawdź sesję.";
+    }
+    if (calEntries) {
+      calEntries.innerHTML =
+        `<p class="state-error">${escHtml(e.message || "Nie udało się załadować kolejki marketingu.")} ` +
+        `<button type="button" id="mkt-retry-global">Spróbuj ponownie</button></p>`;
+      document.getElementById("mkt-retry-global")?.addEventListener("click", () => {
+        loadMarketing().catch((err) => toast(err.message));
+      });
+    }
+    setWeeklyDraftMessage("Draft niedostępny — spróbuj Odśwież.");
+    const forensicEl = document.getElementById("mkt-forensic-body");
+    if (forensicEl) {
+      forensicEl.innerHTML = `<p class="hint">Forensic niedostępny — ${escHtml(e.message || "błąd API")}</p>`;
+    }
+  }
 }
 
 document.getElementById("content-type")?.addEventListener("change", toggleMediaField);
@@ -1287,29 +1302,47 @@ async function loadAnalytics() {
   const kpiEl = document.getElementById("analytics-kpi-tiles");
   const ordersEl = document.getElementById("orders-list");
   const leadsEl = document.getElementById("leads-list");
+  if (!tiles || !ordersEl || !leadsEl) return;
+  if (!getToken()) {
+    tiles.innerHTML = '<p class="state-empty">Zaloguj się (/commander lub JWT), aby załadować analitykę.</p>';
+    if (kpiEl) kpiEl.innerHTML = "";
+    ordersEl.innerHTML = "";
+    leadsEl.innerHTML = "";
+    return;
+  }
   tiles.innerHTML = "<p class=\"hint\">Ładowanie analityki…</p>";
   if (kpiEl) kpiEl.innerHTML = "<p class=\"hint\">…</p>";
-  let snap;
-  let orders;
-  let leads;
-  let health;
-  let draft;
-  try {
-    [snap, orders, leads, health, draft] = await Promise.all([
-      api("/api/v1/commander/analytics/snapshot"),
-      api("/api/v1/orders"),
-      api("/api/v1/leads"),
-      api("/api/v1/commander/marketing/data-health"),
-      api("/api/v1/commander/marketing/weekly-draft").catch(() => null),
-    ]);
-  } catch (e) {
+  let snapErr = null;
+  let ordersErr = null;
+  let leadsErr = null;
+  let healthErr = null;
+  const [snap, orders, leads, health, draft] = await Promise.all([
+    api("/api/v1/commander/analytics/snapshot").catch((e) => {
+      snapErr = e;
+      return null;
+    }),
+    api("/api/v1/orders").catch((e) => {
+      ordersErr = e;
+      return { orders: [] };
+    }),
+    api("/api/v1/leads").catch((e) => {
+      leadsErr = e;
+      return { leads: [] };
+    }),
+    api("/api/v1/commander/marketing/data-health").catch((e) => {
+      healthErr = e;
+      return null;
+    }),
+    api("/api/v1/commander/marketing/weekly-draft").catch(() => null),
+  ]);
+  if (!snap && !health && snapErr && healthErr) {
     tiles.innerHTML = `<p class="state-error">Nie udało się pobrać analityki. <button type="button" id="analytics-retry">Spróbuj ponownie</button></p>`;
     ordersEl.innerHTML = "";
     leadsEl.innerHTML = "";
     if (kpiEl) kpiEl.innerHTML = "";
     const retry = document.getElementById("analytics-retry");
     if (retry) retry.onclick = () => loadAnalytics().catch((err) => toast(err.message));
-    throw e;
+    throw snapErr || healthErr;
   }
 
   const k = draft?.kpis || {};
@@ -1336,28 +1369,36 @@ async function loadAnalytics() {
     ].join("");
   }
 
-  const f = snap.freshness || {};
+  const f = snap?.freshness || {};
   const entries = Object.entries(f);
-  tiles.innerHTML = entries.length
-    ? entries.map(([key, v]) => `
+  if (snapErr && !entries.length) {
+    tiles.innerHTML = `<p class="state-error hint">Freshness niedostępne — ${escHtml(snapErr.message || "błąd API")}</p>`;
+  } else {
+    tiles.innerHTML = entries.length
+      ? entries.map(([key, v]) => `
     <article class="card">
       <strong>${key.toUpperCase()}</strong>
       <p>Ostatnia sync: ${v.last_sync_at || "—"}</p>
       <span class="badge stale-${v.status} ${v.status}">${v.status === "stale" ? "nieaktualne" : v.status}</span>
       ${v.staleness_seconds != null ? `<small>${v.staleness_seconds}s temu</small>` : ""}
     </article>`).join("")
-    : "<p class=\"state-empty\">Brak kafelków świeżości — spokój.</p>";
+      : "<p class=\"state-empty\">Brak kafelków świeżości — spokój.</p>";
+  }
 
   renderDataHealth(health || {}, { factsStale });
 
-  const orderRows = (orders.orders || []).slice(0, 10);
-  ordersEl.innerHTML = orderRows.length
+  const orderRows = (orders?.orders || []).slice(0, 10);
+  ordersEl.innerHTML = ordersErr
+    ? `<tr><td colspan="3" class="state-error hint">${escHtml(ordersErr.message || "Nie udało się pobrać zamówień.")}</td></tr>`
+    : orderRows.length
     ? orderRows.map((o) =>
       `<tr><td>#${escHtml(o.order_id)}</td><td><span class="badge">${escHtml(o.status)}</span></td><td>€${escHtml(o.total_gross)}</td></tr>`).join("")
     : "<tr><td colspan=\"3\" class=\"hint\">Brak zamówień.</td></tr>";
 
-  const leadRows = (leads.leads || []).slice(0, 10);
-  leadsEl.innerHTML = leadRows.length
+  const leadRows = (leads?.leads || []).slice(0, 10);
+  leadsEl.innerHTML = leadsErr
+    ? `<tr><td colspan="4" class="state-error hint">${escHtml(leadsErr.message || "Nie udało się pobrać leadów.")}</td></tr>`
+    : leadRows.length
     ? leadRows.map((l) =>
       `<tr>
         <td>${escHtml(l.email)}</td>
@@ -1408,6 +1449,12 @@ document.getElementById("weekly-draft-refresh")?.addEventListener("click", async
 async function loadAgents() {
   const listEl = document.getElementById("agents-list");
   const mapEl = document.getElementById("ai-os-map");
+  if (!listEl) return;
+  if (!getToken()) {
+    listEl.innerHTML = '<p class="state-empty">Zaloguj się (/commander lub JWT), aby załadować rejestr agentów.</p>';
+    if (mapEl) mapEl.innerHTML = "";
+    return;
+  }
   listEl.innerHTML = "<p class=\"hint\">Ładowanie agentów…</p>";
   if (mapEl) mapEl.innerHTML = "";
   let data;
@@ -1575,7 +1622,6 @@ function vhqNeedsHomeData() {
 }
 
 async function refresh() {
-  if (!getToken()) return;
   const active = document.querySelector(".view:not([hidden])")?.id?.replace("view-", "") || "home";
   const tasks = [];
   if (active === "demand-desk") {
@@ -1588,6 +1634,7 @@ async function refresh() {
     if (active === "audit") tasks.push(loadAudit);
     if (active === "settings") tasks.push(loadSettings);
   }
+  if (!tasks.length) return;
   for (const fn of tasks) {
     try {
       await fn();
@@ -1596,6 +1643,25 @@ async function refresh() {
         toast(e.message);
       }
     }
+  }
+}
+
+async function navigateToView(view) {
+  if (view === "demand-desk") {
+    await openDemandDeskView();
+    return;
+  }
+  if (view === "home") {
+    await openQueueView();
+    return;
+  }
+  parkVhqForDeskView();
+  clearVhqUrlParam();
+  showView(view);
+  try {
+    await refresh();
+  } catch (e) {
+    toast(e.message);
   }
 }
 
@@ -1627,6 +1693,7 @@ function showView(name) {
     if (on) b.setAttribute("aria-current", "page");
     else b.removeAttribute("aria-current");
   });
+  vhqSyncHqAccessibility();
 }
 
 function parkVhqForDeskView() {
@@ -1635,9 +1702,41 @@ function parkVhqForDeskView() {
   }
 }
 
+function clearVhqUrlParam() {
+  if (!vhqIsPrimary()) return;
+  const url = new URL(window.location.href);
+  if (!url.searchParams.has("vhq")) return;
+  url.searchParams.delete("vhq");
+  const qs = url.searchParams.toString();
+  const path = `${url.pathname}${qs ? `?${qs}` : ""}${url.hash}`;
+  window.history.replaceState({ ...(window.history.state || {}), vhq: "" }, "", path);
+  vhqNavState = "";
+}
+
 async function openDemandDeskView() {
   parkVhqForDeskView();
+  clearVhqUrlParam();
   showView("demand-desk");
+  try {
+    await refresh();
+  } catch (e) {
+    toast(e.message);
+  }
+}
+
+async function openQueueView() {
+  parkVhqForDeskView();
+  clearVhqUrlParam();
+  try {
+    vhqRestoreAllSlots();
+  } catch (err) {
+    console.warn("vhqRestoreAllSlots failed", err);
+  }
+  document.body.classList.remove("vhq-open", "vhq-mode-command", "vhq-mode-work", "vhq-mode-world");
+  vhqOpen = false;
+  showView("home");
+  const legacy = document.getElementById("console-legacy-hosts");
+  if (legacy) legacy.open = true;
   try {
     await refresh();
   } catch (e) {
@@ -1658,17 +1757,7 @@ function bindNavButtons(selector) {
         return;
       }
       if (view === "home") {
-        if (typeof vhqGoConsole === "function") {
-          vhqGoConsole({ historyMode: "push" });
-        } else {
-          parkVhqForDeskView();
-          showView("home");
-        }
-        try {
-          await refresh();
-        } catch (e) {
-          toast(e.message);
-        }
+        await openQueueView();
         return;
       }
       if (view === "hq") {
@@ -1698,15 +1787,7 @@ function bindNavButtons(selector) {
         }
         return;
       }
-      if (typeof vhqIsPrimary === "function" && vhqIsPrimary() && typeof vhqParkPrimaryShell === "function") {
-        vhqParkPrimaryShell();
-      }
-      showView(view);
-      try {
-        await refresh();
-      } catch (e) {
-        toast(e.message);
-      }
+      await navigateToView(view);
     });
     btn.addEventListener("keydown", (e) => {
       if (e.key !== "ArrowRight" && e.key !== "ArrowLeft") return;
@@ -2540,6 +2621,28 @@ function vhqIsPrimary() {
   if (override === "legacy") return false;
   if (override === "primary") return true;
   return document.body.dataset.vhqPrimary === "1";
+}
+
+let vhqManifestRendered = false;
+
+function vhqEnsureManifest() {
+  if (vhqManifestRendered) return;
+  vhqManifestRendered = true;
+  if (typeof vhqRenderAllManifestSurfaces === "function") {
+    vhqRenderAllManifestSurfaces();
+  }
+}
+
+function vhqSyncHqAccessibility() {
+  const hq = document.getElementById("view-hq");
+  if (!hq) return;
+  if (!hq.hidden) {
+    hq.removeAttribute("inert");
+    hq.removeAttribute("aria-hidden");
+  } else {
+    hq.setAttribute("inert", "");
+    hq.setAttribute("aria-hidden", "true");
+  }
 }
 
 function vhqStateFromRoom(roomId) {
@@ -3987,6 +4090,7 @@ window.vhqManifestPropagationTest = vhqManifestPropagationTest;
 
 function vhqGoMissionControl(opts = {}) {
   const historyMode = opts.historyMode || "push";
+  vhqEnsureManifest();
   if (vhqIsPrimary()) {
     vhqApplyLegacyShellAttrs(false);
     const shell = document.getElementById("vhq-shell");
@@ -4485,9 +4589,7 @@ function bindVhqShell() {
     vhqRenderRoom(e.target.value, { historyMode: "push" });
   });
   vhqBindFirmChain();
-  if (typeof vhqRenderAllManifestSurfaces === "function") {
-    vhqRenderAllManifestSurfaces();
-  }
+  vhqSyncHqAccessibility();
   document.querySelectorAll(".console-tech-links [data-view]").forEach((btn) => {
     btn.addEventListener("click", () => {
       const view = btn.getAttribute("data-view");
@@ -4840,6 +4942,16 @@ function renderDemandDesk(data) {
   const conn = document.getElementById("desk-connection-banner");
   if (conn) conn.hidden = true;
 
+  const fixBanner = document.getElementById("desk-fixture-banner");
+  if (fixBanner) {
+    if (dataMode === "FIXTURE" || dataMode === "MIXED") {
+      fixBanner.hidden = false;
+      fixBanner.textContent = `Tryb ${dataMode} — dane nie są wyłącznie REAL. Nie traktuj jako potwierdzonej kasy.`;
+    } else {
+      fixBanner.hidden = true;
+    }
+  }
+
   const code = robota.code || "—";
   const robotaEl = document.getElementById("desk-robota");
   if (robotaEl) {
@@ -4857,16 +4969,6 @@ function renderDemandDesk(data) {
       cashWarn.textContent = String(data.cash_warning);
     } else {
       cashWarn.hidden = true;
-    }
-  }
-
-  const fixBanner = document.getElementById("desk-fixture-banner");
-  if (fixBanner) {
-    if (dataMode === "FIXTURE" || dataMode === "MIXED") {
-      fixBanner.hidden = false;
-      fixBanner.textContent = `Tryb ${dataMode} — dane nie są wyłącznie REAL. Nie traktuj jako potwierdzonej kasy.`;
-    } else {
-      fixBanner.hidden = true;
     }
   }
 
@@ -4930,7 +5032,7 @@ function renderDemandDesk(data) {
         .map((row) => {
           const tid = deskEsc(row.target_id || "?");
           const name = deskEsc(row.name || tid);
-          const ds = deskEsc(row.desk_status || "READY");
+          const ds = deskEsc(String(row.desk_status || "READY").toUpperCase());
           const draft = deskEsc(row.draft || "");
           const badgeCls =
             ds === "SENT" ? "desk-badge--sent" : ds === "BLOCK" ? "desk-badge--block" : "desk-badge--ready";
@@ -4948,7 +5050,13 @@ function renderDemandDesk(data) {
 
   const stlEl = document.getElementById("desk-stl");
   if (stlEl) {
-    stlEl.textContent = `STL: open=${stl.open_hot ?? 0} · breach=${stl.breaches ?? 0} · overnight=${stl.overnight ?? 0} · med=${stl.median_min ?? "n/a"} min`;
+    const breaches = stl.breaches ?? 0;
+    let stlText = `STL: open=${stl.open_hot ?? 0} · breach=${breaches} · overnight=${stl.overnight ?? 0} · med=${stl.median_min ?? "n/a"} min`;
+    if (breaches > 0) {
+      stlText += " · Sprawdź HOT-LEADS checklist (Gorące >48h).";
+    }
+    stlEl.textContent = stlText;
+    stlEl.classList.toggle("demand-desk-stl--breach", breaches > 0);
   }
 
   const dualEl = document.getElementById("desk-dual-cash");
@@ -5045,6 +5153,8 @@ async function loadDemandDesk() {
     }
     return;
   }
+  const connOk = document.getElementById("desk-connection-banner");
+  if (connOk) connOk.hidden = true;
   root.classList.add("demand-desk--loading");
   root.setAttribute("aria-busy", "true");
   const loadTimeout = setTimeout(() => {
@@ -5181,6 +5291,15 @@ async function deskHuntDry(targetId, draft) {
       method: "POST",
       body: { target_id: targetId, text: draft || "" },
     });
+    const row = document.querySelector(`#desk-hunt-list [data-target-id="${CSS.escape(targetId)}"]`);
+    if (row) {
+      const badge = row.querySelector(".desk-badge");
+      if (badge) {
+        badge.textContent = "SENT";
+        badge.className = "desk-badge desk-badge--sent";
+      }
+      row.querySelector("[data-desk-act='hunt']")?.setAttribute("disabled", "");
+    }
     toast("Hunt dry OK", "ok");
     await loadDemandDesk();
   } catch (e) {
@@ -5251,13 +5370,7 @@ async function vhqBoot() {
     }
 
     if (viewParam === "home") {
-      if (typeof vhqGoConsole === "function") {
-        vhqGoConsole({ historyMode: "replace" });
-      } else {
-        parkVhqForDeskView();
-        showView("home");
-      }
-      refresh().catch((e) => toast(e.message));
+      await openQueueView();
       return;
     }
 

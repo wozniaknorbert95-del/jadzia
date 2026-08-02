@@ -2,7 +2,8 @@
 status: "[ACTIVE · HUMAN GATE]"
 title: "Biuro Popytu — phone smoke (Dowódca)"
 updated: "2026-08-02"
-gate: "DEMAND-OS-DESK-5B-00"
+gate: "DEMAND-OS-DESK-5F-00"
+master_todo: "docs/ops/demand-os/MASTER-TODO-5F.md"
 url: "https://api.zzpackage.flexgrafik.nl/commander/?cb=desk-dash06"
 ---
 
