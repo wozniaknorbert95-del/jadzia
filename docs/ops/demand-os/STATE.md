@@ -5,7 +5,7 @@ last_step: "DEMAND-OS-DESK-5C-IA-CLOSE"
 phase_program: "docs/ops/demand-os/PROGRAM-PHASES.md"
 next_action: "Dowódca §8 prod smoke po desk-dash04"
 close_handoff: "docs/handoffs/2026-08-02-DEMAND-DESK-5C-IA-CLOSE.md"
-prod_tip: "pending deploy"
+prod_tip: "c6bb38e"
 ---
 
 # Demand OS — STATE
@@ -13,7 +13,7 @@ prod_tip: "pending deploy"
 | Pole | Wartość |
 |------|---------|
 | program_phase | **Etap 5c IA CLEANUP** |
-| desk_ui | `#view-demand-desk` · **default landing** · cache **desk-dash04** |
+| desk_ui | `#view-demand-desk` · **default landing** · cache **desk-dash04** · **LIVE @ c6bb38e** |
 | desk_contract | **SEALED v2.1.1** (backend) |
 | tool_100 | **IN_PROGRESS** → UI SEAL po Dowódca §8 |
 | hard_dod | **14/15 agent** · #12 Dowódca prod |
