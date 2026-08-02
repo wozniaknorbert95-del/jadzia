@@ -76,9 +76,9 @@ DEMAND_OS_SET_NOW=data/demand-os/set-now-sanitized python -m pytest \
 
 ## Dowódca — next (human gate)
 
-1. **`GO DEPLOY COMMANDER UI`** — push · VPS pull · cache `desk-dash03`
-2. `tools/demand_os_sync_set_now.sh` → `/opt/jadzia/data/demand-os/set-now`
-3. Env: `DEMAND_OS_SET_NOW` · `DEMAND_OS_MEMORY` w `.env` VPS
+1. ~~**`GO DEPLOY COMMANDER UI`**~~ — **DONE @ f0fcbe7** (2026-08-02)
+2. ~~sync set-now~~ — **DONE** → `/opt/jadzia/data/demand-os/set-now`
+3. Env: `DEMAND_OS_SET_NOW` · `DEMAND_OS_MEMORY` — **SET** on VPS
 4. Prod URL: `https://api.zzpackage.flexgrafik.nl/commander/?view=demand-desk&cb=desk-dash03`
 5. Phone smoke: [`DESK-PHONE-SMOKE-CHECKLIST.md`](../ops/demand-os/DESK-PHONE-SMOKE-CHECKLIST.md)
 6. Design §8 — 7 checkboxów w [`DEMAND-CONTROL-PANEL-DESIGN.md`](../ops/demand-os/DEMAND-CONTROL-PANEL-DESIGN.md) **tylko po prod**

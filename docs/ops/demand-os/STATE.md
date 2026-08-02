@@ -1,12 +1,12 @@
 ---
-status: "[ETAP 5b AGENT COMPLETE · SEAL PENDING Dowódca §8 prod · marketing PARKED_LAST]"
+status: "[ETAP 5b DEPLOYED @ f0fcbe7 · Dowódca §8 prod pending · marketing PARKED_LAST]"
 updated: "2026-08-02"
-last_step: "DEMAND-OS-DESK-5B-CLOSE"
+last_step: "GO DEPLOY COMMANDER UI"
 phase_program: "docs/ops/demand-os/PROGRAM-PHASES.md"
-next_action: "GO DEPLOY COMMANDER UI → sync set-now → Dowódca §8 prod → Hard DoD 15/15 SEAL"
+next_action: "Dowódca §8 prod smoke (phone) → Hard DoD 15/15 SEAL"
 hardening_spec: "docs/superpowers/specs/2026-08-02-demand-desk-hardening-design.md"
 close_handoff: "docs/handoffs/2026-08-02-DEMAND-DESK-5B-CLOSE.md"
-audit_sot: "docs/handoffs/2026-08-02-DEMAND-OS-DASHBOARD-00-CLOSE.md"
+prod_tip: "f0fcbe7"
 ---
 
 # Demand OS — STATE
@@ -15,7 +15,7 @@ audit_sot: "docs/handoffs/2026-08-02-DEMAND-OS-DASHBOARD-00-CLOSE.md"
 |------|---------|
 | program_phase | **Etap 5b AGENT COMPLETE** |
 | etap5_build | DEPLOYED @ **4f12428** (memory hotfix) |
-| desk_ui | `#view-demand-desk` · cache **desk-dash03** (local ready · prod pending GO) |
+| desk_ui | `#view-demand-desk` · cache **desk-dash03** · **LIVE prod @ f0fcbe7** |
 | desk_contract | **SEALED v2.1.1** (backend) |
 | tool_100 | **IN_PROGRESS** → UI SEAL po Dowódca §8 prod |
 | hard_dod | **14/15 agent PASS** · #12 Dowódca prod pending |
