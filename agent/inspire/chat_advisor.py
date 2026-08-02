@@ -57,6 +57,7 @@ class ChatTurnResult:
     stap_label: str = ""
     quick_replies: list[dict[str, str]] = field(default_factory=list)
     quick_reply_field: str = ""
+    quick_previews: list[str] = field(default_factory=list)
     opening_source: str = "legacy"
     lead_id: Optional[str] = None
     reply: str = ""

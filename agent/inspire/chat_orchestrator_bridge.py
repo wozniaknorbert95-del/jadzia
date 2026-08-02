@@ -120,6 +120,7 @@ def _result_from_turn(
         stap_label=labels.get(stap, ""),
         quick_replies=turn.buttons,
         quick_reply_field=turn.quick_reply_field or "",
+        quick_previews=list(getattr(turn, "quick_preview_urls", None) or []),
         opening_source="brain",
         locale=loc,
     )

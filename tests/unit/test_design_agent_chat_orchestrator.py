@@ -86,9 +86,9 @@ def test_at_chat_04_no_budget_not_ready(client: TestClient) -> None:
     sid = opening["session_id"]
     turns = [
         {"message": "Schilder Janssen"},
+        {"quick_reply_id": "bus_l", "quick_reply_field": "vehicle.type"},
         {"quick_reply_id": "bouw", "quick_reply_field": "company.branche"},
         {"message": "Noord-Brabant"},
-        {"quick_reply_id": "bus_l", "quick_reply_field": "vehicle.type"},
         {"quick_reply_id": "zakelijk", "quick_reply_field": "vehicle.usage"},
         {"message": "woningeigenaren en VvE's"},
         {"message": "binnen- en buitenschilderwerk"},
@@ -130,9 +130,9 @@ def test_at_chat_03_budget_before_summary(client: TestClient) -> None:
     sid = opening["session_id"]
     flow = [
         {"message": "Schilder Janssen"},
+        {"quick_reply_id": "bus_l", "quick_reply_field": "vehicle.type"},
         {"quick_reply_id": "bouw", "quick_reply_field": "company.branche"},
         {"message": "Noord-Brabant"},
-        {"quick_reply_id": "bus_l", "quick_reply_field": "vehicle.type"},
         {"quick_reply_id": "zakelijk", "quick_reply_field": "vehicle.usage"},
         {"message": "woningeigenaren"},
         {"message": "schilderwerk"},
@@ -150,6 +150,29 @@ def test_at_chat_03_budget_before_summary(client: TestClient) -> None:
     assert last["stap"] >= 7
     assert last["brief_partial"].get("budget_range") == "300_600"
     assert last["brief_partial"].get("_budget_explicit") is True
+
+
+def test_quick_previews_after_bedrijfsnaam_and_vehicle(client: TestClient) -> None:
+    """T-002 E2E — orchestrator returns 3 quick preview data URLs after 2Q path."""
+    opening = client.get("/api/v1/design-agent/chat/opening").json()
+    sid = opening["session_id"]
+    client.post(
+        "/api/v1/design-agent/chat",
+        json={"session_id": sid, "message": "Janssen Elektro"},
+    )
+    resp = client.post(
+        "/api/v1/design-agent/chat",
+        json={
+            "session_id": sid,
+            "message": "",
+            "quick_reply_id": "caddy",
+            "quick_reply_field": "vehicle.type",
+        },
+    )
+    assert resp.status_code == 200
+    previews = resp.json().get("quick_previews") or []
+    assert len(previews) == 3
+    assert all(str(u).startswith("data:image/") for u in previews)
 
 
 def test_logo_turn_does_not_pollute_bedrijfsnaam_or_vehicle(client: TestClient) -> None:

@@ -691,6 +691,7 @@ class DesignAgentChatResponse(BaseModel):
     stap_label: str = ""
     quick_replies: list[dict] = []
     quick_reply_field: str = ""
+    quick_previews: list[str] = []
     opening_source: str = "brain"
     lead_id: Optional[str] = None
     locale: str = "nl-NL"

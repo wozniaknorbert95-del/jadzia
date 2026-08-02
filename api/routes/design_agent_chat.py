@@ -93,6 +93,7 @@ def _to_response(result) -> DesignAgentChatResponse:
         stap_label=result.stap_label,
         quick_replies=result.quick_replies,
         quick_reply_field=result.quick_reply_field,
+        quick_previews=getattr(result, "quick_previews", None) or [],
         opening_source=result.opening_source,
         lead_id=getattr(result, "lead_id", None),
         locale=loc,
