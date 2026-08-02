@@ -138,10 +138,21 @@ def test_desk_nav_desktop_and_more_sheet():
     assert 'id="more-to-demand-desk"' in HTML
 
 
-def test_cache_bust_desk_dash05():
-    assert HTML.count("desk-dash05") >= 2
-    assert "desk-dash04" not in HTML
-    assert "coi-commander-desk-dash05" in SW
+def test_cache_bust_desk_dash06():
+    assert HTML.count("desk-dash06") >= 2
+    assert "desk-dash05" not in HTML
+    assert "coi-commander-desk-dash06" in SW
+
+
+def test_bootstrap_auth_defers_refresh_to_vhq_boot():
+    start = APP.index("async function bootstrapAuth()")
+    end = APP.index("\n// --- Demand Desk", start)
+    body = APP[start:end]
+    assert "refresh()" not in body or body.count("refresh()") == 0
+
+
+def test_vhq_enrich_demand_os_non_critical_auth():
+    assert 'api("/api/v1/commander/demand-os/status", { authCritical: false })' in APP
 
 
 def test_desk_design_link_in_html():
@@ -151,9 +162,9 @@ def test_desk_design_link_in_html():
 
 def test_desk_ab_row_layout():
     ab_start = HTML.index('id="desk-ab-row"')
-    puls = HTML.index('id="desk-puls"', ab_start)
     praca = HTML.index('id="desk-praca"', ab_start)
-    assert puls < praca
+    puls = HTML.index('id="desk-puls"', ab_start)
+    assert praca < puls
     assert ".demand-desk-ab-row" in CSS
     assert ".demand-desk-cd-row" in CSS
 

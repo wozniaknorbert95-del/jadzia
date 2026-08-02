@@ -14,7 +14,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" href="styles.css?v=desk-dash05" />
+  <link rel="stylesheet" href="styles.css?v=desk-dash06" />
 </head>
 <body data-vhq-w2="1" data-vhq-w3="1" data-vhq-w31="1" data-vhq-w32="1" data-vhq-w4="1" data-vhq-w5="1" data-vhq-primary="1">
   <a class="skip-link" href="#main">Przejdź do treści</a>
@@ -315,7 +315,7 @@
               <div class="vhq-panel__actions" id="vhq-panel-actions"></div>
             </aside>
           </div>
-          <p class="vhq-shell__hint hint">Esc: room → Mission Control · Więcej → VHQ · Cache desk-dash05</p>
+          <p class="vhq-shell__hint hint">Esc: room → Mission Control · Więcej → VHQ · Cache desk-dash06</p>
         </div>
     </section>
 
@@ -412,6 +412,17 @@
       </header>
 
       <div id="desk-ab-row" class="demand-desk-ab-row">
+        <section id="desk-praca" class="demand-desk-praca demand-desk-section--primary" aria-label="Praca dziś">
+          <div id="desk-praca-hitl" class="panel demand-desk-section demand-desk-section--hitl">
+            <h3>HITL — kalendarz (bez publikacji)</h3>
+            <div id="desk-hitl-list" class="desk-queue-list"><p class="hint state-empty desk-skeleton">Ładowanie…</p></div>
+          </div>
+          <div id="desk-praca-hunt" class="panel demand-desk-section demand-desk-section--hunt">
+            <h3>Hunt — dry komentarze</h3>
+            <div id="desk-hunt-list" class="desk-queue-list"><p class="hint state-empty desk-skeleton">Ładowanie…</p></div>
+          </div>
+        </section>
+
         <section id="desk-puls" class="panel demand-desk-section demand-desk-section--puls" aria-label="Puls kasy">
           <h3>Puls kasy</h3>
           <div id="desk-fixture-banner" class="demand-desk-banner demand-desk-banner--fixture" hidden aria-live="polite"></div>
@@ -421,17 +432,6 @@
             <div class="kpi-tile"><span class="kpi-label">Paid</span><span id="desk-kpi-paid" class="kpi-value">—</span></div>
             <div class="kpi-tile"><span class="kpi-label">Top hook</span><span id="desk-kpi-hook" class="kpi-value">—</span></div>
             <div class="kpi-tile"><span class="kpi-label">Publish</span><span id="desk-kpi-publish" class="kpi-value">—</span></div>
-          </div>
-        </section>
-
-        <section id="desk-praca" class="demand-desk-praca demand-desk-section--primary" aria-label="Praca dziś">
-          <div id="desk-praca-hitl" class="panel demand-desk-section demand-desk-section--hitl">
-            <h3>HITL — kalendarz (bez publikacji)</h3>
-            <div id="desk-hitl-list" class="desk-queue-list"><p class="hint state-empty desk-skeleton">Ładowanie…</p></div>
-          </div>
-          <div id="desk-praca-hunt" class="panel demand-desk-section demand-desk-section--hunt">
-            <h3>Hunt — dry komentarze</h3>
-            <div id="desk-hunt-list" class="desk-queue-list"><p class="hint state-empty desk-skeleton">Ładowanie…</p></div>
           </div>
         </section>
       </div>
@@ -688,6 +688,6 @@
 
 
   <div id="toast" class="toast" role="status" aria-live="polite" hidden></div>
-  <script src="app.js?v=desk-dash05"></script>
+  <script src="app.js?v=desk-dash06"></script>
 </body>
 </html>

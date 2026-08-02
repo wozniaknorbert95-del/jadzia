@@ -2181,7 +2181,12 @@ body.vhq-open.vhq-mode-work .vhq-shell__body {
 }
 
 .demand-desk-section--primary {
-  order: -1;
+  /* Praca (B) first in DOM — design A0 > B > A */
+}
+
+.desk-queue-row:focus-visible {
+  outline: 2px solid var(--accent, #5b9fd4);
+  outline-offset: 2px;
 }
 
 .demand-desk-section--hitl h3,

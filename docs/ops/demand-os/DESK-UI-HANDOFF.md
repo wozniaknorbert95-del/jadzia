@@ -16,7 +16,7 @@ surface: "commander-ui #view-demand-desk"
 - **Więcej:** VHQ · Marketing legacy · Audyt · Ustawienia · OS · VCMS
 - **API:** `GET /api/v1/commander/demand-os/status`
 - **Deep link:** `?view=demand-desk` (opcjonalny; default bez parametru)
-- **Cache:** `desk-dash05`
+- **Cache:** `desk-dash06`
 
 ## Komponenty (reuse tokens)
 

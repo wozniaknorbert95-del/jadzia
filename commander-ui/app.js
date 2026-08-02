@@ -3850,7 +3850,7 @@ async function vhqEnrichDemandOsKpis() {
   const room = VHQ_ROOMS["marketing-studio"];
   if (!room || !room.kpi) return;
   try {
-    const data = await api("/api/v1/commander/demand-os/status");
+    const data = await api("/api/v1/commander/demand-os/status", { authCritical: false });
     const kpi = data.kpi || {};
     const screen = data.screen || {};
     const stl = data.stl || {};
@@ -4722,7 +4722,6 @@ async function bootstrapAuth() {
       setToken(data.token);
       stripAuthParamsFromUrl();
       toast("Zalogowano (Telegram)");
-      await refresh();
       return;
     } catch (e) {
       stripAuthParamsFromUrl();
@@ -4745,7 +4744,6 @@ async function bootstrapAuth() {
   if (getToken()) {
     document.getElementById("jwt-input").value = "";
     updateAuthStatus();
-    refresh().catch((e) => toast(e.message));
   } else {
     updateAuthStatus();
   }
