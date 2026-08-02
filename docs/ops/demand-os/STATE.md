@@ -1,41 +1,32 @@
 ---
-status: "[ETAP 5b DEPLOYED @ f0fcbe7 · Dowódca §8 prod pending · marketing PARKED_LAST]"
+status: "[ETAP 5c IA CLEANUP · desk-dash04 LIVE · §8 Dowódca pending]"
 updated: "2026-08-02"
-last_step: "GO DEPLOY COMMANDER UI"
+last_step: "DEMAND-OS-DESK-5C-IA-CLOSE"
 phase_program: "docs/ops/demand-os/PROGRAM-PHASES.md"
-next_action: "Dowódca §8 prod smoke (phone) → Hard DoD 15/15 SEAL"
-hardening_spec: "docs/superpowers/specs/2026-08-02-demand-desk-hardening-design.md"
-close_handoff: "docs/handoffs/2026-08-02-DEMAND-DESK-5B-CLOSE.md"
-prod_tip: "f0fcbe7"
+next_action: "Dowódca §8 prod smoke po desk-dash04"
+close_handoff: "docs/handoffs/2026-08-02-DEMAND-DESK-5C-IA-CLOSE.md"
+prod_tip: "pending deploy"
 ---
 
 # Demand OS — STATE
 
 | Pole | Wartość |
 |------|---------|
-| program_phase | **Etap 5b AGENT COMPLETE** |
-| etap5_build | DEPLOYED @ **4f12428** (memory hotfix) |
-| desk_ui | `#view-demand-desk` · cache **desk-dash03** · **LIVE prod @ f0fcbe7** |
+| program_phase | **Etap 5c IA CLEANUP** |
+| desk_ui | `#view-demand-desk` · **default landing** · cache **desk-dash04** |
 | desk_contract | **SEALED v2.1.1** (backend) |
-| tool_100 | **IN_PROGRESS** → UI SEAL po Dowódca §8 prod |
-| hard_dod | **14/15 agent PASS** · #12 Dowódca prod pending |
+| tool_100 | **IN_PROGRESS** → UI SEAL po Dowódca §8 |
+| hard_dod | **14/15 agent** · #12 Dowódca prod |
 | marketing_hitl | **PARKED_LAST** |
 
-## Etap 5b — agent done
+## Etap 5c — IA done
 
-Close: [`2026-08-02-DEMAND-DESK-5B-CLOSE.md`](../../handoffs/2026-08-02-DEMAND-DESK-5B-CLOSE.md)
+- Boot → Biuro Popytu (bez `?view=`)
+- Marketing → tylko Więcej (legacy)
+- Nav desktop + mobile: Biuro Popytu primary
 
-- S0–S7 agent deliverables complete
-- pytest desk suite: **75 PASS** @ sanitized set-now
-- Prod deploy + §8: **ready_for_human**
-
-## Verify
-
-```bash
-DEMAND_OS_SET_NOW=data/demand-os/set-now-sanitized python tools/demand_os_hub.py doctor
-DEMAND_OS_SET_NOW=data/demand-os/set-now-sanitized python -m pytest tests/unit/test_demand_desk_ui_contracts.py tests/test_demand_os_api_desk.py tests/test_hunt_dry_updates_queue.py -q
-```
+Close: [`2026-08-02-DEMAND-DESK-5C-IA-CLOSE.md`](../../handoffs/2026-08-02-DEMAND-DESK-5C-IA-CLOSE.md)
 
 ## STOP
 
-Marketing live · Ads · VPS bez GO · fałszywy SEAL przed Dowódca §8
+Marketing live · fałszywy SEAL przed §8

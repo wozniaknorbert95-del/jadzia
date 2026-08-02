@@ -1621,12 +1621,28 @@ function showView(name) {
     v.hidden = !active;
     v.classList.toggle("active", active);
   });
-  document.querySelectorAll(".nav-btn").forEach((b) => {
+  document.querySelectorAll(".nav-btn[data-view]").forEach((b) => {
     const on = b.dataset.view === name;
     b.classList.toggle("active", on);
     if (on) b.setAttribute("aria-current", "page");
     else b.removeAttribute("aria-current");
   });
+}
+
+function parkVhqForDeskView() {
+  if (typeof vhqIsPrimary === "function" && vhqIsPrimary() && typeof vhqParkPrimaryShell === "function") {
+    vhqParkPrimaryShell();
+  }
+}
+
+async function openDemandDeskView() {
+  parkVhqForDeskView();
+  showView("demand-desk");
+  try {
+    await refresh();
+  } catch (e) {
+    toast(e.message);
+  }
 }
 
 function bindNavButtons(selector) {
@@ -1636,6 +1652,11 @@ function bindNavButtons(selector) {
         setMoreSheetOpen(false);
       }
       const view = btn.dataset.view;
+      if (view === "marketing" && !btn.dataset.legacy) {
+        toast("Marketing organic → Biuro Popytu (legacy tylko w Więcej)");
+        await openDemandDeskView();
+        return;
+      }
       if (view === "hq") {
         if (typeof vhqGoMissionControl === "function") {
           vhqGoMissionControl({ historyMode: "push" });
@@ -1670,9 +1691,15 @@ function bindNavButtons(selector) {
   });
 }
 
-bindNavButtons("#main-nav .nav-btn");
-bindNavButtons("#bottom-nav .nav-btn");
+bindNavButtons("#main-nav .nav-btn[data-view]");
+bindNavButtons("#bottom-nav .nav-btn[data-view]");
 bindNavButtons(".more-sheet-btn[data-view]");
+
+document.getElementById("open-more-nav")?.addEventListener("click", () => setMoreSheetOpen(true));
+document.getElementById("open-more-nav-bottom")?.addEventListener("click", () => setMoreSheetOpen(true));
+document.getElementById("mkt-back-to-desk")?.addEventListener("click", () => {
+  openDemandDeskView().catch((e) => toast(e.message));
+});
 bindSystemMapHops();
 
 /* ===== VF-VHQ-W1-SHELL + W3.2 Room Manifest (sole SoT) ===== */
@@ -5176,16 +5203,33 @@ async function vhqBoot() {
   try {
     await bootstrapAuth();
   } finally {
-    const viewParam = new URLSearchParams(window.location.search).get("view");
-    if (viewParam === "demand-desk") {
-      if (typeof vhqIsPrimary === "function" && vhqIsPrimary() && typeof vhqParkPrimaryShell === "function") {
-        vhqParkPrimaryShell();
-      }
-      showView("demand-desk");
-      refresh().catch((e) => toast(e.message));
-    } else {
+    const params = new URLSearchParams(window.location.search);
+    const viewParam = params.get("view");
+    const ticket = params.get("ticket");
+    const vhqParam = params.get("vhq");
+
+    if (ticket) {
       vhqColdOpenMissionControl();
+      return;
     }
+
+    if (viewParam === "hq" || (vhqParam && !viewParam)) {
+      vhqColdOpenMissionControl();
+      return;
+    }
+
+    if (viewParam) {
+      if (viewParam === "demand-desk") {
+        await openDemandDeskView();
+        return;
+      }
+      parkVhqForDeskView();
+      showView(viewParam);
+      refresh().catch((e) => toast(e.message));
+      return;
+    }
+
+    await openDemandDeskView();
   }
 }
 if (document.readyState === "loading") {

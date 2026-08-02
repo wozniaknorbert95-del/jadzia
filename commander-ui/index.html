@@ -7,14 +7,14 @@
   <meta name="mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
-  <title>COI Commander</title>
+  <title>Biuro Popytu · COI Commander</title>
   <link rel="manifest" href="manifest.webmanifest" />
   <link rel="icon" href="icon-192.png" type="image/png" />
   <link rel="apple-touch-icon" href="icon-192.png" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" href="styles.css?v=desk-dash03" />
+  <link rel="stylesheet" href="styles.css?v=desk-dash04" />
 </head>
 <body data-vhq-w2="1" data-vhq-w3="1" data-vhq-w31="1" data-vhq-w32="1" data-vhq-w4="1" data-vhq-w5="1" data-vhq-primary="1">
   <a class="skip-link" href="#main">Przejdź do treści</a>
@@ -31,12 +31,12 @@
     </div>
     <h1>COI Commander</h1>
     <nav aria-label="Główne menu" id="main-nav" class="nav-desktop">
-      <button type="button" data-view="hq" class="nav-btn active" aria-current="page">Start</button>
-      <button type="button" data-view="demand-desk" class="nav-btn">Biuro Popytu</button>
-      <button type="button" data-view="marketing" class="nav-btn">Marketing</button>
+      <button type="button" data-view="demand-desk" class="nav-btn active" aria-current="page">Biuro Popytu</button>
+      <button type="button" data-view="hq" class="nav-btn">Start</button>
       <button type="button" data-view="analytics" class="nav-btn">Analityka</button>
       <button type="button" data-view="agents" class="nav-btn">Agenci</button>
       <button type="button" data-view="settings" class="nav-btn">Ustawienia</button>
+      <button type="button" id="open-more-nav" class="nav-btn nav-btn--more">Więcej</button>
     </nav>
   </header>
 
@@ -69,7 +69,7 @@
   </div>
 
   <main id="main" class="main" tabindex="-1">
-    <section id="view-hq" class="view active" aria-labelledby="vhq-title">
+    <section id="view-hq" class="view" aria-labelledby="vhq-title" hidden>
       <div id="vhq-shell" class="vhq-shell" aria-labelledby="vhq-title">
           <div class="vhq-shell__chrome">
             <header class="vhq-shell__header">
@@ -315,7 +315,7 @@
               <div class="vhq-panel__actions" id="vhq-panel-actions"></div>
             </aside>
           </div>
-          <p class="vhq-shell__hint hint">Esc: room → Mission Control · Tools / Sign in for JWT · No 3D · Cache desk-dash03 · Firm Chain only</p>
+          <p class="vhq-shell__hint hint">Esc: room → Mission Control · Tools / Sign in for JWT · No 3D · Cache desk-dash04 · Firm Chain only</p>
         </div>
     </section>
 
@@ -482,7 +482,10 @@
     </section>
 
     <section id="view-marketing" class="view" aria-labelledby="marketing-title" hidden>
-      <p class="demand-desk-banner demand-desk-banner--fixture" role="status">Legacy organic — operacja dnia → <strong>Biuro Popytu</strong> (nav / More).</p>
+      <p class="demand-desk-banner demand-desk-banner--fixture" role="status">
+        Legacy organic — operacja dnia → <strong>Biuro Popytu</strong>.
+        <button type="button" class="secondary" id="mkt-back-to-desk">Otwórz Biuro Popytu</button>
+      </p>
       <h2 id="marketing-title">Marketing — Organic HITL (Facebook)</h2>
       <p class="hint">Tu publikujesz <strong>organiczne</strong> posty/Reels (HITL). Paid Leads / Instant Form = Meta Ads Manager — nie ten ekran.</p>
       <aside id="mkt-decision-rail" class="exec-rail panel" aria-label="Marketing Brain — Decision Rail">
@@ -648,22 +651,24 @@
   </main>
   </div><!-- /.coi-terminal__body -->
 
-  <footer class="coi-terminal__footer">jadzia · coi commander · organic hitl</footer>
+  <footer class="coi-terminal__footer">jadzia · Biuro Popytu · Demand Desk v2.1</footer>
   </div><!-- /.coi-terminal -->
   </div><!-- /.coi-shell -->
 
   <nav id="bottom-nav" class="bottom-nav" aria-label="Menu mobilne">
-    <button type="button" data-view="hq" class="nav-btn active" aria-current="page">Start</button>
-    <button type="button" data-view="marketing" class="nav-btn">Marketing</button>
+    <button type="button" data-view="demand-desk" class="nav-btn active" aria-current="page">Biuro Popytu</button>
+    <button type="button" data-view="hq" class="nav-btn">Start</button>
     <button type="button" data-view="analytics" class="nav-btn">Analityka</button>
     <button type="button" data-view="agents" class="nav-btn">Agenci</button>
-    <button type="button" data-view="settings" class="nav-btn">Ustawienia</button>
+    <button type="button" id="open-more-nav-bottom" class="nav-btn nav-btn--more">Więcej</button>
   </nav>
 
   <div id="more-sheet" class="more-sheet" hidden role="dialog" aria-label="Więcej">
     <p class="exec-rail-title">Więcej</p>
     <button type="button" class="more-sheet-btn" data-view="demand-desk" id="more-to-demand-desk">Biuro Popytu</button>
+    <button type="button" class="more-sheet-btn more-sheet-btn--legacy" data-view="marketing" data-legacy="1">Marketing (legacy)</button>
     <button type="button" class="more-sheet-btn" data-view="audit" id="more-to-audit">Audyt (secondary)</button>
+    <button type="button" class="more-sheet-btn" data-view="settings">Ustawienia</button>
     <a class="more-sheet-btn" href="https://os.flexgrafik.nl" target="_blank" rel="noopener">Agent OS</a>
     <a class="more-sheet-btn" href="https://cmd.flexgrafik.nl" target="_blank" rel="noopener">VCMS</a>
     <button type="button" id="more-sheet-close" class="secondary">Zamknij</button>
@@ -682,6 +687,6 @@
 
 
   <div id="toast" class="toast" role="status" aria-live="polite" hidden></div>
-  <script src="app.js?v=desk-dash03"></script>
+  <script src="app.js?v=desk-dash04"></script>
 </body>
 </html>

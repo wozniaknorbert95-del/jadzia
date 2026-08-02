@@ -103,12 +103,24 @@ def test_no_go_ready_hero_or_publish_in_desk_section():
     assert "Opublikować" not in section
 
 
-def test_bottom_nav_still_five_views():
+def test_bottom_nav_primary_desk_not_marketing():
     start = HTML.index('id="bottom-nav"')
     end = HTML.index("</nav>", start)
     bottom = HTML[start:end]
-    assert bottom.count('data-view="') == 5
-    assert 'data-view="demand-desk"' not in bottom
+    assert bottom.count('data-view="') == 4
+    assert 'data-view="demand-desk"' in bottom
+    assert 'data-view="marketing"' not in bottom
+    assert 'id="open-more-nav-bottom"' in bottom
+
+
+def test_main_nav_no_marketing_desk_first():
+    start = HTML.index('id="main-nav"')
+    end = HTML.index("</nav>", start)
+    nav = HTML[start:end]
+    assert 'data-view="demand-desk"' in nav
+    assert nav.index('data-view="demand-desk"') < nav.index('data-view="hq"')
+    assert 'data-view="marketing"' not in nav
+    assert 'id="open-more-nav"' in nav
 
 
 def test_desk_nav_desktop_and_more_sheet():
@@ -117,10 +129,10 @@ def test_desk_nav_desktop_and_more_sheet():
     assert 'id="more-to-demand-desk"' in HTML
 
 
-def test_cache_bust_desk_dash03():
-    assert HTML.count("desk-dash03") >= 2
-    assert "desk-dash02" not in HTML
-    assert "coi-commander-desk-dash03" in SW
+def test_cache_bust_desk_dash04():
+    assert HTML.count("desk-dash04") >= 2
+    assert "desk-dash03" not in HTML
+    assert "coi-commander-desk-dash04" in SW
 
 
 def test_desk_design_link_in_html():
@@ -201,3 +213,12 @@ def test_desk_retry_and_money_check_wired():
 def test_marketing_legacy_banner():
     assert "Legacy organic" in HTML
     assert "Biuro Popytu" in HTML
+    assert 'id="mkt-back-to-desk"' in HTML
+    assert "more-sheet-btn--legacy" in HTML
+    assert 'data-view="marketing"' not in HTML[HTML.index('id="main-nav"'): HTML.index('id="bottom-nav"')]
+
+
+def test_default_boot_opens_demand_desk():
+    boot = APP[APP.index("async function vhqBoot"): APP.index("if (document.readyState", APP.index("async function vhqBoot"))]
+    assert "openDemandDeskView" in boot
+    assert "vhqColdOpenMissionControl" in boot

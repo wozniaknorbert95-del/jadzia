@@ -9,9 +9,15 @@ HTML = (ROOT / "commander-ui" / "index.html").read_text(encoding="utf-8")
 APP = (ROOT / "commander-ui" / "app.js").read_text(encoding="utf-8")
 
 
+def test_default_boot_opens_demand_desk_without_view_param():
+    boot = APP[APP.index("async function vhqBoot"): APP.index("if (document.readyState", APP.index("async function vhqBoot"))]
+    assert "await openDemandDeskView()" in boot
+    assert 'viewParam === "hq"' in boot
+
+
 def test_deep_link_demand_desk_in_boot():
-    assert "viewParam === \"demand-desk\"" in APP
-    assert "showView(\"demand-desk\")" in APP
+    assert 'viewParam === "demand-desk"' in APP or 'viewParam === "demand-desk"' in APP
+    assert "openDemandDeskView" in APP
 
 
 def test_more_sheet_demand_desk_entry():

@@ -1129,7 +1129,14 @@ dialog {
   }
 }
 
-.more-sheet-btn, #more-sheet-close {
+.more-sheet-btn--legacy {
+  opacity: 0.85;
+  font-size: 0.92em;
+}
+
+.nav-btn--more {
+  font-weight: 500;
+}
   min-height: var(--touch);
 }
 
