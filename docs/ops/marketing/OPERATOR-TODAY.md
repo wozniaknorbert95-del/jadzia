@@ -1,23 +1,23 @@
 ---
-status: "[GO TIKTOK ORGANIC · DZIŚ 2026-08-01]"
-title: "Marketing OS — PUBLISH NOW"
-updated: "2026-08-01"
-budget_freeze_until: "2026-08-06"
-icp_role_week: "installateur"
+status: "[ETAP 5 DASHBOARD · marketing PARKED_LAST]"
+title: "Marketing OS — START TUTAJ"
+updated: "2026-08-02"
 ---
 
-# GO TIKTOK ORGANIC — DZIŚ
+# START TUTAJ
 
-→ **[`../demand-os/set-now/GO-DAY-TODAY.md`](../demand-os/set-now/GO-DAY-TODAY.md)** ← otwórz i publikuj
+**Kolejność Dowódcy:** tool 100% = **backend + dashboard UX/UI** → dopiero potem marketing.
 
-## Caption + link (tt_w31_install_01)
+**Fazy:** [`../demand-os/PROGRAM-PHASES.md`](../demand-os/PROGRAM-PHASES.md)  
+**Teraz:** **Etap 5** — build Biuro Popytu · design [`../demand-os/DEMAND-CONTROL-PANEL-DESIGN.md`](../demand-os/DEMAND-CONTROL-PANEL-DESIGN.md) · API [`../demand-os/DESK-CONTRACT.md`](../demand-os/DESK-CONTRACT.md)
 
-```
-https://zzpackage.flexgrafik.nl/wizard/?utm_source=tiktok&utm_medium=organic&utm_campaign=icp_installateur&utm_content=tt_w31_install_01
-```
+## Kolejka
 
-Po publish napisz w czacie: `PUBLISHED tt_w31_install_01`
+1. ~~Backend + contract~~ SEALED  
+2. **Dashboard UX/UI (Etap 5)** ← ACTIVE  
+3. Marketing HITL — **PARKED_LAST**  
+4. Tuning na REAL — po HITL  
 
 ## STOP
 
-Ads · HQ · dashboard · multi-CTA · VPS deploy bez GO
+Live publish · Ads · VPS · marketing przed gotowym dashboardem

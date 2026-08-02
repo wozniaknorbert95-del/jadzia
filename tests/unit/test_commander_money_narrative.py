@@ -6,7 +6,12 @@ from __future__ import annotations
 def test_insufficient_data_when_no_leads_no_nba():
     from agent.commander.money_narrative import build_money_risk_narrative
 
-    out = build_money_risk_narrative(leads=[], analytics_snap=None, brief={"nba": None})
+    out = build_money_risk_narrative(
+        leads=[],
+        analytics_snap=None,
+        brief={"nba": None},
+        demand_os_mc={"starts_utm": 0, "paid": 0, "top_hook": "", "validator_fail": 0},
+    )
     assert out["status"] == "insufficient_data"
     assert out["cta"]["action"] == "open_wizard"
     assert "€" not in out["q1"]
@@ -15,6 +20,29 @@ def test_insufficient_data_when_no_leads_no_nba():
     assert "revenue" not in out
     assert "revenue_eur" not in out
     assert out["pipeline"]["wizard_sessions"] is None
+    assert out["demand_os"]["marketing"] == "PARKED_LAST"
+
+
+def test_demand_os_hub_partial_with_starts():
+    from agent.commander.money_narrative import build_money_risk_narrative
+
+    out = build_money_risk_narrative(
+        leads=[],
+        analytics_snap=None,
+        brief={"nba": None},
+        demand_os_mc={
+            "starts_utm": 3,
+            "paid": 1,
+            "top_hook": "tt_w32_install_01",
+            "validator_fail": 0,
+        },
+    )
+    assert out["status"] == "partial"
+    assert out["demand_os"]["starts_utm"] == 3
+    assert out["demand_os"]["marketing"] == "PARKED_LAST"
+    assert out["pipeline"]["wizard_sessions"] == 3
+    assert out["cta"]["action"] == "demand_os_status"
+    assert "€" not in str(out)
 
 
 def test_partial_with_hot_lead_counts_and_top_risk():
@@ -54,7 +82,12 @@ def test_partial_with_hot_lead_counts_and_top_risk():
             "why_now": "Pending hot_lead",
         }
     }
-    out = build_money_risk_narrative(leads=leads, analytics_snap=None, brief=brief)
+    out = build_money_risk_narrative(
+        leads=leads,
+        analytics_snap=None,
+        brief=brief,
+        demand_os_mc={"starts_utm": 0, "paid": 0, "top_hook": "", "validator_fail": 0},
+    )
     assert out["status"] == "partial"
     assert out["pipeline"]["open_leads"] == 2
     assert out["pipeline"]["hot_leads"] == 1
@@ -74,7 +107,12 @@ def test_never_surfaces_purchase_revenue_from_snapshot():
         "sync_status": "ok",
         "sources_json": '{"zzpackage":{"purchase_revenue":99999,"sessions":12}}',
     }
-    out = build_money_risk_narrative(leads=[], analytics_snap=snap, brief={"nba": None})
+    out = build_money_risk_narrative(
+        leads=[],
+        analytics_snap=snap,
+        brief={"nba": None},
+        demand_os_mc={"starts_utm": 0, "paid": 0, "top_hook": "", "validator_fail": 0},
+    )
     blob = str(out)
     assert "99999" not in blob
     assert "purchase_revenue" not in blob or out["ga4"]["usable_for_money"] is False

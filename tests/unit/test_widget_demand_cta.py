@@ -23,6 +23,9 @@ def test_build_widget_wizard_deeplink():
     assert "zzpackage.flexgrafik.nl/wizard/" in url
     assert "voertuig=caddy" in url
     assert "highlight=MA-005" in url
+    assert "utm_source=design_agent" in url
+    assert "utm_campaign=icp_installateur" in url
+    assert "utm_content=da_MA-005" in url
 
 
 def test_extract_email_and_consent():

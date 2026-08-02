@@ -2071,3 +2071,208 @@ body.vhq-open.vhq-mode-work .vhq-shell__body {
     grid-template-columns: 1fr;
   }
 }
+
+/* --- Demand Desk (Etap 5) --- */
+.demand-desk {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  max-width: 960px;
+}
+
+.demand-desk-section h3 {
+  font-size: 1rem;
+  margin: 0 0 0.5rem;
+}
+
+.demand-desk-header h2 {
+  font-size: 1.35rem;
+  margin: 0 0 0.25rem;
+}
+
+.demand-desk-robota {
+  font-size: 1.05rem;
+  font-weight: 600;
+  margin: 0.5rem 0;
+}
+
+.demand-desk-header-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem 1.25rem;
+  font-size: 0.9rem;
+}
+
+.demand-desk-cash-warn {
+  color: var(--warn, #e6a700);
+  font-weight: 600;
+}
+
+.demand-desk-banner {
+  padding: 0.5rem 0.75rem;
+  border-radius: 4px;
+  margin: 0.35rem 0;
+  font-size: 0.85rem;
+}
+
+.demand-desk-banner--fixture {
+  background: rgba(230, 167, 0, 0.15);
+  border: 1px solid var(--warn, #e6a700);
+}
+
+.demand-desk-banner--err {
+  background: rgba(220, 80, 80, 0.12);
+  border: 1px solid var(--err, #dc5050);
+}
+
+.demand-desk--fixture {
+  outline: 2px dashed rgba(230, 167, 0, 0.35);
+  outline-offset: 4px;
+}
+
+.demand-desk--parked-stop .demand-desk-robota {
+  color: var(--err, #dc5050);
+}
+
+.demand-desk--stale .demand-desk-footer {
+  border-color: var(--warn, #e6a700);
+}
+
+.demand-desk-section--primary {
+  order: -1;
+}
+
+.demand-desk-section--hitl h3,
+.demand-desk-section--hunt h3 {
+  font-size: 1.05rem;
+  font-weight: 600;
+}
+
+.demand-desk-section--puls h3 {
+  font-size: 0.95rem;
+  font-weight: 500;
+  opacity: 0.9;
+}
+
+.demand-desk-dual-cash--warn {
+  color: var(--warn, #e6a700);
+  font-weight: 600;
+}
+
+.demand-desk-design-link {
+  margin-top: 0.5rem;
+}
+
+.desk-queue-row:focus-within {
+  outline: 2px solid rgba(100, 160, 255, 0.45);
+  outline-offset: 2px;
+}
+
+.demand-desk-praca {
+  display: grid;
+  gap: 0.75rem;
+}
+
+@media (min-width: 768px) {
+  .demand-desk-praca {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+.desk-queue-row {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  padding: 0.5rem 0;
+  border-bottom: 1px solid var(--border-terminal, #2a3340);
+}
+
+.desk-queue-row:last-child {
+  border-bottom: none;
+}
+
+.desk-act-btn {
+  min-height: 44px;
+  min-width: 44px;
+  padding: 0.35rem 0.75rem;
+  cursor: pointer;
+}
+
+.desk-act-btn:disabled,
+.desk-act-btn[disabled] {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+.demand-desk-icp-form {
+  display: grid;
+  gap: 0.35rem;
+  margin-top: 0.75rem;
+  max-width: 420px;
+}
+
+.demand-desk-icp-form input {
+  min-height: 44px;
+}
+
+.demand-desk-kpis .kpi-tile {
+  padding: 0.5rem;
+  border: 1px solid var(--border-terminal, #2a3340);
+  border-radius: 4px;
+}
+
+.demand-desk-kpis .kpi-label {
+  display: block;
+  font-size: 0.7rem;
+  opacity: 0.75;
+}
+
+.demand-desk-kpis .kpi-value {
+  font-size: 1.1rem;
+  font-weight: 600;
+}
+
+.demand-desk-dual-cash[data-dual-fail]:not([data-dual-fail="0"]) {
+  color: var(--warn, #e6a700);
+  font-weight: 600;
+}
+
+.demand-desk-footer-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-top: 0.5rem;
+}
+
+.demand-desk-diagnostics pre {
+  white-space: pre-wrap;
+  font-size: 0.75rem;
+  max-height: 200px;
+  overflow: auto;
+}
+
+.demand-desk--loading .demand-desk-kpis .kpi-value {
+  opacity: 0.4;
+}
+
+.desk-badge {
+  display: inline-block;
+  padding: 0.1rem 0.4rem;
+  border-radius: 3px;
+  font-size: 0.75rem;
+  background: var(--border-terminal, #2a3340);
+}
+
+.desk-badge--sent { background: rgba(80, 200, 120, 0.2); }
+.desk-badge--block { background: rgba(220, 80, 80, 0.2); }
+.desk-badge--ready { background: rgba(100, 160, 255, 0.2); }
+
+@media (max-width: 320px) {
+  .demand-desk-header-meta {
+    flex-direction: column;
+    gap: 0.35rem;
+  }
+  .demand-desk-praca {
+    grid-template-columns: 1fr;
+  }
+}

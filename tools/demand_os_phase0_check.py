@@ -49,10 +49,12 @@ MUST_CONTAIN = {
     "ICP-WEEK.md": "installateur",
     "PRIMARY-CHANNEL.md": "2026-08-02",
     "UTM-TEMPLATE.md": "utm_source={channel}",
-    "ADS-FREEZE.md": "2026-08-06",
     "WAVE1-ROSTER.md": "Sniper_Validator",
     "VALIDATOR-CHECKLIST.md": "Brak UTM",
 }
+
+# Ads SoT: calendar freeze (legacy) OR cash park (Organic Sprint)
+ADS_FREEZE_OK = ("parked_cash", "2026-08-06")
 
 
 def main() -> int:
@@ -71,6 +73,10 @@ def main() -> int:
         needle = MUST_CONTAIN.get(name)
         if needle and needle not in text:
             errors.append(f"{name}: expected substring {needle!r}")
+        if name == "ADS-FREEZE.md" and not any(s in text for s in ADS_FREEZE_OK):
+            errors.append(
+                f"ADS-FREEZE.md: expected one of {ADS_FREEZE_OK!r}"
+            )
 
     ledger_path = SET_NOW / "LEDGER.csv"
     if ledger_path.is_file():
@@ -100,8 +106,9 @@ def main() -> int:
 
     print("Phase 0 CHECK: PASS")
     print(f"  artifacts: {len(REQUIRED_FILES)} files under {SET_NOW.relative_to(ROOT)}")
-    print("  next: GO TIKTOK ORGANIC >= 2026-08-02 (human publish)")
-    print("  next_agent: /demand-os-execute after organic date")
+    print("  ads: parked_cash OR calendar freeze marker present")
+    print("  next: TOOL/PROGRAM SEAL maintain — marketing PARKED_LAST until GO MARKETING HITL")
+    print("  stop: live publish/hunt · Ads F5 · VPS without GO")
     return 0
 
 

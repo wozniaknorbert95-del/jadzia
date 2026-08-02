@@ -2,8 +2,8 @@
 status: "[ACTIVE]"
 title: "Jadzia-Core Brain (Canonical)"
 owner: "Norbert Wozniak"
-updated: "2026-07-31"
-readiness_overall: "VHQ DI agent closeout DONE (S3–S6+S8=5); S7 Order Desk parked; SoT hygiene DONE"
+updated: "2026-08-02"
+readiness_overall: "Demand Desk design v2 ACTIVE; Tool COHERENCE SEALED; marketing PARKED_LAST; S7 Order Desk parked"
 ---
 
 ## 1) Misja modułu
@@ -114,6 +114,11 @@ Pełne kontrakty: `flexgrafik-meta/docs/core/integration-contracts.md`
 - **Campus program:** `SUPERSEDED` — `docs/ops/FLEXGRAFIK-CAMPUS-PROGRAM.md` (foundation only)
 - **DI scorecard:** `docs/ops/VHQ-DECISION-INSTRUMENT-SCORECARD.md` (S3–S6+S8 DONE; S7 parked)
 - **Lanes appendix:** `docs/ops/PROGRAM-LANES-SOT.md` (ściąga — nie plan)
+- **Demand OS / Biuro Popytu (program faz):** `docs/ops/demand-os/PROGRAM-PHASES.md`
+- **Etap 5 Dashboard ACTIVE (tool 100% includes UI):** `docs/ops/demand-os/DEMAND-CONTROL-PANEL-DESIGN.md` · API `DESK-CONTRACT.md`
+- **Marketing HITL:** PARKED_LAST — po finalnym szlifie tool+UX/UI
+- **OS TARGET (Demand Machine):** `docs/ops/SYSTEM-FIRM-OPERATING-SYSTEM-TARGET.md`
+- **Tool coherence:** `docs/ops/demand-os/OS-TARGET-COHERENCE.md` (Etap 1 SEALED)
 - **Module spec (COI):** `flexgrafik-meta/docs/core/modules/module-jadzia-core.md`
 - **Charter:** `flexgrafik-meta/docs/core/jadzia-operating-charter.md`
 - **Globalne zasady:** `flexgrafik-meta/docs/core/global-rules.md` (VCMS = pointer)
@@ -147,6 +152,9 @@ Golden Path: **L0 Triage → L3 Validate → L3.5 Post-coding → L4 Handoff/Dep
 ```
 brain.md
 todo.json
+docs/ops/demand-os/PROGRAM-PHASES.md
+docs/ops/demand-os/DEMAND-CONTROL-PANEL-DESIGN.md
+docs/ops/SYSTEM-FIRM-OPERATING-SYSTEM-TARGET.md
 docs/PRD-core.md
 .agents/workflows/README.md
 flexgrafik-meta/docs/core/jadzia-operating-charter.md

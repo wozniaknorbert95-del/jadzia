@@ -1,66 +1,34 @@
 ---
-title: "GO TIKTOK ORGANIC — DZIŚ"
+title: "TOOL BUILD FIRST — marketing PARKED_LAST"
 date: "2026-08-01"
-todo: DOS-W1-03
-status: "GO LIVE NOW"
-founder_override: "organic_from brought forward to 2026-08-01 by Dowódca GO"
+todo: DOS-TOOL-*
+status: "PARKED_LAST"
+founder_go: "OS TARGET Tool Complete before any marketing HITL"
 ---
 
-# GO TIKTOK ORGANIC — DZIŚ (2026-08-01)
+# GO DAY — TOOL FIRST
 
-**Komenda:** `GO TIKTOK ORGANIC` — **AKTYWNA TERAZ** (nie czekaj na 02.08).
+Marketing / live publish / FB hunt = **PARKED_LAST**.  
+Cel: 100% [`SYSTEM-FIRM-OPERATING-SYSTEM-TARGET.md`](../../SYSTEM-FIRM-OPERATING-SYSTEM-TARGET.md).
 
-## PUBLISH NOW — tt_w31_install_01
+| Reguła | Wartość |
+|--------|---------|
+| priority | Demand OS TOOL residual → dashboard tip |
+| publish live | **STOP** (dry-run / mock / fixture OK) |
+| Ads | **PARK cash** |
+| VPS | STOP bez GO |
+| unpark marketing | tylko Founder `GO MARKETING HITL` po TOOL PASS |
 
-### Caption (kopiuj 1:1)
+## Agent dziś
 
-```text
-Opdrachtgevers zien je bus vóór ze bellen.
-
-Witte bus = anoniem.
-Branding = herkenbaar.
-
-Start in de Wizard (2 min):
-https://zzpackage.flexgrafik.nl/wizard/?utm_source=tiktok&utm_medium=organic&utm_campaign=icp_installateur&utm_content=tt_w31_install_01
-
-#installateur #zzp #bedrijfsbus #voertuigbelettering
+```bash
+python tools/demand_os_hub.py status
+python tools/demand_os_phase0_check.py
 ```
 
-### Pin comment
+Runner: `/demand-os-execute` · STATE: [`../STATE.md`](../STATE.md)
 
-```text
-Link naar Wizard staat hierboven ↑ — één klik, geen offerte-gedoe.
-```
+## PARKED (nie dziś)
 
-### Validator (przed uploadem) — PASS
-
-| # | Reguła | |
-|---|--------|--|
-| 1 | 1 CTA only | PASS |
-| 2 | UTM | PASS |
-| 3 | icp_role=installateur | PASS |
-| 4 | no multi-CTA | PASS |
-| 5 | Ads OFF | PASS |
-| 6 | no HQ hero | PASS |
-
-## Checklist (odhacz w telefonie)
-
-1. [ ] Otwórz TikTok → Nowy film (9:16) z footage bus / branding
-2. [ ] Wklej caption powyżej
-3. [ ] Link w bio lub first comment = ten sam Wizard UTM
-4. [ ] Publish
-5. [ ] Pin comment
-6. [ ] Napisz agentowi: `PUBLISHED tt_w31_install_01` (+ URL jeśli masz)
-
-## Dziś jeszcze (cel ≥3 / tydz — start dziś)
-
-| # | asset | kiedy dziś/ten tydzień |
-|---|-------|------------------------|
-| 1 | tt_w31_install_01 | **TERAZ** |
-| 2 | tt_w31_install_02 | dziś wieczór / jutro |
-| 3 | tt_w31_install_03 | przed Pt |
-
-Captions: [`TT-CAPTIONS-W1.md`](./TT-CAPTIONS-W1.md)  
-Replies: [`REPLY-BANK-NL.md`](./REPLY-BANK-NL.md)
-
-**STOP:** Ads · HQ · dashboard · multi-CTA
+- TT live publish · FB hunt · Blog HITL ship  
+- Organic sprint: [`../ORGANIC-AGENCY-SPRINT-14D.md`](../ORGANIC-AGENCY-SPRINT-14D.md)

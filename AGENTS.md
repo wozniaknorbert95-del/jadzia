@@ -15,7 +15,7 @@
 - **Deploy**: `.agents/workflows/jadzia-deploy.md`
 - **Post-coding**: `.agents/workflows/post-coding.md` (fresh GO for VPS)
 - **Latest handoffs**: `docs/handoffs/` (≤15 rolling; MBA archived)
-- **Marketing OS**: `docs/ops/marketing/OPERATOR-TODAY.md` (start) · Action Plan: `docs/ops/DEMAND-OS-ACTION-PLAN.md` · SET NOW: `docs/ops/demand-os/set-now/` · Runner: `/demand-os-execute` · Strategy: `docs/ops/strategy/STRATEGY-PACK.md` · OS TARGET: `docs/ops/SYSTEM-FIRM-OPERATING-SYSTEM-TARGET.md` · organic HITL only; paid = Ads Manager after thaw
+- **Marketing OS**: fazy = `PROGRAM-PHASES.md` · **tool 100% PARTIAL** (backend + UI kod; manual §8 pending) · marketing **PARKED_LAST** · Ads/VPS STOP
 
 ## MBA
 

@@ -55,8 +55,10 @@ ROLE_SCOPES: Dict[str, list[str]] = {
         "queue:act",
         "leads:act",
         "commander:read",
+        "demand_os:read",
+        "demand_os:act",
     ],
-    "viewer": ["*:read", "commander:read"],
+    "viewer": ["*:read", "commander:read", "demand_os:read"],
 }
 
 BULK_APPROVE_LIMIT = 5

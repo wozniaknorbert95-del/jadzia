@@ -73,6 +73,7 @@ def build_money_risk_narrative(
     leads: Optional[List[Dict[str, Any]]] = None,
     analytics_snap: Optional[Dict[str, Any]] = None,
     brief: Optional[Dict[str, Any]] = None,
+    demand_os_mc: Optional[Dict[str, Any]] = None,
 ) -> Dict[str, Any]:
     """Build read-only money/risk narrative. Inject deps for unit tests."""
     from agent.db import db_list_analytics_snapshots, db_list_leads
@@ -91,11 +92,42 @@ def build_money_risk_narrative(
     ga4 = _ga4_honesty(analytics_snap)
     top_risk = _top_risk_from_brief(brief or {})
 
+    # Demand OS Hub §M — starts by UTM (never vanity views / euro)
+    demand_os: Dict[str, Any] = {
+        "starts_utm": 0,
+        "paid": 0,
+        "top_hook": "",
+        "validator_fail": 0,
+        "marketing": "PARKED_LAST",
+        "source": "demand_os.money_check",
+        "kill_vanity": True,
+    }
+    try:
+        if demand_os_mc is not None:
+            mc = demand_os_mc
+        else:
+            from agent.demand_os.observability import money_check
+
+            mc = money_check()
+        demand_os = {
+            "starts_utm": int(mc.get("starts_utm") or 0),
+            "paid": int(mc.get("paid") or 0),
+            "top_hook": mc.get("top_hook") or "",
+            "validator_fail": int(mc.get("validator_fail") or 0),
+            "sniper_compliance": mc.get("sniper_compliance"),
+            "marketing": "PARKED_LAST",
+            "source": "demand_os.money_check",
+            "kill_vanity": True,
+        }
+    except Exception as exc:
+        demand_os["error"] = str(exc)[:160]
+
     has_lead_signal = (
         counts["open_leads"] > 0
         or counts["hot_leads"] > 0
         or counts["cta_band_leads"] > 0
     )
+    has_demand_signal = int(demand_os.get("starts_utm") or 0) > 0
     if has_lead_signal or top_risk:
         status = "partial"
         q1 = (
@@ -108,11 +140,24 @@ def build_money_risk_narrative(
             "action": "focus_queue",
             "target": "queue",
         }
+    elif has_demand_signal:
+        status = "partial"
+        q1 = (
+            f"Demand OS: {demand_os['starts_utm']} Wizard start(s) UTM · "
+            f"top_hook={demand_os.get('top_hook') or 'none'} · "
+            "marketing HITL PARKED_LAST — no live euro claimed."
+        )
+        cta = {
+            "label": "Demand OS status",
+            "action": "demand_os_status",
+            "target": "/api/v1/commander/demand-os/status",
+        }
     else:
         status = "insufficient_data"
         q1 = (
-            "Insufficient money/risk signal — no open leads and no ranked NBA. "
-            "Verify Wizard/lead intake; do not invent revenue."
+            "Insufficient money/risk signal — no open leads, no ranked NBA, "
+            "Demand OS starts_utm=0. Verify ingest/fixture; do not invent revenue. "
+            "Marketing PARKED_LAST."
         )
         cta = {
             "label": "Open Wizard",
@@ -120,9 +165,12 @@ def build_money_risk_narrative(
             "target": "https://zzpackage.flexgrafik.nl/wizard/",
         }
 
-    event_ids = [ORDER_DESK["evidence"]]
+    event_ids = [ORDER_DESK["evidence"], "demand_os:hub"]
     if top_risk and top_risk.get("queue_type"):
         event_ids.append(f"nba:{top_risk['queue_type']}")
+
+    # Prefer Hub starts over null GA4 wizard_sessions when available
+    wizard_sessions = demand_os["starts_utm"] if has_demand_signal else ga4["wizard_sessions"]
 
     return {
         "status": status,
@@ -130,10 +178,11 @@ def build_money_risk_narrative(
         "q1": q1,
         "pipeline": {
             **counts,
-            "wizard_sessions": ga4["wizard_sessions"],
+            "wizard_sessions": wizard_sessions,
             "wizard_conversions": ga4["wizard_conversions"],
             "order_desk": dict(ORDER_DESK),
         },
+        "demand_os": demand_os,
         "top_risk": top_risk,
         "freshness": {
             "ga4": ga4["freshness"],
@@ -144,6 +193,7 @@ def build_money_risk_narrative(
             "No vanity euro totals on Mission Control L1",
             "Order Desk PARKED · EV-W2-010",
             "GA4 purchase revenue not shown as money KPI",
+            "Demand OS marketing HITL PARKED_LAST until GO MARKETING HITL",
         ],
         "cta": cta,
         "event_ids": event_ids,

@@ -125,3 +125,22 @@ def test_firm_chain_css_and_js_contracts_present():
     assert "vhqSetFirmStageFilter(room.firmStage" in APP
     assert "btn.dataset.firmStage = room.firmStage" in APP
     assert "function vhqShowStageBrowse" in APP
+
+
+def test_vhq_biuro_popytu_cta():
+    assert 'id="vhq-marketing-observe"' in HTML
+    assert "Otwórz Biuro Popytu" in HTML
+    assert 'target: "demand-desk"' in APP
+
+
+def test_marketing_studio_action_targets_demand_desk():
+    chunk = _room_chunk("marketing-studio")
+    assert 'action: { type: "view", target: "demand-desk"' in chunk
+    assert 'label: "Otwórz Biuro Popytu"' in chunk
+
+
+def test_marketing_studio_campaign_state_desk_etap5():
+    chunk = _room_chunk("marketing-studio")
+    assert "Desk Etap 5" in chunk
+    assert "Campaign state" in chunk
+    assert "marketing PARKED_LAST" in chunk

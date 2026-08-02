@@ -1,7 +1,7 @@
 ---
 status: "[APPENDIX]"
 title: "Program lanes — DONE vs WAITING (ściąga, nie plan)"
-updated: "2026-08-01"
+updated: "2026-08-02"
 owner: "Dowódca + agent"
 tip: "COM-AI-50-SHIP DEPLOY PASS · tip fcf6a9f · VHQ cache vhq-w68a"
 cache: "vhq-w68a"
@@ -31,10 +31,20 @@ demand_os_plan: "docs/ops/DEMAND-OS-ACTION-PLAN.md"
 | A2 | VHQ Final Dashboard | **DONE** |
 | C0 | Order Desk SoT discovery | **DONE · ACCEPTED** |
 | C1 | Order Desk thin WV (mirror RO) | **DONE · DEPLOY PASS** `vhq-w68a` |
-| B | Growth / Demand (COM-AI) | **SHIP DEPLOYED** · widget disclosure LIVE · organic ≥2026-08-02 · counsel TAK · Ads freeze do 2026-08-06 |
-| B2 | Demand OS Action Plan + SET NOW | **F0 PREP DONE** · commit `6dacd92`+ · runner `/demand-os-execute` · next human **DOS-W1-03** ≥2026-08-02 · **NO VPS deploy** |
-| S | Strategy Pack sniper | **ACCEPTED · SOT** `docs/ops/strategy/STRATEGY-PACK.md` |
-| O | OS TARGET egzekutor | **ACCEPTED · SOT** v5 INSIDER |
+| B | Growth / Demand (COM-AI) | **SHIP DEPLOYED** · **TOOL BUILD FIRST** (OS TARGET) · **Ads PARK cash** (F5 parked) |
+| B2 | Demand OS Organic Sprint 14D | **PARKED_LAST** · wait Founder `GO MARKETING HITL` only · **NO VPS** |
+| B3 | Demand OS TOOL residual | **DONE local** · TOOL-PASS.md · pytest 47 · marketing PARKED_LAST |
+| B4 | Demand OS Dashboard tune | **DONE local** · Commander demand-os/status · hub weekly · PROGRAM SEAL |
+| B5 | Demand OS Program Seal | **DONE local / SEALED** · hub doctor PASS · money_narrative Hub · wait `GO MARKETING HITL` |
+| B6 | Demand OS MASTER residual | **DONE local** · sync-db/leads · GA4 wrap · Wave1 agents · doctor · wait `GO MARKETING HITL` |
+| B7 | Demand OS TOOL-100 | **SUPERSEDED** · overclaim ~91% · see B8 |
+| B8 | Demand OS TOOL COHERENCE (Etap 1) | **SEALED** · COHERENCE PASS · doctor+pytest · marketing PARKED_LAST |
+| B9 | Demand Desk DESIGN v2.1 | **ACCEPTED** · `DEMAND-CONTROL-PANEL-DESIGN.md` |
+| B9b | Desk Contract (Etap 1b) | **SEALED** v2.1.1 · `DESK-CONTRACT.md` |
+| B9c | HITL-READY dry | **PASS** · `HITL-READY-TOOL.md` · park `GO MARKETING HITL` |
+| B10 | Strategy + agent config (Etap 3) | **PARKED** do ACCEPT Etapu 2 · fakty, nie zgadywanie |
+| S | Strategy Pack sniper | **ACCEPTED · SOT** · egzekucja config = po Etapie 1 |
+| O | OS TARGET egzekutor | **ACCEPTED · SOT** v5 · Etap 1 = 100% tool coherence |
 | C | Order Desk / S7 LIVE | **PARKED** (`blocked_sot` · EV-W2-010) |
 | D | 3D · MKT-ASSET · Ads freeze · dashboard P0 | **PARKED** |
 

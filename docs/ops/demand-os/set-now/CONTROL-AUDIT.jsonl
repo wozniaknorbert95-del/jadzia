@@ -1,0 +1,88 @@
+{"id": "aud_4f696360b8ab", "ts": "2026-08-01T12:54:30+00:00", "action": "go_day_ready", "actor": "agent", "detail": {"score": 100.0}}
+{"id": "aud_8b27466cd721", "ts": "2026-08-01T12:57:16+00:00", "action": "engage_comment", "actor": "Agent_TT", "detail": {"target_id": "tt_own", "ok": true, "dry_run": true, "asset_id": "tt_engage_01"}}
+{"id": "aud_232aacba476e", "ts": "2026-08-01T12:57:16+00:00", "action": "engage_comment", "actor": "Agent_FB", "detail": {"target_id": "fb_g1", "ok": true, "dry_run": true, "asset_id": "fb_engage_01"}}
+{"id": "aud_0ba0f8bc362d", "ts": "2026-08-01T12:57:16+00:00", "action": "brief_icp", "actor": "Growth_Lead", "detail": {"role": "installateur", "handoff_id": "c5a0ce18-c8c2-40e7-9f0b-482bf2b89544"}}
+{"id": "aud_99694fbc8d9b", "ts": "2026-08-01T12:57:16+00:00", "action": "gate_allow", "actor": "Publish_Gate", "detail": {"asset_id": "tt_gate_01", "reason": "GATE ALLOW", "dry_run": true}}
+{"id": "aud_f791a35865c7", "ts": "2026-08-01T12:57:16+00:00", "action": "validator_pass", "actor": "Sniper_Validator", "detail": {"asset_id": "tt_w32_install_01", "decision": "PASS", "fail_rules": []}}
+{"id": "aud_a08d7c165fc1", "ts": "2026-08-02T11:11:49+00:00", "action": "gate_allow", "actor": "Publish_Gate", "detail": {"asset_id": "tt_gate_01", "reason": "GATE ALLOW", "dry_run": true}}
+{"id": "aud_498b5cfc681a", "ts": "2026-08-02T11:11:50+00:00", "action": "validator_pass", "actor": "Sniper_Validator", "detail": {"asset_id": "tt_w32_install_01", "decision": "PASS", "fail_rules": []}}
+{"id": "aud_83359c4fdebc", "ts": "2026-08-02T11:11:59+00:00", "action": "engage_comment", "actor": "Agent_TT", "detail": {"target_id": "tt_own", "ok": true, "dry_run": true, "asset_id": "tt_engage_01"}}
+{"id": "aud_3dee6649ab4a", "ts": "2026-08-02T11:11:59+00:00", "action": "engage_comment", "actor": "Agent_FB", "detail": {"target_id": "fb_g1", "ok": true, "dry_run": true, "asset_id": "fb_engage_01"}}
+{"id": "aud_df71ee8f2d1b", "ts": "2026-08-02T11:11:59+00:00", "action": "brief_icp", "actor": "Growth_Lead", "detail": {"role": "installateur", "handoff_id": "7c3d1041-fc9b-4e02-9049-fbaa2fcfc0b5"}}
+{"id": "aud_b4c36bd834de", "ts": "2026-08-02T11:11:59+00:00", "action": "gate_allow", "actor": "Publish_Gate", "detail": {"asset_id": "tt_gate_01", "reason": "GATE ALLOW", "dry_run": true}}
+{"id": "aud_6c9a9ba39624", "ts": "2026-08-02T11:11:59+00:00", "action": "validator_pass", "actor": "Sniper_Validator", "detail": {"asset_id": "tt_w32_install_01", "decision": "PASS", "fail_rules": []}}
+{"id": "aud_4366019fc837", "ts": "2026-08-02T11:14:20+00:00", "action": "engage_comment", "actor": "Agent_TT", "detail": {"target_id": "tt_own", "ok": true, "dry_run": true, "asset_id": "tt_engage_01"}}
+{"id": "aud_fb3a11657547", "ts": "2026-08-02T11:14:20+00:00", "action": "engage_comment", "actor": "Agent_FB", "detail": {"target_id": "fb_g1", "ok": true, "dry_run": true, "asset_id": "fb_engage_01"}}
+{"id": "aud_bb9b163db751", "ts": "2026-08-02T11:14:20+00:00", "action": "brief_icp", "actor": "Growth_Lead", "detail": {"role": "installateur", "handoff_id": "351c3b42-eb5a-4e7b-bb4d-ed1dcc6cf486"}}
+{"id": "aud_84e82e6caf92", "ts": "2026-08-02T11:14:20+00:00", "action": "gate_allow", "actor": "Publish_Gate", "detail": {"asset_id": "tt_gate_01", "reason": "GATE ALLOW", "dry_run": true}}
+{"id": "aud_7f46ac6f7c76", "ts": "2026-08-02T11:14:20+00:00", "action": "validator_pass", "actor": "Sniper_Validator", "detail": {"asset_id": "tt_w32_install_01", "decision": "PASS", "fail_rules": []}}
+{"id": "aud_75ac4a7dbf0d", "ts": "2026-08-02T11:15:32+00:00", "action": "engage_comment", "actor": "Agent_TT", "detail": {"target_id": "tt_own", "ok": true, "dry_run": true, "asset_id": "tt_engage_01"}}
+{"id": "aud_91af78e525ce", "ts": "2026-08-02T11:15:32+00:00", "action": "engage_comment", "actor": "Agent_FB", "detail": {"target_id": "fb_g1", "ok": true, "dry_run": true, "asset_id": "fb_engage_01"}}
+{"id": "aud_0033b517ba91", "ts": "2026-08-02T11:15:32+00:00", "action": "brief_icp", "actor": "Growth_Lead", "detail": {"role": "installateur", "handoff_id": "08fe1c82-e55c-49c3-9078-a85bdde8677a"}}
+{"id": "aud_6dc8d8f016f6", "ts": "2026-08-02T11:15:32+00:00", "action": "gate_allow", "actor": "Publish_Gate", "detail": {"asset_id": "tt_gate_01", "reason": "GATE ALLOW", "dry_run": true}}
+{"id": "aud_d674f845d7e9", "ts": "2026-08-02T11:15:32+00:00", "action": "validator_pass", "actor": "Sniper_Validator", "detail": {"asset_id": "tt_w32_install_01", "decision": "PASS", "fail_rules": []}}
+{"id": "aud_3b97c6cb68e8", "ts": "2026-08-02T11:44:09+00:00", "action": "engage_comment", "actor": "Agent_TT", "detail": {"target_id": "tt_own", "ok": true, "dry_run": true, "asset_id": "tt_engage_01"}}
+{"id": "aud_f42eb828dd18", "ts": "2026-08-02T11:44:09+00:00", "action": "engage_comment", "actor": "Agent_FB", "detail": {"target_id": "fb_g1", "ok": true, "dry_run": true, "asset_id": "fb_engage_01"}}
+{"id": "aud_17b7c63d1972", "ts": "2026-08-02T11:44:09+00:00", "action": "brief_icp", "actor": "Growth_Lead", "detail": {"role": "installateur", "handoff_id": "4945f0e8-dd4a-4e4e-910d-0987a67776f3"}}
+{"id": "aud_89863551bb11", "ts": "2026-08-02T11:44:09+00:00", "action": "gate_allow", "actor": "Publish_Gate", "detail": {"asset_id": "tt_gate_01", "reason": "GATE ALLOW", "dry_run": true}}
+{"id": "aud_30b9edb2e91c", "ts": "2026-08-02T11:44:09+00:00", "action": "validator_pass", "actor": "Sniper_Validator", "detail": {"asset_id": "tt_w32_install_01", "decision": "PASS", "fail_rules": []}}
+{"id": "aud_0f94a4b13a42", "ts": "2026-08-02T11:53:02+00:00", "action": "hitl_decision", "actor": "dowodca", "detail": {"asset_id": "tt_hitl", "decision": "GOTOWY", "calendar_status": "validated"}}
+{"id": "aud_1bd9dd11af6b", "ts": "2026-08-02T11:53:02+00:00", "action": "hitl_decision", "actor": "dowodca", "detail": {"asset_id": "tt_hitl", "decision": "BLOKADA", "calendar_status": "blocked"}}
+{"id": "aud_b1beecfc0d2c", "ts": "2026-08-02T11:53:03+00:00", "action": "hitl_decision", "actor": "dowodca", "detail": {"asset_id": "tt_api", "decision": "GOTOWY", "calendar_status": "validated"}}
+{"id": "aud_5f9448ad533a", "ts": "2026-08-02T11:53:03+00:00", "action": "brief_icp", "actor": "Growth_Lead", "detail": {"role": "installateur", "handoff_id": "b5e53b26-edfb-4084-987d-0d76764d0ecb"}}
+{"id": "aud_0db7bd5f8a76", "ts": "2026-08-02T11:53:16+00:00", "action": "hitl_decision", "actor": "dowodca", "detail": {"asset_id": "tt_api", "decision": "GOTOWY", "calendar_status": "validated"}}
+{"id": "aud_a9cca3da5eb6", "ts": "2026-08-02T11:53:17+00:00", "action": "hitl_decision", "actor": "dowodca", "detail": {"asset_id": "tt_hitl", "decision": "GOTOWY", "calendar_status": "validated"}}
+{"id": "aud_2cdae41cecb7", "ts": "2026-08-02T11:53:17+00:00", "action": "hitl_decision", "actor": "dowodca", "detail": {"asset_id": "tt_hitl", "decision": "BLOKADA", "calendar_status": "blocked"}}
+{"id": "aud_7c5b19209725", "ts": "2026-08-02T11:53:17+00:00", "action": "engage_comment", "actor": "Agent_TT", "detail": {"target_id": "tt_own", "ok": true, "dry_run": true, "asset_id": "tt_engage_01"}}
+{"id": "aud_d4038d6f716a", "ts": "2026-08-02T11:53:17+00:00", "action": "engage_comment", "actor": "Agent_FB", "detail": {"target_id": "fb_g1", "ok": true, "dry_run": true, "asset_id": "fb_engage_01"}}
+{"id": "aud_13041eecbfc2", "ts": "2026-08-02T11:53:17+00:00", "action": "brief_icp", "actor": "Growth_Lead", "detail": {"role": "installateur", "handoff_id": "3a8d174e-c47e-41d6-8b3f-494a8b64bc93"}}
+{"id": "aud_677d32b8f386", "ts": "2026-08-02T11:53:17+00:00", "action": "gate_allow", "actor": "Publish_Gate", "detail": {"asset_id": "tt_gate_01", "reason": "GATE ALLOW", "dry_run": true}}
+{"id": "aud_37d0198ce0e6", "ts": "2026-08-02T11:53:17+00:00", "action": "validator_pass", "actor": "Sniper_Validator", "detail": {"asset_id": "tt_w32_install_01", "decision": "PASS", "fail_rules": []}}
+{"id": "aud_3ed85dfdc4c8", "ts": "2026-08-02T11:54:29+00:00", "action": "hitl_decision", "actor": "dowodca", "detail": {"asset_id": "tt_api", "decision": "GOTOWY", "calendar_status": "validated"}}
+{"id": "aud_45be0c560e74", "ts": "2026-08-02T11:54:29+00:00", "action": "hitl_decision", "actor": "dowodca", "detail": {"asset_id": "tt_hitl", "decision": "GOTOWY", "calendar_status": "validated"}}
+{"id": "aud_0005592ec30c", "ts": "2026-08-02T11:54:29+00:00", "action": "hitl_decision", "actor": "dowodca", "detail": {"asset_id": "tt_hitl", "decision": "BLOKADA", "calendar_status": "blocked"}}
+{"id": "aud_9a7241f6934e", "ts": "2026-08-02T11:54:29+00:00", "action": "engage_comment", "actor": "Agent_TT", "detail": {"target_id": "tt_own", "ok": true, "dry_run": true, "asset_id": "tt_engage_01"}}
+{"id": "aud_1c72e8875075", "ts": "2026-08-02T11:54:29+00:00", "action": "engage_comment", "actor": "Agent_FB", "detail": {"target_id": "fb_g1", "ok": true, "dry_run": true, "asset_id": "fb_engage_01"}}
+{"id": "aud_9affebd7e5ae", "ts": "2026-08-02T11:54:29+00:00", "action": "brief_icp", "actor": "Growth_Lead", "detail": {"role": "installateur", "handoff_id": "4298eccf-9887-4990-bd56-ff0f89ab9a10"}}
+{"id": "aud_e3f586fbf749", "ts": "2026-08-02T11:54:29+00:00", "action": "gate_allow", "actor": "Publish_Gate", "detail": {"asset_id": "tt_gate_01", "reason": "GATE ALLOW", "dry_run": true}}
+{"id": "aud_932da36f17cb", "ts": "2026-08-02T11:54:29+00:00", "action": "validator_pass", "actor": "Sniper_Validator", "detail": {"asset_id": "tt_w32_install_01", "decision": "PASS", "fail_rules": []}}
+{"id": "aud_6e46998f1a33", "ts": "2026-08-02T11:54:42+00:00", "action": "hitl_decision", "actor": "dowodca", "detail": {"asset_id": "tt_hitl", "decision": "GOTOWY", "calendar_status": "validated"}}
+{"id": "aud_4ffc061d8953", "ts": "2026-08-02T11:54:42+00:00", "action": "hitl_decision", "actor": "dowodca", "detail": {"asset_id": "tt_hitl", "decision": "BLOKADA", "calendar_status": "blocked"}}
+{"id": "aud_888121d86606", "ts": "2026-08-02T11:54:59+00:00", "action": "hitl_decision", "actor": "dowodca", "detail": {"asset_id": "tt_api", "decision": "GOTOWY", "calendar_status": "validated"}}
+{"id": "aud_23630d7efe45", "ts": "2026-08-02T11:54:59+00:00", "action": "hitl_decision", "actor": "dowodca", "detail": {"asset_id": "tt_hitl", "decision": "GOTOWY", "calendar_status": "validated"}}
+{"id": "aud_7f75c1250dc6", "ts": "2026-08-02T11:54:59+00:00", "action": "hitl_decision", "actor": "dowodca", "detail": {"asset_id": "tt_hitl", "decision": "BLOKADA", "calendar_status": "blocked"}}
+{"id": "aud_4852c9f14f6b", "ts": "2026-08-02T11:54:59+00:00", "action": "engage_comment", "actor": "Agent_TT", "detail": {"target_id": "tt_own", "ok": true, "dry_run": true, "asset_id": "tt_engage_01"}}
+{"id": "aud_e1b86f8db25e", "ts": "2026-08-02T11:54:59+00:00", "action": "engage_comment", "actor": "Agent_FB", "detail": {"target_id": "fb_g1", "ok": true, "dry_run": true, "asset_id": "fb_engage_01"}}
+{"id": "aud_9a694c5154da", "ts": "2026-08-02T11:54:59+00:00", "action": "brief_icp", "actor": "Growth_Lead", "detail": {"role": "installateur", "handoff_id": "ebf7be8a-d045-4e5e-8497-ff0bfb6d63b5"}}
+{"id": "aud_bc7b37f692df", "ts": "2026-08-02T11:54:59+00:00", "action": "gate_allow", "actor": "Publish_Gate", "detail": {"asset_id": "tt_gate_01", "reason": "GATE ALLOW", "dry_run": true}}
+{"id": "aud_46d6d536af63", "ts": "2026-08-02T11:54:59+00:00", "action": "validator_pass", "actor": "Sniper_Validator", "detail": {"asset_id": "tt_w32_install_01", "decision": "PASS", "fail_rules": []}}
+{"id": "aud_c16ba6db8e87", "ts": "2026-08-02T12:13:14+00:00", "action": "hitl_decision", "actor": "dowodca", "detail": {"asset_id": "tt_api", "decision": "GOTOWY", "calendar_status": "validated"}}
+{"id": "aud_db1c62ae89c6", "ts": "2026-08-02T12:13:14+00:00", "action": "engage_comment", "actor": "Agent_FB", "detail": {"target_id": "fb_own_page", "ok": true, "dry_run": true, "asset_id": "hunt_dry"}}
+{"id": "aud_b1fcfa617ebc", "ts": "2026-08-02T12:13:25+00:00", "action": "hitl_decision", "actor": "dowodca", "detail": {"asset_id": "tt_api", "decision": "GOTOWY", "calendar_status": "validated"}}
+{"id": "aud_640137b4cc93", "ts": "2026-08-02T12:13:25+00:00", "action": "engage_comment", "actor": "Agent_FB", "detail": {"target_id": "fb_own_page", "ok": true, "dry_run": true, "asset_id": "hunt_dry"}}
+{"id": "aud_8fc9055ae985", "ts": "2026-08-02T12:13:25+00:00", "action": "hitl_decision", "actor": "dowodca", "detail": {"asset_id": "tt_hitl", "decision": "GOTOWY", "calendar_status": "validated"}}
+{"id": "aud_b060267c01bb", "ts": "2026-08-02T12:13:25+00:00", "action": "hitl_decision", "actor": "dowodca", "detail": {"asset_id": "tt_hitl", "decision": "BLOKADA", "calendar_status": "blocked"}}
+{"id": "aud_a8b10a11b9b5", "ts": "2026-08-02T12:13:25+00:00", "action": "engage_comment", "actor": "Agent_TT", "detail": {"target_id": "tt_own", "ok": true, "dry_run": true, "asset_id": "tt_engage_01"}}
+{"id": "aud_04a247b2b49b", "ts": "2026-08-02T12:13:25+00:00", "action": "engage_comment", "actor": "Agent_FB", "detail": {"target_id": "fb_g1", "ok": true, "dry_run": true, "asset_id": "fb_engage_01"}}
+{"id": "aud_53c52a2c358a", "ts": "2026-08-02T12:13:25+00:00", "action": "brief_icp", "actor": "Growth_Lead", "detail": {"role": "installateur", "handoff_id": "fc0b6b76-70f5-4949-a4f2-a714ae493200"}}
+{"id": "aud_f9407649f0f0", "ts": "2026-08-02T12:13:26+00:00", "action": "gate_allow", "actor": "Publish_Gate", "detail": {"asset_id": "tt_gate_01", "reason": "GATE ALLOW", "dry_run": true}}
+{"id": "aud_61e0692277cd", "ts": "2026-08-02T12:13:26+00:00", "action": "validator_pass", "actor": "Sniper_Validator", "detail": {"asset_id": "tt_w32_install_01", "decision": "PASS", "fail_rules": []}}
+{"id": "aud_0734b8e8933b", "ts": "2026-08-02T12:13:50+00:00", "action": "hitl_decision", "actor": "dowodca", "detail": {"asset_id": "tt_api", "decision": "GOTOWY", "calendar_status": "validated"}}
+{"id": "aud_21d06bc5ab2c", "ts": "2026-08-02T12:13:51+00:00", "action": "engage_comment", "actor": "Agent_FB", "detail": {"target_id": "fb_own_page", "ok": true, "dry_run": true, "asset_id": "hunt_dry"}}
+{"id": "aud_de5bdb5d6a4f", "ts": "2026-08-02T12:21:59+00:00", "action": "hitl_decision", "actor": "dowodca", "detail": {"asset_id": "tt_api", "decision": "GOTOWY", "calendar_status": "validated"}}
+{"id": "aud_115342d222fa", "ts": "2026-08-02T12:21:59+00:00", "action": "engage_comment", "actor": "Agent_FB", "detail": {"target_id": "fb_own_page", "ok": true, "dry_run": true, "asset_id": "hunt_dry"}}
+{"id": "aud_311a3fed03cd", "ts": "2026-08-02T12:22:21+00:00", "action": "hitl_decision", "actor": "dowodca", "detail": {"asset_id": "tt_api", "decision": "GOTOWY", "calendar_status": "validated"}}
+{"id": "aud_c6c00e412ca1", "ts": "2026-08-02T12:22:21+00:00", "action": "engage_comment", "actor": "Agent_FB", "detail": {"target_id": "fb_own_page", "ok": true, "dry_run": true, "asset_id": "hunt_dry"}}
+{"id": "aud_7ba2e20fcb39", "ts": "2026-08-02T12:22:21+00:00", "action": "hitl_decision", "actor": "dowodca", "detail": {"asset_id": "tt_hitl", "decision": "GOTOWY", "calendar_status": "validated"}}
+{"id": "aud_d288d5eb2a87", "ts": "2026-08-02T12:22:21+00:00", "action": "hitl_decision", "actor": "dowodca", "detail": {"asset_id": "tt_hitl", "decision": "BLOKADA", "calendar_status": "blocked"}}
+{"id": "aud_75ed485c1492", "ts": "2026-08-02T12:22:21+00:00", "action": "engage_comment", "actor": "Agent_TT", "detail": {"target_id": "tt_own", "ok": true, "dry_run": true, "asset_id": "tt_engage_01"}}
+{"id": "aud_5736e9f72d1d", "ts": "2026-08-02T12:22:21+00:00", "action": "engage_comment", "actor": "Agent_FB", "detail": {"target_id": "fb_g1", "ok": true, "dry_run": true, "asset_id": "fb_engage_01"}}
+{"id": "aud_2f47771b9993", "ts": "2026-08-02T12:22:21+00:00", "action": "brief_icp", "actor": "Growth_Lead", "detail": {"role": "installateur", "handoff_id": "02a6d1fe-d803-4840-957f-1370d2ec0926"}}
+{"id": "aud_e9afb544fe4a", "ts": "2026-08-02T12:22:22+00:00", "action": "gate_allow", "actor": "Publish_Gate", "detail": {"asset_id": "tt_gate_01", "reason": "GATE ALLOW", "dry_run": true}}
+{"id": "aud_810539653a6c", "ts": "2026-08-02T12:22:22+00:00", "action": "validator_pass", "actor": "Sniper_Validator", "detail": {"asset_id": "tt_w32_install_01", "decision": "PASS", "fail_rules": []}}
+{"id": "aud_ecc38f289543", "ts": "2026-08-02T12:23:06+00:00", "action": "hitl_decision", "actor": "dowodca", "detail": {"asset_id": "tt_api", "decision": "GOTOWY", "calendar_status": "validated"}}
+{"id": "aud_f932111d647e", "ts": "2026-08-02T12:23:06+00:00", "action": "engage_comment", "actor": "Agent_FB", "detail": {"target_id": "fb_own_page", "ok": true, "dry_run": true, "asset_id": "hunt_dry"}}
+{"id": "aud_a3fc6527fc09", "ts": "2026-08-02T12:34:00+00:00", "action": "brief_icp", "actor": "Growth_Lead", "detail": {"role": "loodgieter", "handoff_id": "21cf92e7-760c-48b1-a8d7-413c412218dd"}}
+{"id": "aud_d34e72dfc1a5", "ts": "2026-08-02T12:34:16+00:00", "action": "brief_icp", "actor": "Growth_Lead", "detail": {"role": "loodgieter", "handoff_id": "9e27a3fd-0f42-49b3-a060-418805c52710"}}
+{"id": "aud_a55e1f316219", "ts": "2026-08-02T12:34:16+00:00", "action": "hitl_decision", "actor": "dowodca", "detail": {"asset_id": "tt_api", "decision": "GOTOWY", "calendar_status": "validated"}}
+{"id": "aud_8b5d25c62a1a", "ts": "2026-08-02T12:34:16+00:00", "action": "engage_comment", "actor": "Agent_FB", "detail": {"target_id": "fb_own_page", "ok": true, "dry_run": true, "asset_id": "hunt_dry"}}

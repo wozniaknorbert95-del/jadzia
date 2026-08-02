@@ -95,8 +95,11 @@ async function api(path, options = {}) {
   }
   const res = await fetch(`${API_BASE}${path}`, { ...options, headers });
   if (res.status === 401) {
-    clearToken();
-    setAuthExpanded(true);
+    const authCritical = options.authCritical !== false;
+    if (authCritical) {
+      clearToken();
+      setAuthExpanded(true);
+    }
     throw new Error("Sesja wygasła — Telegram /commander lub wklej token");
   }
   if (!res.ok) {
@@ -1574,12 +1577,26 @@ function vhqNeedsHomeData() {
 async function refresh() {
   if (!getToken()) return;
   const active = document.querySelector(".view:not([hidden])")?.id?.replace("view-", "") || "home";
-  if (active === "home" || vhqNeedsHomeData()) await loadHome();
-  if (active === "marketing") await loadMarketing();
-  if (active === "analytics") await loadAnalytics();
-  if (active === "agents") await loadAgents();
-  if (active === "audit") await loadAudit();
-  if (active === "settings") await loadSettings();
+  const tasks = [];
+  if (active === "demand-desk") {
+    tasks.push(loadDemandDesk);
+  } else {
+    if (active === "home" || vhqNeedsHomeData()) tasks.push(loadHome);
+    if (active === "marketing") tasks.push(loadMarketing);
+    if (active === "analytics") tasks.push(loadAnalytics);
+    if (active === "agents") tasks.push(loadAgents);
+    if (active === "audit") tasks.push(loadAudit);
+    if (active === "settings") tasks.push(loadSettings);
+  }
+  for (const fn of tasks) {
+    try {
+      await fn();
+    } catch (e) {
+      if (active === "demand-desk" || tasks.length === 1) {
+        toast(e.message);
+      }
+    }
+  }
 }
 
 async function openTicketFromDeeplink(ticketId, token) {
@@ -1615,6 +1632,9 @@ function showView(name) {
 function bindNavButtons(selector) {
   document.querySelectorAll(selector).forEach((btn, idx, all) => {
     btn.addEventListener("click", async () => {
+      if (btn.closest("#more-sheet")) {
+        setMoreSheetOpen(false);
+      }
       const view = btn.dataset.view;
       if (view === "hq") {
         if (typeof vhqGoMissionControl === "function") {
@@ -1652,6 +1672,7 @@ function bindNavButtons(selector) {
 
 bindNavButtons("#main-nav .nav-btn");
 bindNavButtons("#bottom-nav .nav-btn");
+bindNavButtons(".more-sheet-btn[data-view]");
 bindSystemMapHops();
 
 /* ===== VF-VHQ-W1-SHELL + W3.2 Room Manifest (sole SoT) ===== */
@@ -2038,40 +2059,42 @@ const VHQ_ROOMS = {
     id: "marketing-studio",
     label: "Marketing Studio",
     floor: "P1",
-    purpose: "Organic HITL surface — paid Ads out of scope in freeze",
+    purpose: "Demand OS Hub §M — TOOL FIRST; marketing HITL PARKED_LAST",
     firmStage: "demand",
-    status: "UNVERIFIED",
-    evidence: "EV-W3-001",
-    lastVerified: "2026-07-27T15:13:35Z",
-    owner: "Marketing/Ops",
-    sotLabel: "Campaign SoT requires MKT / Ads Manager verification and is outside current Virtual HQ scope.",
+    status: "LIVE",
+    evidence: "DEMAND-OS-HUB / demand-os/status",
+    lastVerified: null,
+    owner: "Growth Lead",
+    sotLabel: "OS TARGET · Demand OS Hub (wizard starts UTM · Val · HITL queue)",
     sotHref: null,
-    firmRole: "Tu firma buduje popyt organiczny i pilnuje freeze na paid.",
+    firmRole: "Tu firma mierzy popyt (starts UTM) zanim ruszy live marketing.",
     limitation:
-      "EV-W3-001 — do not invent campaign LIVE or campaign-absence claims. Paid Ads PARKED to 2026-08-06. No Ads execute from VHQ.",
-    action: { type: "view", target: "marketing", label: "Open Marketing tab (observe)" },
+      "Marketing HITL PARKED_LAST until TOOL PASS + GO MARKETING HITL. Ads PARK cash. No live publish from VHQ.",
+    action: { type: "view", target: "demand-desk", label: "Otwórz Biuro Popytu" },
     mvp: true,
     pulse: true,
     truthPilot: true,
     floorCard: true,
-    pulseLabel: "Marketing",
+    pulseLabel: "Demand OS",
     mapHop: {
       href: null,
       interactive: false,
       label: "Marketing Studio",
-      meta: "P1 · Marketing Studio · UNVERIFIED — campaign state not verified",
+      meta: "P1 · Demand OS Hub · TOOL FIRST · marketing PARKED_LAST",
     },
     honesty: [
-      { status: "UNVERIFIED", text: "UNVERIFIED — campaign state not verified · EV-W3-001" },
+      { status: "LIVE", text: "Demand OS Hub §M via /api/v1/commander/demand-os/status" },
       {
         status: "PARKED",
-        text: "[PARKED] Paid Ads frozen until 2026-08-06 · €0 spend · no Ads execute from VHQ",
+        text: "[PARKED_LAST] Marketing HITL · Ads PARK cash · no live publish from VHQ",
       },
     ],
     kpi: [
-      { id: "Campaign state", value: "insufficient_data" },
-      { id: "wizard_starts (UTM)", value: "insufficient_data" },
-      { id: "KPI-CPA-WIZARD", value: "PARKED (freeze · €0 paid) · not a measured value" },
+      { id: "Campaign state", value: "Desk Etap 5 LIVE · marketing PARKED_LAST" },
+      { id: "wizard_starts (UTM)", value: "loading…" },
+      { id: "validator_fail", value: "loading…" },
+      { id: "top_hook", value: "loading…" },
+      { id: "KPI-CPA-WIZARD", value: "PARKED (Ads cash) · not a measured value" },
     ],
   },
   "client-support": {
@@ -3660,7 +3683,7 @@ function vhqRenderTruthCards() {
         status.appendChild(document.createTextNode(" · no operational desk"));
       }
       if (room.id === "marketing-studio") {
-        status.appendChild(document.createTextNode(" — campaign state not verified"));
+        status.appendChild(document.createTextNode(" — Demand OS Hub · marketing PARKED_LAST"));
       }
       art.appendChild(status);
 
@@ -3673,7 +3696,9 @@ function vhqRenderTruthCards() {
       } else if (room.action) {
         action.appendChild(vhqEl("span", "muted", room.action.label));
       } else if (room.id === "marketing-studio") {
-        action.appendChild(vhqEl("span", "muted", "Observe only — no execution in Campus sessions"));
+        action.appendChild(
+          vhqEl("span", "muted", "Observe Hub §M — no live publish (PARKED_LAST)")
+        );
       } else if (room.id === "order-desk") {
         action.appendChild(vhqEl("span", "muted", "None — desk not implemented (EV-W2-010)"));
       } else {
@@ -3763,6 +3788,75 @@ function vhqRenderAllManifestSurfaces() {
   vhqRenderTruthCards();
   vhqRenderTeleportOptions();
   vhqRefreshOpsBusSurfaces();
+  vhqEnrichDemandOsKpis();
+}
+
+async function vhqEnrichDemandOsKpis() {
+  const room = VHQ_ROOMS["marketing-studio"];
+  if (!room || !room.kpi) return;
+  try {
+    const data = await api("/api/v1/commander/demand-os/status");
+    const kpi = data.kpi || {};
+    const screen = data.screen || {};
+    const stl = data.stl || {};
+    const starts = kpi.wizard_starts_utm;
+    const byUtm = screen.wizard_starts_by_utm || {};
+    const utmKeys = Object.keys(byUtm);
+    const utmSummary = utmKeys.length
+      ? utmKeys
+          .slice(0, 3)
+          .map((u) => {
+            const aid = (u.match(/utm_content=([^&]+)/) || [])[1] || "utm";
+            return `${decodeURIComponent(aid)}=${byUtm[u]}`;
+          })
+          .join(" · ")
+      : "none";
+    const hitl = screen.hitl_queue || [];
+    const hitlSummary = hitl.length
+      ? hitl
+          .slice(0, 3)
+          .map((h) => `${h.asset_id || "?"}(${h.status || "?"})`)
+          .join(" · ")
+      : "empty";
+    room.kpi = [
+      { id: "Campaign state", value: "Desk Etap 5 LIVE · marketing PARKED_LAST" },
+      {
+        id: "wizard_starts (UTM)",
+        value: starts === undefined || starts === null ? "0" : String(starts),
+      },
+      { id: "starts_by_utm", value: utmSummary },
+      { id: "paid", value: String(kpi.paid ?? screen.paid_total ?? 0) },
+      { id: "comments_sent", value: String(kpi.comments_sent ?? screen.comments_sent ?? 0) },
+      {
+        id: "validator_fail",
+        value:
+          kpi.validator_fail === "n/a" || kpi.validator_fail === undefined
+            ? kpi.publish_count === 0
+              ? "n/a"
+              : String(kpi.validator_fail ?? 0)
+            : String(kpi.validator_fail),
+      },
+      { id: "top_hook", value: String(kpi.top_hook || "none") },
+      { id: "publish_count", value: String(kpi.publish_count ?? 0) },
+      { id: "HITL queue", value: hitlSummary },
+      {
+        id: "STL",
+        value: `open=${stl.open_hot ?? 0} breach=${stl.breaches ?? 0} med=${stl.median_min ?? "n/a"}`,
+      },
+      { id: "KPI-CPA-WIZARD", value: "PARKED (Ads cash) · not a measured value" },
+    ];
+    room.lastVerified = new Date().toISOString();
+    room.status = "LIVE";
+    vhqRenderTruthCards();
+    vhqRenderPulse();
+    vhqRenderFloorCards();
+  } catch (_err) {
+    const startsKpi = room.kpi.find((k) => k.id === "wizard_starts (UTM)");
+    if (startsKpi && startsKpi.value === "loading…") {
+      startsKpi.value = "0";
+      startsKpi.note = "Hub offline / auth — local fixture via hub money-check";
+    }
+  }
 }
 
 async function vhqRefreshOpsBusSurfaces() {
@@ -4296,8 +4390,13 @@ function bindVhqShell() {
   document.getElementById("vhq-sales-focus-queue")?.addEventListener("click", () => {
     vhqRunAction({ type: "focus-queue" });
   });
-  document.getElementById("vhq-marketing-observe")?.addEventListener("click", () => {
-    vhqRunAction({ type: "view", target: "marketing" });
+  document.getElementById("vhq-marketing-observe")?.addEventListener("click", async () => {
+    vhqRunAction({ type: "view", target: "demand-desk" });
+    try {
+      await refresh();
+    } catch (e) {
+      toast(e.message);
+    }
   });
   document.querySelectorAll("[data-vhq-jump]").forEach((btn) => {
     btn.addEventListener("click", () => {
@@ -4512,15 +4611,6 @@ function setMoreSheetOpen(open) {
 
 document.getElementById("open-more-sheet")?.addEventListener("click", () => setMoreSheetOpen(true));
 document.getElementById("more-sheet-close")?.addEventListener("click", () => setMoreSheetOpen(false));
-document.getElementById("more-to-audit")?.addEventListener("click", async () => {
-  setMoreSheetOpen(false);
-  showView("audit");
-  try {
-    await refresh();
-  } catch (e) {
-    toast(e.message);
-  }
-});
 
 document.getElementById("audit-verify").onclick = async () => {
   const banner = document.getElementById("audit-verify-banner");
@@ -4604,12 +4694,414 @@ async function bootstrapAuth() {
   }
 }
 
+// --- Demand Desk (Etap 5) ---
+let _deskRefreshTimer = null;
+let _deskLastData = null;
+
+function deskEsc(s) {
+  return String(s ?? "")
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;");
+}
+
+function jwtPayloadRole() {
+  const t = getToken();
+  if (!t) return "";
+  try {
+    const payload = t.split(".")[1];
+    if (!payload) return "";
+    const json = atob(payload.replace(/-/g, "+").replace(/_/g, "/"));
+    const p = JSON.parse(json);
+    return String(p.role || "").toLowerCase();
+  } catch (_e) {
+    return "";
+  }
+}
+
+function deskCanAct() {
+  if (!getToken()) return false;
+  const role = jwtPayloadRole();
+  if (!role) return true;
+  return role !== "viewer";
+}
+
+function deskSetText(id, text) {
+  const el = document.getElementById(id);
+  if (el) el.textContent = text ?? "—";
+}
+
+function deskApplyActButtons() {
+  const can = deskCanAct();
+  document.querySelectorAll(".desk-act-btn").forEach((btn) => {
+    btn.disabled = !can;
+  });
+  const hint = document.getElementById("desk-scope-banner");
+  if (hint && !can && getToken()) {
+    hint.hidden = false;
+    hint.textContent = "Tryb tylko odczyt (viewer) — akcje wyłączone.";
+    hint.className = "demand-desk-banner";
+  } else if (hint && can) {
+    hint.hidden = true;
+  }
+}
+
+function renderDemandDesk(data) {
+  const root = document.getElementById("view-demand-desk");
+  if (!root || !data) return;
+
+  const kpi = data.kpi || {};
+  const screen = data.screen || {};
+  const stl = data.stl || {};
+  const footer = data.footer || {};
+  const dual = data.dual_cash || {};
+  const robota = data.robota_dnia || {};
+  const dataMode = data.data_mode || "EMPTY";
+  const lastReal = data.last_real_event || {};
+  const diag = data.diagnostics || {};
+
+  root.classList.remove("demand-desk--fixture", "demand-desk--parked-stop", "demand-desk--stale");
+  if (dataMode === "FIXTURE" || dataMode === "MIXED") {
+    root.classList.add("demand-desk--fixture");
+  }
+  if (robota.code === "PARKED_STOP") {
+    root.classList.add("demand-desk--parked-stop");
+  }
+  if (footer.stale_warn || lastReal.stale_warn) {
+    root.classList.add("demand-desk--stale");
+  }
+
+  const conn = document.getElementById("desk-connection-banner");
+  if (conn) conn.hidden = true;
+
+  const code = robota.code || "—";
+  const robotaEl = document.getElementById("desk-robota");
+  if (robotaEl) {
+    robotaEl.textContent = `Robota dnia: ${code}${robota.label ? ` — ${robota.label}` : ""}`;
+  }
+
+  deskSetText("desk-icp", data.icp_role_week || "—");
+  deskSetText("desk-week", data.iso_week || "—");
+  deskSetText("desk-state", data.state || "—");
+
+  const cashWarn = document.getElementById("desk-cash-warning");
+  if (cashWarn) {
+    if (data.cash_warning) {
+      cashWarn.hidden = false;
+      cashWarn.textContent = String(data.cash_warning);
+    } else {
+      cashWarn.hidden = true;
+    }
+  }
+
+  const fixBanner = document.getElementById("desk-fixture-banner");
+  if (fixBanner) {
+    if (dataMode === "FIXTURE" || dataMode === "MIXED") {
+      fixBanner.hidden = false;
+      fixBanner.textContent = `Tryb ${dataMode} — dane nie są wyłącznie REAL. Nie traktuj jako potwierdzonej kasy.`;
+    } else {
+      fixBanner.hidden = true;
+    }
+  }
+
+  deskSetText("desk-kpi-starts", String(kpi.wizard_starts_utm ?? 0));
+  deskSetText("desk-kpi-wow", String(kpi.wizard_starts_wow_delta ?? 0));
+  deskSetText("desk-kpi-paid", String(kpi.paid ?? 0));
+  deskSetText("desk-kpi-hook", String(kpi.top_hook || "none"));
+  deskSetText("desk-kpi-publish", String(kpi.publish_count ?? 0));
+
+  const valFail =
+    kpi.validator_fail === "n/a" || (kpi.publish_count === 0 && kpi.validator_fail == null)
+      ? "n/a"
+      : String(kpi.validator_fail ?? 0);
+  deskSetText("desk-val-fail", valFail);
+  deskSetText("desk-comments", String(kpi.comments_sent ?? screen.comments_sent ?? 0));
+
+  const hitl = screen.hitl_queue || [];
+  const hitlEl = document.getElementById("desk-hitl-list");
+  if (hitlEl) {
+    if (!hitl.length) {
+      hitlEl.innerHTML =
+        '<p class="hint state-empty">Brak pozycji HITL — dodaj slot w CONTENT-CALENDAR lub sprawdź top_wizard_note.</p>';
+    } else {
+      hitlEl.innerHTML = hitl
+        .map((row) => {
+          const aid = deskEsc(row.asset_id || "?");
+          const st = deskEsc(row.status || row.desk_action || "?");
+          const prepHint =
+            st === "PREP" || row.desk_action === "PREP"
+              ? " · przygotuj slot w kalendarzu"
+              : "";
+          const channel = deskEsc(row.channel || "");
+          const can = deskCanAct();
+          const dis = can ? "" : " disabled";
+          return `<article class="desk-queue-row" data-asset-id="${aid}">
+            <p><strong>${aid}</strong> · ${st}${prepHint}${channel ? ` · ${channel}` : ""}</p>
+            <div class="demand-desk-footer-actions">
+              <button type="button" class="desk-act-btn" data-desk-act="hitl" data-decision="GOTOWY" data-asset-id="${aid}"${dis}>GOTOWY</button>
+              <button type="button" class="desk-act-btn secondary" data-desk-act="hitl" data-decision="BLOKADA" data-asset-id="${aid}"${dis}>BLOKADA</button>
+            </div>
+          </article>`;
+        })
+        .join("");
+    }
+  }
+
+  const hunt = screen.hunt_queue || [];
+  const huntEl = document.getElementById("desk-hunt-list");
+  if (huntEl) {
+    if (!hunt.length) {
+      huntEl.innerHTML =
+        '<p class="hint state-empty">Brak celów hunt — uzupełnij ALLOWLIST.json lub ENGAGE-LOG.</p>';
+    } else {
+      huntEl.innerHTML = hunt
+        .map((row) => {
+          const tid = deskEsc(row.target_id || "?");
+          const name = deskEsc(row.name || tid);
+          const ds = deskEsc(row.desk_status || "READY");
+          const draft = deskEsc(row.draft || "");
+          const badgeCls =
+            ds === "SENT" ? "desk-badge--sent" : ds === "BLOCK" ? "desk-badge--block" : "desk-badge--ready";
+          const can = deskCanAct();
+          const dis = can || ds === "SENT" ? " disabled" : "";
+          return `<article class="desk-queue-row" data-target-id="${tid}">
+            <p><strong>${name}</strong> <span class="desk-badge ${badgeCls}">${ds}</span></p>
+            <p class="hint">${draft || "1 wartość ICP + 1 CTA Wizard (dry)"}</p>
+            <button type="button" class="desk-act-btn" data-desk-act="hunt" data-target-id="${tid}" data-draft="${draft}"${dis}>Dry komentarz</button>
+          </article>`;
+        })
+        .join("");
+    }
+  }
+
+  const stlEl = document.getElementById("desk-stl");
+  if (stlEl) {
+    stlEl.textContent = `STL: open=${stl.open_hot ?? 0} · breach=${stl.breaches ?? 0} · overnight=${stl.overnight ?? 0} · med=${stl.median_min ?? "n/a"} min`;
+  }
+
+  const dualEl = document.getElementById("desk-dual-cash");
+  if (dualEl) {
+    const fail = dual.open_fail ?? 0;
+    const cols = (dual.columns || []).join(", ") || "verdict, offerte_only";
+    const rule = dual.rule ? ` · ${dual.rule}` : "";
+    dualEl.textContent = `Dual-cash open_fail: ${fail}${dual.red ? " · RED" : ""} · [${cols}]${rule}`;
+    dualEl.setAttribute("data-dual-fail", String(fail));
+    if (dual.red || fail > 0) {
+      dualEl.classList.add("demand-desk-dual-cash--warn");
+    } else {
+      dualEl.classList.remove("demand-desk-dual-cash--warn");
+    }
+  }
+
+  const assets = screen.top_wizard_assets || [];
+  const topNote = (screen.top_wizard_note || "").trim();
+  const assetsEl = document.getElementById("desk-top-assets");
+  if (assetsEl) {
+    if (!assets.length) {
+      const hint = topNote
+        || "Brak startów Wizard w REAL — top assety pojawią się po pierwszym evencie UTM.";
+      assetsEl.innerHTML = `<li class="hint state-empty">${deskEsc(hint)}</li>`;
+    } else {
+      assetsEl.innerHTML = assets
+        .slice(0, 5)
+        .map(
+          (a) =>
+            `<li><strong>${deskEsc(a.asset || a.asset_id || a.utm_content || "?")}</strong> — ${deskEsc(String(a.starts ?? a.count ?? 0))} startów</li>`
+        )
+        .join("");
+    }
+  }
+
+  const cal = data.week_calendar || [];
+  const calEl = document.getElementById("desk-week-calendar");
+  if (calEl) {
+    calEl.innerHTML = cal
+      .map((d) => `<li>${deskEsc(d.day || "?")}${d.label ? `: ${deskEsc(d.label)}` : ""}</li>`)
+      .join("");
+  }
+
+  deskSetText("desk-shells-line", data.shells_line || "—");
+  deskSetText("desk-data-mode", `data_mode: ${dataMode}`);
+  const lrTs = lastReal.ts || "brak";
+  const lrKind = lastReal.kind ? ` (${lastReal.kind})` : "";
+  deskSetText("desk-last-real", `${lrTs}${lrKind}`);
+  deskSetText("desk-doctor", footer.doctor_ok === true ? "OK" : footer.doctor_ok === false ? "FAIL" : "—");
+  deskSetText("desk-gate", data.gate || "—");
+  deskSetText("desk-contract-version", data.contract_version || footer.contract_version || "—");
+
+  const icpInput = document.getElementById("desk-icp-input");
+  if (icpInput && data.icp_role_week) icpInput.value = data.icp_role_week;
+
+  const diagBody = document.getElementById("desk-diagnostics-body");
+  if (diagBody) {
+    diagBody.textContent = JSON.stringify(diag, null, 2);
+  }
+
+  deskApplyActButtons();
+}
+
+async function loadDemandDesk() {
+  const root = document.getElementById("view-demand-desk");
+  if (!root) return;
+  if (!getToken()) {
+    const conn = document.getElementById("desk-connection-banner");
+    if (conn) {
+      conn.hidden = false;
+      conn.textContent = "Zaloguj się — /commander lub JWT.";
+    }
+    return;
+  }
+  root.classList.add("demand-desk--loading");
+  try {
+    const data = await api("/api/v1/commander/demand-os/status");
+    _deskLastData = data;
+    renderDemandDesk(data);
+  } catch (e) {
+    const conn = document.getElementById("desk-connection-banner");
+    if (conn) {
+      conn.hidden = false;
+      conn.textContent = `BRAK POŁĄCZENIA — ${e.message || "błąd API"}`;
+    }
+    if (String(e.message || "").includes("403")) {
+      const scope = document.getElementById("desk-scope-banner");
+      if (scope) {
+        scope.hidden = false;
+        scope.textContent = "Brak scope demand_os — tylko odczyt ograniczony.";
+      }
+    }
+  } finally {
+    root.classList.remove("demand-desk--loading");
+  }
+}
+
+async function deskHitlDecision(assetId, decision) {
+  if (!deskCanAct()) {
+    toast("Brak uprawnień (viewer)", "err");
+    return;
+  }
+  const ok = await confirmAction(
+    `Oznaczyć ${decision} dla ${assetId} w kalendarzu? (bez publikacji)`
+  );
+  if (!ok) return;
+  try {
+    if (_deskRefreshTimer) {
+      clearTimeout(_deskRefreshTimer);
+      _deskRefreshTimer = null;
+    }
+    await api("/api/v1/commander/demand-os/hitl/decision", {
+      method: "POST",
+      body: { asset_id: assetId, decision },
+    });
+    toast(`${decision} zapisane`, "ok");
+    await loadDemandDesk();
+  } catch (e) {
+    toast(
+      `${e.message || "HITL błąd"} — sprawdź slot w CONTENT-CALENDAR.json`,
+      "err"
+    );
+  }
+}
+
+async function deskSubmitIcp(ev) {
+  ev.preventDefault();
+  if (!deskCanAct()) {
+    toast("Brak uprawnień (viewer)", "err");
+    return;
+  }
+  const role = (document.getElementById("desk-icp-input")?.value || "").trim();
+  const hook = (document.getElementById("desk-hook-input")?.value || "").trim();
+  if (!role || hook.length < 3) {
+    toast("ICP rola i hook (min 3 znaki) są wymagane", "err");
+    return;
+  }
+  try {
+    await api("/api/v1/commander/demand-os/memory/icp", {
+      method: "POST",
+      body: { icp_role: role, hook },
+    });
+    toast("ICP zapisane", "ok");
+    await loadDemandDesk();
+  } catch (e) {
+    toast(e.message || "ICP błąd", "err");
+  }
+}
+
+async function deskEnsureLedger() {
+  if (!deskCanAct()) {
+    toast("Brak uprawnień (viewer)", "err");
+    return;
+  }
+  try {
+    await api("/api/v1/commander/demand-os/ledger/ensure-today", { method: "POST", body: {} });
+    toast("Ledger — wpis na dziś", "ok");
+    await loadDemandDesk();
+  } catch (e) {
+    toast(e.message || "Ledger błąd", "err");
+  }
+}
+
+async function deskHuntDry(targetId, draft) {
+  if (!deskCanAct()) {
+    toast("Brak uprawnień (viewer)", "err");
+    return;
+  }
+  const ok = await confirmAction(`Dry komentarz na ${targetId}? (mock — bez live FB)`);
+  if (!ok) return;
+  try {
+    if (_deskRefreshTimer) {
+      clearTimeout(_deskRefreshTimer);
+      _deskRefreshTimer = null;
+    }
+    await api("/api/v1/commander/demand-os/hunt/dry", {
+      method: "POST",
+      body: { target_id: targetId, text: draft || "" },
+    });
+    toast("Hunt dry OK", "ok");
+    await loadDemandDesk();
+  } catch (e) {
+    toast(e.message || "Hunt dry błąd", "err");
+  }
+}
+
+function bindDemandDeskEvents() {
+  document.getElementById("desk-refresh")?.addEventListener("click", () => {
+    loadDemandDesk().catch((e) => toast(e.message));
+  });
+  document.getElementById("desk-ledger-ensure")?.addEventListener("click", () => {
+    deskEnsureLedger();
+  });
+  document.getElementById("desk-icp-form")?.addEventListener("submit", deskSubmitIcp);
+  document.getElementById("view-demand-desk")?.addEventListener("click", (e) => {
+    const hitlBtn = e.target.closest("[data-desk-act='hitl']");
+    if (hitlBtn) {
+      deskHitlDecision(hitlBtn.dataset.assetId, hitlBtn.dataset.decision);
+      return;
+    }
+    const huntBtn = e.target.closest("[data-desk-act='hunt']");
+    if (huntBtn) {
+      deskHuntDry(huntBtn.dataset.targetId, huntBtn.dataset.draft || "");
+    }
+  });
+}
+
+bindDemandDeskEvents();
+
 registerServiceWorker();
 async function vhqBoot() {
   try {
     await bootstrapAuth();
   } finally {
-    vhqColdOpenMissionControl();
+    const viewParam = new URLSearchParams(window.location.search).get("view");
+    if (viewParam === "demand-desk") {
+      if (typeof vhqIsPrimary === "function" && vhqIsPrimary() && typeof vhqParkPrimaryShell === "function") {
+        vhqParkPrimaryShell();
+      }
+      showView("demand-desk");
+      refresh().catch((e) => toast(e.message));
+    } else {
+      vhqColdOpenMissionControl();
+    }
   }
 }
 if (document.readyState === "loading") {

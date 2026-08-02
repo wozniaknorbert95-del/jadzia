@@ -245,8 +245,8 @@ Statusy: `pending` · `in_progress` · `done` · `blocked` · `wont_do`
 | deps | DOS-C3-01 · DOS-C5-01 · DOS-W1-02 |
 | os_target_section_ref | `Agent_TT` · `J Wave1` · `C.3` |
 | status | `in_progress` |
-| evidence | `https://www.tiktok.com/@flexgrafik.nl/video/7669024279140388118` · LEDGER publish=Y |
-| note | **1/3 published** 2026-08-01. Need ≥2 more this week (install_02 · install_03). Privacy may be Only me until TT review clears → set Everyone. |
+| evidence | DELETED video/7669024279140388118 · F1–F4 LOCAL DONE · GO ORGANIC RESUME 2026-08-01 |
+| note | **UNFROZEN** 2026-08-01 — tools F1–F4 PASS. Publish tylko przez F2 gate. Sprint: ORGANIC-AGENCY-SPRINT-14D. Ads PARK cash. |
 | **DoD** | ≥3 TT publish / tydzień; każdy z dokładnie 1 CTA Wizard+UTM; `asset_id` w ledger; Validator PASS przed publish. Mierzalne w ledger `publish_Y/N` + `utm_link`. |
 
 ### DOS-W1-04
@@ -315,8 +315,10 @@ Statusy: `pending` · `in_progress` · `done` · `blocked` · `wont_do`
 | owner | Dowódca |
 | deps | DOS-W1-PASS |
 | os_target_section_ref | `F1` · `L` · `O #4` |
-| status | `pending` |
+| status | `done` |
+| evidence | Dowódca 2026-08-01: delete test TT + **kontynuuj wdrożenie narzędzia** = `GO BUILD demand-f1` |
 | **DoD** | Explicit GO: `GO BUILD demand-f1` zapisane przez Dowódcę. Warunek: audit ledger pokazuje, że brak UTM na growth linkach jest bólem (przynajmniej 1 FAIL Validator „brak UTM” lub 100% świadomość luki). Zero kodu przed tym GO. |
+| **DoD met** | GO recorded · bridge CDP proved publish path · organic frozen until tool PASS · W1-PASS parked. |
 
 ### DOS-F1-01
 
@@ -327,8 +329,10 @@ Statusy: `pending` · `in_progress` · `done` · `blocked` · `wont_do`
 | owner | Agent_Eng + Agent_Growth_Lead |
 | deps | DOS-F1-GO |
 | os_target_section_ref | `F1` |
-| status | `pending` |
+| status | `done` |
+| evidence | blast · `agent/demand_os/` · `tools/demand_os_utm.py` · tests 8/8 · `audit-sample` 10/10 PASS · ledger 3/3 · GROWTH-EVENTS.jsonl |
 | **DoD** | Spec/blast UTM Lock + growth_events. Po implementacji (osobna sesja kodu): **100% growth CTA** (TT/FB/Blog/DA/Widget) mają UTM zgodne z szablonem C.1 #3. Weryfikacja: sample ≥10 linków z ledger/produkcji = 100% z UTM. |
+| **DoD met** | Library+CLI LIVE. `UTM-AUDIT-SAMPLE.csv` ≥10 = 100% PASS. Ledger rows PASS. Builder egzekwuje template. |
 
 ### DOS-F2-01
 
@@ -339,8 +343,10 @@ Statusy: `pending` · `in_progress` · `done` · `blocked` · `wont_do`
 | owner | Agent_Eng + Sniper_Validator |
 | deps | DOS-F1-01 |
 | os_target_section_ref | `F2` · `E MCP` |
-| status | `pending` |
+| status | `done` |
+| evidence | blast+close · `agent/demand_os/validator.py` · `content_calendar.py` · `tools/demand_os_f2.py` · tests 11 F2 + 8 F1 = 19 · gate DENY without token |
 | **DoD** | `GO BUILD demand-f2`: Validator + content_calendar MCP. DoD runtime: `publish_request` → Validator decyzja &lt;5 min; zero publish bez Val. Kalendarz MCP używany przez TT/FB/Blog. |
+| **DoD met** | Rule engine R1-R8 · PASS token · CONTENT-CALENDAR.json · CLI validate/calendar/gate · MCP = Python+CLI tool surface (not fake HTTP). decision_ms << 5 min. Publish frozen until gate ALLOW. |
 
 ### DOS-F3-01
 
@@ -351,8 +357,10 @@ Statusy: `pending` · `in_progress` · `done` · `blocked` · `wont_do`
 | owner | Agent_Eng + Agent_TT + Agent_FB |
 | deps | DOS-F2-01 · DOS-W2-PASS |
 | os_target_section_ref | `F3` |
-| status | `pending` |
+| status | `done` |
+| evidence | blast+close · `ALLOWLIST.json` · `agent/demand_os/connectors/` · `tools/demand_os_f3.py` · pytest 26 · smoke PASS |
 | **DoD** | `GO BUILD demand-f3`: TT/FB connectors TO-BE (read/comment). Allowlist HITL enforced. Zakaz spam (ten sam copy 20 grup). Smoke: 1 read + 1 comment na allowlist bez błędu. |
+| **DoD met** | Allowlist enforced · anti-spam ≤1 group/copy/day · mock smoke read+comment PASS · live comment PARKED · Wizard CTA → F2 Val. W2-PASS parked (publish frozen). |
 
 ### DOS-F4-01
 
@@ -363,8 +371,57 @@ Statusy: `pending` · `in_progress` · `done` · `blocked` · `wont_do`
 | owner | Agent_Eng + Agent_Blog |
 | deps | DOS-F2-01 · DOS-W3-01 |
 | os_target_section_ref | `F4` · `Agent_Blog` |
-| status | `pending` |
+| status | `done` |
+| evidence | blast+close · `blog_pipeline.py` · `tools/demand_os_f4.py` · `BLOG-DRAFTS/blog_w31_install_bus50m.*` · pytest 32 · Val PASS |
 | **DoD** | `GO BUILD demand-f4`: Blog pipeline = 1 ICP role / article · CTA Wizard UTM `blog` · tag `icp_role`. Zakaz ogólnych AI blogów bez roli. DoD: 1 article wygenerowany/pipeline z walidacją C.5. |
+| **DoD met** | Pipeline generate→Val C.5→persist+calendar · role required / general banned · sample installateur bus 50m validated · auto-publish NIE (F2 gate). Organic sprint unfreeze 2026-08-01. |
+
+### DOS-HUB-01
+
+| Pole | Wartość |
+|------|---------|
+| id | `DOS-HUB-01` |
+| phase | 2 — Control plane |
+| owner | Agent_Growth_Lead |
+| deps | DOS-F1-01 · DOS-F2-01 |
+| os_target_section_ref | `E A2A` · `F Memory` · `G` · `M` |
+| status | `done` |
+| evidence | blast+close · `observability.py` · `a2a_bus.py` · `memory.py` · `tools/demand_os_hub.py` · pytest 37 |
+| **DoD** | Jeden ekran OS §M · Money Check CLI · A2A runtime JSONL · Memory 3 warstwy v0. Marketing HITL = PARKED_LAST do TOOL PASS. |
+| **DoD met** | Hub LIVE local · tip STATE/OPERATOR/todo · marketing parked. |
+
+### DOS-TOOL-01 … DOS-TOOL-06 + TOOL-PASS
+
+| id | status | DoD met |
+|----|--------|---------|
+| `DOS-TOOL-01` starts ingest | `done` | fixture → money-check starts_utm · pytest |
+| `DOS-TOOL-02` publish gate | `done` | DENY/ALLOW dry-run · calendar_publish wired |
+| `DOS-TOOL-03` calendar SoT | `done` | `CALENDAR-SOT.md` growth=JSON |
+| `DOS-TOOL-04` MCP facades | `done` | ga4/gdrive/widget + `demand_os_mcp.py` fail-closed |
+| `DOS-TOOL-05` TT transport | `done` | LiveTikTokTransport stub · comment PARKED |
+| `DOS-TOOL-06` A2A auto | `done` | Val PASS + engage emit |
+| `DEMAND-OS-TOOL-PASS` | `done` | [`TOOL-PASS.md`](./demand-os/TOOL-PASS.md) · pytest 47 |
+| `DOS-DASH-01` Commander | `done` | `/api/v1/commander/demand-os/status` + UI enrich |
+| `DOS-DASH-02` priorities tip | `done` | lanes · scorecard · campus · OPERATOR |
+| `DOS-DASH-03` weekly tune | `done` | `hub weekly` · no live publish CTA |
+| `DOS-SEAL-00` program seal | `done` | tip v2 · `hub doctor` · money_narrative Hub · PROGRAM-SEAL.md · SEALED |
+| `DOS-MASTER-01` ops_bus→starts | `done` | `db_utm.py` · `hub sync-db` |
+| `DOS-MASTER-02` hot leads A2A | `done` | `widget_leads` DB · `hub sync-leads` |
+| `DOS-MASTER-03` GA4 wrap | `done` | fail-closed · LIVE+DTL optional |
+| `DOS-MASTER-04` Wave1 shells | `done` | `demand_os_agents.py` ×5 |
+| `DEMAND-OS-MASTER-RESIDUAL-00` | `done` | [`MASTER-STAGES-RESIDUAL.md`](./demand-os/MASTER-STAGES-RESIDUAL.md) · doctor PASS |
+| `DOS-T100-01` week/stl/ledger | `done` | `hub week` · `stl` · `ledger` |
+| `DOS-T100-02` CF/FB shells | `done` | Wave2 `cf`/`fb` · proof gate |
+| `DOS-T100-03` design+audit+go-ready | `done` | dual-cash · control audit · go-ready |
+| `DEMAND-OS-TOOL-100` | `superseded` | overclaim — see COHERENCE |
+| `DEMAND-OS-TOOL-COHERENCE-00` | `done` | Etap 1 SEALED · COHERENCE PASS |
+| `DEMAND-OS-PANEL-DESIGN-00` | `in_progress` | [`DEMAND-CONTROL-PANEL-DESIGN.md`](./demand-os/DEMAND-CONTROL-PANEL-DESIGN.md) |
+| `DOS-COH-01` RBAC | `done` | demand_os:read/act · API mutate |
+| `DOS-COH-02` §M UI | `done` | commander-ui full screen KPIs |
+| `DOS-COH-03` GDrive honesty | `done` | local_registry / not_wired |
+| `DOS-COH-04` blog→pipeline | `done` | wave3 pipeline |
+| `DOS-COH-05` MCP cal/gate/ga4-utm | `done` | demand_os_mcp |
+| `DOS-COH-06` fatigue+R9 | `done` | fatigue.py · Val R9 |
 
 ### DOS-F5-01
 
@@ -373,10 +430,11 @@ Statusy: `pending` · `in_progress` · `done` · `blocked` · `wont_do`
 | id | `DOS-F5-01` |
 | phase | 2 — F5 |
 | owner | Dowódca + Agent_FB |
-| deps | DOS-F1-01 · data ≥2026-08-06 · GO Foundera |
+| deps | DOS-F1-01 · **budget** · GO Foundera |
 | os_target_section_ref | `F5` · `C.1 #5` |
-| status | `pending` |
-| **DoD** | `GO BUILD demand-f5` + Ads thaw dopiero ≥2026-08-06 **i** explicit GO Foundera. Mały test spend z CAC proxy (spend/starts). Zero spend w freeze = PASS tego constraintu do daty. |
+| status | `parked` |
+| note | **PARKED CASH 2026-08-01** — brak gotówki; data 2026-08-06 nie odblokowuje. Thaw = budget + explicit GO. |
+| **DoD** | `GO BUILD demand-f5` dopiero po budget + GO Foundera. Zero spend = PASS constraintu cash. |
 
 ---
 
@@ -391,7 +449,8 @@ Statusy: `pending` · `in_progress` · `done` · `blocked` · `wont_do`
 | owner | Agent_Content_Factory + Agent_FB HITL |
 | deps | DOS-W1-PASS · DOS-C2-01 |
 | os_target_section_ref | `J Wave2` · `Agent_FB` · `B.5` |
-| status | `pending` |
+| status | `in_progress` |
+| note | **SOFT-START cash-first 2026-08-01** — hunt na allowlist `active` (g2–g6,g9) równolegle z W1; formal W2-PASS po 5 dni comments. CDP HITL OK. |
 | **DoD** | Wave2 aktywna: +CF + FB hunter. Komentarze daily na allowlist: 1 wartość + 1 CTA Wizard+UTM. KPI: starts facebook + qualified comments/day logowane w ledger. |
 
 ### DOS-W2-PASS
@@ -482,7 +541,9 @@ Statusy: `pending` · `in_progress` · `done` · `blocked` · `wont_do`
 | deps | DOS-F0-01 |
 | os_target_section_ref | `E MCP` |
 | status | `done` |
+| evidence | ACTION PLAN §6 map · F1 `demand_os_utm` · F2 `demand_os_f2` (validate/calendar/gate) = tool surface |
 | **DoD** | Map tool→agent zapisany (jadzia.db/UTM, content_calendar, GA4, publish path, GDrive, widget/leads). Day1: **zero nowych narzędzi** poza listą OS. Social connectors = TO-BE w F3. |
+| **DoD met** | UTM + content_calendar + validator gate LIVE as CLI/Python tools. No fake MCP HTTP. Connectors = F3. |
 
 ### DOS-INS-01
 

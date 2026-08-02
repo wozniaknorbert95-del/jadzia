@@ -18,14 +18,18 @@ budget_context: "freeze organic only do 2026-08-06"
 
 ## Campus — pokój Marketing (gdzie jesteśmy)
 
+**Full map:** [FLEXGRAFIK-CAMPUS-MAP.md](../FLEXGRAFIK-CAMPUS-MAP.md) · **Program:** [FLEXGRAFIK-CAMPUS-PROGRAM.md](../FLEXGRAFIK-CAMPUS-PROGRAM.md) §13 · WW target: **`MKT/2026-W31/`**.
+
+**DoD (PLAN-00):** Asset Card + Experiment Card + rights + UTM + Founder HITL — nie sam folder.
+
 ```
 FlexGrafik (Firma)
-└── Marketing (departament)
+└── Marketing Studio (P1)
     ├── SoT strategii      → GTM-1PAGER · OPERATOR-TODAY
     ├── Dashboard          → Commander ?v=mkt-dash08
     ├── Automaty (boty)    → MB propose · calendar publish · DTL ingest
     ├── HITL Dowódca       → FB organic · TT token · (paid PARK do 08-06)
-    └── Produkcja treści   → Asset Factory → MKT/YYYY-WW/  ← NASTĘPNA SESJA
+    └── Produkcja treści   → Asset Factory → MKT/2026-W31/  ← NASTĘPNA SESJA
 ```
 
 | Pokój (departament) | Repo / surface | Agenci / automaty |

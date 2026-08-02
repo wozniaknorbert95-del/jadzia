@@ -36,7 +36,7 @@ set_at: "2026-08-01"
 | top hook | `tt_w31_install_01` (draft / Validator PASS) |
 | FAIL count | 0 |
 | compliance | 100% (0 FAIL / 0 bypass) |
-| kill vanity | NO dashboard · NO HQ · NO Ads · NO Wave2 · NO ops desk |
+| kill vanity | NO dashboard · NO HQ · NO Ads (PARK cash) · NO ops desk · Wave2 hunt soft-start OK |
 | one improvement | każdy publish = wiersz w VALIDATOR-LOG najpierw |
 
 ## Procedura 5 min (Pon)

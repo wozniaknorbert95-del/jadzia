@@ -141,6 +141,102 @@ async def get_money_risk_narrative(
     return build_money_risk_narrative()
 
 
+@router.get("/api/v1/commander/demand-os/status")
+async def get_demand_os_status(
+    _auth=Depends(require_scope("demand_os:read")),
+) -> dict:
+    """Demand Desk v2.1 status — same builder as hub status (no vanity)."""
+    from agent.demand_os.commander_status import build_demand_os_status
+
+    return build_demand_os_status()
+
+
+@router.get("/api/v1/commander/demand-os/money-check")
+async def get_demand_os_money_check(
+    _auth=Depends(require_scope("demand_os:read")),
+) -> dict:
+    """Pon Money Check slice — read-only."""
+    from agent.demand_os.observability import money_check
+
+    return {"ok": True, "money_check": money_check(), "marketing": "PARKED_LAST"}
+
+
+@router.post("/api/v1/commander/demand-os/hitl/decision")
+async def post_demand_os_hitl_decision(
+    body: dict,
+    auth=Depends(require_scope("demand_os:act")),
+) -> dict:
+    """GOTOWY/BLOKADA → calendar + audit. Never live publish."""
+    from agent.demand_os.hitl_decision import record_hitl_decision
+    from agent.demand_os.rbac import require_act
+
+    gate = require_act(auth)
+    if not gate.get("ok"):
+        raise HTTPException(status_code=403, detail=gate.get("error"))
+    asset_id = str(body.get("asset_id") or "").strip()
+    decision = str(body.get("decision") or "").strip()
+    notes = str(body.get("notes") or "").strip()
+    out = record_hitl_decision(asset_id, decision, notes=notes)
+    if not out.get("ok"):
+        raise HTTPException(status_code=400, detail=out.get("error") or "hitl failed")
+    return out
+
+
+@router.post("/api/v1/commander/demand-os/hunt/dry")
+async def post_demand_os_hunt_dry(
+    body: dict,
+    auth=Depends(require_scope("demand_os:act")),
+) -> dict:
+    """Dry hunt comment — ENGAGE-LOG only, no live FB."""
+    from agent.demand_os.hunt_dry import run_hunt_dry
+    from agent.demand_os.rbac import require_act
+
+    gate = require_act(auth)
+    if not gate.get("ok"):
+        raise HTTPException(status_code=403, detail=gate.get("error"))
+    target_id = str(body.get("target_id") or "").strip()
+    text = str(body.get("text") or body.get("draft") or "").strip()
+    icp_role = str(body.get("icp_role") or "installateur").strip()
+    out = run_hunt_dry(target_id, text=text, icp_role=icp_role)
+    if not out.get("ok"):
+        raise HTTPException(status_code=400, detail=out.get("error") or "hunt dry failed")
+    return out
+
+
+@router.post("/api/v1/commander/demand-os/memory/icp")
+async def post_demand_os_memory_icp(
+    body: dict,
+    auth=Depends(require_scope("demand_os:act")),
+) -> dict:
+    """Mutate semantic ICP week — Demand OS §G act scope."""
+    from agent.demand_os.memory import set_semantic_icp
+    from agent.demand_os.rbac import require_act
+
+    gate = require_act(auth)
+    if not gate.get("ok"):
+        raise HTTPException(status_code=403, detail=gate.get("error"))
+    role = str(body.get("role") or body.get("icp_role") or "").strip()
+    hook = str(body.get("hook") or body.get("hook_nl") or "").strip()
+    if not role or not hook:
+        raise HTTPException(status_code=400, detail="role and hook required")
+    store = set_semantic_icp(role, hook)
+    return {"ok": True, "memory": store, "scope": "demand_os:act"}
+
+
+@router.post("/api/v1/commander/demand-os/ledger/ensure-today")
+async def post_demand_os_ledger_ensure(
+    auth=Depends(require_scope("demand_os:act")),
+) -> dict:
+    """Append hygiene ledger row for today — act scope."""
+    from agent.demand_os.ledger import ensure_today_row
+    from agent.demand_os.rbac import require_act
+
+    gate = require_act(auth)
+    if not gate.get("ok"):
+        raise HTTPException(status_code=403, detail=gate.get("error"))
+    return ensure_today_row(dry_run=False)
+
+
 @router.get("/api/v1/commander/audit-log/verify")
 async def verify_audit_chain_endpoint(
     auth=Depends(require_scope("commander:read")),

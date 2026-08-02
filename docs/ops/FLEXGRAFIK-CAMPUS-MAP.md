@@ -106,7 +106,7 @@ budget_freeze_until: "2026-08-06"
 | **Lead Game** | `app.flexgrafik.nl` | **LIVE** | INT-004 ingest | `leads` table | game + leads API | lead→coupon→Wizard | — |
 | **Sales Room** | jadzia REV-DEMAND | **LIVE** | lead_node · sales_cta | leads · hot_lead tickets | Home CRITICAL/ACTION | Lead→Wizard · SLA | disposition Ack |
 | **Design Studio** | zzpackage design-agent · jadzia INSPIRE | **PARTIAL** | inspire · design-agent | mockups / briefs | Wizard DA UI · hop health **historically 404** | mockup before price | brief edit HITL |
-| **Marketing Studio** | jadzia Marketing OS · [OPERATOR-TODAY](./marketing/OPERATOR-TODAY.md) | **LIVE** (organic) / **PARK** (paid) | MB · calendar publish · TT-PUB | content_calendar · GTM | Marketing tab + MB rail | wizard_starts · organic publish | FB organic · TT token · **€0 paid → 2026-08-06** |
+| **Marketing Studio** | jadzia Demand OS Hub · [OPERATOR-TODAY](./marketing/OPERATOR-TODAY.md) · [TOOL-PASS](./demand-os/TOOL-PASS.md) | **LIVE** (Hub §M tool) / **PARKED_LAST** (HITL publish) / **PARK** (paid) | Hub status · money-check · Val gate | CONTENT-CALENDAR.json · UTM Lock · GROWTH-EVENTS | Commander `demand-os/status` + Marketing tab | wizard_starts UTM · val FAIL · top_hook | **Ads PARK cash** · no live publish without GO |
 | **Brand Portal** | `flexgrafik-nl` · flexgrafik.nl | **PARTIAL** | portal_qualify INT-012 | WP content | portal pages | trust → Wizard/Game | deploy GHA |
 | **Client Support** | jadzia `cs_followup` · SPEED-TO-LEAD | **PARTIAL** | cs_followup | CS tickets | Home CS form | WA &lt;15 min | Ack follow-up |
 
@@ -173,15 +173,15 @@ budget_freeze_until: "2026-08-06"
 
 ### Marketing Studio
 - **Piętro:** P1 Commercial
-- **Repo / URL:** `jadzia-core` `docs/ops/marketing/` · Commander Marketing
-- **Status:** LIVE (organic) · PARK (paid Meta do 2026-08-06)
-- **Owner (human/agent):** Dowódca / MB propose
-- **Agenci / automaty:** Marketing Brain · content_calendar · FB publish · TT-PUB (kod LIVE)
-- **Dane (SoT):** GTM-1PAGER · content_calendar · GDrive `MKT/YYYY-WW/`
-- **Dashboard / wejście:** Commander **Marketing** + MB Decision Rail
-- **KPI (1–3):** organic publish · wizard_starts · (paid CPA po unlock)
-- **HITL gate:** FB organic approve · TT token · **€0 Ads**
-- **Next action:** **MKT-ASSET-00** — materials → `MKT/2026-W31/`
+- **Repo / URL:** `jadzia-core` Demand OS Hub · `docs/ops/demand-os/` · Commander Marketing
+- **Status:** LIVE (Hub §M tool) · PARKED_LAST (HITL publish) · PARK (Ads cash)
+- **Owner (human/agent):** Growth Lead / Dowódca
+- **Agenci / automaty:** Demand OS F1–F4 + Hub · Val gate · A2A (publish HITL parked)
+- **Dane (SoT):** OS TARGET · CONTENT-CALENDAR.json · UTM Lock · GROWTH-EVENTS · MEMORY.json
+- **Dashboard / wejście:** Commander `GET /api/v1/commander/demand-os/status` + Marketing tab
+- **KPI (1–3):** wizard_starts UTM · validator_fail · top_hook (no vanity views)
+- **HITL gate:** live publish only after `GO MARKETING HITL` · **€0 Ads**
+- **Next action:** dashboard tip complete · marketing remains PARKED_LAST
 
 ### Order Desk
 - **Piętro:** Parter Order/Production

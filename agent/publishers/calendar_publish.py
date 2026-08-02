@@ -8,8 +8,24 @@ from agent.publishers.facebook import publish_photo, publish_post, publish_video
 from agent.publishers import tiktok as tt
 
 
-def publish_calendar_content(row: Dict) -> dict:
-    """Route publish to the correct platform publisher."""
+def publish_calendar_content(row: Dict, *, skip_demand_gate: bool = False) -> dict:
+    """Route publish to the correct platform publisher.
+
+    Demand OS growth assets with asset_id must pass F2 calendar gate unless
+    skip_demand_gate=True (legacy ops calendar rows without growth asset_id).
+    """
+    asset_id = (row.get("asset_id") or "").strip()
+    if asset_id and not skip_demand_gate:
+        from agent.demand_os.publish_gate_bridge import check_publish_allowed
+
+        gate = check_publish_allowed(asset_id)
+        if not gate.allowed:
+            return {
+                "status": "denied",
+                "error": gate.reason,
+                "gate": gate.to_dict(),
+            }
+
     platform = (row.get("platform") or "facebook").strip().lower()
     content_type = row.get("content_type") or "text"
     message = row.get("body_nl") or ""

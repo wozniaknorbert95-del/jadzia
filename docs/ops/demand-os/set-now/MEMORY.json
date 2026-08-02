@@ -1,0 +1,385 @@
+{
+  "updated": "2026-08-02T12:35:43+00:00",
+  "semantic": {
+    "icp_role_week": "installateur",
+    "hook_nl": "witte bus · opdrachtgever ziet je niet",
+    "cta": "wizard_only"
+  },
+  "episodic": {
+    "top_hook_asset_id": "tt_w32_install_01",
+    "starts_utm_total": 3,
+    "weekly_improvement": "Double down on angle behind #tt_w32_install_01 next week — same ICP pain, new creative angle (fatigue 7-14d) — tool path only until GO MARKETING HITL",
+    "history": [
+      {
+        "ts": "2026-08-02T11:54:49+00:00",
+        "top_hook_asset_id": "tt_w32_install_01",
+        "starts_utm_total": 3,
+        "paid": 1,
+        "validator_fail": 2
+      },
+      {
+        "ts": "2026-08-02T11:54:56+00:00",
+        "top_hook_asset_id": "tt_w32_install_01",
+        "starts_utm_total": 3,
+        "paid": 1,
+        "validator_fail": 2
+      },
+      {
+        "ts": "2026-08-02T11:54:58+00:00",
+        "top_hook_asset_id": "tt_w32_install_01",
+        "starts_utm_total": 3,
+        "paid": 1,
+        "validator_fail": 2
+      },
+      {
+        "ts": "2026-08-02T11:54:59+00:00",
+        "top_hook_asset_id": "tt_w32_install_01",
+        "starts_utm_total": 3,
+        "paid": 1,
+        "validator_fail": 2
+      },
+      {
+        "ts": "2026-08-02T11:54:59+00:00",
+        "top_hook_asset_id": "tt_w32_install_01",
+        "starts_utm_total": 3,
+        "paid": 1,
+        "validator_fail": 2
+      },
+      {
+        "ts": "2026-08-02T11:54:59+00:00",
+        "top_hook_asset_id": "tt_w32_install_01",
+        "starts_utm_total": 3,
+        "paid": 1,
+        "validator_fail": 2
+      },
+      {
+        "ts": "2026-08-02T11:54:59+00:00",
+        "top_hook_asset_id": "tt_w32_install_01",
+        "starts_utm_total": 3,
+        "paid": 1,
+        "validator_fail": 2
+      },
+      {
+        "ts": "2026-08-02T11:54:59+00:00",
+        "top_hook_asset_id": "tt_w32_install_01",
+        "starts_utm_total": 3,
+        "paid": 1,
+        "validator_fail": 2
+      },
+      {
+        "ts": "2026-08-02T11:54:59+00:00",
+        "top_hook_asset_id": "tt_w32_install_01",
+        "starts_utm_total": 3,
+        "paid": 1,
+        "validator_fail": 2
+      },
+      {
+        "ts": "2026-08-02T11:54:59+00:00",
+        "top_hook_asset_id": "tt_w32_install_01",
+        "starts_utm_total": 3,
+        "paid": 1,
+        "validator_fail": 2
+      },
+      {
+        "ts": "2026-08-02T11:54:59+00:00",
+        "top_hook_asset_id": "tt_w32_install_01",
+        "starts_utm_total": 3,
+        "paid": 1,
+        "validator_fail": 2
+      },
+      {
+        "ts": "2026-08-02T11:54:59+00:00",
+        "top_hook_asset_id": "tt_w32_install_01",
+        "starts_utm_total": 3,
+        "paid": 1,
+        "validator_fail": 2
+      },
+      {
+        "ts": "2026-08-02T11:54:59+00:00",
+        "top_hook_asset_id": "tt_w32_install_01",
+        "starts_utm_total": 3,
+        "paid": 1,
+        "validator_fail": 2
+      },
+      {
+        "ts": "2026-08-02T11:54:59+00:00",
+        "top_hook_asset_id": "tt_w32_install_01",
+        "starts_utm_total": 3,
+        "paid": 1,
+        "validator_fail": 2
+      },
+      {
+        "ts": "2026-08-02T12:13:13+00:00",
+        "top_hook_asset_id": "tt_w32_install_01",
+        "starts_utm_total": 3,
+        "paid": 1,
+        "validator_fail": 2
+      },
+      {
+        "ts": "2026-08-02T12:13:14+00:00",
+        "top_hook_asset_id": "tt_w32_install_01",
+        "starts_utm_total": 3,
+        "paid": 1,
+        "validator_fail": 2
+      },
+      {
+        "ts": "2026-08-02T12:13:25+00:00",
+        "top_hook_asset_id": "tt_w32_install_01",
+        "starts_utm_total": 3,
+        "paid": 1,
+        "validator_fail": 2
+      },
+      {
+        "ts": "2026-08-02T12:13:25+00:00",
+        "top_hook_asset_id": "tt_w32_install_01",
+        "starts_utm_total": 3,
+        "paid": 1,
+        "validator_fail": 2
+      },
+      {
+        "ts": "2026-08-02T12:13:25+00:00",
+        "top_hook_asset_id": "tt_w32_install_01",
+        "starts_utm_total": 3,
+        "paid": 1,
+        "validator_fail": 2
+      },
+      {
+        "ts": "2026-08-02T12:13:25+00:00",
+        "top_hook_asset_id": "tt_w32_install_01",
+        "starts_utm_total": 3,
+        "paid": 1,
+        "validator_fail": 2
+      },
+      {
+        "ts": "2026-08-02T12:13:25+00:00",
+        "top_hook_asset_id": "tt_w32_install_01",
+        "starts_utm_total": 3,
+        "paid": 1,
+        "validator_fail": 2
+      },
+      {
+        "ts": "2026-08-02T12:13:25+00:00",
+        "top_hook_asset_id": "tt_w32_install_01",
+        "starts_utm_total": 3,
+        "paid": 1,
+        "validator_fail": 2
+      },
+      {
+        "ts": "2026-08-02T12:13:25+00:00",
+        "top_hook_asset_id": "tt_w32_install_01",
+        "starts_utm_total": 3,
+        "paid": 1,
+        "validator_fail": 2
+      },
+      {
+        "ts": "2026-08-02T12:13:25+00:00",
+        "top_hook_asset_id": "tt_w32_install_01",
+        "starts_utm_total": 3,
+        "paid": 1,
+        "validator_fail": 2
+      },
+      {
+        "ts": "2026-08-02T12:13:25+00:00",
+        "top_hook_asset_id": "tt_w32_install_01",
+        "starts_utm_total": 3,
+        "paid": 1,
+        "validator_fail": 2
+      },
+      {
+        "ts": "2026-08-02T12:13:25+00:00",
+        "top_hook_asset_id": "tt_w32_install_01",
+        "starts_utm_total": 3,
+        "paid": 1,
+        "validator_fail": 2
+      },
+      {
+        "ts": "2026-08-02T12:13:25+00:00",
+        "top_hook_asset_id": "tt_w32_install_01",
+        "starts_utm_total": 3,
+        "paid": 1,
+        "validator_fail": 2
+      },
+      {
+        "ts": "2026-08-02T12:13:26+00:00",
+        "top_hook_asset_id": "tt_w32_install_01",
+        "starts_utm_total": 3,
+        "paid": 1,
+        "validator_fail": 2
+      },
+      {
+        "ts": "2026-08-02T12:13:50+00:00",
+        "top_hook_asset_id": "tt_w32_install_01",
+        "starts_utm_total": 3,
+        "paid": 1,
+        "validator_fail": 2
+      },
+      {
+        "ts": "2026-08-02T12:21:57+00:00",
+        "top_hook_asset_id": "tt_w32_install_01",
+        "starts_utm_total": 3,
+        "paid": 1,
+        "validator_fail": 2
+      },
+      {
+        "ts": "2026-08-02T12:21:59+00:00",
+        "top_hook_asset_id": "tt_w32_install_01",
+        "starts_utm_total": 3,
+        "paid": 1,
+        "validator_fail": 2
+      },
+      {
+        "ts": "2026-08-02T12:22:21+00:00",
+        "top_hook_asset_id": "tt_w32_install_01",
+        "starts_utm_total": 3,
+        "paid": 1,
+        "validator_fail": 2
+      },
+      {
+        "ts": "2026-08-02T12:22:21+00:00",
+        "top_hook_asset_id": "tt_w32_install_01",
+        "starts_utm_total": 3,
+        "paid": 1,
+        "validator_fail": 2
+      },
+      {
+        "ts": "2026-08-02T12:22:21+00:00",
+        "top_hook_asset_id": "tt_w32_install_01",
+        "starts_utm_total": 3,
+        "paid": 1,
+        "validator_fail": 2
+      },
+      {
+        "ts": "2026-08-02T12:22:21+00:00",
+        "top_hook_asset_id": "tt_w32_install_01",
+        "starts_utm_total": 3,
+        "paid": 1,
+        "validator_fail": 2
+      },
+      {
+        "ts": "2026-08-02T12:22:21+00:00",
+        "top_hook_asset_id": "tt_w32_install_01",
+        "starts_utm_total": 3,
+        "paid": 1,
+        "validator_fail": 2
+      },
+      {
+        "ts": "2026-08-02T12:22:21+00:00",
+        "top_hook_asset_id": "tt_w32_install_01",
+        "starts_utm_total": 3,
+        "paid": 1,
+        "validator_fail": 2
+      },
+      {
+        "ts": "2026-08-02T12:22:22+00:00",
+        "top_hook_asset_id": "tt_w32_install_01",
+        "starts_utm_total": 3,
+        "paid": 1,
+        "validator_fail": 2
+      },
+      {
+        "ts": "2026-08-02T12:22:22+00:00",
+        "top_hook_asset_id": "tt_w32_install_01",
+        "starts_utm_total": 3,
+        "paid": 1,
+        "validator_fail": 2
+      },
+      {
+        "ts": "2026-08-02T12:22:22+00:00",
+        "top_hook_asset_id": "tt_w32_install_01",
+        "starts_utm_total": 3,
+        "paid": 1,
+        "validator_fail": 2
+      },
+      {
+        "ts": "2026-08-02T12:22:22+00:00",
+        "top_hook_asset_id": "tt_w32_install_01",
+        "starts_utm_total": 3,
+        "paid": 1,
+        "validator_fail": 2
+      },
+      {
+        "ts": "2026-08-02T12:22:22+00:00",
+        "top_hook_asset_id": "tt_w32_install_01",
+        "starts_utm_total": 3,
+        "paid": 1,
+        "validator_fail": 2
+      },
+      {
+        "ts": "2026-08-02T12:22:22+00:00",
+        "top_hook_asset_id": "tt_w32_install_01",
+        "starts_utm_total": 3,
+        "paid": 1,
+        "validator_fail": 2
+      },
+      {
+        "ts": "2026-08-02T12:22:37+00:00",
+        "top_hook_asset_id": "tt_w32_install_01",
+        "starts_utm_total": 3,
+        "paid": 1,
+        "validator_fail": 2
+      },
+      {
+        "ts": "2026-08-02T12:23:06+00:00",
+        "top_hook_asset_id": "tt_w32_install_01",
+        "starts_utm_total": 3,
+        "paid": 1,
+        "validator_fail": 2
+      },
+      {
+        "ts": "2026-08-02T12:30:19+00:00",
+        "top_hook_asset_id": "tt_w32_install_01",
+        "starts_utm_total": 3,
+        "paid": 1,
+        "validator_fail": 2
+      },
+      {
+        "ts": "2026-08-02T12:30:49+00:00",
+        "top_hook_asset_id": "tt_w32_install_01",
+        "starts_utm_total": 3,
+        "paid": 1,
+        "validator_fail": 2
+      },
+      {
+        "ts": "2026-08-02T12:34:14+00:00",
+        "top_hook_asset_id": "tt_w32_install_01",
+        "starts_utm_total": 3,
+        "paid": 1,
+        "validator_fail": 2
+      },
+      {
+        "ts": "2026-08-02T12:34:16+00:00",
+        "top_hook_asset_id": "tt_w32_install_01",
+        "starts_utm_total": 3,
+        "paid": 1,
+        "validator_fail": 2
+      },
+      {
+        "ts": "2026-08-02T12:35:17+00:00",
+        "top_hook_asset_id": "tt_w32_install_01",
+        "starts_utm_total": 3,
+        "paid": 1,
+        "validator_fail": 2
+      },
+      {
+        "ts": "2026-08-02T12:35:40+00:00",
+        "top_hook_asset_id": "tt_w32_install_01",
+        "starts_utm_total": 3,
+        "paid": 1,
+        "validator_fail": 2
+      },
+      {
+        "ts": "2026-08-02T12:35:43+00:00",
+        "top_hook_asset_id": "tt_w32_install_01",
+        "starts_utm_total": 3,
+        "paid": 1,
+        "validator_fail": 2
+      }
+    ]
+  },
+  "procedural": {
+    "playbook": "docs/ops/SYSTEM-FIRM-OPERATING-SYSTEM-TARGET.md",
+    "validator_rules": "C.5 R1-R8",
+    "anti_spam": "<=1 group/copy/day",
+    "ads": "parked_cash until budget+GO"
+  }
+}

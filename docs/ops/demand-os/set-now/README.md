@@ -1,32 +1,37 @@
 ---
-status: "[ACTIVE · SET NOW + CONTINUOUS PREP]"
+status: "[HITL-READY DRY · marketing PARKED_LAST]"
 title: "Demand OS — SET NOW artifacts"
-updated: "2026-08-01"
-gate: "DEMAND-OS-SET-NOW-00"
+updated: "2026-08-02"
+gate: "DEMAND-OS-HITL-READY-00"
 os_target: "docs/ops/SYSTEM-FIRM-OPERATING-SYSTEM-TARGET.md §C"
 ---
 
 # SET NOW Pack
 
-| Plik | TODO | OS |
-|------|------|-----|
-| [`GO-DAY-TODAY.md`](./GO-DAY-TODAY.md) | **DOS-W1-03 LIVE DZIŚ** | O #2 |
-| [`TT-CAPTIONS-W1.md`](./TT-CAPTIONS-W1.md) | W1-03 | Agent_TT |
-| [`TT-SHOOT-PLAN-W1.md`](./TT-SHOOT-PLAN-W1.md) | W1-03 | Agent_TT |
-| [`REPLY-BANK-NL.md`](./REPLY-BANK-NL.md) | W1-03/04 | B.5/B.6 |
-| [`OBJECTIONS-NL.md`](./OBJECTIONS-NL.md) | W1-04 | Sales |
-| [`WEEK-CALENDAR-W32.md`](./WEEK-CALENDAR-W32.md) | K | tydzień |
-| [`ASSET-REGISTRY.csv`](./ASSET-REGISTRY.csv) | W1 | registry |
-| [`LEDGER.csv`](./LEDGER.csv) · [`LEDGER-OPS-14D.md`](./LEDGER-OPS-14D.md) | C.7 · LEDGER-2W | ledger |
-| [`MONEY-CHECK-OPS.md`](./MONEY-CHECK-OPS.md) | W1-01 | Growth |
-| [`VALIDATOR-LOG.csv`](./VALIDATOR-LOG.csv) | W1-05 | Validator |
-| [`SALES-STL-OPS.md`](./SALES-STL-OPS.md) | W1-04 | Sales |
-| [`CREATIVE-FATIGUE.md`](./CREATIVE-FATIGUE.md) | INS-02 | B.4 |
-| [`BLOG-DRAFT-W1-NL.md`](./BLOG-DRAFT-W1-NL.md) | C.4 | Blog |
-| [`EPISODIC-MEMORY.md`](./EPISODIC-MEMORY.md) | F Memory | episodic |
-| [`ICP-WEEK.md`](./ICP-WEEK.md) … Wave1 roster | C.1–C.6 | SET NOW |
+**SoT egzekucji:** [`../../SYSTEM-FIRM-OPERATING-SYSTEM-TARGET.md`](../../SYSTEM-FIRM-OPERATING-SYSTEM-TARGET.md)  
+**Marketing HITL:** PARKED_LAST · Ads = PARK cash
 
-**Verify:** `python tools/demand_os_phase0_check.py`  
-**Daily ledger:** `python tools/demand_os_ledger_day.py`  
+| Plik | Rola | OS |
+|------|------|-----|
+| [`GO-DAY-TODAY.md`](./GO-DAY-TODAY.md) | TOOL FIRST tip | O |
+| [`ADS-FREEZE.md`](./ADS-FREEZE.md) | F5 parked_cash | C.1 #5 |
+| [`LEDGER.csv`](./LEDGER.csv) | ledger | C.7 |
+| [`CONTENT-CALENDAR.json`](./CONTENT-CALENDAR.json) | growth gate F2 | E |
+| [`MEMORY.json`](./MEMORY.json) | §F memory | F |
+| [`A2A-HANDOFFS.jsonl`](./A2A-HANDOFFS.jsonl) | §E A2A | E |
+| [`GROWTH-EVENTS.jsonl`](./GROWTH-EVENTS.jsonl) | F1 events | F1 |
+| [`MONEY-CHECK-OPS.md`](./MONEY-CHECK-OPS.md) | Pon rytm | C.1 #8 |
+| [`VALIDATOR-LOG.csv`](./VALIDATOR-LOG.csv) | Val log | C.5 |
+| Organic sprint / hunt / captions | **PARKED_LAST** | — |
+
+## Operator dry runbook (no live)
+
+1. `python tools/demand_os_hub.py money-check`  
+2. F2 validate asset → calendar `validated`  
+3. HITL decide: API `POST …/hitl/decision` GOTOWY|BLOKADA (no publish)  
+4. `hub engage-dry` → ENGAGE-LOG → `status` hunt_queue SENT|BLOCK  
+5. Live publish dopiero po `GO MARKETING HITL`
+
+**Verify:** `python tools/demand_os_phase0_check.py` · `hub doctor` · `hub status`  
 **Runner:** `/demand-os-execute` · [`../STATE.md`](../STATE.md)  
-**Deploy:** STOP bez GO · **Dashboard:** STOP P0
+**Deploy / live publish:** STOP

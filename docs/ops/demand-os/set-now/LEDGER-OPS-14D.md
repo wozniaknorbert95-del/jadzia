@@ -5,20 +5,23 @@ status: in_progress
 set_at: "2026-08-01"
 window_start: "2026-08-01"
 window_end: "2026-08-14"
+sprint: "../ORGANIC-AGENCY-SPRINT-14D.md"
 ---
 
 # Ledger Ops — 14 dni (DOS-LEDGER-2W)
 
 **SoT plik:** [`LEDGER.csv`](./LEDGER.csv)  
+**Sprint:** [`../ORGANIC-AGENCY-SPRINT-14D.md`](../ORGANIC-AGENCY-SPRINT-14D.md)  
 **Reguła:** ≥1 wiersz / dzień · dziura max &lt;48h · **nie** fake `publish_Y=Y` bez real publish.
 
 ## Okno audit
 
 | Dzień | date | status |
 |-------|------|--------|
-| 0 | 2026-08-01 | **DONE** (Money Check + STL drill) |
-| 1 | 2026-08-02 | organic start — wpisz po aktywności |
-| 2–13 | 2026-08-03 … 08-14 | daily |
+| 0 | 2026-08-01 | **DONE** (STL + sprint D0 SoT row) |
+| 1 | 2026-08-02 | TT#1 + Hunt g2 — wpisz po aktywności |
+| 2 | 2026-08-03 | Pon Money Check + Hunt |
+| 3–13 | 2026-08-04 … 08-14 | daily (TT/FB/blog/trust) |
 | PASS | po 14 dniach bez luk &gt;48h | `DOS-LEDGER-2W` → done |
 
 ## Daily 60s

@@ -61,5 +61,25 @@ def resolve_recommendations(
     return out
 
 
-def build_wizard_deeplink(vehicle: str, highlight_sku: str) -> str:
-    return f"https://zzpackage.flexgrafik.nl/wizard/?voertuig={vehicle}&highlight={highlight_sku}"
+def build_wizard_deeplink(
+    vehicle: str,
+    highlight_sku: str,
+    *,
+    icp_role: str = "installateur",
+) -> str:
+    """Wizard CTA with Demand OS UTM Lock (OS C.1 #3 / B.7).
+
+    Preserves voertuig/highlight for product context; never bare /wizard/.
+    """
+    from agent.demand_os.utm_lock import build_wizard_utm
+
+    veh = (vehicle or "bus").strip().lower() or "bus"
+    sku = (highlight_sku or "pack").strip() or "pack"
+    # asset_id: no whitespace (Lock rule)
+    aid = f"da_{sku}".replace(" ", "_")
+    return build_wizard_utm(
+        "design_agent",
+        (icp_role or "installateur").strip().lower(),
+        aid,
+        extra={"voertuig": veh, "highlight": sku},
+    )

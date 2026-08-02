@@ -13,8 +13,8 @@
 |---|---------|----------------------|--------------------|--------|-------|---------------|
 | 1 | Dashboard CEO | Cold open ≤10s; daily &lt;5 min; kolejka + mapa | `/commander/` | **LIVE** | Agent dogfood PASS @ tip `2ba7c85` (`UX-DOGFOOD-PHONE.md`) | maintain; residual TG live optional |
 | 2 | System wiedzy | Indeks SoT + procesy; zero sprzecznych kanonów | KNOW-01 mirrors | **LIVE** | SoT jadzia + meta/VCMS pointers (COI-KNOW-01) | maintain; #8 proces VCMS-link osobno |
-| 3 | AI Sprzedawca | Lead→CTA→Wizard | Demand + widget | LIVE | REV-DEMAND F0–F7 | maintain |
-| 4 | AI Marketing | Draft→HITL→publish | Commander Marketing | LIVE | PUBLISH-B + audit publish×8/14d | maintain |
+| 3 | AI Sprzedawca | Lead→CTA→Wizard | Demand + widget + A2A lead_hot | LIVE | Demand OS Hub · TOOL PASS local | maintain · marketing HITL PARKED_LAST |
+| 4 | AI Marketing | Hub §M → (later) HITL publish | Demand OS Hub + Commander demand-os/status | LIVE (tool) / PARKED_LAST (publish) | OS TARGET F1–F4+Hub+wires · `TOOL-PASS.md` | no live publish until `GO MARKETING HITL` |
 | 5 | AI Project Manager | Orkiestracja HITL | Agent OS | **LIVE** | HITL approve `task-4f6a23d8` → DONE @ os-api 2026-07-18 | maintain; UI Basic Auth Dowódca |
 | 6 | AI Customer Success | Post-sale follow-up | `cs_followup` | **LIVE** | API+UI HITL tip `0a54bc7`; dogfood spawn→Ack | maintain; auto-trigger later |
 | 7 | AI Asystent Zarządu | Brief→HITL→Home | brief_node | LIVE | STRATEGY-HITL + tickets | maintain |
