@@ -5,7 +5,7 @@ last_step: "DEMAND-OS-DESK-5E-GAP-CLOSE"
 phase_program: "docs/ops/demand-os/PROGRAM-PHASES.md"
 next_action: "Dowódca §8 prod smoke → Hard DoD 15/15"
 close_handoff: "docs/handoffs/2026-08-02-DEMAND-DESK-5E-GAP-CLOSE.md"
-prod_tip: "pending deploy"
+prod_tip: "dfae759"
 ---
 
 # Demand OS — STATE
