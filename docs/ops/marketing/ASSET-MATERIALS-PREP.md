@@ -26,7 +26,7 @@ budget_context: "freeze organic only do 2026-08-06"
 FlexGrafik (Firma)
 └── Marketing Studio (P1)
     ├── SoT strategii      → GTM-1PAGER · OPERATOR-TODAY
-    ├── Dashboard          → Commander ?view=demand-desk&cb=desk-dash03 (Biuro Popytu)
+    ├── Dashboard          → Commander ?cb=desk-dash05 (Biuro Popytu default)
     ├── Automaty (boty)    → MB propose · calendar publish · DTL ingest
     ├── HITL Dowódca       → FB organic · TT token · (paid PARK do 08-06)
     └── Produkcja treści   → Asset Factory → MKT/2026-W31/  ← NASTĘPNA SESJA

@@ -10,10 +10,13 @@ surface: "commander-ui #view-demand-desk"
 
 ## Powierzchnia
 
-- **View:** `#view-demand-desk` w [`commander-ui/index.html`](../../commander-ui/index.html)
-- **Nav:** desktop `#main-nav` · mobile `#more-sheet`
+- **View:** `#view-demand-desk` — **default landing** (`/commander/` bez `?view=`)
+- **Nav desktop:** Biuro Popytu · Kolejka (`#view-home`) · Analityka · Agenci · Ustawienia · Więcej
+- **Nav mobile:** Biuro Popytu · Kolejka · Analityka · Agenci · Więcej
+- **Więcej:** VHQ · Marketing legacy · Audyt · Ustawienia · OS · VCMS
 - **API:** `GET /api/v1/commander/demand-os/status`
-- **Deep link:** `?view=demand-desk`
+- **Deep link:** `?view=demand-desk` (opcjonalny; default bez parametru)
+- **Cache:** `desk-dash05`
 
 ## Komponenty (reuse tokens)
 

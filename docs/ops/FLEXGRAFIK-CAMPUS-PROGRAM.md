@@ -93,7 +93,7 @@ Równoległość W1+MKT tylko: **inny owner / osobna sesja / osobny worktree**.
 | Claim ID | Twierdzenie | Klasa | Dowód | Zebrano | Wygasa | Owner A | Status |
 |----------|-------------|-------|-------|---------|--------|---------|--------|
 | EV-CAMPUS-001 | Prod tip jadzia `4cf66fe` | git/prod | [DEPLOY-FREEZE-CLOSE](../handoffs/2026-07-27-DEPLOY-FREEZE-CLOSE.md) · VPS `/opt/jadzia` | 2026-07-27 | przy nowym deploy | Ops/COI | **verified** (handoff; local HEAD `d427a94` ≠ prod — OK) |
-| EV-CAMPUS-002 | Commander `?view=demand-desk&cb=desk-dash03` | prod (post GO) | URL 200 + cache `desk-dash03` in HTML | 2026-08-02 | 24h | Ops/COI | **pending deploy GO** |
+| EV-CAMPUS-002 | Commander `?cb=desk-dash05` | prod | URL 200 + cache `desk-dash05` · default Desk | 2026-08-02 | 24h | Ops/COI | **verified @ 5d** |
 | EV-CAMPUS-003 | VCMS Conflicts=0 | governance | `node tools/vcms-scan.js` → Conflicts: 0 | 2026-07-27T15:50+02 | start kolejnej sesji | Govern | **verified** |
 | EV-CAMPUS-004 | Order #3149 E2E INT-002 | business | archive handoff deploy-int-002 + SPINE proof | history | never | Ops/COI | **verified** (history) |
 | EV-CAMPUS-005 | Worker health / SSH | prod | `/worker/health` → healthy · `ssh_connection=ok` · INC-SSH-RECOVERY-00 **CLOSED** 2026-07-31 | 2026-07-31 | przy regresji | Ops/COI | **verified** (recovered) |
@@ -145,10 +145,10 @@ status: LIVE
 status_evidence: EV-CAMPUS-002
 source_of_truth:
   label: Biuro Popytu (Demand Desk)
-  url: https://api.zzpackage.flexgrafik.nl/commander/?view=demand-desk&cb=desk-dash03
+  url: https://api.zzpackage.flexgrafik.nl/commander/?cb=desk-dash05
 primary_action:
-  label: Robota dnia + HITL queue
-  target: https://api.zzpackage.flexgrafik.nl/commander/?view=demand-desk&cb=desk-dash03
+  label: Biuro Popytu — operacja dnia
+  target: https://api.zzpackage.flexgrafik.nl/commander/?cb=desk-dash05
 room_card:
   kpis: [KPI-CEO-COLD-OPEN, KPI-CEO-QUEUE-CLEAR]
   last_verified_at: "2026-07-27T15:50:00+02:00"
@@ -337,7 +337,7 @@ owner: Finance / Product
 
 | hop_id | Source | Label | Target | Expected marker | Auth expect | W0 note |
 |--------|--------|-------|--------|-----------------|-------------|---------|
-| HOP-CMD | Home map | Biuro Popytu | `/commander/?view=demand-desk&cb=desk-dash03` | `desk-dash03` in HTML | 200 JWT session | EV-002 pending deploy GO |
+| HOP-CMD | Home map | Biuro Popytu | `/commander/?cb=desk-dash05` | `desk-dash05` in HTML | 200 JWT session | EV-002 verified |
 | HOP-OS | Home map | Agent OS | `https://os.flexgrafik.nl` | Mission Control UI title | 401/302→Basic Auth OK | W2 full chain |
 | HOP-VCMS | Home map | VCMS | `https://cmd.flexgrafik.nl` | Command Center | 401/302→Basic Auth OK | W2 |
 | HOP-WIZ | Home map | Wizard | `https://zzpackage.flexgrafik.nl/wizard/` | Wizard SPA | 200 | W2 |

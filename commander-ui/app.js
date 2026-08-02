@@ -1657,7 +1657,35 @@ function bindNavButtons(selector) {
         await openDemandDeskView();
         return;
       }
+      if (view === "home") {
+        if (typeof vhqGoConsole === "function") {
+          vhqGoConsole({ historyMode: "push" });
+        } else {
+          parkVhqForDeskView();
+          showView("home");
+        }
+        try {
+          await refresh();
+        } catch (e) {
+          toast(e.message);
+        }
+        return;
+      }
       if (view === "hq") {
+        if (!btn.dataset.vhqEntry) {
+          toast("Mission Control (VHQ) → menu Więcej");
+          if (typeof vhqGoConsole === "function") {
+            vhqGoConsole({ historyMode: "push" });
+          } else {
+            showView("home");
+          }
+          try {
+            await refresh();
+          } catch (e) {
+            toast(e.message);
+          }
+          return;
+        }
         if (typeof vhqGoMissionControl === "function") {
           vhqGoMissionControl({ historyMode: "push" });
         } else {
@@ -4392,7 +4420,9 @@ function bindVhqShell() {
   const shell = document.getElementById("vhq-shell");
   if (!enter || !shell) return;
 
-  enter.addEventListener("click", () => vhqGoMissionControl({ historyMode: "push" }));
+  enter.addEventListener("click", () => {
+    openDemandDeskView().catch((e) => toast(e.message));
+  });
   document.getElementById("vhq-close")?.addEventListener("click", () => {
     vhqClose({ historyMode: "push" });
   });
@@ -5214,7 +5244,22 @@ async function vhqBoot() {
     }
 
     if (viewParam === "hq" || (vhqParam && !viewParam)) {
-      vhqColdOpenMissionControl();
+      if (typeof vhqGoMissionControl === "function") {
+        vhqGoMissionControl({ historyMode: "replace" });
+      } else {
+        vhqColdOpenMissionControl();
+      }
+      return;
+    }
+
+    if (viewParam === "home") {
+      if (typeof vhqGoConsole === "function") {
+        vhqGoConsole({ historyMode: "replace" });
+      } else {
+        parkVhqForDeskView();
+        showView("home");
+      }
+      refresh().catch((e) => toast(e.message));
       return;
     }
 

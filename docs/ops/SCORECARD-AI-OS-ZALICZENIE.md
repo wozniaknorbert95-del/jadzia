@@ -11,7 +11,7 @@
 
 | # | Warunek | Definicja operacyjna | SoT / powierzchnia | Status | Dowód | Następny gate |
 |---|---------|----------------------|--------------------|--------|-------|---------------|
-| 1 | Dashboard CEO | Cold open ≤10s; daily &lt;5 min; kolejka + mapa | `/commander/?view=demand-desk` (Biuro Popytu primary) | **LIVE** | Agent dogfood PASS @ tip `2ba7c85` · Etap 5b hardening 75 desk tests | maintain; Dowódca §8 prod pending GO deploy |
+| 1 | Dashboard CEO | Cold open ≤10s; daily &lt;5 min; kolejka + mapa | `/commander/` → Biuro Popytu default | **LIVE** | Etap 5d IA · desk-dash05 · Kolejka secondary | Dowódca §8 pending |
 | 2 | System wiedzy | Indeks SoT + procesy; zero sprzecznych kanonów | KNOW-01 mirrors | **LIVE** | SoT jadzia + meta/VCMS pointers (COI-KNOW-01) | maintain; #8 proces VCMS-link osobno |
 | 3 | AI Sprzedawca | Lead→CTA→Wizard | Demand + widget + A2A lead_hot | LIVE | Demand OS Hub · TOOL PASS local | maintain · marketing HITL PARKED_LAST |
 | 4 | AI Marketing | Hub §M → (later) HITL publish | Demand OS Hub + Commander demand-os/status | LIVE (tool) / PARKED_LAST (publish) | OS TARGET F1–F4+Hub+wires · `TOOL-PASS.md` | no live publish until `GO MARKETING HITL` |

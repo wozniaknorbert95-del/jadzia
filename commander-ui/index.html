@@ -14,7 +14,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" href="styles.css?v=desk-dash04" />
+  <link rel="stylesheet" href="styles.css?v=desk-dash05" />
 </head>
 <body data-vhq-w2="1" data-vhq-w3="1" data-vhq-w31="1" data-vhq-w32="1" data-vhq-w4="1" data-vhq-w5="1" data-vhq-primary="1">
   <a class="skip-link" href="#main">Przejdź do treści</a>
@@ -29,10 +29,10 @@
       <span class="topbar-dot topbar-dot--min"></span>
       <span class="topbar-dot topbar-dot--max"></span>
     </div>
-    <h1>COI Commander</h1>
+    <h1>Biuro Popytu</h1>
     <nav aria-label="Główne menu" id="main-nav" class="nav-desktop">
       <button type="button" data-view="demand-desk" class="nav-btn active" aria-current="page">Biuro Popytu</button>
-      <button type="button" data-view="hq" class="nav-btn">Start</button>
+      <button type="button" data-view="home" class="nav-btn">Kolejka</button>
       <button type="button" data-view="analytics" class="nav-btn">Analityka</button>
       <button type="button" data-view="agents" class="nav-btn">Agenci</button>
       <button type="button" data-view="settings" class="nav-btn">Ustawienia</button>
@@ -315,20 +315,20 @@
               <div class="vhq-panel__actions" id="vhq-panel-actions"></div>
             </aside>
           </div>
-          <p class="vhq-shell__hint hint">Esc: room → Mission Control · Tools / Sign in for JWT · No 3D · Cache desk-dash04 · Firm Chain only</p>
+          <p class="vhq-shell__hint hint">Esc: room → Mission Control · Więcej → VHQ · Cache desk-dash05</p>
         </div>
     </section>
 
     <section id="view-home" class="view view-home--console" aria-labelledby="home-title" hidden>
       <header class="home-hero">
-        <p class="home-eyebrow">Secondary utility · Commander engine</p>
-        <h2 id="home-title">Operations Console</h2>
-        <p class="home-sub">Secondary utility · auth, tickets and evidence. Primary dashboard = Virtual HQ.</p>
+        <p class="home-eyebrow">Secondary · legacy console</p>
+        <h2 id="home-title">Kolejka i tickets</h2>
+        <p class="home-sub">Operacja dnia → <strong>Biuro Popytu</strong>. Ten ekran = kolejka CRITICAL/ACTION, CS follow-up i mapa techniczna.</p>
       </header>
       <section class="vhq-entry panel" id="vhq-entry" aria-labelledby="vhq-entry-title">
-        <h3 id="vhq-entry-title">Virtual HQ</h3>
-        <p class="hint">Primary dashboard = Virtual HQ · Mission Control. Use Console for session, tickets and evidence only.</p>
-        <button type="button" id="vhq-enter" class="primary">Return to HQ</button>
+        <h3 id="vhq-entry-title">Powrót do operacji</h3>
+        <p class="hint">Primary surface = Biuro Popytu. VHQ (Director Brief) tylko z menu Więcej.</p>
+        <button type="button" id="vhq-enter" class="primary">Otwórz Biuro Popytu</button>
       </section>
       <details class="console-collapse" id="console-legacy-hosts">
         <summary>Legacy operator hosts</summary>
@@ -368,7 +368,7 @@
         <summary>Technical / Evidence</summary>
         <p class="hint">Manifest-rendered System Map and Truth Cards · Audit / Agent Ops via tabs · Settings.</p>
       <section class="system-map" aria-labelledby="system-map-title">
-        <h3 id="system-map-title">Mapa systemu · Campus</h3>
+        <h3 id="system-map-title">Mapa systemu · Campus (legacy console)</h3>
         <p class="hint">Piętro · pokój · cel. Status jawny (LIVE tylko z dowodem). W2 = Trust hops. Osobne systemy — Basic Auth u właściciela hosta (OS/VCMS). Sesja JWT w Commanderze zostaje (D0.6 / D0.19).</p>
         <div class="system-map-links" id="system-map-links"></div>
       </section>
@@ -389,7 +389,7 @@
     <section id="view-demand-desk" class="view demand-desk" aria-labelledby="demand-desk-title" hidden>
       <header id="desk-header" class="demand-desk-header panel">
         <h2 id="demand-desk-title">Biuro Popytu</h2>
-        <p class="hint">Demand Desk v2.1 · marketing organiczny = osobna zakładka Marketing (nie ten ekran).</p>
+        <p class="hint">Demand Desk v2.1 · jedyna powierzchnia operacji dnia (HITL + Hunt + puls).</p>
         <div id="desk-scope-banner" class="demand-desk-banner" hidden role="alert"></div>
         <div id="desk-connection-banner" class="demand-desk-banner demand-desk-banner--err" hidden role="alert">
           BRAK POŁĄCZENIA — sprawdź auth i API.
@@ -657,7 +657,7 @@
 
   <nav id="bottom-nav" class="bottom-nav" aria-label="Menu mobilne">
     <button type="button" data-view="demand-desk" class="nav-btn active" aria-current="page">Biuro Popytu</button>
-    <button type="button" data-view="hq" class="nav-btn">Start</button>
+    <button type="button" data-view="home" class="nav-btn">Kolejka</button>
     <button type="button" data-view="analytics" class="nav-btn">Analityka</button>
     <button type="button" data-view="agents" class="nav-btn">Agenci</button>
     <button type="button" id="open-more-nav-bottom" class="nav-btn nav-btn--more">Więcej</button>
@@ -666,6 +666,7 @@
   <div id="more-sheet" class="more-sheet" hidden role="dialog" aria-label="Więcej">
     <p class="exec-rail-title">Więcej</p>
     <button type="button" class="more-sheet-btn" data-view="demand-desk" id="more-to-demand-desk">Biuro Popytu</button>
+    <button type="button" class="more-sheet-btn" data-view="hq" data-vhq-entry="1" id="more-to-vhq">Mission Control (VHQ)</button>
     <button type="button" class="more-sheet-btn more-sheet-btn--legacy" data-view="marketing" data-legacy="1">Marketing (legacy)</button>
     <button type="button" class="more-sheet-btn" data-view="audit" id="more-to-audit">Audyt (secondary)</button>
     <button type="button" class="more-sheet-btn" data-view="settings">Ustawienia</button>
@@ -687,6 +688,6 @@
 
 
   <div id="toast" class="toast" role="status" aria-live="polite" hidden></div>
-  <script src="app.js?v=desk-dash04"></script>
+  <script src="app.js?v=desk-dash05"></script>
 </body>
 </html>

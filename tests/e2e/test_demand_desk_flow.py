@@ -9,10 +9,15 @@ HTML = (ROOT / "commander-ui" / "index.html").read_text(encoding="utf-8")
 APP = (ROOT / "commander-ui" / "app.js").read_text(encoding="utf-8")
 
 
-def test_default_boot_opens_demand_desk_without_view_param():
-    boot = APP[APP.index("async function vhqBoot"): APP.index("if (document.readyState", APP.index("async function vhqBoot"))]
-    assert "await openDemandDeskView()" in boot
-    assert 'viewParam === "hq"' in boot
+def test_kolejka_nav_uses_home_not_hq():
+    assert 'data-view="home"' in HTML
+    assert 'vhqGoConsole' in APP
+    assert 'data-vhq-entry="1"' in HTML
+
+
+def test_vhq_enter_opens_desk():
+    chunk = APP[APP.index("function bindVhqShell"): APP.index("function bindVhqShell") + 800]
+    assert "openDemandDeskView" in chunk
 
 
 def test_deep_link_demand_desk_in_boot():

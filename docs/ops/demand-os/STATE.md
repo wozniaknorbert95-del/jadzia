@@ -1,32 +1,30 @@
 ---
-status: "[ETAP 5c IA CLEANUP · desk-dash04 LIVE · §8 Dowódca pending]"
+status: "[ETAP 5d IA SEAL agent · desk-dash05 · Dowódca §8 pending]"
 updated: "2026-08-02"
-last_step: "DEMAND-OS-DESK-5C-IA-CLOSE"
+last_step: "DEMAND-OS-DESK-5D-IA-CLOSE"
 phase_program: "docs/ops/demand-os/PROGRAM-PHASES.md"
-next_action: "Dowódca §8 prod smoke po desk-dash04"
-close_handoff: "docs/handoffs/2026-08-02-DEMAND-DESK-5C-IA-CLOSE.md"
-prod_tip: "c6bb38e"
+next_action: "Dowódca §8 prod smoke → Hard DoD 15/15"
+close_handoff: "docs/handoffs/2026-08-02-DEMAND-DESK-5D-IA-CLOSE.md"
+prod_tip: "pending deploy"
 ---
 
 # Demand OS — STATE
 
 | Pole | Wartość |
 |------|---------|
-| program_phase | **Etap 5c IA CLEANUP** |
-| desk_ui | `#view-demand-desk` · **default landing** · cache **desk-dash04** · **LIVE @ c6bb38e** |
-| desk_contract | **SEALED v2.1.1** (backend) |
+| program_phase | **Etap 5d IA SEAL (agent)** |
+| desk_ui | `#view-demand-desk` default · Kolejka secondary · cache **desk-dash05** |
+| desk_contract | **SEALED v2.1.1** |
 | tool_100 | **IN_PROGRESS** → UI SEAL po Dowódca §8 |
-| hard_dod | **14/15 agent** · #12 Dowódca prod |
+| hard_dod | **14/15** · #12 Dowódca prod |
 | marketing_hitl | **PARKED_LAST** |
 
-## Etap 5c — IA done
+## Etap 5d — IA naprawione
 
-- Boot → Biuro Popytu (bez `?view=`)
-- Marketing → tylko Więcej (legacy)
-- Nav desktop + mobile: Biuro Popytu primary
-
-Close: [`2026-08-02-DEMAND-DESK-5C-IA-CLOSE.md`](../../handoffs/2026-08-02-DEMAND-DESK-5C-IA-CLOSE.md)
+- VHQ demoted (Więcej only) · Kolejka = `#view-home`
+- CSS more-sheet fix · copy bez VHQ primary
+- Close: [`2026-08-02-DEMAND-DESK-5D-IA-CLOSE.md`](../../handoffs/2026-08-02-DEMAND-DESK-5D-IA-CLOSE.md)
 
 ## STOP
 
-Marketing live · fałszywy SEAL przed §8
+Fałszywy SEAL przed Dowódca §8 · marketing live
