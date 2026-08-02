@@ -6,12 +6,14 @@ Exit 1 = FAIL (missing files / ledger columns / empty test row).
 """
 from __future__ import annotations
 
+import argparse
 import csv
+import os
 import sys
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
-SET_NOW = ROOT / "docs" / "ops" / "demand-os" / "set-now"
+DEFAULT_SET_NOW = ROOT / "docs" / "ops" / "demand-os" / "set-now"
 
 REQUIRED_FILES = [
     "README.md",
@@ -58,14 +60,23 @@ ADS_FREEZE_OK = ("parked_cash", "2026-08-06")
 
 
 def main() -> int:
+    parser = argparse.ArgumentParser(description="Demand OS Phase 0 verifier")
+    parser.add_argument(
+        "--set-now",
+        default=os.environ.get("DEMAND_OS_SET_NOW", ""),
+        help="Override set-now directory (default: docs/ops/demand-os/set-now)",
+    )
+    args = parser.parse_args()
+    set_now = Path(args.set_now) if args.set_now else DEFAULT_SET_NOW
+
     errors: list[str] = []
 
-    if not SET_NOW.is_dir():
-        print(f"FAIL: missing dir {SET_NOW}")
+    if not set_now.is_dir():
+        print(f"FAIL: missing dir {set_now}")
         return 1
 
     for name in REQUIRED_FILES:
-        path = SET_NOW / name
+        path = set_now / name
         if not path.is_file():
             errors.append(f"missing file: {name}")
             continue
@@ -78,7 +89,7 @@ def main() -> int:
                 f"ADS-FREEZE.md: expected one of {ADS_FREEZE_OK!r}"
             )
 
-    ledger_path = SET_NOW / "LEDGER.csv"
+    ledger_path = set_now / "LEDGER.csv"
     if ledger_path.is_file():
         with ledger_path.open(encoding="utf-8", newline="") as fh:
             reader = csv.DictReader(fh)
@@ -105,7 +116,12 @@ def main() -> int:
         return 1
 
     print("Phase 0 CHECK: PASS")
-    print(f"  artifacts: {len(REQUIRED_FILES)} files under {SET_NOW.relative_to(ROOT)}")
+    try:
+        rel = set_now.relative_to(ROOT)
+        loc = str(rel)
+    except ValueError:
+        loc = str(set_now)
+    print(f"  artifacts: {len(REQUIRED_FILES)} files under {loc}")
     print("  ads: parked_cash OR calendar freeze marker present")
     print("  next: TOOL/PROGRAM SEAL maintain — marketing PARKED_LAST until GO MARKETING HITL")
     print("  stop: live publish/hunt · Ads F5 · VPS without GO")

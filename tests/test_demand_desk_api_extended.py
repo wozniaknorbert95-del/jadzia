@@ -89,6 +89,16 @@ def test_ledger_ensure_viewer_forbidden(client):
     assert r.status_code in (403, 401)
 
 
+def test_hunt_dry_viewer_forbidden(client):
+    with jwt_env():
+        r = client.post(
+            "/api/v1/commander/demand-os/hunt/dry",
+            headers=_auth_headers("viewer"),
+            json={"target_id": "fb_g2", "text": "dry"},
+        )
+    assert r.status_code in (403, 401)
+
+
 def test_ledger_ensure_act(client, tmp_path: Path, monkeypatch):
     ledger = tmp_path / "LEDGER.csv"
     ledger.write_text(

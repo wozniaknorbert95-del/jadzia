@@ -1,0 +1,30 @@
+{
+  "max_groups": 3,
+  "updated": "2026-08-02",
+  "targets": [
+    {
+      "id": "fb_g2",
+      "platform": "facebook",
+      "kind": "group_nl",
+      "name": "ZZP BOUW demo",
+      "external_id": "667616250015961",
+      "url": "https://www.facebook.com/groups/667616250015961/",
+      "status": "active",
+      "icp_score": 94,
+      "icp_role": "installateur",
+      "notes": "sanitized hunt target"
+    },
+    {
+      "id": "tt_own",
+      "platform": "tiktok",
+      "kind": "own_account",
+      "name": "@flexgrafik.nl",
+      "external_id": "flexgrafik.nl",
+      "url": "https://www.tiktok.com/@flexgrafik.nl",
+      "status": "active",
+      "icp_score": 100,
+      "icp_role": "installateur",
+      "notes": "sanitized"
+    }
+  ]
+}

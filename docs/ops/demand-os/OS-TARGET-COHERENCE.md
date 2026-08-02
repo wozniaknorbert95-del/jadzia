@@ -27,5 +27,5 @@ python -m pytest tests -k demand_os -q
 
 ## Next program
 
-**Tool 100% ≠ backend only.** Etap 5 **DASHBOARD ACTIVE** — Biuro Popytu UX/UI.  
+**Tool 100% ≠ backend only.** Etap **5b HARDENING ACTIVE** — domknąć UI (Hard DoD 15/15).  
 Marketing **PARKED_LAST** po finalnym szlifie narzędzia.

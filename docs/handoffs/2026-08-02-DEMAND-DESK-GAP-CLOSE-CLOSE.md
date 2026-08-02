@@ -1,10 +1,13 @@
 ---
 gate: DEMAND-OS-DASHBOARD-00
-status: CLOSE · GAP-CLOSE SEAL
+status: SUPERSEDED · Hard DoD 15/15 was premature
 updated: 2026-08-02
+superseded_by: docs/superpowers/specs/2026-08-02-demand-desk-hardening-design.md
 ---
 
-# CLOSE — Demand Desk GAP-CLOSE (S1–S5)
+> **SUPERSEDED (2026-08-02):** Hard DoD 15/15 claim below was **premature**. SoT audyt: [`2026-08-02-DEMAND-OS-DASHBOARD-00-CLOSE.md`](2026-08-02-DEMAND-OS-DASHBOARD-00-CLOSE.md) (12/15). Active work: **Etap 5b**.
+
+# CLOSE — Demand Desk GAP-CLOSE (S1–S5) [ARCHIVE]
 
 ## Delivered
 

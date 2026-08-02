@@ -22,6 +22,7 @@ DESK_IDS = [
     "desk-state",
     "desk-week",
     "desk-cash-warning",
+    "desk-ab-row",
     "desk-praca",
     "desk-puls",
     "desk-kpi-starts",
@@ -34,6 +35,7 @@ DESK_IDS = [
     "desk-hitl-list",
     "desk-praca-hunt",
     "desk-hunt-list",
+    "desk-cd-row",
     "desk-jakosc",
     "desk-val-fail",
     "desk-comments",
@@ -46,6 +48,10 @@ DESK_IDS = [
     "desk-week-calendar",
     "desk-shells-line",
     "desk-footer",
+    "desk-stale-hint",
+    "desk-empty-data-hint",
+    "desk-retry",
+    "desk-money-check",
     "desk-data-mode",
     "desk-last-real",
     "desk-doctor",
@@ -111,10 +117,10 @@ def test_desk_nav_desktop_and_more_sheet():
     assert 'id="more-to-demand-desk"' in HTML
 
 
-def test_cache_bust_desk_dash02():
-    assert HTML.count("desk-dash02") >= 2
-    assert "desk-dash01" not in HTML
-    assert "coi-commander-desk-dash02" in SW
+def test_cache_bust_desk_dash03():
+    assert HTML.count("desk-dash03") >= 2
+    assert "desk-dash02" not in HTML
+    assert "coi-commander-desk-dash03" in SW
 
 
 def test_desk_design_link_in_html():
@@ -122,8 +128,13 @@ def test_desk_design_link_in_html():
     assert "Design v2.1" in HTML
 
 
-def test_desk_praca_before_puls_in_html():
-    assert HTML.index('id="desk-praca"') < HTML.index('id="desk-puls"')
+def test_desk_ab_row_layout():
+    ab_start = HTML.index('id="desk-ab-row"')
+    puls = HTML.index('id="desk-puls"', ab_start)
+    praca = HTML.index('id="desk-praca"', ab_start)
+    assert puls < praca
+    assert ".demand-desk-ab-row" in CSS
+    assert ".demand-desk-cd-row" in CSS
 
 
 def test_render_top_assets_asset_or_asset_id():
@@ -176,3 +187,17 @@ def test_more_sheet_demand_desk_wired():
 def test_desk_rbac_disables_all_act_buttons():
     section = _desk_js_section()
     assert 'querySelectorAll(".desk-act-btn")' in section
+    assert "#desk-icp-form input" in section
+
+
+def test_desk_retry_and_money_check_wired():
+    section = _desk_js_section()
+    assert "desk-retry" in section
+    assert "deskMoneyCheck" in section
+    assert "deskFormatWow" in section
+    assert "aria-busy" in section
+
+
+def test_marketing_legacy_banner():
+    assert "Legacy organic" in HTML
+    assert "Biuro Popytu" in HTML

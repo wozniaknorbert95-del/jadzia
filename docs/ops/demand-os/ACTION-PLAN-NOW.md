@@ -1,19 +1,28 @@
 ---
-status: "[DONE · POST 1b SEAL + HITL-READY]"
+status: "[ACTIVE · ETAP 5b]"
 updated: "2026-08-02"
-gate: "DEMAND-OS-HITL-READY-00"
+gate: "DEMAND-OS-DESK-5B-00"
+spec: "docs/superpowers/specs/2026-08-02-demand-desk-hardening-design.md"
 ---
 
-# Plan działania — zamknięty
+# Plan działania — teraz
 
-## Done
+## Active
 
-- ACCEPT Desk v2.1
-- Etap 1b Desk Contract **SEALED** (parity hub/API · A0/F · golden · doctor)
-- HITL-READY dry **PASS** (money-check API · hitl decision · engage-log)
+**Etap 5b — Biuro Popytu Dashboard Hardening**
 
-## Next (human)
+Spec: [`2026-08-02-demand-desk-hardening-design.md`](../../superpowers/specs/2026-08-02-demand-desk-hardening-design.md)
 
-`GO MARKETING HITL` — potem rytm publish+hunt+STL+ledger.  
-UI Desk = po ≥1 tyg REAL.  
-**Zakaz** kolejnego tool polish gate (Backend Trap).
+- Hard DoD 15/15 (audyt start: 12/15)
+- Prod data path (sanitized set-now)
+- Layout AB/CD + UI contract gaps
+- Tests unit/API/E2E
+- Dowódca §8 prod
+
+## Done (nie cofać)
+
+- ACCEPT Desk v2.1 · Etap 1b Contract SEALED · Etap 5 build deployed @ 4f12428
+
+## PARKED
+
+Marketing HITL · Ads · VPS bez GO

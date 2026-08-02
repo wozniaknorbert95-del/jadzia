@@ -2,9 +2,11 @@
 
 from __future__ import annotations
 
+from pathlib import Path
 from typing import Any, Dict, Optional
 
 from agent.demand_os.connectors.engage import comment_on_target
+from agent.demand_os.desk_contract import set_now_path
 from agent.demand_os.utm_lock import build_wizard_utm
 
 
@@ -14,11 +16,16 @@ def run_hunt_dry(
     text: str = "",
     icp_role: str = "installateur",
     asset_id: str = "hunt_dry",
+    set_now: Optional[Path] = None,
 ) -> Dict[str, Any]:
     """Dry comment on allowlist target; persists ENGAGE-LOG for hunt_queue."""
     tid = (target_id or "").strip()
     if not tid:
         return {"ok": False, "error": "target_id required", "live": False}
+
+    root = set_now or set_now_path()
+    allowlist = root / "ALLOWLIST.json"
+    engage_log = root / "ENGAGE-LOG.jsonl"
 
     body = (text or "").strip()
     if not body:
@@ -33,6 +40,8 @@ def run_hunt_dry(
             dry_run=True,
             asset_id=asset_id,
             icp_role=icp_role,
+            allowlist_path=allowlist if allowlist.is_file() else None,
+            log_path=engage_log,
         )
     except Exception as exc:
         return {

@@ -4732,10 +4732,20 @@ function deskSetText(id, text) {
   if (el) el.textContent = text ?? "—";
 }
 
+function deskFormatWow(delta) {
+  const n = Number(delta);
+  if (!Number.isFinite(n)) return "—";
+  if (n > 0) return `+${n}`;
+  return String(n);
+}
+
 function deskApplyActButtons() {
   const can = deskCanAct();
   document.querySelectorAll(".desk-act-btn").forEach((btn) => {
     btn.disabled = !can;
+  });
+  document.querySelectorAll("#desk-icp-form input, #desk-icp-submit").forEach((el) => {
+    el.disabled = !can;
   });
   const hint = document.getElementById("desk-scope-banner");
   if (hint && !can && getToken()) {
@@ -4806,7 +4816,12 @@ function renderDemandDesk(data) {
   }
 
   deskSetText("desk-kpi-starts", String(kpi.wizard_starts_utm ?? 0));
-  deskSetText("desk-kpi-wow", String(kpi.wizard_starts_wow_delta ?? 0));
+  const wowEl = document.getElementById("desk-kpi-wow");
+  const wowDelta = kpi.wizard_starts_wow_delta ?? 0;
+  if (wowEl) {
+    wowEl.textContent = deskFormatWow(wowDelta);
+    wowEl.classList.toggle("desk-wow--down", Number(wowDelta) < 0);
+  }
   deskSetText("desk-kpi-paid", String(kpi.paid ?? 0));
   deskSetText("desk-kpi-hook", String(kpi.top_hook || "none"));
   deskSetText("desk-kpi-publish", String(kpi.publish_count ?? 0));
@@ -4822,21 +4837,22 @@ function renderDemandDesk(data) {
   const hitlEl = document.getElementById("desk-hitl-list");
   if (hitlEl) {
     if (!hitl.length) {
-      hitlEl.innerHTML =
-        '<p class="hint state-empty">Brak pozycji HITL — dodaj slot w CONTENT-CALENDAR lub sprawdź top_wizard_note.</p>';
+      const emptyMsg =
+        dataMode === "EMPTY"
+          ? "Brak CONTENT-CALENDAR na serwerze — sync set-now (data/demand-os/set-now-sanitized README)."
+          : "Brak pozycji HITL — dodaj slot w CONTENT-CALENDAR lub sprawdź top_wizard_note.";
+      hitlEl.innerHTML = `<p class="hint state-empty">${deskEsc(emptyMsg)}</p>`;
     } else {
       hitlEl.innerHTML = hitl
         .map((row) => {
           const aid = deskEsc(row.asset_id || "?");
           const st = deskEsc(row.status || row.desk_action || "?");
-          const prepHint =
-            st === "PREP" || row.desk_action === "PREP"
-              ? " · przygotuj slot w kalendarzu"
-              : "";
+          const isPrep = st === "PREP" || row.desk_action === "PREP";
+          const prepHint = isPrep ? " · przygotuj slot w kalendarzu" : "";
           const channel = deskEsc(row.channel || "");
-          const can = deskCanAct();
+          const can = deskCanAct() && !isPrep;
           const dis = can ? "" : " disabled";
-          return `<article class="desk-queue-row" data-asset-id="${aid}">
+          return `<article class="desk-queue-row" tabindex="0" data-asset-id="${aid}">
             <p><strong>${aid}</strong> · ${st}${prepHint}${channel ? ` · ${channel}` : ""}</p>
             <div class="demand-desk-footer-actions">
               <button type="button" class="desk-act-btn" data-desk-act="hitl" data-decision="GOTOWY" data-asset-id="${aid}"${dis}>GOTOWY</button>
@@ -4865,7 +4881,7 @@ function renderDemandDesk(data) {
             ds === "SENT" ? "desk-badge--sent" : ds === "BLOCK" ? "desk-badge--block" : "desk-badge--ready";
           const can = deskCanAct();
           const dis = can || ds === "SENT" ? " disabled" : "";
-          return `<article class="desk-queue-row" data-target-id="${tid}">
+          return `<article class="desk-queue-row" tabindex="0" data-target-id="${tid}">
             <p><strong>${name}</strong> <span class="desk-badge ${badgeCls}">${ds}</span></p>
             <p class="hint">${draft || "1 wartość ICP + 1 CTA Wizard (dry)"}</p>
             <button type="button" class="desk-act-btn" data-desk-act="hunt" data-target-id="${tid}" data-draft="${draft}"${dis}>Dry komentarz</button>
@@ -4905,11 +4921,33 @@ function renderDemandDesk(data) {
     } else {
       assetsEl.innerHTML = assets
         .slice(0, 5)
-        .map(
-          (a) =>
-            `<li><strong>${deskEsc(a.asset || a.asset_id || a.utm_content || "?")}</strong> — ${deskEsc(String(a.starts ?? a.count ?? 0))} startów</li>`
-        )
+        .map((a) => {
+          const name = deskEsc(a.asset || a.asset_id || a.utm_content || "?");
+          const ch = a.channel ? ` · ${deskEsc(a.channel)}` : "";
+          return `<li><strong>${name}</strong>${ch} — ${deskEsc(String(a.starts ?? a.count ?? 0))} startów</li>`;
+        })
         .join("");
+    }
+  }
+
+  const staleHint = document.getElementById("desk-stale-hint");
+  if (staleHint) {
+    if (footer.stale_warn || lastReal.stale_warn) {
+      staleHint.hidden = false;
+      staleHint.textContent = "Maszyna milczy >48h — sprawdź rytm publish/hunt i ledger.";
+    } else {
+      staleHint.hidden = true;
+    }
+  }
+
+  const emptyHint = document.getElementById("desk-empty-data-hint");
+  if (emptyHint) {
+    if (dataMode === "EMPTY") {
+      emptyHint.hidden = false;
+      emptyHint.textContent =
+        "Maszyna bez danych operacyjnych — ustaw DEMAND_OS_SET_NOW na VPS (patrz data/demand-os/set-now-sanitized/README.md).";
+    } else {
+      emptyHint.hidden = true;
     }
   }
 
@@ -4953,6 +4991,15 @@ async function loadDemandDesk() {
     return;
   }
   root.classList.add("demand-desk--loading");
+  root.setAttribute("aria-busy", "true");
+  const loadTimeout = setTimeout(() => {
+    if (root.classList.contains("demand-desk--loading")) {
+      const robotaEl = document.getElementById("desk-robota");
+      if (robotaEl && robotaEl.textContent.includes("Ładowanie")) {
+        robotaEl.textContent = _deskLastData ? "Robota dnia: (cache)" : "Robota dnia: —";
+      }
+    }
+  }, 15000);
   try {
     const data = await api("/api/v1/commander/demand-os/status");
     _deskLastData = data;
@@ -4961,7 +5008,11 @@ async function loadDemandDesk() {
     const conn = document.getElementById("desk-connection-banner");
     if (conn) {
       conn.hidden = false;
-      conn.textContent = `BRAK POŁĄCZENIA — ${e.message || "błąd API"}`;
+      const msg = e.message || "błąd API";
+      conn.innerHTML = `BRAK POŁĄCZENIA — ${deskEsc(msg)} <button type="button" id="desk-retry" class="desk-act-btn secondary">Ponów</button>`;
+      document.getElementById("desk-retry")?.addEventListener("click", () => {
+        loadDemandDesk().catch((err) => toast(err.message));
+      });
     }
     if (String(e.message || "").includes("403")) {
       const scope = document.getElementById("desk-scope-banner");
@@ -4970,8 +5021,26 @@ async function loadDemandDesk() {
         scope.textContent = "Brak scope demand_os — tylko odczyt ograniczony.";
       }
     }
+    if (_deskLastData) renderDemandDesk(_deskLastData);
   } finally {
+    clearTimeout(loadTimeout);
     root.classList.remove("demand-desk--loading");
+    root.removeAttribute("aria-busy");
+  }
+}
+
+async function deskMoneyCheck() {
+  if (!deskCanAct()) {
+    toast("Brak uprawnień (viewer)", "err");
+    return;
+  }
+  try {
+    const mc = await api("/api/v1/commander/demand-os/money-check");
+    const starts = mc.starts_utm ?? mc.wizard_starts_utm ?? 0;
+    const paid = mc.paid ?? 0;
+    toast(`Money Check: starts UTM=${starts} · paid=${paid}`, "ok");
+  } catch (e) {
+    toast(e.message || "Money Check błąd", "err");
   }
 }
 
@@ -5068,6 +5137,12 @@ function bindDemandDeskEvents() {
   document.getElementById("desk-refresh")?.addEventListener("click", () => {
     loadDemandDesk().catch((e) => toast(e.message));
   });
+  document.getElementById("desk-retry")?.addEventListener("click", () => {
+    loadDemandDesk().catch((e) => toast(e.message));
+  });
+  document.getElementById("desk-money-check")?.addEventListener("click", () => {
+    deskMoneyCheck();
+  });
   document.getElementById("desk-ledger-ensure")?.addEventListener("click", () => {
     deskEnsureLedger();
   });
@@ -5081,6 +5156,15 @@ function bindDemandDeskEvents() {
     const huntBtn = e.target.closest("[data-desk-act='hunt']");
     if (huntBtn) {
       deskHuntDry(huntBtn.dataset.targetId, huntBtn.dataset.draft || "");
+    }
+  });
+  document.getElementById("view-demand-desk")?.addEventListener("keydown", (e) => {
+    const row = e.target.closest(".desk-queue-row");
+    if (!row || (e.key !== "Enter" && e.key !== " ")) return;
+    const btn = row.querySelector(".desk-act-btn:not([disabled])");
+    if (btn) {
+      e.preventDefault();
+      btn.focus();
     }
   });
 }

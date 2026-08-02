@@ -9,7 +9,7 @@ supersedes: "QuietForge_Architektura (input only) · FLEXGRAFIK-VIRTUAL-CAMPUS-B
 evidence:
   vcms_scan: "Conflicts: 0 @ 2026-07-27"
   prod_tip: "4cf66fe"
-  commander: "https://api.zzpackage.flexgrafik.nl/commander/?v=mkt-dash08"
+  commander: "https://api.zzpackage.flexgrafik.nl/commander/?view=demand-desk&cb=desk-dash03"
   health: "healthy (ssh_connection=ok, worker_loop_alive=true, sqlite=true) · INC-SSH-RECOVERY-00 CLOSED 2026-07-31"
 budget_freeze_until: "2026-08-06"
 ---
@@ -60,7 +60,7 @@ budget_freeze_until: "2026-08-06"
 |------|------------|--------|
 | **Govern** | `flex-vcms` · `cmd.flexgrafik.nl` + `flexgrafik-meta` | P3 Boardroom + VCMS |
 | **Build** | `agent-os` · `agent-os-ui` · `os.flexgrafik.nl` | P3 Agent OS Control |
-| **Operate** | `jadzia-core` · Commander `?v=mkt-dash08` | P3 Mission Control + P1–Parter ops |
+| **Operate** | `jadzia-core` · Commander `?view=demand-desk&cb=desk-dash03` | P3 Mission Control + P1–Parter ops |
 
 ---
 
@@ -82,7 +82,7 @@ budget_freeze_until: "2026-08-06"
 | Pomieszczenie | Repo / URL | Status | Agenci | SoT data | Dashboard | KPI | HITL |
 |---------------|------------|--------|--------|----------|-----------|-----|------|
 | **Boardroom** | `flexgrafik-meta` · `docs/core/master-plan.md` | LIVE (docs) | — | master-plan · global-rules · scorecard mirrors | VCMS docs / repo | Etapy 1–5 alignment | Dowódca strategia |
-| **Mission Control** | `jadzia-core` · [Commander](https://api.zzpackage.flexgrafik.nl/commander/?v=mkt-dash08) | **LIVE** | COI · brief · CS · MB rail | `jadzia.db` · tickets · audit | Start + Ops rail | cold open ≤10s · queue clear | Ack/Snooze/Close · GO deploy |
+| **Mission Control** | `jadzia-core` · [Commander Biuro Popytu](https://api.zzpackage.flexgrafik.nl/commander/?view=demand-desk&cb=desk-dash03) | **LIVE** | COI · brief · CS · MB rail | `jadzia.db` · tickets · audit | Start + Ops rail | cold open ≤10s · queue clear | Ack/Snooze/Close · GO deploy |
 | **Agent OS Control** | `agent-os` + `agent-os-ui` · [os.flexgrafik.nl](https://os.flexgrafik.nl) | **LIVE** | LangGraph runner · HITL approve | OS tasks DB | Mission Control UI | task approve→DONE | Basic Auth · approve/done |
 | **VCMS Command** | `Flex-vcms/flex-vcms` · [cmd.flexgrafik.nl](https://cmd.flexgrafik.nl) | **LIVE** | vcms-scan | `data/vcms.db` · conflicts.md | Command Center | **Conflicts: 0** | Basic Auth |
 | **Approval Vault** | `jadzia-core` handoffs · Commander Audyt | **LIVE** | audit hash-chain | `docs/handoffs/` · audit API | Audyt (secondary) | chain verify | Zasada 11 GO |
@@ -106,7 +106,7 @@ budget_freeze_until: "2026-08-06"
 | **Lead Game** | `app.flexgrafik.nl` | **LIVE** | INT-004 ingest | `leads` table | game + leads API | lead→coupon→Wizard | — |
 | **Sales Room** | jadzia REV-DEMAND | **LIVE** | lead_node · sales_cta | leads · hot_lead tickets | Home CRITICAL/ACTION | Lead→Wizard · SLA | disposition Ack |
 | **Design Studio** | zzpackage design-agent · jadzia INSPIRE | **PARTIAL** | inspire · design-agent | mockups / briefs | Wizard DA UI · hop health **historically 404** | mockup before price | brief edit HITL |
-| **Marketing Studio** | jadzia Demand OS Hub · [OPERATOR-TODAY](./marketing/OPERATOR-TODAY.md) · [TOOL-PASS](./demand-os/TOOL-PASS.md) | **LIVE** (Hub §M tool) / **PARKED_LAST** (HITL publish) / **PARK** (paid) | Hub status · money-check · Val gate | CONTENT-CALENDAR.json · UTM Lock · GROWTH-EVENTS | Commander `demand-os/status` + Marketing tab | wizard_starts UTM · val FAIL · top_hook | **Ads PARK cash** · no live publish without GO |
+| **Marketing Studio** | jadzia Demand OS Hub · [OPERATOR-TODAY](./marketing/OPERATOR-TODAY.md) · [TOOL-PASS](./demand-os/TOOL-PASS.md) | **LIVE** (Hub §M tool) / **PARKED_LAST** (HITL publish) / **PARK** (paid) | Hub status · money-check · Val gate | CONTENT-CALENDAR.json · UTM Lock · GROWTH-EVENTS | Commander `#view-demand-desk` (Biuro Popytu) | wizard_starts UTM · val FAIL · top_hook | **Ads PARK cash** · no live publish without GO |
 | **Brand Portal** | `flexgrafik-nl` · flexgrafik.nl | **PARTIAL** | portal_qualify INT-012 | WP content | portal pages | trust → Wizard/Game | deploy GHA |
 | **Client Support** | jadzia `cs_followup` · SPEED-TO-LEAD | **PARTIAL** | cs_followup | CS tickets | Home CS form | WA &lt;15 min | Ack follow-up |
 
@@ -149,7 +149,7 @@ budget_freeze_until: "2026-08-06"
 
 ### Mission Control
 - **Piętro:** P3 Governance
-- **Repo / URL:** `jadzia-core` · https://api.zzpackage.flexgrafik.nl/commander/?v=mkt-dash08
+- **Repo / URL:** `jadzia-core` · https://api.zzpackage.flexgrafik.nl/commander/?view=demand-desk&cb=desk-dash03
 - **Status:** LIVE
 - **Owner (human/agent):** Dowódca / Jadzia COI
 - **Agenci / automaty:** brief_node · cs_followup · ticket queue · Ops health strip
@@ -178,7 +178,7 @@ budget_freeze_until: "2026-08-06"
 - **Owner (human/agent):** Growth Lead / Dowódca
 - **Agenci / automaty:** Demand OS F1–F4 + Hub · Val gate · A2A (publish HITL parked)
 - **Dane (SoT):** OS TARGET · CONTENT-CALENDAR.json · UTM Lock · GROWTH-EVENTS · MEMORY.json
-- **Dashboard / wejście:** Commander `GET /api/v1/commander/demand-os/status` + Marketing tab
+- **Dashboard / wejście:** Commander `#view-demand-desk` · `GET /api/v1/commander/demand-os/status` (legacy Marketing tab = observe only)
 - **KPI (1–3):** wizard_starts UTM · validator_fail · top_hook (no vanity views)
 - **HITL gate:** live publish only after `GO MARKETING HITL` · **€0 Ads**
 - **Next action:** dashboard tip complete · marketing remains PARKED_LAST
@@ -283,7 +283,7 @@ campus_room: Marketing Studio · Design Studio
 |-------|--------|
 | `node tools/vcms-scan.js` | Conflicts: **0** |
 | `GET …/worker/health` | `degraded` · worker alive · sqlite true · ssh error |
-| `GET …/commander/?v=mkt-dash08` | HTTP **200** |
+| `GET …/commander/?view=demand-desk&cb=desk-dash03` | HTTP **200** (post-deploy GO) |
 | Pitch extract | 14 pages · LIVE vs ROADMAP agents table used |
 | QuietForge arch | floors kept · décor rejected |
 | Scorecard AI OS | #1–9 **LIVE** |

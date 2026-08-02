@@ -3,7 +3,7 @@ status: "[ACTIVE]"
 title: "Jadzia-Core Brain (Canonical)"
 owner: "Norbert Wozniak"
 updated: "2026-08-02"
-readiness_overall: "Demand Desk design v2 ACTIVE; Tool COHERENCE SEALED; marketing PARKED_LAST; S7 Order Desk parked"
+readiness_overall: "Etap 5b Biuro Popytu agent COMPLETE (14/15 Hard DoD); Dowódca §8 prod + GO deploy pending; marketing PARKED_LAST"
 ---
 
 ## 1) Misja modułu
@@ -115,7 +115,8 @@ Pełne kontrakty: `flexgrafik-meta/docs/core/integration-contracts.md`
 - **DI scorecard:** `docs/ops/VHQ-DECISION-INSTRUMENT-SCORECARD.md` (S3–S6+S8 DONE; S7 parked)
 - **Lanes appendix:** `docs/ops/PROGRAM-LANES-SOT.md` (ściąga — nie plan)
 - **Demand OS / Biuro Popytu (program faz):** `docs/ops/demand-os/PROGRAM-PHASES.md`
-- **Etap 5 Dashboard ACTIVE (tool 100% includes UI):** `docs/ops/demand-os/DEMAND-CONTROL-PANEL-DESIGN.md` · API `DESK-CONTRACT.md`
+- **Etap 5b Hardening (ACTIVE):** `docs/superpowers/specs/2026-08-02-demand-desk-hardening-design.md` · design `DEMAND-CONTROL-PANEL-DESIGN.md` · API `DESK-CONTRACT.md`
+- **Primary Commander surface:** `#view-demand-desk` (Biuro Popytu)
 - **Marketing HITL:** PARKED_LAST — po finalnym szlifie tool+UX/UI
 - **OS TARGET (Demand Machine):** `docs/ops/SYSTEM-FIRM-OPERATING-SYSTEM-TARGET.md`
 - **Tool coherence:** `docs/ops/demand-os/OS-TARGET-COHERENCE.md` (Etap 1 SEALED)

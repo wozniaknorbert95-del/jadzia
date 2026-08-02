@@ -58,3 +58,14 @@ surface: "commander-ui #view-demand-desk"
 ## Test IDs
 
 Kontrakt: [`tests/unit/test_demand_desk_ui_contracts.py`](../../tests/unit/test_demand_desk_ui_contracts.py)
+
+## Known gaps Etap 5b — agent CLOSED (2026-08-02)
+
+Spec: [`2026-08-02-demand-desk-hardening-design.md`](../../superpowers/specs/2026-08-02-demand-desk-hardening-design.md)
+
+- ~~Hard DoD 12/15~~ → **14/15 agent PASS** (pytest 75 · E2E flow static)
+- ~~Prod data EMPTY~~ → sanitized pack + `demand_os_sync_set_now.sh` + `.env.example`
+- ~~Layout AB/CD~~ → `#desk-ab-row` / `#desk-cd-row` @768+
+- ~~E2E~~ → `tests/e2e/test_demand_desk_flow.py` + phone checklist
+
+**Open (Dowódca only):** design §8 prod smoke · deploy GO · Hard DoD #12

@@ -1,18 +1,18 @@
 {
   "project": "Jadzia-Core",
-  "last_updated": "2026-08-02 (ETAP5 DASHBOARD SEALED · tool 100% UI · marketing PARKED_LAST)",
+  "last_updated": "2026-08-02 (ETAP 5b AGENT COMPLETE · SEAL pending Dowódca §8 prod · marketing PARKED_LAST)",
   "status": "active",
   "plan": "docs/ops/demand-os/PROGRAM-PHASES.md",
-  "active_gate": "DEMAND-OS-DASHBOARD-00",
-  "active_plan": "docs/ops/demand-os/DEMAND-CONTROL-PANEL-DESIGN.md",
+  "active_gate": "DEMAND-OS-DESK-5B-00",
+  "active_plan": "docs/superpowers/specs/2026-08-02-demand-desk-hardening-design.md",
   "runtime_changes_allowed": false,
   "todo_schema": "todo.schema.json",
   "gate_machine": {
-    "active": "DEMAND-OS-DASHBOARD-00",
-    "active_state": "etap5_dashboard_sealed_tool100_ui_marketing_parked_last",
+    "active": "DEMAND-OS-DESK-5B-00",
+    "active_state": "etap5b_agent_complete_pending_dowodca_section8_prod",
     "demand_desk_v21": "ACCEPTED · DEMAND-CONTROL-PANEL-DESIGN.md",
     "demand_desk_contract": "SEALED v2.1.1 · DESK-CONTRACT.md",
-    "demand_tool_100": "SEALED · backend + dashboard UI · CLOSE docs/handoffs/2026-08-02-DEMAND-OS-DASHBOARD-00-CLOSE.md",
+    "demand_tool_100": "IN_PROGRESS · Etap 5b agent COMPLETE · 14/15 Hard DoD · Dowódca §8 prod · close docs/handoffs/2026-08-02-DEMAND-DESK-5B-CLOSE.md",
     "demand_marketing": "PARKED_LAST · after tool+UI final polish",
     "vhq_final": "completed · DEPLOY PASS · cache vhq-w67a · dashboard_seal FINISHED_PARTIAL_LOOP",
     "vhq_final_preclose": "docs/handoffs/2026-07-31-VF-VHQ-FINAL-00-PRECLOSE.md",
@@ -318,9 +318,9 @@
       "D6": "W2 local on W1 commits — no separate W1 deploy",
       "D7": "W2 activated"
     },
-    "proposed_next_gate": "GO-MARKETING-HITL",
-    "proposed_next_gate_active": false,
-    "proposed_next": "PROGRAM SEALED. Maintain hub doctor. Marketing HITL PARKED until Founder GO MARKETING HITL. Ads PARK cash. NO VPS."
+    "proposed_next_gate": "DEMAND-OS-DESK-5B-00",
+    "proposed_next_gate_active": true,
+    "proposed_next": "Etap 5b Biuro Popytu hardening S0–S7. Hard DoD 15/15. Marketing PARKED_LAST. NO VPS without GO."
   },
   "standing_go_closeout": false,
   "closeout_queue": [],
@@ -337,8 +337,8 @@
     }
   ],
   "closeout_expires": "2026-08-15",
-  "next_human": "PROGRAM SEALED. Only Founder GO MARKETING HITL unparks publish/hunt. Ads €0. NO VPS.",
-  "next_agent": "Maintain: hub doctor. Observe-only Demand OS. Do NOT hunt/publish live. Do NOT build F5. Do NOT deploy VPS.",
+  "next_human": "Etap 5b: Dowódca §8 prod + phone smoke after deploy GO. Marketing PARKED until separate GO.",
+  "next_agent": "Execute Etap 5b hardening spec S0–S7. hub doctor maintain. NO live publish/hunt. NO VPS without GO.",
   "budget_freeze_until": "parked_cash",
   "budget_freeze_note": "2026-08-01 Dowódca: Ads PARK cash — organic only until budget + GO; not date-gated",
   "agent_rule": "SoT egzekucji: docs/ops/SYSTEM-FIRM-OPERATING-SYSTEM-TARGET.md v5. Action: docs/ops/DEMAND-OS-ACTION-PLAN.md. Runner: /demand-os-execute. Problem: NIE MA KLIENTOW. Ops OUT. Deploy only GO DEPLOY.",

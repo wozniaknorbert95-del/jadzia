@@ -118,12 +118,32 @@ def test_hunt_dry_viewer_forbidden(client):
     assert r.status_code in (403, 401)
 
 
-def test_hunt_dry_act(client):
+def test_hunt_dry_act(client, tmp_path: Path, monkeypatch):
+    pack = tmp_path / "set-now"
+    pack.mkdir()
+    allow = {
+        "targets": [
+            {
+                "id": "fb_g2",
+                "platform": "facebook",
+                "kind": "group_nl",
+                "name": "Demo group",
+                "status": "active",
+                "icp_role": "installateur",
+            }
+        ],
+        "max_groups": 1,
+        "updated": "2026-08-02",
+    }
+    (pack / "ALLOWLIST.json").write_text(json.dumps(allow), encoding="utf-8")
+    (pack / "ENGAGE-LOG.jsonl").write_text("", encoding="utf-8")
+    monkeypatch.setenv("DEMAND_OS_SET_NOW", str(pack))
+
     with jwt_env():
         r = client.post(
             "/api/v1/commander/demand-os/hunt/dry",
             headers=_auth_headers("dowodca"),
-            json={"target_id": "fb_own_page", "text": "Tip zonder link — dry test"},
+            json={"target_id": "fb_g2", "text": "Tip zonder link — dry test"},
         )
     assert r.status_code == 200
     body = r.json()

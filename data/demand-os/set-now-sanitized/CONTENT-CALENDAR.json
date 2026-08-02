@@ -1,0 +1,33 @@
+{
+  "week": "2026-W32",
+  "updated": "2026-08-02T12:00:00+00:00",
+  "slots": [
+    {
+      "date": "2026-08-02",
+      "channel": "tiktok",
+      "asset_id": "tt_w32_install_01",
+      "status": "validated",
+      "request_id": "215fb14a-71f5-4733-9e01-10502f42ab63",
+      "pass_token": null,
+      "notes": "sanitized demo · Val PASS · no token in repo"
+    },
+    {
+      "date": "2026-08-03",
+      "channel": "tiktok",
+      "asset_id": "tt_w31_install_02",
+      "status": "planned",
+      "request_id": null,
+      "pass_token": null,
+      "notes": "PREP slot — przygotuj przed publikacją"
+    },
+    {
+      "date": "2026-08-04",
+      "channel": "facebook",
+      "asset_id": "fb_hunt_w32_d2",
+      "status": "validated",
+      "request_id": "9d734905-ca22-44e1-ab16-5bb27cbea243",
+      "pass_token": null,
+      "notes": "sanitized hunt asset"
+    }
+  ]
+}

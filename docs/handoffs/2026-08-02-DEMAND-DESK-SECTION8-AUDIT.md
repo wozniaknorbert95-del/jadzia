@@ -9,6 +9,8 @@ cache: desk-dash02
 
 **Verdict: PASS** (agent browser + API, lokalnie :8765)
 
+> **Note:** Agent lokalny PASS **nie zastępuje** Dowódcy §8 visual PASS **na prod**. Design §8 checkboxy = Dowódca only (Etap 5b S7).
+
 ## Results
 
 | # | Check | Result | Evidence |

@@ -1,4 +1,4 @@
-"""CMD-DASH Complete + UX Polish — static UI contracts (cache desk-dash02)."""
+"""CMD-DASH Complete + UX Polish — static UI contracts (cache desk-dash03)."""
 
 from pathlib import Path
 
@@ -8,9 +8,9 @@ JS = (ROOT / "commander-ui" / "app.js").read_text(encoding="utf-8")
 CSS = (ROOT / "commander-ui" / "styles.css").read_text(encoding="utf-8")
 
 
-def test_cache_bust_desk_dash02():
-    assert HTML.count("desk-dash02") >= 2
-    assert "desk-dash01" not in HTML
+def test_cache_bust_desk_dash03():
+    assert HTML.count("desk-dash03") >= 2
+    assert "desk-dash02" not in HTML
     assert "vhq-w68a" not in HTML
 
 

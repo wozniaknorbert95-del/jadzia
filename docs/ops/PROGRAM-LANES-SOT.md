@@ -42,6 +42,7 @@ demand_os_plan: "docs/ops/DEMAND-OS-ACTION-PLAN.md"
 | B9 | Demand Desk DESIGN v2.1 | **ACCEPTED** · `DEMAND-CONTROL-PANEL-DESIGN.md` |
 | B9b | Desk Contract (Etap 1b) | **SEALED** v2.1.1 · `DESK-CONTRACT.md` |
 | B9c | HITL-READY dry | **PASS** · `HITL-READY-TOOL.md` · park `GO MARKETING HITL` |
+| B11 | Demand Desk HARDENING (Etap 5b) | **ACTIVE** · Hard DoD 15/15 · spec `2026-08-02-demand-desk-hardening-design.md` |
 | B10 | Strategy + agent config (Etap 3) | **PARKED** do ACCEPT Etapu 2 · fakty, nie zgadywanie |
 | S | Strategy Pack sniper | **ACCEPTED · SOT** · egzekucja config = po Etapie 1 |
 | O | OS TARGET egzekutor | **ACCEPTED · SOT** v5 · Etap 1 = 100% tool coherence |

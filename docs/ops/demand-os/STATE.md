@@ -1,41 +1,41 @@
 ---
-status: "[ETAP 5 DASHBOARD SEALED · tool 100% UI · marketing PARKED_LAST]"
+status: "[ETAP 5b AGENT COMPLETE · SEAL PENDING Dowódca §8 prod · marketing PARKED_LAST]"
 updated: "2026-08-02"
-last_step: "DEMAND-DESK-GAP-CLOSE-SEAL"
+last_step: "DEMAND-OS-DESK-5B-CLOSE"
 phase_program: "docs/ops/demand-os/PROGRAM-PHASES.md"
-next_action: "GO deploy Commander UI (VPS) · potem GO MARKETING HITL"
-section8_audit: "docs/handoffs/2026-08-02-DEMAND-DESK-SECTION8-AUDIT.md"
-gap_close_plan: "docs/superpowers/plans/2026-08-02-demand-desk-gap-close.md"
+next_action: "GO DEPLOY COMMANDER UI → sync set-now → Dowódca §8 prod → Hard DoD 15/15 SEAL"
+hardening_spec: "docs/superpowers/specs/2026-08-02-demand-desk-hardening-design.md"
+close_handoff: "docs/handoffs/2026-08-02-DEMAND-DESK-5B-CLOSE.md"
+audit_sot: "docs/handoffs/2026-08-02-DEMAND-OS-DASHBOARD-00-CLOSE.md"
 ---
 
 # Demand OS — STATE
 
 | Pole | Wartość |
 |------|---------|
-| program_phase | **Etap 5 DASHBOARD SEALED** |
-| desk_ui | `#view-demand-desk` · cache `desk-dash02` |
-| desk_contract | **SEALED v2.1.1** |
-| tool_100 | **SEALED** (backend + UI + gap-close) |
+| program_phase | **Etap 5b AGENT COMPLETE** |
+| etap5_build | DEPLOYED @ **4f12428** (memory hotfix) |
+| desk_ui | `#view-demand-desk` · cache **desk-dash03** (local ready · prod pending GO) |
+| desk_contract | **SEALED v2.1.1** (backend) |
+| tool_100 | **IN_PROGRESS** → UI SEAL po Dowódca §8 prod |
+| hard_dod | **14/15 agent PASS** · #12 Dowódca prod pending |
 | marketing_hitl | **PARKED_LAST** |
-| F5 / VPS | **DEPLOYED @ 4f12428** |
 
-## Gap-close (2026-08-02)
+## Etap 5b — agent done
 
-- B1 refresh scope-aware ✓
-- B2 asset field ✓
-- B3 VHQ CTA ✓
-- U24 DOM B before A ✓
-- dual_cash columns ✓
-- design §8 link ✓
-- 50 desk tests PASS
+Close: [`2026-08-02-DEMAND-DESK-5B-CLOSE.md`](../../handoffs/2026-08-02-DEMAND-DESK-5B-CLOSE.md)
+
+- S0–S7 agent deliverables complete
+- pytest desk suite: **75 PASS** @ sanitized set-now
+- Prod deploy + §8: **ready_for_human**
 
 ## Verify
 
 ```bash
-python tools/demand_os_hub.py doctor
-python -m pytest tests/unit/test_demand_desk_ui_contracts.py tests/test_demand_desk_api_extended.py tests/test_demand_os_api_desk.py -q
+DEMAND_OS_SET_NOW=data/demand-os/set-now-sanitized python tools/demand_os_hub.py doctor
+DEMAND_OS_SET_NOW=data/demand-os/set-now-sanitized python -m pytest tests/unit/test_demand_desk_ui_contracts.py tests/test_demand_os_api_desk.py tests/test_hunt_dry_updates_queue.py -q
 ```
 
 ## STOP
 
-Marketing live · Ads · VPS bez GO
+Marketing live · Ads · VPS bez GO · fałszywy SEAL przed Dowódca §8
