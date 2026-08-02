@@ -290,3 +290,26 @@ def test_more_sheet_btn_css_rule():
     assert ".more-sheet-btn," in CSS
     assert "#more-sheet-close" in CSS
     assert "min-height: var(--touch)" in CSS.split(".more-sheet-btn,")[1][:200]
+
+
+def test_navigate_to_view_wired_in_nav():
+    assert "async function navigateToView(view)" in APP
+    assert "await navigateToView(view)" in APP.split("function bindNavButtons(selector)")[1][:2500]
+
+
+def test_p1_resilient_tab_loaders():
+    analytics = APP.split("async function loadAnalytics()")[1][:2200]
+    assert "snapErr" in analytics
+    assert ".catch((e)" in analytics
+    assert "Zaloguj się (/commander lub JWT), aby załadować analitykę" in analytics
+    agents = APP.split("async function loadAgents()")[1][:800]
+    assert "Zaloguj się (/commander lub JWT), aby załadować rejestr agentów" in agents
+    assert "mkt-retry-global" in APP
+    assert "Sesja wymagana" in APP.split("async function loadMarketing()")[1][:1200]
+
+
+def test_refresh_loads_without_token_gate():
+    start = APP.index("async function refresh()")
+    end = APP.index("\nasync function navigateToView", start)
+    body = APP[start:end]
+    assert "if (!getToken()) return" not in body

@@ -42,7 +42,7 @@ close_target: "tool_100 SEALED · Commander dashboard 100% per surface"
 | Ustawienia / Audyt | ~80% | OK |
 | Hard DoD | **14/15** | #12 Dowódca §8 prod |
 
-**Prod:** `https://api.zzpackage.flexgrafik.nl/commander/?cb=desk-dash08` · tip post-deploy
+**Prod:** local `9e3e5c5` · **prod pending deploy** `desk-dash08` (prod still `desk-dash06` / tip `b6c0382`)
 
 ---
 
@@ -122,7 +122,7 @@ Legenda status: `open` · `in_progress` · `done` · `blocked` · `ready_for_hum
 ```
 CURRENT: 5F-P2-01 (human)
 NEXT:    5F-P2-02 SEAL after §8
-BLOCKED: deploy — cleared (GO 2026-08-02)
+BLOCKED: deploy desk-dash08 (GO) · 5F-P2-01 (human §8)
 ```
 
 Mirror: `.cursor/current-task.md` musi = ten ID + gate.

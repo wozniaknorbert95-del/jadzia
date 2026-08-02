@@ -888,8 +888,8 @@ async function loadMarketing() {
   if (railSummary) railSummary.textContent = "Ładowanie bramki MB…";
 
   try {
-  let calErr = null;
-  const [
+    let calErr = null;
+    const [
     cal,
     agents,
     settings,

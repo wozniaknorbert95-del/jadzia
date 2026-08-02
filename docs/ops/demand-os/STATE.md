@@ -7,7 +7,7 @@ master_todo: "docs/ops/demand-os/MASTER-TODO-5F.md"
 workflow: ".agents/workflows/demand-os-master-loop.md"
 next_action: "5F-P2-01 Dowódca §8 phone smoke"
 close_handoff: "pending DEMAND-DESK-5F-CLOSE"
-prod_tip: "PENDING_DEPLOY"
+prod_tip: "b6c0382 (prod) · local 9e3e5c5 desk-dash08 PENDING_DEPLOY"
 ---
 
 # Demand OS — STATE

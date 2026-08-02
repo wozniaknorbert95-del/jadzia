@@ -1,6 +1,6 @@
 {
   "project": "Jadzia-Core",
-  "last_updated": "2026-08-02 (ETAP 5f P0 done · desk-dash07 · CURRENT=5F-P1-01)",
+  "last_updated": "2026-08-02 (ETAP 5f P0+P1 done · desk-dash08 · CURRENT=5F-P2-01 · deploy PENDING)",
   "status": "active",
   "plan": "docs/ops/demand-os/PROGRAM-PHASES.md",
   "active_gate": "DEMAND-OS-DESK-5F-00",
@@ -12,7 +12,7 @@
   "todo_schema": "todo.schema.json",
   "gate_machine": {
     "active": "DEMAND-OS-DESK-5F-00",
-    "active_state": "etap5f_master_todo_active_5f_p0_01",
+    "active_state": "etap5f_p1_done_deploy_pending_p2_01_human",
     "master_todo": "docs/ops/demand-os/MASTER-TODO-5F.md",
     "master_workflow": ".agents/workflows/demand-os-master-loop.md",
     "active_item": "5F-P2-01",
@@ -346,7 +346,7 @@
   ],
   "closeout_expires": "2026-08-15",
   "next_human": "Etap 5f: Dowódca §8 prod phone smoke when P0+P1 done (5F-P2-01). Marketing PARKED until GO MARKETING HITL.",
-  "next_agent": "Deploy GO desk-dash07 → browser proof P1 tabs. CURRENT=5F-P1-01. NO fake SEAL.",
+  "next_agent": "GO deploy desk-dash08 (9e3e5c5) → browser proof → Dowódca 5F-P2-01 §8. NO fake SEAL.",
   "budget_freeze_until": "parked_cash",
   "budget_freeze_note": "2026-08-01 Dowódca: Ads PARK cash — organic only until budget + GO; not date-gated",
   "agent_rule": "SoT egzekucji UI: docs/ops/demand-os/MASTER-TODO-5F.md. STATE: docs/ops/demand-os/STATE.md. Runner: /demand-os-master-loop (primary) · /demand-os-execute (legacy verify). One task per loop. Deploy only GO.",
