@@ -17,7 +17,7 @@ gap_close_plan: "docs/superpowers/plans/2026-08-02-demand-desk-gap-close.md"
 | desk_contract | **SEALED v2.1.1** |
 | tool_100 | **SEALED** (backend + UI + gap-close) |
 | marketing_hitl | **PARKED_LAST** |
-| F5 / VPS | UI deploy wymaga **GO Dowódcy** |
+| F5 / VPS | **DEPLOYED @ 4f12428** |
 
 ## Gap-close (2026-08-02)
 
