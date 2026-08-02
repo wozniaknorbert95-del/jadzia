@@ -11,7 +11,11 @@ from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any, Dict, List, Optional
 
+import logging
+
 from agent.demand_os.observability import build_screen, money_check
+
+logger = logging.getLogger(__name__)
 
 
 def _repo_root() -> Path:
@@ -25,11 +29,24 @@ def _set_now() -> Path:
     return _repo_root() / "docs" / "ops" / "demand-os" / "set-now"
 
 
+def _writable_data_memory_path() -> Path:
+    return _repo_root() / "data" / "demand-os" / "MEMORY.json"
+
+
 def default_memory_path() -> Path:
     env = os.environ.get("DEMAND_OS_MEMORY")
     if env:
         return Path(env)
-    return _set_now() / "MEMORY.json"
+    set_now = _set_now()
+    set_now_mem = set_now / "MEMORY.json"
+    try:
+        set_now.mkdir(parents=True, exist_ok=True)
+        probe = set_now / ".write_probe"
+        probe.write_text("", encoding="utf-8")
+        probe.unlink(missing_ok=True)
+        return set_now_mem
+    except OSError:
+        return _writable_data_memory_path()
 
 
 def _utc_now() -> str:
@@ -78,8 +95,11 @@ def load_memory(*, path: Optional[Path] = None) -> Dict[str, Any]:
 def save_memory(store: Dict[str, Any], *, path: Optional[Path] = None) -> Path:
     p = path or default_memory_path()
     store["updated"] = _utc_now()
-    p.parent.mkdir(parents=True, exist_ok=True)
-    p.write_text(json.dumps(store, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
+    try:
+        p.parent.mkdir(parents=True, exist_ok=True)
+        p.write_text(json.dumps(store, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
+    except OSError as exc:
+        logger.warning("save_memory skipped (read-only?): %s %s", p, exc)
     return p
 
 
