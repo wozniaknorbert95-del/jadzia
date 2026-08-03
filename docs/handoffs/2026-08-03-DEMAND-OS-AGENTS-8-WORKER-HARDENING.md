@@ -39,7 +39,14 @@
 
 ## Post-deploy prod verify
 
-_(uzupełniane po deploy — tip, owner-verify, wave-check prod)_
+- VPS HEAD = **`0930ea6`** (ff-only; commity `44a7166` kod + `0930ea6` SoT/handoff).
+- Deploy hiccup: merge jako `root` zostawił 114 plików root-owned → 2× PermissionError (`CONTROL-AUDIT.jsonl`, desk HITL testy). Fix: `chown -R jadzia:jadzia /opt/jadzia` (0 pozostało). **Lekcja (jak D8-05): VPS `git merge` zawsze `sudo -u jadzia`** — dopisać do deploy playbook.
+- Owner-verify: **`ok:true`, errors []** — doctor ✓ pointer ✓ pytest demand_os 114/0 ✓ footer ✓ go_day ✓ waves 1–4 `tool_ready`.
+- Full unit na prod: **709 passed, 0 failed, 22 skipped** (skips = env by design: inspire sibling, GA4 live creds).
+- Wave-check prod: `heartbeat_staleness` ok (all cadence roles fresh) · `state_writers_resolvable` **9/9** ok.
+- `run-due` prod dry: ok, due=[] (heartbeats świeże z dispatchów dogfood).
+- Service: `systemctl restart jadzia` → active, `/health` 200.
+- SoT: STATE/current-task/todo.json → tip `0930ea6` (STATE wskazuje deploy-tip `0930ea6`; kod-tip `44a7166` w HEAD~1 — pointer test toleruje oba).
 
 ## Następny cykl (MASTER-TODO-9, po unlock decyzji)
 

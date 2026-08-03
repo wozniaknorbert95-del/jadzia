@@ -1,6 +1,6 @@
 {
   "project": "Jadzia-Core",
-  "last_updated": "2026-08-03 (AGENTS MASTER-TODO-8 worker+hardening DONE 10/10 · tip 44a7166 · desk-dash13 · live P0 PARKED)",
+  "last_updated": "2026-08-03 (AGENTS MASTER-TODO-8 worker+hardening DONE 10/10 · tip 0930ea6 · desk-dash13 · prod owner-verify ok:true · live P0 PARKED)",
   "status": "active",
   "plan": "docs/ops/demand-os/PROGRAM-PHASES.md",
   "active_gate": "DEMAND-OS-MARKETING-4-00",
@@ -8,7 +8,7 @@
   "master_todo": "docs/ops/demand-os/MASTER-TODO-4.md",
   "master_workflow": ".agents/workflows/demand-os-master-loop.md",
   "active_item": "4-TOOL-AGENTS-9-01",
-  "agents_last_done": "4-TOOL-AGENTS-8 (10/10, worker loop + hardening @44a7166)",
+  "agents_last_done": "4-TOOL-AGENTS-8 (10/10, worker loop + hardening, prod verified @0930ea6)",
   "runtime_changes_allowed": false,
   "todo_schema": "todo.schema.json",
   "gate_machine": {
