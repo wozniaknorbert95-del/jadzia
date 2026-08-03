@@ -117,6 +117,7 @@ def set_slot_status(
     request_id: Optional[str] = None,
     pass_token: Optional[str] = None,
     notes: Optional[str] = None,
+    channel: Optional[str] = None,
 ) -> ContentCalendar:
     status = status.strip().lower()
     if status not in ALLOWED_STATUS:
@@ -124,7 +125,8 @@ def set_slot_status(
     out = deepcopy(cal)
     found = False
     for s in out.slots:
-        if s.asset_id == asset_id:
+        # channel filter: same asset may legitimately have one slot per channel
+        if s.asset_id == asset_id and (channel is None or s.channel == channel):
             s.status = status
             if request_id is not None:
                 s.request_id = request_id

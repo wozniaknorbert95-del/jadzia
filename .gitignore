@@ -37,3 +37,6 @@ coverage.xml
 htmlcov/
 
 tmp/
+
+# Demand OS runtime agent state (per-environment, never committed)
+docs/ops/demand-os/set-now/AGENTS-HEARTBEAT.json

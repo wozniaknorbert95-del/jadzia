@@ -144,6 +144,24 @@ def list_agents(*, with_heartbeat: bool = True) -> List[Dict[str, Any]]:
     return out
 
 
+def _record_run_heartbeat(role: str, action: str) -> None:
+    """Best-effort auto-heartbeat after a successful dispatch.
+
+    A manual-only heartbeat would be a dead mechanism — no one runs it. Failed
+    writes (read-only prod paths) are logged and never break the dispatch.
+    """
+    try:
+        from agent.demand_os.agents.heartbeat import record_heartbeat
+
+        record_heartbeat(role, action=action)
+    except Exception as exc:  # noqa: BLE001 — observability must not break the run
+        import logging
+
+        logging.getLogger(__name__).warning(
+            "auto-heartbeat failed role=%s err=%s", role, exc
+        )
+
+
 def dispatch(role: str, *, action: str = "status", **kwargs: Any) -> Dict[str, Any]:
     """Unified envelope over wave shells. Never raises for bad input."""
     mode = resolve_marketing_mode()
@@ -184,6 +202,7 @@ def dispatch(role: str, *, action: str = "status", **kwargs: Any) -> Dict[str, A
             "marketing": mode,
             "live_allowed": allowed,
         }
+    _record_run_heartbeat(r, act)
     return {
         "ok": True,
         "role": r,

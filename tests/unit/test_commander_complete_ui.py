@@ -6,13 +6,24 @@ ROOT = Path(__file__).resolve().parents[2]
 HTML = (ROOT / "commander-ui" / "index.html").read_text(encoding="utf-8")
 JS = (ROOT / "commander-ui" / "app.js").read_text(encoding="utf-8")
 CSS = (ROOT / "commander-ui" / "styles.css").read_text(encoding="utf-8")
+SW = (ROOT / "commander-ui" / "sw.js").read_text(encoding="utf-8")
 
 
-def test_cache_bust_desk_dash06():
-    assert HTML.count("desk-dash09") >= 2
-    assert "desk-dash07" not in HTML
-    assert "desk-dash02" not in HTML
-    assert "vhq-w68a" not in HTML
+def test_cache_bust_consistent():
+    """Cache tag must be one coherent value across HTML assets and SW cache name.
+
+    Tag value itself rotates every UI ship (desk-dashNN); hardcoding it here made
+    this test stale-broken after every bump (dash06→09→11→12). Consistency, not
+    the literal tag, is the real contract.
+    """
+    import re
+
+    m = re.search(r'app\.js\?v=([a-z0-9-]+)"', HTML)
+    assert m, "app.js must carry a ?v= cache tag"
+    tag = m.group(1)
+    assert f'styles.css?v={tag}' in HTML
+    assert f"coi-commander-{tag}" in SW
+    assert HTML.count(tag) >= 2
 
 
 def test_wave_a_decision_rail():

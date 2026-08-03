@@ -40,8 +40,43 @@ def run_hub_spoke_flow(
     caption: str = "",
     dry_run: bool = True,
 ) -> Dict[str, Any]:
-    """Execute ICP → CF → Validator → publish_request draft chain."""
+    """Execute the chain — never raises; hub CLI depends on an honest envelope."""
     mode = resolve_marketing_mode()
+    try:
+        return _run_hub_spoke_flow(
+            icp_role=icp_role,
+            channel=channel,
+            asset_id=asset_id,
+            caption=caption,
+            dry_run=dry_run,
+            mode=mode,
+        )
+    except Exception as exc:  # noqa: BLE001 — flow must not crash the plane
+        return {
+            "ok": False,
+            "chain": "ICP_Brain→fatigue→Content_Factory→Sniper_Validator→publish_request→calendar",
+            "steps": {},
+            "steps_ok": [],
+            "error": "flow_exception",
+            "error_detail": f"{type(exc).__name__}: {str(exc)[:280]}",
+            "request": None,
+            "dry_run": dry_run,
+            "live_publish": False,
+            "marketing": mode,
+            "note": "flow proves chain integrity; live publish stays gated",
+        }
+
+
+def _run_hub_spoke_flow(
+    *,
+    icp_role: str,
+    channel: str,
+    asset_id: Optional[str],
+    caption: str,
+    dry_run: bool,
+    mode: str,
+) -> Dict[str, Any]:
+    """Execute ICP → fatigue → CF → Validator → publish_request draft chain."""
     role = (icp_role or "installateur").strip().lower()
     chan = (channel or "tiktok").strip().lower()
     aid = (asset_id or f"{chan[:2]}_flow_{role}_01").strip()
@@ -147,6 +182,7 @@ def run_hub_spoke_flow(
                     status="validated",
                     request_id=req.request_id,
                     pass_token=decision.pass_token,
+                    channel=chan,
                 )
                 cal_step["status"] = "updated_existing"
             except KeyError:
@@ -166,6 +202,7 @@ def run_hub_spoke_flow(
             save_calendar(cal)
             cal_step["date"] = day
             cal_step["channel"] = chan
+            cal_step["request_id"] = req.request_id
         except Exception as exc:  # noqa: BLE001 — calendar is the chain tail; report, don't crash
             cal_step = {"ok": False, "status": "error", "error": str(exc)[:300]}
             steps["calendar"] = cal_step

@@ -1,4 +1,4 @@
-agent.demand_os.commander_status: 84.8% line
+agent.demand_os.commander_status: 82.2% line
 agent.demand_os.desk_contract: 84.0% line
 agent.demand_os.ga4_adapter: 96.7% line
 floor=80.0

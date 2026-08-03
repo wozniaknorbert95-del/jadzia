@@ -78,20 +78,26 @@ class TestServiceDependencies:
         reset_registry()
 
 
+def _bare_request():
+    """Request without Bearer header and without session cookie (K3 signature)."""
+    from unittest.mock import MagicMock
+
+    req = MagicMock()
+    req.cookies = {}
+    return req
+
+
 class TestJWTAuth:
     def test_jwt_disabled_when_no_secret(self):
         with patch("api.dependencies.JWT_SECRET", None):
-            import jwt
-            from fastapi.security import HTTPAuthorizationCredentials
-
             # When JWT_SECRET is None, verify_jwt should return None without token
             import asyncio
-            result = asyncio.run(verify_jwt(credentials=None))
+            result = asyncio.run(verify_jwt(_bare_request(), credentials=None))
             assert result is None
 
     def test_jwt_requires_token_when_secret_set(self):
         with patch("api.dependencies.JWT_SECRET", "test-secret"):
             with pytest.raises(HTTPException) as exc:
                 import asyncio
-                asyncio.run(verify_jwt(credentials=None))
+                asyncio.run(verify_jwt(_bare_request(), credentials=None))
             assert exc.value.status_code == 401

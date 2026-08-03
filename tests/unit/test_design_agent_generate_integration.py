@@ -23,9 +23,17 @@ pytestmark = pytest.mark.skipif(
 
 
 @pytest.fixture(autouse=True)
-def _tier_matrix_env(monkeypatch: pytest.MonkeyPatch) -> None:
+def _tier_matrix_env(monkeypatch: pytest.MonkeyPatch, tmp_path: Path) -> None:
     if _TIER_MATRIX.is_file():
         monkeypatch.setenv("DA_TIER_MATRIX_PATH", str(_TIER_MATRIX))
+    # /generate cost lock = 1 hit/IP/hour in a persisted store — isolate per
+    # test or the second test in a run always sees 429
+    monkeypatch.setenv("DA_RATE_STORE_PATH", str(tmp_path / "rate.json"))
+    from agent import rate_store
+
+    rate_store.clear_store()
+    yield
+    rate_store.clear_store()
 
 
 def _logo_png() -> bytes:

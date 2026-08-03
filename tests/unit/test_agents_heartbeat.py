@@ -65,6 +65,26 @@ def test_heartbeat_old_record_is_stale(tmp_path: Path):
     assert view["age_days"] >= 10
 
 
+def test_dispatch_records_auto_heartbeat(monkeypatch: pytest.MonkeyPatch, tmp_path: Path):
+    """D1 regression: manual-only heartbeat would be a dead mechanism."""
+    p = tmp_path / "hb.json"
+    monkeypatch.setenv("DEMAND_OS_AGENTS_HEARTBEAT", str(p))
+    from agent.demand_os.agents.registry import dispatch
+
+    out = dispatch("validator", action="compliance")
+    assert out["ok"] is True
+    hb = load_heartbeats(path=p)
+    assert hb["validator"]["last_action"] == "compliance"
+    assert hb["validator"]["run_count"] == 1
+    # failed dispatch must NOT record (honest: run did not succeed)
+    out2 = dispatch("validator", action="bogus")
+    assert out2["ok"] is False
+    assert load_heartbeats(path=p)["validator"]["run_count"] == 1
+    # unknown role must NOT record
+    dispatch("bogus", action="status")
+    assert "bogus" not in load_heartbeats(path=p)
+
+
 def test_default_path_env_override(monkeypatch: pytest.MonkeyPatch, tmp_path: Path):
     from agent.demand_os.agents.heartbeat import default_heartbeat_path
 

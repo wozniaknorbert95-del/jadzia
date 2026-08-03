@@ -42,9 +42,15 @@ def test_w4_room_stays_parked_ev():
     assert 'value: "insufficient_data"' in chunk
 
 
-def test_w5_cache_vhq_w68a():
-    assert "vhq-w68a" in HTML
-    assert "coi-commander-shell-vhq-w68a" in SW
+def test_w5_cache_tag_consistent():
+    """W5-era literal tag (vhq-w68a) rotated away; durable contract = one tag
+    shared by HTML assets and SW cache name."""
+    import re
+
+    m = re.search(r'app\.js\?v=([a-z0-9-]+)"', HTML)
+    assert m, "app.js must carry a ?v= cache tag"
+    tag = m.group(1)
+    assert f"coi-commander-{tag}" in SW
 
 
 def test_w5_list_orders_projects_pay_fields():

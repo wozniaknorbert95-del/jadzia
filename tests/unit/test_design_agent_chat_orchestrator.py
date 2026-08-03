@@ -56,7 +56,9 @@ def test_at_chat_02_opening_defers_standard_premium_to_recommendation(client: Te
     body = client.get("/api/v1/design-agent/chat/opening").json()
     assert not re.search(r"Standard", body["reply_nl"], re.I)
     assert not re.search(r"Premium", body["reply_nl"], re.I)
-    assert re.search(r"bedrijfsnaam", body["reply_nl"], re.I)
+    # copy rotates in the inspire brain; the structural contract is that the
+    # opening asks for the company identity (bedrijfsnaam stays missing)
+    assert "bedrijfsnaam" in body["missing_fields"]
 
 
 def test_at_chat_opening_always_fresh_session_id(client: TestClient) -> None:
@@ -153,25 +155,37 @@ def test_at_chat_03_budget_before_summary(client: TestClient) -> None:
 
 
 def test_quick_previews_after_bedrijfsnaam_and_vehicle(client: TestClient) -> None:
-    """T-002 E2E — orchestrator returns 3 quick preview data URLs after 2Q path."""
+    """T-002 E2E — bridge passes engine quick previews through (v6.1 golden path).
+
+    The old v5 path (quick_reply vehicle.type → 3 previews) was superseded by
+    the engine's 8-turn golden path: previews arrive on the vehicle turn that
+    also carries the logo. Bridge contract: whatever the engine emits in
+    quick_preview_urls must surface as data: URLs in quick_previews.
+    """
     opening = client.get("/api/v1/design-agent/chat/opening").json()
     sid = opening["session_id"]
     client.post(
         "/api/v1/design-agent/chat",
-        json={"session_id": sid, "message": "Janssen Elektro"},
+        json={"session_id": sid, "message": "Janssen Elektro zonnepanelen particulier Ypenburg"},
     )
-    resp = client.post(
+    client.post(
         "/api/v1/design-agent/chat",
-        json={
-            "session_id": sid,
-            "message": "",
-            "quick_reply_id": "caddy",
-            "quick_reply_field": "vehicle.type",
-        },
+        json={"session_id": sid, "message": "Veel mond-tot-mond"},
+    )
+    import io
+
+    from PIL import Image
+
+    buf = io.BytesIO()
+    Image.new("RGBA", (48, 48), (220, 40, 40, 255)).save(buf, format="PNG")
+    resp = client.post(
+        "/api/v1/design-agent/chat/turn",
+        data={"session_id": sid, "message": "Witte Caddy Ypenburg"},
+        files={"logo": ("logo-janssen.png", buf.getvalue(), "image/png")},
     )
     assert resp.status_code == 200
     previews = resp.json().get("quick_previews") or []
-    assert len(previews) == 3
+    assert len(previews) >= 1
     assert all(str(u).startswith("data:image/") for u in previews)
 
 

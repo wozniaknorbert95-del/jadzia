@@ -50,9 +50,15 @@ def test_f7_finish_card_chrome():
     assert "not live-verified" in APP
 
 
-def test_f7_cache_vhq_w68a():
-    assert "vhq-w68a" in HTML
-    assert "coi-commander-shell-vhq-w68a" in SW
+def test_f7_cache_tag_consistent():
+    """F7-era literal tag (vhq-w68a) rotated away; the durable contract is that
+    HTML asset tags and the SW cache name share one tag (see commander_complete_ui)."""
+    import re
+
+    m = re.search(r'app\.js\?v=([a-z0-9-]+)"', HTML)
+    assert m, "app.js must carry a ?v= cache tag"
+    tag = m.group(1)
+    assert f"coi-commander-{tag}" in SW
 
 
 def test_f7_css_stage_bands():

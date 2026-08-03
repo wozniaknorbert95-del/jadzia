@@ -55,6 +55,28 @@ def test_publish_entry_not_found(temp_db, fb_env):
 
 
 def test_publish_entry_wrong_platform(temp_db, fb_env):
+    # TikTok became a supported platform (M2) and db_create rejects unknown
+    # platforms at insert — so the wrong-platform path is exercised by seeding
+    # a row directly with an unsupported channel.
+    from agent.db import get_connection
+
+    conn = get_connection()
+    cur = conn.execute(
+        """
+        INSERT INTO content_calendar (
+            platform, title, body_nl, scheduled_at, status, created_at, updated_at
+        ) VALUES ('instagram', 'T', 'body', '2026-07-01T10:00:00+00:00',
+                  'approved', '2026-07-01T00:00:00+00:00', '2026-07-01T00:00:00+00:00')
+        """
+    )
+    conn.commit()
+    result = publish_entry(str(cur.lastrowid))
+    assert result["status"] == "error"
+    assert "facebook|tiktok" in result["message"]
+
+
+def test_publish_entry_tiktok_needs_token(temp_db, fb_env):
+    # tiktok entries are supported but fail-closed without TIKTOK credentials
     entry_id, _ = db_create_calendar_entry(
         {
             "platform": "tiktok",
@@ -66,7 +88,7 @@ def test_publish_entry_wrong_platform(temp_db, fb_env):
     db_update_calendar_entry(int(entry_id), {"status": "approved"})
     result = publish_entry(entry_id)
     assert result["status"] == "error"
-    assert "facebook only" in result["message"]
+    assert "TIKTOK_ACCESS_TOKEN" in result["message"]
 
 
 def test_publish_entry_not_approved(temp_db, fb_env):

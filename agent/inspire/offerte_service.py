@@ -113,6 +113,38 @@ def _team_email_body(row: dict[str, Any], body: dict[str, Any]) -> str:
     )
 
 
+def _track_offerte_analytics(
+    session_id: str,
+    body: dict[str, Any],
+    offerte_id: str,
+    sku: str,
+) -> None:
+    """Forward offerte success to flexgrafik-inspire JSONL analytics (T-012)."""
+    inspire_root = os.getenv("INSPIRE_REPO_PATH", "").strip()
+    if not inspire_root:
+        return
+    try:
+        import sys
+        from pathlib import Path
+
+        root = Path(inspire_root)
+        if str(root) not in sys.path:
+            sys.path.insert(0, str(root))
+        from engine.v4.api_handlers import handle_offerte_submitted
+
+        selection = body.get("selection") or {}
+        handle_offerte_submitted(
+            session_id,
+            {
+                "offerte_request_id": offerte_id,
+                "sku": sku,
+                "variant": selection.get("variant"),
+            },
+        )
+    except Exception as exc:
+        logger.warning("offerte analytics track failed: %s", exc)
+
+
 def create_offerte_request(body: dict[str, Any], *, client_ip: str = "unknown") -> dict[str, Any]:
     normalized, err = _validate_payload(body)
     if err:
@@ -162,6 +194,8 @@ def create_offerte_request(body: dict[str, Any], *, client_ip: str = "unknown") 
         "created_at": now,
     }
     db_offerte_insert(row)
+
+    _track_offerte_analytics(session_id, body, offerte_id, sku)
 
     tg_msg = _telegram_message(row, body)
     Thread(target=_send_telegram_alert_sync, args=(tg_msg,), daemon=True).start()

@@ -60,5 +60,7 @@ def test_opening_default_nl(client: TestClient) -> None:
     r = client.get("/api/v1/design-agent/chat/opening")
     assert r.status_code == 200
     body = r.json()
-    assert "bedrijfsnaam" in body["reply_nl"].lower()
+    # brain copy rotates outside this repo; structural anchor = brief schema
+    assert "bedrijfsnaam" in body["missing_fields"]
+    assert body["reply_nl"].strip()
     assert body.get("locale", "nl-NL") == "nl-NL"

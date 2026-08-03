@@ -91,6 +91,31 @@ def test_flow_dry_run_skips_calendar(monkeypatch: pytest.MonkeyPatch, tmp_path: 
     assert not cal_path.exists()
 
 
+def test_flow_never_raises_on_invalid_channel():
+    """D2 regression: hub CLI must get an honest envelope, not a traceback."""
+    out = run_hub_spoke_flow(channel="myspace", dry_run=False)
+    assert out["ok"] is False
+    assert out["error"] == "flow_exception"
+    assert "UtmLockError" in out["error_detail"]
+    assert out["live_publish"] is False
+
+
+def test_flow_calendar_bind_is_per_channel(monkeypatch: pytest.MonkeyPatch, tmp_path: Path):
+    """D3 regression: same asset_id on tt+fb must keep two channel slots."""
+    monkeypatch.setenv("DEMAND_OS_A2A_BUS", str(tmp_path / "bus.jsonl"))
+    cal_path = tmp_path / "cal.json"
+    monkeypatch.setenv("DEMAND_OS_CONTENT_CALENDAR", str(cal_path))
+    o1 = run_hub_spoke_flow(channel="tiktok", asset_id="xx_same_01", dry_run=False)
+    assert o1["ok"] is True
+    o2 = run_hub_spoke_flow(channel="facebook", asset_id="xx_same_01", dry_run=False)
+    assert o2["ok"] is True
+    assert o2["steps"]["calendar"]["status"] == "added"  # not a silent cross-channel update
+    cal = json.loads(cal_path.read_text(encoding="utf-8"))
+    slots = [s for s in cal["slots"] if s["asset_id"] == "xx_same_01"]
+    assert {s["channel"] for s in slots} == {"tiktok", "facebook"}
+    assert all(s["status"] == "validated" for s in slots)
+
+
 def test_flow_fatigue_step_fresh_and_tired(monkeypatch: pytest.MonkeyPatch, tmp_path: Path):
     # fresh asset: fatigue False
     monkeypatch.setenv("DEMAND_OS_LEDGER", str(tmp_path / "LEDGER.csv"))
