@@ -3,7 +3,7 @@ status: READY_FOR_HUMAN
 updated: "2026-08-03"
 gate: DEMAND-OS-MARKETING-4-00
 preflight: PASS
-tip: 1545415
+tip: 4093179
 ---
 
 # Unlock live P0 — Dowódca ceremony
@@ -16,10 +16,10 @@ Tool 100% SEALED + OPS + UX desk-dash09 do not authorize live TT/FB/blog.
 
 - [x] TOOL 100% SEAL + OPS HARDENING SEAL (OPS floor `a3deb59`)
 - [x] Desk UX repair SEAL · cache `desk-dash09`
-- [x] Pointer hygiene · workflows `4-AWAIT-UNLOCK` · tip **`1545415`**
+- [x] Pointer hygiene · workflows `4-AWAIT-UNLOCK` · tip **`4093179`**
 - [x] Safe set-now sync dry-run + apply (README only; runtime LEDGER excluded)
 - [x] Local `owner-verify` green (`DEMAND_OS_SET_NOW=data/demand-os/set-now-sanitized`)
-- [x] VPS `owner-verify` green @ tip `1545415` · `doctor_ok=true` · `doctor_scope=full` · `live_cadence=PARKED` · `data_mode=MIXED`
+- [x] VPS `owner-verify` green @ tip `4093179` · `doctor_ok=true` · `doctor_scope=full` · `live_cadence=PARKED` · `data_mode=MIXED`
 - [x] Ads remain PARK cash
 
 ## Unlock record (Founder — tylko Ty)

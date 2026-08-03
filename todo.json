@@ -1,6 +1,6 @@
 {
   "project": "Jadzia-Core",
-  "last_updated": "2026-08-03 (AWAIT UNLOCK · PARK leave · tip 1545415 · desk-dash09)",
+  "last_updated": "2026-08-03 (AWAIT UNLOCK · PARK leave · tip 4093179 · desk-dash09)",
   "status": "active",
   "plan": "docs/ops/demand-os/PROGRAM-PHASES.md",
   "active_gate": "DEMAND-OS-MARKETING-4-00",
@@ -18,8 +18,8 @@
     "active_item": "4-AWAIT-UNLOCK",
     "demand_desk_v21": "ACCEPTED · §8 prod PASS · 5f SEALED",
     "demand_desk_contract": "SEALED v2.1.1 · DESK-CONTRACT.md",
-    "demand_tool_100": "SEALED · tip 1545415 · OPS floor a3deb59 · rule demand-os-tool-first.mdc",
-    "demand_marketing_4": "TOOL+OPS SEALED · tip 1545415 · desk-dash09 · live 4-P0-* PARKED · PARK leave · UNLOCK-LIVE-P0",
+    "demand_tool_100": "SEALED · tip 4093179 · OPS floor a3deb59 · rule demand-os-tool-first.mdc",
+    "demand_marketing_4": "TOOL+OPS SEALED · tip 4093179 · desk-dash09 · live 4-P0-* PARKED · PARK leave · UNLOCK-LIVE-P0",
     "demand_desk_5b_close": "docs/handoffs/2026-08-02-DEMAND-DESK-5B-CLOSE.md",
     "demand_desk_5e_close": "docs/handoffs/2026-08-02-DEMAND-DESK-5E-GAP-CLOSE.md",
     "demand_marketing": "HITL_LIVE · organic only · Ads PARK",

@@ -14,7 +14,7 @@
 | 1 | Dashboard CEO | Cold open ≤10s; daily &lt;5 min; kolejka + mapa | `/commander/` → Biuro Popytu default | **LIVE** | Etap 5f CLOSE · desk-dash09 · UX repair PASS | maintain |
 | 2 | System wiedzy | Indeks SoT + procesy; zero sprzecznych kanonów | KNOW-01 mirrors | **LIVE** | SoT jadzia + meta/VCMS pointers (COI-KNOW-01) | maintain; #8 proces VCMS-link osobno |
 | 3 | AI Sprzedawca | Lead→CTA→Wizard | Demand + widget + A2A lead_hot | LIVE | Demand OS Hub · TOOL 100% SEALED | maintain |
-| 4 | AI Marketing | Hub §M · tool+ops sealed · later HITL | Demand OS Hub + status | TOOL+OPS SEALED / live_cadence PARKED | tip `1545415` · `UNLOCK-LIVE-P0.md` · PARK leave | Dowódca unlock before live P0 |
+| 4 | AI Marketing | Hub §M · tool+ops sealed · later HITL | Demand OS Hub + status | TOOL+OPS SEALED / live_cadence PARKED | tip `4093179` · `UNLOCK-LIVE-P0.md` · PARK leave | Dowódca unlock before live P0 |
 | 5 | AI Project Manager | Orkiestracja HITL | Agent OS | **LIVE** | HITL approve `task-4f6a23d8` → DONE @ os-api 2026-07-18 | maintain; UI Basic Auth Dowódca |
 | 6 | AI Customer Success | Post-sale follow-up | `cs_followup` | **LIVE** | API+UI HITL tip `0a54bc7`; dogfood spawn→Ack | maintain; auto-trigger later |
 | 7 | AI Asystent Zarządu | Brief→HITL→Home | brief_node | LIVE | STRATEGY-HITL + tickets | maintain |

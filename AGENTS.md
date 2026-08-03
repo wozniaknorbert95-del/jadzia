@@ -15,7 +15,7 @@
 - **Deploy**: `.agents/workflows/jadzia-deploy.md`
 - **Post-coding**: `.agents/workflows/post-coding.md` (fresh GO for VPS)
 - **Latest handoffs**: `docs/handoffs/` (≤15 rolling; MBA archived)
-- **Marketing OS**: fazy = `PROGRAM-PHASES.md` · **Etap 4 TOOL+OPS SEALED** · tip `1545415` · cache `desk-dash09` · live P0 **PARKED** · unlock = `UNLOCK-LIVE-P0.md`
+- **Marketing OS**: fazy = `PROGRAM-PHASES.md` · **Etap 4 TOOL+OPS SEALED** · tip `4093179` · cache `desk-dash09` · live P0 **PARKED** · unlock = `UNLOCK-LIVE-P0.md`
 
 ## MBA
 

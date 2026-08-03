@@ -2,7 +2,7 @@
 status: CLOSE
 title: Post-TOOL 100% hygiene N1–N7
 date: 2026-08-03
-tip: 1545415
+tip: 4093179
 cache: desk-dash09
 ---
 
@@ -14,13 +14,13 @@ cache: desk-dash09
 
 | Step | Result |
 |------|--------|
-| N1 tip/cache | `1545415` · `desk-dash09` in active SoT |
+| N1 tip/cache | `4093179` · `desk-dash09` in active SoT |
 | N2 workflows | `/demand-os-master-loop` AWAIT-UNLOCK |
 | N3 pointers | no ACTIVE `4-TOOL-01` |
 | N4 VPS verify | `ok: true` · doctor full · `live_cadence=PARKED` |
 | N5 set-now | dry-run → apply README only · no LEDGER wipe |
 | N6 verify pack | OWNER-VERIFY-COMMANDS full regression |
-| N7 unlock prep | UNLOCK-LIVE-P0 preflight @ `1545415` |
+| N7 unlock prep | UNLOCK-LIVE-P0 preflight @ `4093179` |
 
 ## Evidence
 
