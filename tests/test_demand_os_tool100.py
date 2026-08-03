@@ -4,6 +4,8 @@ from __future__ import annotations
 
 from pathlib import Path
 
+import pytest
+
 from agent.demand_os.agents.wave2 import run_wave2
 from agent.demand_os.audit_log import append_audit, list_audit
 from agent.demand_os.content_factory import build_brief, proof_check
@@ -40,13 +42,28 @@ def test_stl_report_shape():
     assert r["sla_min"] == 15
 
 
-def test_week_and_go_ready():
+def test_week_and_go_ready(monkeypatch: pytest.MonkeyPatch):
+    monkeypatch.delenv("DEMAND_OS_MARKETING_HITL", raising=False)
     w = week_plan(day="pon")
     assert w["ok"] is True
     assert w["day"] == "pon"
+    assert w["marketing"] == "PARKED_LAST"
+    assert w["marketing_hitl_gate"] == "BLOCKED"
     g = go_day_ready()
     assert "score" in g
     assert g["marketing"] == "PARKED_LAST"
+    assert g["marketing_hitl_gate"] == "BLOCKED"
+
+
+def test_week_and_go_ready_go_env(monkeypatch: pytest.MonkeyPatch):
+    monkeypatch.setenv("DEMAND_OS_MARKETING_HITL", "GO")
+    w = week_plan(day="sr")
+    assert w["marketing"] == "HITL_LIVE"
+    assert w["marketing_hitl_gate"] == "READY"
+    assert w["job"]["live"] == "READY after Validator PASS + HITL approval"
+    g = go_day_ready()
+    assert g["marketing"] == "HITL_LIVE"
+    assert g["marketing_hitl_gate"] == "READY"
 
 
 def test_cf_brief_and_proof():
@@ -57,13 +74,18 @@ def test_cf_brief_and_proof():
     assert proof_check("bus before after")["ok"] is True
 
 
-def test_wave2_shells():
+def test_wave2_shells(monkeypatch: pytest.MonkeyPatch):
+    monkeypatch.delenv("DEMAND_OS_MARKETING_HITL", raising=False)
     cf = run_wave2("cf", action="brief")
     assert cf["role"] == "cf"
     assert cf["marketing"] == "PARKED_LAST"
     fb = run_wave2("fb")
     assert fb["role"] == "fb"
     assert fb["result"]["live_comment"] is False
+    monkeypatch.setenv("DEMAND_OS_MARKETING_HITL", "GO")
+    cf_go = run_wave2("cf", action="brief")
+    assert cf_go["marketing"] == "HITL_LIVE"
+    assert run_wave2("fb")["result"]["live_comment"] is False
 
 
 def test_design_wizard_rules():
@@ -85,10 +107,11 @@ def test_audit_log(tmp_path: Path):
     assert listed["count"] == 1
 
 
-def test_wave3_and_commander():
+def test_wave3_and_commander(monkeypatch: pytest.MonkeyPatch):
     from agent.demand_os.agents.wave3 import run_wave3
     from agent.demand_os.commander_status import build_demand_os_status
 
+    monkeypatch.delenv("DEMAND_OS_MARKETING_HITL", raising=False)
     blog = run_wave3("blog")
     assert blog["role"] == "blog"
     assert blog["result"]["live_ship"] is False

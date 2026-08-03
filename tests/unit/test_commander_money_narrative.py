@@ -3,9 +3,10 @@
 from __future__ import annotations
 
 
-def test_insufficient_data_when_no_leads_no_nba():
+def test_insufficient_data_when_no_leads_no_nba(monkeypatch):
     from agent.commander.money_narrative import build_money_risk_narrative
 
+    monkeypatch.delenv("DEMAND_OS_MARKETING_HITL", raising=False)
     out = build_money_risk_narrative(
         leads=[],
         analytics_snap=None,
@@ -23,9 +24,10 @@ def test_insufficient_data_when_no_leads_no_nba():
     assert out["demand_os"]["marketing"] == "PARKED_LAST"
 
 
-def test_demand_os_hub_partial_with_starts():
+def test_demand_os_hub_partial_with_starts(monkeypatch):
     from agent.commander.money_narrative import build_money_risk_narrative
 
+    monkeypatch.delenv("DEMAND_OS_MARKETING_HITL", raising=False)
     out = build_money_risk_narrative(
         leads=[],
         analytics_snap=None,
@@ -43,6 +45,26 @@ def test_demand_os_hub_partial_with_starts():
     assert out["pipeline"]["wizard_sessions"] == 3
     assert out["cta"]["action"] == "demand_os_status"
     assert "€" not in str(out)
+
+
+def test_demand_os_hub_partial_with_starts_go_env(monkeypatch):
+    from agent.commander.money_narrative import build_money_risk_narrative
+
+    monkeypatch.setenv("DEMAND_OS_MARKETING_HITL", "GO")
+    out = build_money_risk_narrative(
+        leads=[],
+        analytics_snap=None,
+        brief={"nba": None},
+        demand_os_mc={
+            "starts_utm": 3,
+            "paid": 1,
+            "top_hook": "tt_w32_install_01",
+            "validator_fail": 0,
+        },
+    )
+    assert out["status"] == "partial"
+    assert out["demand_os"]["marketing"] == "HITL_LIVE"
+    assert "marketing HITL READY" in out["q1"]
 
 
 def test_partial_with_hot_lead_counts_and_top_risk():

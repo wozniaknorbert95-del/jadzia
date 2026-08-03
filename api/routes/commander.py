@@ -148,7 +148,8 @@ async def get_demand_os_status(
     """Demand Desk v2.1 status — same builder as hub status (no vanity)."""
     from agent.demand_os.commander_status import build_demand_os_status
 
-    return build_demand_os_status()
+    # Full doctor for footer honesty (no false-green from lightweight slice)
+    return build_demand_os_status(with_full_doctor=True)
 
 
 @router.get("/api/v1/commander/demand-os/money-check")
@@ -156,9 +157,10 @@ async def get_demand_os_money_check(
     _auth=Depends(require_scope("demand_os:read")),
 ) -> dict:
     """Pon Money Check slice — read-only."""
+    from agent.demand_os.marketing_mode import resolve_marketing_mode
     from agent.demand_os.observability import money_check
 
-    return {"ok": True, "money_check": money_check(), "marketing": "PARKED_LAST"}
+    return {"ok": True, "money_check": money_check(), "marketing": resolve_marketing_mode()}
 
 
 @router.post("/api/v1/commander/demand-os/hitl/decision")

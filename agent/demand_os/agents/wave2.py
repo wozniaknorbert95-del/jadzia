@@ -1,4 +1,4 @@
-"""Wave2 agent shells — CF + FB (OS §J). Live engage PARKED_LAST."""
+"""Wave2 agent shells — CF + FB (OS §J). Live engage stays false until unlock."""
 
 from __future__ import annotations
 
@@ -7,8 +7,13 @@ from typing import Any, Dict
 from agent.demand_os.connectors.allowlist import load_allowlist
 from agent.demand_os.content_factory import build_brief, list_local_assets, proof_check
 from agent.demand_os.gdrive_cf import list_cf_assets_stub
+from agent.demand_os.marketing_mode import resolve_marketing_mode
 
 WAVE2_ROLES = frozenset({"cf", "fb", "content_factory", "agent_fb"})
+
+
+def _mode() -> str:
+    return resolve_marketing_mode()
 
 
 def run_wave2(role: str, *, action: str = "status", **kwargs: Any) -> Dict[str, Any]:
@@ -35,7 +40,7 @@ def _cf(action: str, **kwargs: Any) -> Dict[str, Any]:
                 asset_id=kwargs.get("asset_id"),
                 proof_tier=int(kwargs.get("proof_tier") or 1),
             ),
-            "marketing": "PARKED_LAST",
+            "marketing": _mode(),
         }
     if action == "assets":
         return {
@@ -45,21 +50,23 @@ def _cf(action: str, **kwargs: Any) -> Dict[str, Any]:
                 "local": list_local_assets(limit=int(kwargs.get("limit") or 10)),
                 "gdrive": list_cf_assets_stub(limit=5),
             },
+            "marketing": _mode(),
         }
     if action == "proof":
         return {
             "role": "cf",
             "action": action,
             "result": proof_check(str(kwargs.get("label") or "")),
+            "marketing": _mode(),
         }
     return {
         "role": "cf",
         "action": "status",
         "result": build_brief(channel="tiktok"),
         "kpi": "assets with 1 CTA · proof≥1",
-        "marketing": "PARKED_LAST",
+        "marketing": _mode(),
         "wave": 2,
-        "note": "Wave2 after W1 PASS — shell ready",
+        "note": "Wave2 shell — live ship gated by Dowódca unlock",
     }
 
 
@@ -84,9 +91,9 @@ def _fb(action: str, **kwargs: Any) -> Dict[str, Any]:
             "engageable_count": len(engageable),
             "max_groups": al.get("max_groups"),
             "live_comment": False,
-            "note": "PARKED_LAST — dry allowlist only until GO MARKETING HITL",
+            "note": "live_comment=false until Dowódca unlock after tool 100%",
         },
         "kpi": "starts facebook + qualified comments/day",
-        "marketing": "PARKED_LAST",
+        "marketing": _mode(),
         "wave": 2,
     }

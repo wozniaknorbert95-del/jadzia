@@ -1,0 +1,46 @@
+---
+description: HARD — Demand OS tool 100% first; live publish PARKED; test-only publish→delete
+alwaysApply: true
+---
+
+# Demand OS — TOOL FIRST (HARD LOCK)
+
+**Dowódca 2026-08-03 — nie pytaj, nie „przypominaj o publish”, nie dryfuj.**
+
+## Canonical pointer (read in this order)
+
+1. `.cursor/current-task.md`
+2. `docs/ops/demand-os/STATE.md`
+3. `docs/ops/demand-os/MASTER-TODO-4.md` → sekcja **Aktywne zadanie**
+4. `todo.json` → `active_item` (must be `4-TOOL-*`, not `4-P0-*`)
+
+If any handoff / blast / packet contradicts these → **SoT wins. Handoff is stale.**
+
+## Direction (non-negotiable)
+
+1. **Najpierw narzędzie 100%** (backend + desk/UX + doctor/pytest/coherence residual).
+2. **Publikacje tylko testowo:** dry → optional test publish → **delete** → ledger/notes as test/deleted.
+3. **Live** `4-P0-01` / `4-P0-02` / `4-P0-03` / P1 cadence = **PARKED** until Dowódca explicitly unlocks after tool 100%.
+
+## Forbidden agent behaviors
+
+- Asking / pushing Dowódca to live-publish TT/FB/blog
+- Treating GO LIVE, gate READY, TOOL-INTEGRITY-SEAL, or `@blast 4-P0-01` as permission for live cadence
+- Writing fake `publish=Y` ledger rows
+- Ending a session with `RECOMMENDED_NEXT: Founder publish…` while tool residual is open
+- Ads / boost / paid spend
+- Autonomous social publish or VPS deploy without fresh GO
+
+## Allowed publish path (tool proof only)
+
+```text
+plan test proof → execute → DELETE asset → ledger notes (test/deleted) → resume TOOL work
+```
+
+Never advance live P0 SEAL from a test publish.
+
+## Session close checklist (mandatory)
+
+- [ ] `active_item` still tool-side (`4-TOOL-*`) unless Dowódca unlocked live
+- [ ] Handoff `RECOMMENDED_NEXT` is tool work, not live publish
+- [ ] No new “Founder publish now” pointer left active

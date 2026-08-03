@@ -1,16 +1,17 @@
-"""Wave1 agent shells (OS §H / §J) — thin orchestration, marketing PARKED_LAST.
+"""Wave1 agent shells (OS §H / §J) — thin orchestration.
 
 Roles: growth_lead · icp_brain · tt · sales · validator
-No live TT/FB publish. No Ads.
+No live TT/FB publish. No Ads. marketing field follows resolve_marketing_mode().
 """
 
 from __future__ import annotations
 
-from typing import Any, Dict, Optional
+from typing import Any, Dict
 
 from agent.demand_os.commander_status import build_demand_os_status
 from agent.demand_os.db_utm import sync_wizard_starts_from_ops_bus
 from agent.demand_os.doctor import run_doctor
+from agent.demand_os.marketing_mode import resolve_marketing_mode
 from agent.demand_os.memory import load_memory, set_semantic_icp, sync_episodic_from_ledger
 from agent.demand_os.observability import money_check
 from agent.demand_os.weekly_tune import weekly_success_report
@@ -19,6 +20,10 @@ from agent.demand_os.widget_leads import list_hot_leads, sync_hot_leads_to_a2a
 WAVE1_ROLES = frozenset(
     {"growth_lead", "icp_brain", "tt", "sales", "validator"}
 )
+
+
+def _mode() -> str:
+    return resolve_marketing_mode()
 
 
 def run_agent(role: str, *, action: str = "status", **kwargs: Any) -> Dict[str, Any]:
@@ -53,12 +58,11 @@ def _growth_lead(action: str, **kwargs: Any) -> Dict[str, Any]:
                 dry_run=bool(kwargs.get("dry_run", True))
             ),
         }
-    # default status
     return {
         "role": "growth_lead",
         "action": "status",
         "result": build_demand_os_status(),
-        "marketing": "PARKED_LAST",
+        "marketing": _mode(),
         "kpi": "starts_utm + paid WoW",
     }
 
@@ -91,10 +95,10 @@ def _tt(action: str, **kwargs: Any) -> Dict[str, Any]:
         "result": {
             "hitl_queue_tiktok": tt_slots,
             "live_publish": False,
-            "note": "PARKED_LAST — Founder GO MARKETING HITL required to publish",
+            "note": "live_publish=false until Dowódca unlock after tool 100%",
             "kpi": "starts tiktok (measure only)",
         },
-        "marketing": "PARKED_LAST",
+        "marketing": _mode(),
     }
 
 
@@ -113,7 +117,7 @@ def _sales(action: str, **kwargs: Any) -> Dict[str, Any]:
         "action": "list_hot",
         "result": list_hot_leads(limit=int(kwargs.get("limit") or 20)),
         "kpi": "hot→Wizard median time (STL)",
-        "marketing": "PARKED_LAST",
+        "marketing": _mode(),
     }
 
 
@@ -130,4 +134,5 @@ def _validator(action: str, **kwargs: Any) -> Dict[str, Any]:
             "bypass": 0,
         },
         "kpi": "FAIL rate down · zero bypass",
+        "marketing": _mode(),
     }

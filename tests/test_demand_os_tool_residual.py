@@ -170,7 +170,8 @@ def test_a2a_auto_on_val_pass(tmp_path: Path, monkeypatch):
     assert any(x.get("status") == "acked" for x in lines)
 
 
-def test_weekly_no_live_publish_cta(tmp_path: Path):
+def test_weekly_no_live_publish_cta(tmp_path: Path, monkeypatch):
+    monkeypatch.delenv("DEMAND_OS_MARKETING_HITL", raising=False)
     (tmp_path / "LEDGER.csv").write_text(
         "date,channel,icp_role,asset_id,utm_link,publish_Y/N,comments_sent,"
         "hot_leads,wizard_starts,paid,notes\n",

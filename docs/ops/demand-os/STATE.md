@@ -1,28 +1,32 @@
 ---
-status: "[ETAP 4 · GO LIVE · P0 active]"
+status: "[ETAP 4 · TOOL 100% SEALED · live P0 PARKED]"
 updated: "2026-08-03"
-last_step: "GO EXEC CLOSE · prod 2f68b64 gate READY"
-next_action: "4-P0-01 TT publish tt_w32_install_01"
+last_step: "TOOL 100% SEAL — doctor/footer/waves/connectors/verify pack"
+next_action: "awaiting Dowódca unlock for live 4-P0-* (not auto)"
 prod_tip: "2f68b64 · DEMAND_OS_MARKETING_HITL=GO · desk-dash08"
-close_handoff: "docs/handoffs/2026-08-03-GO-MARKETING-HITL-EXEC-CLOSE.md"
+close_handoff: "docs/handoffs/2026-08-03-DEMAND-OS-TOOL-100-SEAL-CLOSE.md"
 ---
 
 # Demand OS — STATE
 
 | Pole | Wartość |
 |------|---------|
-| program_phase | **Etap 4 GO LIVE** |
+| program_phase | **Etap 4 · TOOL 100% SEALED** · live cadence PARKED |
 | master_todo | [`MASTER-TODO-4.md`](./MASTER-TODO-4.md) |
-| active_item | **4-P0-01** TT HITL publish |
+| active_item | **4-TOOL-100 SEALED** · live `4-P0-*` PARKED |
 | prod_tip | **`2f68b64`** |
-| marketing_hitl | **HITL_LIVE** · gate **READY** |
-| desk_ui | SEALED · `desk-dash08` |
+| marketing_hitl | env GO possible · **live publish cadence PARKED** |
+| desk_ui | SEALED · `desk-dash08` · footer doctor honesty |
 | Ads | **PARK cash** (unchanged) |
 
 ## Close
 
-[`2026-08-03-GO-MARKETING-HITL-EXEC-CLOSE.md`](../handoffs/2026-08-03-GO-MARKETING-HITL-EXEC-CLOSE.md)
+[`2026-08-03-DEMAND-OS-TOOL-100-SEAL-CLOSE.md`](../handoffs/2026-08-03-DEMAND-OS-TOOL-100-SEAL-CLOSE.md)
 
 ## STOP
 
-Ads · publish without Val PASS
+Live TT/FB/blog without Dowódca unlock · Ads · fake ledger · autonomous publish
+
+## Focus now
+
+Tool sealed. Unlock live P0 only by Dowódca ceremony — agents do not push publish.

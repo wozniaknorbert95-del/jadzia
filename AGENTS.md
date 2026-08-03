@@ -15,7 +15,7 @@
 - **Deploy**: `.agents/workflows/jadzia-deploy.md`
 - **Post-coding**: `.agents/workflows/post-coding.md` (fresh GO for VPS)
 - **Latest handoffs**: `docs/handoffs/` (≤15 rolling; MBA archived)
-- **Marketing OS**: fazy = `PROGRAM-PHASES.md` · **Etap 4 GO LIVE** · prod `2f68b64` gate READY · P0 TT publish
+- **Marketing OS**: fazy = `PROGRAM-PHASES.md` · prod `2f68b64` · **TOOL 100% FIRST** · live P0 **PARKED** · publish tylko test+delete
 
 ## MBA
 
@@ -26,6 +26,7 @@
 - **No-ask:** one path, execute; park human-only as `ready_for_human`.
 - **Zasada 11:** VPS only with GO (`standing_go_closeout` **false**).
 - **Hard STOP:** Gate D, Mollie LIVE, secrets, merge OS↔jadzia, fake PASS.
+- **Demand OS TOOL FIRST:** najpierw narzędzie 100%; publikacje tylko testowo (publish→delete); live `4-P0-*` dopiero po jawnym unlock Dowódcy. Rule: `.cursor/rules/demand-os-tool-first.mdc`.
 - **Least privilege:** no `_mint_*` / `_recover_*` in commits (gitignored).
 
 ## Copy & languages

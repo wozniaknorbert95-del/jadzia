@@ -1,55 +1,57 @@
 ---
-description: Demand OS Etap 5f — Master TODO loop. One task per iteration. No fake SEAL.
+description: Demand OS Etap 4 — TOOL FIRST loop. Live P0 PARKED. One task per iteration.
 ---
 
 # /demand-os-master-loop
 
 ## Goal
 
-Wykonuj **MASTER TODO Etap 5f** w pętli: jedno zadanie → prove → close → next.  
-Domknij Commander Dashboard **100% per surface** bez ściemy.
+Domknij **narzędzie 100%** (`4-TOOL-*`).  
+Live marketing P0 **PARKED** aż do jawnego unlock Dowódcy.
 
-**SoT:** `docs/ops/demand-os/MASTER-TODO-5F.md` (kanoniczny backlog)
+**SoT:** `docs/ops/demand-os/MASTER-TODO-4.md`  
+**HARD rule:** `.cursor/rules/demand-os-tool-first.mdc`  
+**Pointer:** `.cursor/current-task.md` + `docs/ops/demand-os/STATE.md`
 
 ## Hard rules
 
-1. **No-ask** — wybierz pierwsze `open` w P0, potem P1.
-2. **One task per iteration** — nie równoległe P0.
-3. **STOP:** marketing live · Ads · VPS bez GO · fałszywy SEAL · commit set-now secrets.
-4. **Nie dodawaj** nowych planów — aktualizuj MASTER-TODO status + pointer.
+1. **No-ask** — follow CURRENT in MASTER-TODO-4 (tool residual).
+2. **One task per iteration**.
+3. **STOP:** live TT/FB/blog push · Ads · VPS bez GO · fake ledger `publish=Y` · SEAL z test-publish.
+4. Stale handoffs (`@blast 4-P0-01`, “Founder publish”) → **ignore**.
+5. Publish tylko test→delete jeśli tool proof tego wymaga.
 
 ## Start (każda iteracja)
 
-1. Read `MASTER-TODO-5F.md` → sekcja **Aktywne zadanie**
-2. Read `STATE.md` + `.cursor/current-task.md`
-3. Confirm `todo.json` → `active_gate: DEMAND-OS-DESK-5F-00`
-4. If mismatch → Agent A sync first (15 min max)
+1. Read `.cursor/current-task.md`
+2. Read `STATE.md` + `MASTER-TODO-4.md` → **Aktywne zadanie**
+3. Confirm `todo.json` → `active_item` starts with `4-TOOL-`
+4. If pointer says live `4-P0-*` without Dowódca unlock → **STOP and re-sync to TOOL FIRST**
 
 ## Execute
 
-| Krok | Agent | Akcja |
-|------|-------|-------|
-| 1 | B | Implement per task DoD in MASTER-TODO |
-| 2 | C | pytest gate + browser prod `?cb=desk-dashXX` |
-| 3 | A | handoff + STATE + MASTER-TODO `[x]` + advance pointer |
-| 4 | D | deploy only if GO recorded |
+| Krok | Akcja |
+|------|-------|
+| 1 | Implement tool residual DoD |
+| 2 | `doctor` + `pytest -k demand_os` |
+| 3 | handoff with `RECOMMENDED_NEXT` = next **tool** item |
+| 4 | deploy only if fresh GO recorded |
 
 ## Verify
 
 ```bash
 export DEMAND_OS_SET_NOW=data/demand-os/set-now-sanitized
 python tools/demand_os_hub.py doctor
-python -m pytest tests/unit/test_demand_desk_ui_contracts.py tests/e2e/test_demand_desk_flow.py tests/test_hunt_dry_updates_queue.py -q
+python -m pytest tests -k demand_os -q
 ```
 
-## Done when
+## Done when (tool lane)
 
-- All P0 + P1 = `done` in MASTER-TODO
-- Dowódca §8 = `done` (human)
-- Hard DoD **15/15** · STATE `tool_100: SEALED`
-- Handoff `DEMAND-DESK-5F-CLOSE.md`
+- Tool residual closed per MASTER-TODO-4 `4-TOOL-*`
+- Dowódca explicitly unlocks live P0 (separate ceremony)
+- Only then unpark `4-P0-01`
 
 ## Loop stop
 
-- `ready_for_human: Dowódca §8` when P0+P1 done
-- Full SEAL when P2 complete
+- Live P0 remains `blocked` until unlock
+- Never end session recommending Founder live publish while tool open

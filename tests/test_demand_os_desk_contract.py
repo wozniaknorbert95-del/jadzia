@@ -64,7 +64,8 @@ def test_dual_cash_baseline_pass_not_fail():
     assert r["red"] is False
 
 
-def test_commander_desk_v21_shape(tmp_path: Path):
+def test_commander_desk_v21_shape(tmp_path: Path, monkeypatch):
+    monkeypatch.delenv("DEMAND_OS_MARKETING_HITL", raising=False)
     led = tmp_path / "LEDGER.csv"
     led.write_text(
         "date,channel,icp_role,asset_id,utm_link,publish_Y/N,comments_sent,"
@@ -120,7 +121,9 @@ def test_commander_desk_v21_shape(tmp_path: Path):
     assert st["screen"]["hunt_queue"][0]["desk_status"] == "BLOCK"
     assert st["screen"]["hitl_queue"][0]["desk_action"] == "GOTOWY"
     assert st["kpi"]["validator_fail"] == "n/a"
-    assert isinstance(st["footer"]["doctor_ok"], bool)
+    assert st["footer"]["doctor_scope"] == "lightweight"
+    assert st["footer"]["doctor_ok"] is False
+    assert isinstance(st["footer"]["doctor_files_ok"], bool)
     assert st["footer"]["stale_warn"] is True or st["data_mode"] == "EMPTY"
 
 

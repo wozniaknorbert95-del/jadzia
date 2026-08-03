@@ -45,6 +45,7 @@ from agent.demand_os.design_wizard import check_design_lead  # noqa: E402
 from agent.demand_os.doctor import run_doctor  # noqa: E402
 from agent.demand_os.fatigue import fatigue_check  # noqa: E402
 from agent.demand_os.ledger import ensure_today_row, ledger_summary  # noqa: E402
+from agent.demand_os.marketing_mode import resolve_marketing_mode  # noqa: E402
 from agent.demand_os.stl_monitor import stl_report  # noqa: E402
 from agent.demand_os.utm_lock import build_wizard_utm  # noqa: E402
 from agent.demand_os.week_ritual import go_day_ready, week_plan  # noqa: E402
@@ -248,10 +249,11 @@ def cmd_engage_dry(args: argparse.Namespace) -> int:
     """Always dry_run — never live comment from hub."""
     from agent.demand_os.connectors.allowlist import require_engage_target
 
+    marketing = resolve_marketing_mode()
     try:
         target = require_engage_target(args.target_id)
     except Exception as exc:
-        _print({"ok": False, "error": str(exc)[:300], "marketing": "PARKED_LAST"})
+        _print({"ok": False, "error": str(exc)[:300], "marketing": marketing})
         return 1
     channel = target.platform if target.platform in ("tiktok", "facebook", "blog", "whatsapp") else "facebook"
     utm = args.utm or build_wizard_utm(channel, args.icp_role, args.asset_id)
@@ -270,9 +272,9 @@ def cmd_engage_dry(args: argparse.Namespace) -> int:
             icp_role=role,
         )
     except Exception as exc:
-        _print({"ok": False, "error": str(exc)[:300], "marketing": "PARKED_LAST"})
+        _print({"ok": False, "error": str(exc)[:300], "marketing": marketing})
         return 1
-    out["marketing"] = "PARKED_LAST"
+    out["marketing"] = marketing
     out["live"] = False
     _print(out)
     return 0 if out.get("ok") else 1

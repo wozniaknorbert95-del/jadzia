@@ -9,6 +9,7 @@ from __future__ import annotations
 from datetime import datetime, timezone
 from typing import Any, Dict, List, Optional
 
+from agent.demand_os.marketing_mode import marketing_hitl_gate, resolve_marketing_mode
 from agent.commander.sla import freshness_status
 
 CTA_SCORE_THRESHOLD = 40
@@ -92,13 +93,16 @@ def build_money_risk_narrative(
     ga4 = _ga4_honesty(analytics_snap)
     top_risk = _top_risk_from_brief(brief or {})
 
+    marketing = resolve_marketing_mode()
+    hitl_gate = marketing_hitl_gate(marketing=marketing)
+
     # Demand OS Hub §M — starts by UTM (never vanity views / euro)
     demand_os: Dict[str, Any] = {
         "starts_utm": 0,
         "paid": 0,
         "top_hook": "",
         "validator_fail": 0,
-        "marketing": "PARKED_LAST",
+        "marketing": marketing,
         "source": "demand_os.money_check",
         "kill_vanity": True,
     }
@@ -115,7 +119,7 @@ def build_money_risk_narrative(
             "top_hook": mc.get("top_hook") or "",
             "validator_fail": int(mc.get("validator_fail") or 0),
             "sniper_compliance": mc.get("sniper_compliance"),
-            "marketing": "PARKED_LAST",
+            "marketing": marketing,
             "source": "demand_os.money_check",
             "kill_vanity": True,
         }
@@ -145,7 +149,7 @@ def build_money_risk_narrative(
         q1 = (
             f"Demand OS: {demand_os['starts_utm']} Wizard start(s) UTM · "
             f"top_hook={demand_os.get('top_hook') or 'none'} · "
-            "marketing HITL PARKED_LAST — no live euro claimed."
+            f"marketing HITL {hitl_gate} — no live euro claimed."
         )
         cta = {
             "label": "Demand OS status",
@@ -157,7 +161,7 @@ def build_money_risk_narrative(
         q1 = (
             "Insufficient money/risk signal — no open leads, no ranked NBA, "
             "Demand OS starts_utm=0. Verify ingest/fixture; do not invent revenue. "
-            "Marketing PARKED_LAST."
+            f"Marketing {marketing}."
         )
         cta = {
             "label": "Open Wizard",
@@ -193,7 +197,7 @@ def build_money_risk_narrative(
             "No vanity euro totals on Mission Control L1",
             "Order Desk PARKED · EV-W2-010",
             "GA4 purchase revenue not shown as money KPI",
-            "Demand OS marketing HITL PARKED_LAST until GO MARKETING HITL",
+            f"Demand OS marketing HITL {hitl_gate} ({marketing})",
         ],
         "cta": cta,
         "event_ids": event_ids,

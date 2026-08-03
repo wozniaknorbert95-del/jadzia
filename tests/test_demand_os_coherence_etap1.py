@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import json
 from pathlib import Path
 
 from agent.commander.authz import has_scope
@@ -86,3 +87,50 @@ def test_hub_rbac_viewer_blocked(monkeypatch):
     monkeypatch.delenv("DEMAND_OS_ROLE", raising=False)
     rc2 = hub.main(["doctor"])
     assert rc2 == 0
+
+
+def test_hub_engage_dry_reflects_go_env(tmp_path: Path, monkeypatch, capsys):
+    import tools.demand_os_hub as hub
+
+    pack = tmp_path / "set-now"
+    pack.mkdir()
+    (pack / "ALLOWLIST.json").write_text(
+        json.dumps(
+            {
+                "targets": [
+                    {
+                        "id": "fb_g2",
+                        "platform": "facebook",
+                        "kind": "group_nl",
+                        "name": "Demo group",
+                        "status": "active",
+                        "icp_role": "installateur",
+                    }
+                ],
+                "max_groups": 1,
+            }
+        ),
+        encoding="utf-8",
+    )
+    (pack / "ENGAGE-LOG.jsonl").write_text("", encoding="utf-8")
+    monkeypatch.setenv("DEMAND_OS_SET_NOW", str(pack))
+    monkeypatch.setenv("DEMAND_OS_MARKETING_HITL", "GO")
+
+    rc = hub.main(
+        [
+            "engage-dry",
+            "--target-id",
+            "fb_g2",
+            "--asset-id",
+            "engage_go_test",
+            "--icp-role",
+            "installateur",
+        ]
+    )
+    out = json.loads(capsys.readouterr().out)
+    assert rc in (0, 1)
+    assert out["marketing"] == "HITL_LIVE"
+    if "live" in out:
+        assert out["live"] is False
+    else:
+        assert "error" in out

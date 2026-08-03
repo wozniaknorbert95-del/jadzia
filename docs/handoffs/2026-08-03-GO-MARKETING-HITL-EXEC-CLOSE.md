@@ -18,11 +18,14 @@
 
 **Prod tip:** `2f68b64` · backup `jadzia-pre-rev-demand-01-20260803-151102.db`
 
-## P0 today (Dowódca — operational, not blocked)
+## P0 live (PARKED — direction correction 2026-08-03)
 
-1. TT publish `tt_w32_install_01` — `set-now/cap_tt_w32_01.txt`
-2. FB hunt 1× — `FB-HUNT-DAILY.md`
-3. LEDGER row per action
+> **Do not treat as next.** TOOL FIRST. Live P0 unlock only after tool 100% + Dowódca.  
+> Rule: `.cursor/rules/demand-os-tool-first.mdc`
+
+1. ~~TT publish `tt_w32_install_01`~~ PARKED  
+2. ~~FB hunt 1×~~ PARKED  
+3. Publish only test→delete if tool proof needs it
 
 ## Rollback GO
 

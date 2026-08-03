@@ -10,6 +10,7 @@ from pathlib import Path
 from typing import Any, Dict, List, Optional
 
 from agent.demand_os.content_calendar import DEFAULT_CALENDAR_PATH
+from agent.demand_os.marketing_mode import resolve_marketing_mode
 from agent.demand_os.observability import money_check
 
 
@@ -53,7 +54,7 @@ REQUIRED_MODULES = [
     "docs/ops/demand-os/OS-TARGET-COHERENCE.md",
 ]
 
-TIP_FILES_PARKED = [
+TIP_FILES = [
     "docs/ops/demand-os/STATE.md",
     "docs/ops/marketing/OPERATOR-TODAY.md",
 ]
@@ -72,6 +73,68 @@ class DoctorReport:
 
 def _check(name: str, ok: bool, detail: str = "") -> Dict[str, Any]:
     return {"name": name, "ok": ok, "detail": detail}
+
+
+def _is_tool_first_state(text: str) -> bool:
+    """TOOL FIRST era: live cadence PARKED while tool residual is active."""
+    upper = text.upper()
+    has_tool = "TOOL FIRST" in upper or "TOOL 100%" in upper
+    has_park = "PARKED" in upper and (
+        "LIVE P0" in upper
+        or "4-P0" in upper
+        or "CADENCE PARKED" in upper
+        or "PUBLISH CADENCE PARKED" in upper
+        or "LIVE PUBLISH CADENCE PARKED" in upper
+    )
+    return has_tool and has_park
+
+
+def _state_marketing_pair(text: str) -> tuple[str, str] | None:
+    """Return coherent (marketing, gate) markers from STATE tip text."""
+    has_hitl = "HITL_LIVE" in text
+    has_parked_mode = "PARKED_LAST" in text
+    has_ready = "READY" in text
+    has_blocked = "BLOCKED" in text
+
+    # Reject crossed historical pairs (HITL_LIVE+BLOCKED without READY, etc.)
+    if has_hitl and has_ready and not has_blocked:
+        return "HITL_LIVE", "READY"
+    if has_parked_mode and has_blocked and not has_ready:
+        return "PARKED_LAST", "BLOCKED"
+    if has_hitl and has_blocked and not has_ready:
+        return None
+    if has_parked_mode and has_ready and not has_blocked:
+        return None
+    if _is_tool_first_state(text):
+        return "HITL_LIVE", "PARKED"
+    return None
+
+
+def _tip_ok(*, rel: str, text: str) -> tuple[bool, str]:
+    if rel.endswith("STATE.md"):
+        if _is_tool_first_state(text):
+            return True, "TOOL_FIRST/PARKED"
+        pair = _state_marketing_pair(text)
+        ok = pair is not None and (
+            "TOOL-INTEGRITY-SEAL" in text or "TOOL FIRST" in text.upper()
+        )
+        detail = f"{pair[0]}/{pair[1]}" if ok and pair else "state tip mismatch"
+        return ok, detail
+
+    if rel.endswith("OPERATOR-TODAY.md"):
+        lower = text.lower()
+        has_order = "tool 100%" in lower or "tool first" in lower
+        has_focus = (
+            "tool-integrity seal" in lower
+            or "execution freeze" in lower
+            or "live p0" in lower
+            or "parked" in lower
+        )
+        ok = has_order and has_focus
+        detail = "tool-first seal" if ok else "operator tip mismatch"
+        return ok, detail
+
+    return False, "missing"
 
 
 def run_doctor(*, root: Optional[Path] = None) -> DoctorReport:
@@ -150,14 +213,14 @@ def run_doctor(*, root: Optional[Path] = None) -> DoctorReport:
         checks.append(_check("money_check", False, str(exc)[:200]))
         errors.append(f"money_check: {exc}")
 
-    # Marketing PARKED_LAST in tip files
-    for rel in TIP_FILES_PARKED:
+    # Marketing tips must be semantically coherent with current mode
+    for rel in TIP_FILES:
         path = repo / rel
         text = path.read_text(encoding="utf-8") if path.is_file() else ""
-        tip_ok = path.is_file() and "PARKED_LAST" in text
-        checks.append(_check(f"tip:{rel}", tip_ok, "PARKED_LAST" if tip_ok else "missing"))
+        tip_ok, detail = _tip_ok(rel=rel, text=text)
+        checks.append(_check(f"tip:{rel}", path.is_file() and tip_ok, detail if path.is_file() else "missing"))
         if not tip_ok:
-            errors.append(f"tip missing PARKED_LAST: {rel}")
+            errors.append(f"tip mismatch for marketing mode: {rel}")
 
     # No organic ACTIVE drift in STATE
     state = repo / "docs/ops/demand-os/STATE.md"
@@ -265,4 +328,15 @@ def run_doctor(*, root: Optional[Path] = None) -> DoctorReport:
         errors.append(f"desk_contract: {exc}")
 
     ok = not errors and all(c["ok"] for c in checks)
-    return DoctorReport(ok=ok, checks=checks, errors=errors, marketing="PARKED_LAST")
+    state_text = (
+        (repo / "docs/ops/demand-os/STATE.md").read_text(encoding="utf-8")
+        if (repo / "docs/ops/demand-os/STATE.md").is_file()
+        else ""
+    )
+    # Report env/mode truth; TOOL FIRST tip may say PARKED cadence while env=GO → HITL_LIVE
+    marketing = resolve_marketing_mode()
+    if marketing == "PARKED_LAST":
+        state_pair = _state_marketing_pair(state_text)
+        if state_pair and state_pair[0] == "PARKED_LAST":
+            marketing = "PARKED_LAST"
+    return DoctorReport(ok=ok, checks=checks, errors=errors, marketing=marketing)

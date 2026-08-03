@@ -1,24 +1,29 @@
 ---
-status: "[ETAP 5f MASTER TODO · marketing PARKED_LAST]"
+status: "[TOOL 100% SEALED · live P0 PARKED]"
 title: "Marketing OS — START TUTAJ"
-updated: "2026-08-02"
+updated: "2026-08-03"
 ---
 
 # START TUTAJ
 
-**Kolejność Dowódcy:** tool 100% = **backend + dashboard UX/UI 100% per surface** → dopiero potem marketing.
+**Kolejność Dowódcy (twarda):** tool 100% → dopiero potem live marketing.  
+Tool = **SEALED**. Live P0 = **PARKED** until Twój unlock.
 
 **Fazy:** [`../demand-os/PROGRAM-PHASES.md`](../demand-os/PROGRAM-PHASES.md)  
-**Teraz:** **Etap 5f** — MASTER TODO · [`../demand-os/MASTER-TODO-5F.md`](../demand-os/MASTER-TODO-5F.md)
+**Teraz:** **TOOL 100% SEALED** · await unlock · live `4-P0-*` PARKED  
+**Rule:** [`.cursor/rules/demand-os-tool-first.mdc`](../../../.cursor/rules/demand-os-tool-first.mdc)  
+**SEAL:** [`../../handoffs/2026-08-03-DEMAND-OS-TOOL-100-SEAL-CLOSE.md`](../../handoffs/2026-08-03-DEMAND-OS-TOOL-100-SEAL-CLOSE.md)
 
 ## Kolejka
 
 1. ~~Backend + contract~~ SEALED  
 2. ~~Dashboard build + IA + gap-close~~ 5c–5e DONE  
-3. **Dashboard 100% (Etap 5f)** ← ACTIVE · `5F-P0-01`  
-4. Dowódca §8 prod → Hard DoD 15/15  
-5. Marketing HITL — **PARKED_LAST**  
+3. ~~Dashboard 100% (Etap 5f)~~ SEALED · Hard DoD 15/15  
+4. ~~Marketing gate env GO~~ prod READY (env)  
+5. ~~Tool-integrity seal~~ PASS (historical)  
+6. ~~Tool 100% residual~~ **SEALED**  
+7. Live P0 TT/FB/blog — PARKED until Dowódca unlock  
 
 ## STOP
 
-Live publish · Ads · VPS · marketing przed SEAL 5f
+Live publish without unlock · Ads · fake ledger · agent push to publish

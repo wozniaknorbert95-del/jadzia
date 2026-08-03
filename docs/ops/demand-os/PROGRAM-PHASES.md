@@ -1,9 +1,8 @@
 ---
-status: "[ACTIVE · PROGRAM SoT]"
-updated: "2026-08-02"
+status: "[ACTIVE · TOOL 100% SEALED · live P0 PARKED]"
+updated: "2026-08-03"
 gate: "DEMAND-OS-MARKETING-4-00"
 master_todo: "docs/ops/demand-os/MASTER-TODO-4.md"
-status: "PREP CLOSE · GO pending"
 sot_tool: "docs/ops/SYSTEM-FIRM-OPERATING-SYSTEM-TARGET.md"
 desk_design: "docs/ops/demand-os/DEMAND-CONTROL-PANEL-DESIGN.md"
 desk_contract: "docs/ops/demand-os/DESK-CONTRACT.md"
@@ -12,7 +11,8 @@ desk_contract: "docs/ops/demand-os/DESK-CONTRACT.md"
 # Demand OS — kolejność (Dowódca — kanon)
 
 **Tool 100% = maszyna + Biuro Popytu + każda zakładka Commander wypełniona.**  
-Marketing dopiero po SEAL + GO MARKETING HITL.
+**Live marketing dopiero po tool 100% + jawnym unlock Dowódcy.**  
+Publikacje wcześniej = tylko test → delete.
 
 ```text
 ETAP 1   TOOL backend                    ← SEALED
@@ -23,17 +23,19 @@ ETAP 5c  IA NAV                          ← DONE
 ETAP 5d  IA SEAL                         ← DONE
 ETAP 5e  gap-close (boot, Praca-first)   ← DONE
 ETAP 5f  MASTER TODO dashboard 100%      ← SEALED 2026-08-03
-ETAP 4   MARKETING live                  ← GO LIVE 2026-08-03
+ETAP 4   MARKETING                       ← env GO possible · live cadence PARKED
+         TOOL 100%                       ← SEALED 2026-08-03
 ```
 
-## Etap 4 — Marketing HITL (**PREP done · GO pending**)
+## Etap 4 — Marketing HITL (**TOOL 100% SEALED · live P0 PARKED**)
 
 **SoT:** [`MASTER-TODO-4.md`](./MASTER-TODO-4.md)  
-**GO checklist:** [`GO-MARKETING-HITL-CHECKLIST.md`](./GO-MARKETING-HITL-CHECKLIST.md)  
-**Prep close:** [`2026-08-03-DEMAND-MARKETING-4-PREP-CLOSE.md`](../handoffs/2026-08-03-DEMAND-MARKETING-4-PREP-CLOSE.md)
+**Rule:** [`.cursor/rules/demand-os-tool-first.mdc`](../../../.cursor/rules/demand-os-tool-first.mdc)  
+**SEAL:** [`2026-08-03-DEMAND-OS-TOOL-100-SEAL-CLOSE.md`](../handoffs/2026-08-03-DEMAND-OS-TOOL-100-SEAL-CLOSE.md)
 
-- go_day_ready **100%** · env switch `DEMAND_OS_MARKETING_HITL=GO`
-- **Blocked:** live publish until Founder GO
+- Tool residual **SEALED** · doctor/footer/waves/connectors honest
+- Live `4-P0-01/02/03` **PARKED** until Dowódca unlock
+- `go_day_ready` = artifact score ≠ seal
 - Ads **PARK cash** unchanged
 
 ## Etap 5f — SEALED (archiwum)

@@ -13,6 +13,7 @@ globs:
 - Any schema/data changes must be reflected in module docs before code changes.
 - Deploy is manual-only by Dowódca (Zasada 11).
 - End each meaningful session with a handoff note in `docs/handoffs/`.
+- **Demand OS TOOL FIRST (HARD):** see alwaysApply rule `demand-os-tool-first.mdc`. Live `4-P0-*` PARKED. Publish only test→delete until Dowódca unlock. Stale handoffs that say “Founder publish” lose to `current-task.md` / `STATE.md` / `MASTER-TODO-4.md`.
 
 ## CORE slash skills (Stage 2)
 

@@ -1,12 +1,17 @@
 ---
-status: "[PASS · HITL-READY DRY · marketing PARKED_LAST]"
-updated: "2026-08-02"
+status: "[PASS · HITL-READY DRY · HISTORICAL PRE-GO SNAPSHOT]"
+updated: "2026-08-03"
 gate: "DEMAND-OS-HITL-READY-00"
+superseded_by: "docs/handoffs/2026-08-03-GO-MARKETING-HITL-EXEC-CLOSE.md"
 ---
 
 # HITL-READY tool (dry-only)
 
 Maszyna gotowa na rytm Foundera — **bez** autonomicznego publish.
+
+## Historical note
+
+Ten dokument opisuje **dry gate pre-GO**. Aktualny pointer = `MASTER-TODO-4.md` **`4-TOOL-01` TOOL FIRST**; live P0 **PARKED**. Rule: `.cursor/rules/demand-os-tool-first.mdc`.
 
 ## DoD (PASS)
 
@@ -20,8 +25,8 @@ Maszyna gotowa na rytm Foundera — **bez** autonomicznego publish.
 
 ## Backend Trap (zakaz)
 
-Po tym PASS **nie** otwieraj kolejnego „tool polish” gate.  
-Jedyny next €: Founder `GO MARKETING HITL`.
+Po tym PASS historycznie następował Founder `GO MARKETING HITL`.  
+Po GO / seal: **nie** skacz do live P0. Najpierw tool 100% residual; publish tylko test→delete; live P0 po jawnym unlock Dowódcy.
 
 ## STOP
 

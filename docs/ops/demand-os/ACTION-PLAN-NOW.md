@@ -1,8 +1,8 @@
 ---
-status: "[ACTIVE · ETAP 5f]"
-updated: "2026-08-02"
-gate: "DEMAND-OS-DESK-5F-00"
-master_todo: "docs/ops/demand-os/MASTER-TODO-5F.md"
+status: "[ACTIVE · TOOL 100% FIRST]"
+updated: "2026-08-03"
+gate: "DEMAND-OS-MARKETING-4-00"
+master_todo: "docs/ops/demand-os/MASTER-TODO-4.md"
 workflow: ".agents/workflows/demand-os-master-loop.md"
 ---
 
@@ -10,23 +10,23 @@ workflow: ".agents/workflows/demand-os-master-loop.md"
 
 ## Active (jedyna prawda)
 
-**Etap 5f — Commander Dashboard 100%**
+**Etap 4 — TOOL 100% residual** (`4-TOOL-01`)
 
-Master backlog: [`MASTER-TODO-5F.md`](./MASTER-TODO-5F.md)
+Master backlog: [`MASTER-TODO-4.md`](./MASTER-TODO-4.md)  
+Rule: `.cursor/rules/demand-os-tool-first.mdc`
 
 | Priorytet | Item | Status |
 |-----------|------|--------|
-| **NOW** | 5F-P0-01 VHQ lazy/off-DOM | open |
-| P0 | 5F-P0-02 … P0-06 | open |
-| P1 | Analityka · Agenci · Marketing · STL | open |
-| P2 | §8 Dowódca · SEAL | human / open |
+| **NOW** | 4-TOOL-01 tool residual / seal | in_progress |
+| TOOL | 4-TOOL-02 test publish→delete (if needed) | open |
+| PARKED | live 4-P0-01/02/03 | blocked |
 
 Loop: `/demand-os-master-loop`
 
 ## Done (nie cofać)
 
-5e · 5d · 5c · 5b · contract SEALED · desk-dash06 @ b6c0382
+5f SEALED · desk-dash08 · contract v2.1.1 · GO env ceremony (cadence PARKED)
 
 ## PARKED
 
-Marketing HITL · Ads · VPS bez GO
+Live TT/FB/blog · Ads · VPS bez GO · Founder publish push

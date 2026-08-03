@@ -120,7 +120,8 @@ def test_sync_hot_leads_dry_run(tmp_path: Path):
     assert out["dry_run"] is True
 
 
-def test_wave1_agents():
+def test_wave1_agents(monkeypatch):
+    monkeypatch.delenv("DEMAND_OS_MARKETING_HITL", raising=False)
     assert len(WAVE1_ROLES) == 5
     gl = run_agent("growth_lead", action="money_check")
     assert gl["role"] == "growth_lead"

@@ -5127,7 +5127,16 @@ function renderDemandDesk(data) {
   const lrTs = lastReal.ts || "brak";
   const lrKind = lastReal.kind ? ` (${lastReal.kind})` : "";
   deskSetText("desk-last-real", `${lrTs}${lrKind}`);
-  deskSetText("desk-doctor", footer.doctor_ok === true ? "OK" : footer.doctor_ok === false ? "FAIL" : "—");
+  // doctor_ok is FULL doctor only; lightweight never claims OK (false-green guard)
+  var doctorLabel = "—";
+  if (footer.doctor_scope === "full") {
+    doctorLabel = footer.doctor_ok === true ? "OK" : "FAIL";
+  } else if (footer.doctor_files_ok === true) {
+    doctorLabel = "files";
+  } else if (footer.doctor_files_ok === false) {
+    doctorLabel = "FAIL";
+  }
+  deskSetText("desk-doctor", doctorLabel);
   deskSetText("desk-gate", data.gate || "—");
   deskSetText("desk-contract-version", data.contract_version || footer.contract_version || "—");
 

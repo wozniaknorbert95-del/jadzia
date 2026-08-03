@@ -78,10 +78,13 @@ def build_demand_os_status(
     )
     screen_dict["hitl_queue"] = screen_dict.get("hitl_queue") or []
 
-    doctor_ok = lightweight_doctor_ok()
+    files_ok = lightweight_doctor_ok()
+    doctor_scope = "lightweight"
+    doctor_ok = False
     if with_full_doctor:
         from agent.demand_os.doctor import run_doctor
 
+        doctor_scope = "full"
         doctor_ok = run_doctor().ok
 
     hitl_gate = marketing_hitl_gate(marketing=marketing)
@@ -129,6 +132,8 @@ def build_demand_os_status(
             data_mode=dm["data_mode"],
             last_real=dm["last_real_event"],
             doctor_ok=doctor_ok,
+            doctor_scope=doctor_scope,
+            doctor_files_ok=files_ok,
         ),
         "cash_warning": (
             "PARKED - EUR nie powstaje z Desk dopoki brak GO MARKETING HITL"

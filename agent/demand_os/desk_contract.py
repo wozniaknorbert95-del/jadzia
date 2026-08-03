@@ -435,13 +435,32 @@ def build_desk_footer(
     data_mode: str,
     last_real: Dict[str, Any],
     doctor_ok: Optional[bool] = None,
+    doctor_scope: str = "lightweight",
+    doctor_files_ok: Optional[bool] = None,
 ) -> Dict[str, Any]:
+    """Footer honesty: doctor_ok means FULL doctor only when doctor_scope=full.
+
+    Lightweight path never claims PASS via doctor_ok (avoids false green).
+    """
+    scope = (doctor_scope or "lightweight").strip().lower()
+    files_ok = (
+        bool(doctor_files_ok)
+        if doctor_files_ok is not None
+        else lightweight_doctor_ok()
+    )
+    if scope == "full":
+        ok_val = bool(doctor_ok) if doctor_ok is not None else False
+    else:
+        # Never advertise full PASS from a files-only slice
+        ok_val = False
     return {
         "gate": gate,
         "data_mode": data_mode,
         "last_real_event": last_real,
         "stale_warn": bool((last_real or {}).get("stale_warn")),
-        "doctor_ok": bool(doctor_ok) if doctor_ok is not None else lightweight_doctor_ok(),
+        "doctor_ok": ok_val,
+        "doctor_scope": scope,
+        "doctor_files_ok": files_ok,
         "operator": "Dowódca",
         "contract_version": CONTRACT_VERSION,
     }

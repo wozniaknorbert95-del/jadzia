@@ -1,12 +1,15 @@
 ---
-status: "[ACTIVE · ETAP 5 UI HANDOFF]"
-updated: "2026-08-02"
+status: "[SEALED · ETAP 5f UI · historical handoff]"
+updated: "2026-08-03"
 design: "DEMAND-CONTROL-PANEL-DESIGN.md"
 contract: "DESK-CONTRACT.md"
 surface: "commander-ui #view-demand-desk"
 ---
 
-# Biuro Popytu — UI handoff (implementacja)
+# Biuro Popytu — UI handoff (historical)
+
+> **ACTIVE program pointer:** [`MASTER-TODO-4.md`](./MASTER-TODO-4.md) → `4-TOOL-01` TOOL FIRST.  
+> Live P0 PARKED. Rule: `.cursor/rules/demand-os-tool-first.mdc`.
 
 ## Powierzchnia
 
@@ -14,10 +17,17 @@ surface: "commander-ui #view-demand-desk"
 - **Nav desktop:** Biuro Popytu · Kolejka (`#view-home`) · Analityka · Agenci · Ustawienia · Więcej
 - **Nav mobile:** Biuro Popytu · Kolejka · Analityka · Agenci · Więcej
 - **Więcej:** VHQ · Marketing legacy · Audyt · Ustawienia · OS · VCMS
-- **API:** `GET /api/v1/commander/demand-os/status`
+- **API:** `GET /api/v1/commander/demand-os/status` (full doctor in footer)
 - **Deep link:** `?view=demand-desk` (opcjonalny; default bez parametru)
-- **Cache:** `desk-dash06`
-- **Master TODO:** [`MASTER-TODO-5F.md`](./MASTER-TODO-5F.md) · active `5F-P0-01`
+- **Cache:** `desk-dash08`
+- **Master TODO (active):** [`MASTER-TODO-4.md`](./MASTER-TODO-4.md) · `4-TOOL-01`
+- **UI SEAL archive:** [`MASTER-TODO-5F.md`](./MASTER-TODO-5F.md) · SEALED (not active)
+
+## Footer honesty
+
+- `footer.doctor_scope`: `full` (API) | `lightweight` (local builder default)
+- `footer.doctor_ok`: **true only when scope=full and full doctor PASS**
+- `footer.doctor_files_ok`: files-only slice (never shown as OK in UI)
 
 ## Komponenty (reuse tokens)
 
@@ -30,20 +40,6 @@ surface: "commander-ui #view-demand-desk"
 | Footer | `.demand-desk-footer` | data_mode, doctor, gate |
 | Actions | `.buttonish` min 44px | max 4 akcje |
 
-## Stany UI
-
-| Stan | Trigger | UX |
-|------|---------|-----|
-| loading | fetch start | skeleton `.state-empty` |
-| ok | 200 + render | pełny layout |
-| BRAK_POŁĄCZENIA | network/500 | banner + retry |
-| scope_denied | 403 | banner brak scope |
-| PARKED | `state=PARKED` | badge + cash_warning |
-| FIXTURE/MIXED | `data_mode` | `.demand-desk--fixture` root |
-| parked_stop | `robota_dnia.code` | czerwony akcent A0 |
-| stale | `footer.stale_warn` | hint stopka |
-| empty_hitl/hunt/e | puste tablice | hint PL |
-
 ## Akcje (dry only)
 
 1. HITL GOTOWY/BLOKADA → `POST …/hitl/decision`
@@ -51,25 +47,8 @@ surface: "commander-ui #view-demand-desk"
 3. Ledger Pon → `POST …/ledger/ensure-today`
 4. Hunt dry → `POST …/hunt/dry`
 
-**Zakaz:** one-click publish · reuse marketing publish handlers.
+**Zakaz:** one-click publish · live TT/FB/blog · Ads.
 
-## RBAC
+## Closed
 
-- `viewer`: read-only (disable act buttons)
-- `delegat`/`dowodca`: act enabled
-- 403 → toast backup
-
-## Test IDs
-
-Kontrakt: [`tests/unit/test_demand_desk_ui_contracts.py`](../../tests/unit/test_demand_desk_ui_contracts.py)
-
-## Known gaps Etap 5b — agent CLOSED (2026-08-02)
-
-Spec: [`2026-08-02-demand-desk-hardening-design.md`](../../superpowers/specs/2026-08-02-demand-desk-hardening-design.md)
-
-- ~~Hard DoD 12/15~~ → **14/15 agent PASS** (pytest 75 · E2E flow static)
-- ~~Prod data EMPTY~~ → sanitized pack + `demand_os_sync_set_now.sh` + `.env.example`
-- ~~Layout AB/CD~~ → `#desk-ab-row` / `#desk-cd-row` @768+
-- ~~E2E~~ → `tests/e2e/test_demand_desk_flow.py` + phone checklist
-
-**Open (Dowódca only):** design §8 prod smoke · deploy GO · Hard DoD #12
+§8 prod smoke · Hard DoD 15/15 — [`2026-08-03-DEMAND-DESK-5F-CLOSE.md`](../handoffs/2026-08-03-DEMAND-DESK-5F-CLOSE.md)

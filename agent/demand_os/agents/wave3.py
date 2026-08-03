@@ -1,14 +1,19 @@
-"""Wave3 shells — Blog ICP + CRE Wizard (OS §J). Ship live PARKED."""
+"""Wave3 shells — Blog ICP + CRE Wizard (OS §J). Live ship stays false until unlock."""
 
 from __future__ import annotations
 
 from typing import Any, Dict
 
 from agent.demand_os.blog_pipeline import list_drafts, run_pipeline
+from agent.demand_os.marketing_mode import resolve_marketing_mode
 from agent.demand_os.utm_lock import build_wizard_utm
 from agent.demand_os.widget_leads import list_hot_leads
 
 WAVE3_ROLES = frozenset({"blog", "cre"})
+
+
+def _mode() -> str:
+    return resolve_marketing_mode()
 
 
 def run_wave3(role: str, *, action: str = "status", **kwargs: Any) -> Dict[str, Any]:
@@ -39,7 +44,7 @@ def _blog(action: str, **kwargs: Any) -> Dict[str, Any]:
             "result": result,
             "live_ship": False,
             "kpi": "organic→starts",
-            "marketing": "PARKED_LAST",
+            "marketing": _mode(),
             "wave": 3,
         }
     drafts = list_drafts()
@@ -61,7 +66,7 @@ def _blog(action: str, **kwargs: Any) -> Dict[str, Any]:
             "cli": "tools/demand_os_f4.py · agents --role blog --action pipeline",
         },
         "kpi": "organic→starts",
-        "marketing": "PARKED_LAST",
+        "marketing": _mode(),
         "wave": 3,
     }
 
@@ -78,6 +83,6 @@ def _cre(action: str, **kwargs: Any) -> Dict[str, Any]:
             "cli": "hub design-check",
         },
         "kpi": "Wizard starts from hot",
-        "marketing": "PARKED_LAST",
+        "marketing": _mode(),
         "wave": 3,
     }

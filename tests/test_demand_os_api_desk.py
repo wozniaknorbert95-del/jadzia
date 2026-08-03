@@ -64,6 +64,17 @@ def test_money_check_read(client):
     assert "money_check" in r.json()
 
 
+def test_money_check_read_reflects_go_env(client, monkeypatch):
+    monkeypatch.setenv("DEMAND_OS_MARKETING_HITL", "GO")
+    with jwt_env():
+        r = client.get(
+            "/api/v1/commander/demand-os/money-check",
+            headers=_auth_headers("viewer"),
+        )
+    assert r.status_code == 200
+    assert r.json()["marketing"] == "HITL_LIVE"
+
+
 def test_hitl_decision_viewer_forbidden(client):
     with jwt_env():
         r = client.post(

@@ -14,7 +14,7 @@ CLI: `python tools/demand_os_hub.py status` (= ten sam builder).
 
 ## contract_version
 
-`v2.1.1` — parity hub/API · A0/F · footer.doctor_ok · last_real honesty · go_ready w diagnostics.
+`v2.1.1` — parity hub/API · A0/F · footer doctor honesty · last_real honesty · go_ready w diagnostics.
 
 ## Schema A0–F + stopka
 
@@ -38,7 +38,9 @@ CLI: `python tools/demand_os_hub.py status` (= ten sam builder).
 | E | `screen.top_wizard_assets` | max 5 · puste = `[]` + note |
 | F | `week_calendar` | 5 dni Pon–Pt |
 | F | `shells_line` | **1 linia** (nie 5-role grid) |
-| stopka | `footer.doctor_ok` | **bool** (lightweight) |
+| stopka | `footer.doctor_scope` | `full` \| `lightweight` |
+| stopka | `footer.doctor_ok` | **true only if scope=full and full doctor PASS** (lightweight always false) |
+| stopka | `footer.doctor_files_ok` | bool — files-only slice (never shown as OK alone) |
 | stopka | `footer.stale_warn` | bool |
 | stopka | `data_mode` | EMPTY\|FIXTURE\|REAL\|MIXED |
 | stopka | `last_real_event` | tylko REAL hits (fixture nie ustawia) |

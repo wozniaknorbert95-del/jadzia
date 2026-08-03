@@ -2,8 +2,8 @@
 status: "[ACTIVE]"
 title: "Jadzia-Core Brain (Canonical)"
 owner: "Norbert Wozniak"
-updated: "2026-08-02"
-readiness_overall: "Etap 5f MASTER TODO ACTIVE (dashboard 100% per surface); 14/15 Hard DoD; Dowódca §8 prod pending; marketing PARKED_LAST"
+updated: "2026-08-03"
+readiness_overall: "Etap 5f SEALED; Hard DoD 15/15; TOOL 100% SEALED; live P0 PARKED; awaiting Dowódca unlock"
 ---
 
 ## 1) Misja modułu
@@ -115,9 +115,9 @@ Pełne kontrakty: `flexgrafik-meta/docs/core/integration-contracts.md`
 - **DI scorecard:** `docs/ops/VHQ-DECISION-INSTRUMENT-SCORECARD.md` (S3–S6+S8 DONE; S7 parked)
 - **Lanes appendix:** `docs/ops/PROGRAM-LANES-SOT.md` (ściąga — nie plan)
 - **Demand OS / Biuro Popytu (program faz):** `docs/ops/demand-os/PROGRAM-PHASES.md`
-- **Etap 5f MASTER TODO (ACTIVE):** `docs/ops/demand-os/MASTER-TODO-5F.md` · loop `.agents/workflows/demand-os-master-loop.md` · design `DEMAND-CONTROL-PANEL-DESIGN.md` · API `DESK-CONTRACT.md`
+- **Etap 5f MASTER TODO:** `docs/ops/demand-os/MASTER-TODO-5F.md` · SEALED 2026-08-03 · design `DEMAND-CONTROL-PANEL-DESIGN.md` · API `DESK-CONTRACT.md`
 - **Primary Commander surface:** `#view-demand-desk` (Biuro Popytu)
-- **Marketing HITL:** PARKED_LAST — po finalnym szlifie tool+UX/UI
+- **Marketing HITL:** TOOL 100% SEALED · live `4-P0-*` PARKED · unlock = Dowódca only · rule `.cursor/rules/demand-os-tool-first.mdc`
 - **OS TARGET (Demand Machine):** `docs/ops/SYSTEM-FIRM-OPERATING-SYSTEM-TARGET.md`
 - **Tool coherence:** `docs/ops/demand-os/OS-TARGET-COHERENCE.md` (Etap 1 SEALED)
 - **Module spec (COI):** `flexgrafik-meta/docs/core/modules/module-jadzia-core.md`
@@ -125,7 +125,7 @@ Pełne kontrakty: `flexgrafik-meta/docs/core/integration-contracts.md`
 - **Globalne zasady:** `flexgrafik-meta/docs/core/global-rules.md` (VCMS = pointer)
 - **Workflow:** `.agents/workflows/README.md` → start `/vibe-init`
 - **PRD:** `docs/PRD-core.md`
-- **Prod tip:** `0264f5d` docs / runtime `2623ae2` / cache `vhq-w65a`
+- **Prod tip:** `2f68b64` (GO LIVE) · prior UI close `5713cbc` / cache `desk-dash08`
 - **Handoffs LIVE:** `docs/handoffs/` (≤15; cold → `docs/archive/handoffs/`)
 
 ## 8) Workflow Framework (v2.2)

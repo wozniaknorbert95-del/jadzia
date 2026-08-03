@@ -1,17 +1,18 @@
 ---
 gate: DEMAND-OS-MARKETING-4-00
-status: ACTIVE · prep · awaiting GO
+status: ACTIVE · TOOL 100% SEALED · live P0 PARKED
 updated: "2026-08-03"
 owner: agent-orchestrator
-human_gate: "Founder GO MARKETING HITL"
-prerequisite: "Etap 5f SEALED · Hard DoD 15/15"
-close_target: "marketing_hitl_gate READY · first HITL publish logged"
+human_gate: "Dowódca unlock live marketing (separate ceremony)"
+prerequisite: "Etap 5f SEALED · Hard DoD 15/15 · GO LIVE done · TOOL 100% SEAL"
+close_target: "awaiting Dowódca unlock for live 4-P0-*"
 ---
 
-# MASTER TODO — Etap 4 (Marketing HITL live)
+# MASTER TODO — Etap 4 (Marketing HITL · TOOL FIRST)
 
-> **Jedyny aktywny backlog po 5f SEAL.** Marketing **nie** startuje bez Founder `GO MARKETING HITL`.  
-> Domykaj: **PREP → GO ceremony → P0 first publish → SEAL**.
+> **Kierunek Dowódcy (2026-08-03):** najpierw **narzędzie 100%**.  
+> Jakiekolwiek publikacje **tylko testowo** (proof → delete). Live `4-P0-*` PARKED.  
+> Rule: [`.cursor/rules/demand-os-tool-first.mdc`](../../../.cursor/rules/demand-os-tool-first.mdc)
 
 ## Hierarchia SoT
 
@@ -21,17 +22,19 @@ close_target: "marketing_hitl_gate READY · first HITL publish logged"
 | 2 | [`GO-MARKETING-HITL-CHECKLIST.md`](./GO-MARKETING-HITL-CHECKLIST.md) | Ceremonia GO (human) |
 | 3 | [`STATE.md`](./STATE.md) | Faza · prod_tip |
 | 4 | [`.cursor/current-task.md`](../../../.cursor/current-task.md) | Jedno aktywne zadanie |
-| 5 | [`ORGANIC-AGENCY-SPRINT-14D.md`](./ORGANIC-AGENCY-SPRINT-14D.md) | Rytm 14d organic |
-| 6 | [`HITL-READY-TOOL.md`](./HITL-READY-TOOL.md) | DoD maszyny dry |
+| 5 | [`P0-HITL-PREFLIGHT.md`](./P0-HITL-PREFLIGHT.md) | Pakiet wejścia do P0 |
+| 6 | [`4-P0-01-TT-HITL-EXECUTION-PACKET.md`](./4-P0-01-TT-HITL-EXECUTION-PACKET.md) | Packet operatora TT |
+| 7 | [`ORGANIC-AGENCY-SPRINT-14D.md`](./ORGANIC-AGENCY-SPRINT-14D.md) | Rytm 14d organic |
+| 8 | [`HITL-READY-TOOL.md`](./HITL-READY-TOOL.md) | DoD maszyny dry |
 
 ## Stan wejścia (post 5f SEAL 2026-08-03)
 
 | Pole | Wartość |
 |------|---------|
 | 5f | SEALED · Hard DoD 15/15 |
-| prod | `5713cbc` · cache `desk-dash08` |
-| go_day_ready | **100%** (tool side) |
-| marketing_hitl_gate | **BLOCKED** (default) |
+| prod | `2f68b64` · gate READY · `5713cbc` desk-dash08 UI close |
+| go_day_ready | artifact score (≠ Tool SEAL) |
+| marketing_hitl_gate | env-dependent · live cadence **PARKED** |
 | GO switch | `DEMAND_OS_MARKETING_HITL=GO` on VPS (env-only) |
 | Ads | **PARK cash** · €0 spend |
 
@@ -55,13 +58,20 @@ Legenda: `open` · `in_progress` · `done` · `blocked` · `ready_for_human`
 | **4-GO-02** | VPS deploy `2f68b64` + env GO | Ops | `done` | EXEC-CLOSE handoff |
 | **4-GO-03** | Verify prod gate READY | Agent | `done` | VPS + browser prod |
 
-### P0 — first HITL actions (post-GO)
+### TOOL — active now (before any live publish)
 
 | ID | Zadanie | Owner | Status | DoD |
 |----|---------|-------|--------|-----|
-| **4-P0-01** | TT publish `tt_w32_install_01` HITL | Dowódca+Agent | `open` | Val PASS · ledger row · no dry |
-| **4-P0-02** | FB hunt dry→live comment #1 | Dowódca | `open` | ENGAGE-LOG · allowlist |
-| **4-P0-03** | Blog ship `blog_w31_install_bus50m` | Dowódca | `open` | BLOG-HITL-SHIP checklist |
+| **4-TOOL-01** | Demand OS tool 100% residual | Agent | `done` | doctor tip TOOL_FIRST · footer honesty · waves mode · connectors · verify pack |
+| **4-TOOL-02** | Test publish only if tool needs proof | Agent | `done` | dry gate path + [`4-TOOL-02-TEST-PUBLISH.md`](./4-TOOL-02-TEST-PUBLISH.md) · no live SEAL |
+
+### P0 — live HITL (PARKED until tool 100% + Dowódca unlock)
+
+| ID | Zadanie | Owner | Status | DoD |
+|----|---------|-------|--------|-----|
+| **4-P0-01** | TT publish `tt_w32_install_01` HITL | Dowódca+Agent | `blocked` | PARKED · not next |
+| **4-P0-02** | FB hunt dry→live comment #1 | Dowódca | `blocked` | PARKED |
+| **4-P0-03** | Blog ship `blog_w31_install_bus50m` | Dowódca | `blocked` | PARKED |
 
 ### P1 — rhythm (week 1 post-GO)
 
@@ -82,27 +92,32 @@ Legenda: `open` · `in_progress` · `done` · `blocked` · `ready_for_human`
 ## Aktywne zadanie (pointer)
 
 ```
-CURRENT: 4-P0-01 (TT publish tt_w32_install_01)
-NEXT:    4-P0-02 FB hunt · 4-P0-03 blog
-BLOCKED: none (GO LIVE)
+CURRENT: 4-TOOL-100 SEAL (tool residual closed)
+NEXT:    awaiting Dowódca unlock for live 4-P0-* (not auto)
+BLOCKED: live 4-P0-01/02/03 until explicit Dowódca unlock
 ```
 
 ## Verify (agent — każda sesja)
 
+Canonical pack: [`OWNER-VERIFY-COMMANDS.md`](./OWNER-VERIFY-COMMANDS.md)
+
 ```bash
 export DEMAND_OS_SET_NOW=data/demand-os/set-now-sanitized
 python tools/demand_os_hub.py doctor
-python -c "from agent.demand_os.week_ritual import go_day_ready; print(go_day_ready())"
-python -m pytest tests/test_demand_os_marketing_mode.py tests/test_demand_os_desk_contract.py -q
+python -m pytest tests/test_demand_os_tool_first_pointer.py -q
+python -m pytest tests -k demand_os -q
 ```
+
+Note: `go_day_ready` score = artifact metric, **not** Tool 100% SEAL.
 
 ## STOP
 
-- Live publish bez GO
+- Live publish jako „następny krok” przed tool 100%
 - Ads / boost / € spend
 - VPS deploy bez GO
 - Auto-publish Wave3
-- Fałszywy SEAL bez REAL ledger
+- Fałszywy SEAL / fake ledger `publish=Y`
+- Handoffy typu „Founder publish now” — **stale** dopóki brak unlock
 
 ## GO execution (po Founder GO)
 

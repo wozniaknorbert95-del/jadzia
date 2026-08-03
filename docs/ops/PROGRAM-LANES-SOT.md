@@ -32,18 +32,18 @@ demand_os_plan: "docs/ops/DEMAND-OS-ACTION-PLAN.md"
 | C0 | Order Desk SoT discovery | **DONE · ACCEPTED** |
 | C1 | Order Desk thin WV (mirror RO) | **DONE · DEPLOY PASS** `vhq-w68a` |
 | B | Growth / Demand (COM-AI) | **SHIP DEPLOYED** · **TOOL BUILD FIRST** (OS TARGET) · **Ads PARK cash** (F5 parked) |
-| B2 | Demand OS Organic Sprint 14D | **PARKED_LAST** · wait Founder `GO MARKETING HITL` only · **NO VPS** |
-| B3 | Demand OS TOOL residual | **DONE local** · TOOL-PASS.md · pytest 47 · marketing PARKED_LAST |
+| B2 | Demand OS Organic Sprint 14D | **live P0 PARKED** · awaiting unlock · **TOOL 100% SEALED** |
+| B3 | Demand OS TOOL residual | **SEALED** · rule `demand-os-tool-first.mdc` · seal handoff 2026-08-03 |
 | B4 | Demand OS Dashboard tune | **DONE local** · Commander demand-os/status · hub weekly · PROGRAM SEAL |
-| B5 | Demand OS Program Seal | **DONE local / SEALED** · hub doctor PASS · money_narrative Hub · wait `GO MARKETING HITL` |
-| B6 | Demand OS MASTER residual | **DONE local** · sync-db/leads · GA4 wrap · Wave1 agents · doctor · wait `GO MARKETING HITL` |
+| B5 | Demand OS Program Seal | **DONE / SEALED** · hub doctor PASS · tool-integrity seal close |
+| B6 | Demand OS MASTER residual | **DONE local** · sync-db/leads · GA4 wrap · Wave1 agents · doctor · GO already recorded |
 | B7 | Demand OS TOOL-100 | **SUPERSEDED** · overclaim ~91% · see B8 |
-| B8 | Demand OS TOOL COHERENCE (Etap 1) | **SEALED** · COHERENCE PASS · doctor+pytest · marketing PARKED_LAST |
+| B8 | Demand OS TOOL COHERENCE (Etap 1) | **SEALED** · COHERENCE PASS · doctor+pytest · GO LIVE follows separately |
 | B9 | Demand Desk DESIGN v2.1 | **ACCEPTED** · `DEMAND-CONTROL-PANEL-DESIGN.md` |
 | B9b | Desk Contract (Etap 1b) | **SEALED** v2.1.1 · `DESK-CONTRACT.md` |
-| B9c | HITL-READY dry | **PASS** · `HITL-READY-TOOL.md` · park `GO MARKETING HITL` |
-| B11 | Demand Desk HARDENING (Etap 5b) | **DONE agent** · 14/15 · handoff 5B-CLOSE |
-| B12 | Demand Desk 100% (Etap 5f MASTER) | **ACTIVE** · `MASTER-TODO-5F.md` · `/demand-os-master-loop` |
+| B9c | HITL-READY dry | **PASS / historical** · `HITL-READY-TOOL.md` · superseded by GO EXEC |
+| B11 | Demand Desk HARDENING (Etap 5b) | **DONE agent** · historical stage before 5f seal |
+| B12 | Demand Desk 100% (Etap 5f MASTER) | **SEALED** · `MASTER-TODO-5F.md` · close 2026-08-03 |
 | B10 | Strategy + agent config (Etap 3) | **PARKED** do ACCEPT Etapu 2 · fakty, nie zgadywanie |
 | S | Strategy Pack sniper | **ACCEPTED · SOT** · egzekucja config = po Etapie 1 |
 | O | OS TARGET egzekutor | **ACCEPTED · SOT** v5 · Etap 1 = 100% tool coherence |

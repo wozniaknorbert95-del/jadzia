@@ -23,6 +23,8 @@ def _weekday() -> str:
 
 def week_plan(*, day: str = "") -> Dict[str, Any]:
     d = (day or _weekday()).strip().lower()
+    marketing = resolve_marketing_mode()
+    hitl_gate = marketing_hitl_gate(marketing=marketing)
     jobs: Dict[str, Dict[str, Any]] = {
         "pon": {
             "title": "Money Check + episodic",
@@ -50,7 +52,9 @@ def week_plan(*, day: str = "") -> Dict[str, Any]:
         "sob": {"title": "Rest / ledger hygiene", "actions": ["hub ledger"]},
         "nd": {"title": "Rest / ledger hygiene", "actions": ["hub ledger"]},
     }
-    job = jobs.get(d) or jobs["pon"]
+    job = dict(jobs.get(d) or jobs["pon"])
+    if "live" in job and hitl_gate == "READY":
+        job["live"] = "READY after Validator PASS + HITL approval"
     return {
         "ok": True,
         "day": d,
@@ -60,7 +64,8 @@ def week_plan(*, day: str = "") -> Dict[str, Any]:
         "stl": stl_report() if d in ("pon", "pt") else None,
         "brief": build_brief(channel="tiktok") if d == "wt" else None,
         "weekly": weekly_success_report() if d == "pon" else None,
-        "marketing": "PARKED_LAST",
+        "marketing": marketing,
+        "marketing_hitl_gate": hitl_gate,
         "rhythm": "OS §K",
     }
 

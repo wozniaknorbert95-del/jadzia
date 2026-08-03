@@ -11,10 +11,10 @@
 
 | # | Warunek | Definicja operacyjna | SoT / powierzchnia | Status | Dowód | Następny gate |
 |---|---------|----------------------|--------------------|--------|-------|---------------|
-| 1 | Dashboard CEO | Cold open ≤10s; daily &lt;5 min; kolejka + mapa | `/commander/` → Biuro Popytu default | **LIVE** | Etap 5d IA · desk-dash05 · Kolejka secondary | Dowódca §8 pending |
+| 1 | Dashboard CEO | Cold open ≤10s; daily &lt;5 min; kolejka + mapa | `/commander/` → Biuro Popytu default | **LIVE** | Etap 5f CLOSE · desk-dash08 · §8 prod PASS | maintain |
 | 2 | System wiedzy | Indeks SoT + procesy; zero sprzecznych kanonów | KNOW-01 mirrors | **LIVE** | SoT jadzia + meta/VCMS pointers (COI-KNOW-01) | maintain; #8 proces VCMS-link osobno |
-| 3 | AI Sprzedawca | Lead→CTA→Wizard | Demand + widget + A2A lead_hot | LIVE | Demand OS Hub · TOOL PASS local | maintain · marketing HITL PARKED_LAST |
-| 4 | AI Marketing | Hub §M → (later) HITL publish | Demand OS Hub + Commander demand-os/status | LIVE (tool) / PARKED_LAST (publish) | OS TARGET F1–F4+Hub+wires · `TOOL-PASS.md` | no live publish until `GO MARKETING HITL` |
+| 3 | AI Sprzedawca | Lead→CTA→Wizard | Demand + widget + A2A lead_hot | LIVE | Demand OS Hub · TOOL PASS local | maintain · execution freeze until tool-integrity seal PASS |
+| 4 | AI Marketing | Hub §M · tool sealed · later HITL | Demand OS Hub + Commander demand-os/status | TOOL 100% SEALED / live P0 PARKED | `TOOL-100-SEAL-CLOSE` · `demand-os-tool-first.mdc` | Dowódca unlock before live P0 |
 | 5 | AI Project Manager | Orkiestracja HITL | Agent OS | **LIVE** | HITL approve `task-4f6a23d8` → DONE @ os-api 2026-07-18 | maintain; UI Basic Auth Dowódca |
 | 6 | AI Customer Success | Post-sale follow-up | `cs_followup` | **LIVE** | API+UI HITL tip `0a54bc7`; dogfood spawn→Ack | maintain; auto-trigger later |
 | 7 | AI Asystent Zarządu | Brief→HITL→Home | brief_node | LIVE | STRATEGY-HITL + tickets | maintain |
