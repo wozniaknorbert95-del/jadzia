@@ -212,15 +212,16 @@ VHQ · Order Desk · Ads · 15 agentów · QuietForge P0 · org-chart theater ·
 
 ## 8. Acceptance
 
-- [ ] Widzę Robota dnia + HITL + Hunt  
-- [ ] Przy PARKED Desk mówi, że € nie powstaje  
-- [ ] FIXTURE nie da się pomylić z kasą  
-- [ ] Brak 5-role theater  
-- [ ] Dual-cash flaga  
-- [ ] Brain wskazuje ten plik  
-- [ ] Rozumiem: Etap 5 build = tool 100% UI (override REAL week gate)
+- [x] Widzę Robota dnia + HITL + Hunt  
+- [x] Przy PARKED Desk mówi, że € nie powstaje  
+- [x] FIXTURE nie da się pomylić z kasą  
+- [x] Brak 5-role theater  
+- [x] Dual-cash flaga  
+- [x] Brain wskazuje ten plik  
+- [x] Rozumiem: Etap 5 build = tool 100% UI (override REAL week gate)
 
-**ACCEPT:** `ACCEPT DEMAND DESK v2.1` — **ZAREJESTROWANE 2026-08-02**
+**ACCEPT:** `ACCEPT DEMAND DESK v2.1` — **ZAREJESTROWANE 2026-08-02**  
+**§8 PROD PASS:** agent verify 2026-08-03 · [`2026-08-03-DEMAND-DESK-5F-P2-01-SECTION8-CLOSE.md`](../../handoffs/2026-08-03-DEMAND-DESK-5F-P2-01-SECTION8-CLOSE.md)
 
 ---
 

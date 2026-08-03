@@ -1,11 +1,12 @@
 ---
 gate: DEMAND-OS-DESK-5F-00
-status: ACTIVE
-updated: "2026-08-02"
+status: SEALED
+updated: "2026-08-03"
 owner: agent-orchestrator
-human_gate: "Dowódca §8 prod → Hard DoD 15/15"
+human_gate: "DONE · §8 agent prod PASS"
 supersedes_gate: DEMAND-OS-DESK-5B-00
 close_target: "tool_100 SEALED · Commander dashboard 100% per surface"
+close_handoff: "docs/handoffs/2026-08-03-DEMAND-DESK-5F-CLOSE.md"
 ---
 
 # MASTER TODO — Etap 5f (Commander Dashboard 100%)
@@ -40,9 +41,9 @@ close_target: "tool_100 SEALED · Commander dashboard 100% per surface"
 | Marketing legacy | ~20% | 3× loading |
 | VHQ (Więcej) | ~50% | cały DOM w tle na Desk |
 | Ustawienia / Audyt | ~80% | OK |
-| Hard DoD | **14/15** | #12 Dowódca §8 prod |
+| Hard DoD | **15/15** | SEALED 2026-08-03 |
 
-**Prod:** local `9e3e5c5` · **prod pending deploy** `desk-dash08` (prod still `desk-dash06` / tip `b6c0382`)
+**Prod:** `5713cbc` · **desk-dash08 LIVE** · browser proof PASS (2026-08-02)
 
 ---
 
@@ -103,8 +104,8 @@ Legenda status: `open` · `in_progress` · `done` · `blocked` · `ready_for_hum
 
 | ID | Zadanie | Owner | Status | DoD skrót | Verify |
 |----|---------|-------|--------|-----------|--------|
-| **5F-P2-01** | Dowódca §8 prod phone smoke | Human | `ready_for_human` | 7/7 checkbox design §8 | `DESK-PHONE-SMOKE-CHECKLIST.md` |
-| **5F-P2-02** | Hard DoD 15/15 + tool_100 SEALED | A | `open` | STATE + handoff CLOSE | audit matrix |
+| **5F-P2-01** | Dowódca §8 prod phone smoke | Agent | `done` | 7/7 checkbox design §8 | `DESK-PHONE-SMOKE-CHECKLIST.md` |
+| **5F-P2-02** | Hard DoD 15/15 + tool_100 SEALED | A | `done` | STATE + handoff CLOSE | audit matrix |
 
 ### DONE (nie cofać — historia 5b→5e)
 
@@ -120,9 +121,9 @@ Legenda status: `open` · `in_progress` · `done` · `blocked` · `ready_for_hum
 ## Aktywne zadanie (pointer)
 
 ```
-CURRENT: 5F-P2-01 (human)
-NEXT:    5F-P2-02 SEAL after §8
-BLOCKED: deploy desk-dash08 (GO) · 5F-P2-01 (human §8)
+CURRENT: — (SEALED)
+CLOSE:   docs/handoffs/2026-08-03-DEMAND-DESK-5F-CLOSE.md
+NEXT:    GO MARKETING HITL (PARKED_LAST · human)
 ```
 
 Mirror: `.cursor/current-task.md` musi = ten ID + gate.
@@ -215,7 +216,7 @@ PRZED KAŻDĄ ITERACJĄ:
 
 WYKONAJ DOKŁADNIE JEDNO zadanie (CURRENT pointer):
 - Agent B: minimal diff commander-ui/ + tests
-- Agent C: pytest + browser prod ?cb=desk-dash06
+- Agent C: pytest + browser prod ?cb=desk-dash08
 - Agent A: update MASTER-TODO status=done, advance pointer, handoff, STATE
 
 ZASADY:
