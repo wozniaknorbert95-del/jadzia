@@ -50,6 +50,8 @@ DESK_IDS = [
     "desk-footer",
     "desk-stale-hint",
     "desk-empty-data-hint",
+    "desk-human-line",
+    "desk-cadence-chip",
     "desk-retry",
     "desk-money-check",
     "desk-data-mode",
@@ -138,10 +140,23 @@ def test_desk_nav_desktop_and_more_sheet():
     assert 'id="more-to-demand-desk"' in HTML
 
 
-def test_cache_bust_desk_dash08():
-    assert HTML.count("desk-dash08") >= 2
-    assert "desk-dash07" not in HTML
-    assert "coi-commander-desk-dash08" in SW
+def test_cache_bust_desk_dash09():
+    assert HTML.count("desk-dash09") >= 2
+    assert "desk-dash08" not in HTML
+    assert "coi-commander-desk-dash09" in SW
+
+
+def test_ux_repair_honesty_guards():
+    assert "#desk-connection-banner[hidden]" in CSS
+    assert "display: none !important" in CSS.split("#desk-connection-banner[hidden]")[1][:120]
+    assert "desk-cadence-chip" in HTML
+    assert "desk-human-line" in HTML
+    assert "demand-desk-icp-details" in HTML
+    section = _desk_js_section()
+    assert "live_cadence" in section
+    assert "kalendarz · bez publish" in section
+    assert "if (!confirmed?.ok) return" in section
+    assert '!can || ds === "SENT"' in section
 
 
 def test_vhq_lazy_manifest_deferred():

@@ -1160,6 +1160,35 @@ dialog {
     padding: 0 0 0.5rem;
     max-width: 100%;
   }
+  .coi-terminal {
+    max-width: 100%;
+    width: 100%;
+  }
+  #view-demand-desk.demand-desk {
+    width: 100%;
+    max-width: 100%;
+    padding-bottom: calc(5.75rem + env(safe-area-inset-bottom, 0px));
+  }
+  #view-demand-desk .demand-desk-ab-row,
+  #view-demand-desk .demand-desk-cd-row {
+    grid-template-columns: 1fr;
+    width: 100%;
+  }
+  #view-demand-desk .demand-desk-footer {
+    position: relative;
+    z-index: 2;
+    padding-bottom: 0.75rem;
+  }
+  #view-demand-desk .demand-desk-footer-actions,
+  #view-demand-desk .demand-desk-diagnostics {
+    position: relative;
+    z-index: 2;
+  }
+  #view-demand-desk .demand-desk-diagnostics summary {
+    min-height: var(--touch);
+    display: flex;
+    align-items: center;
+  }
   /* F5: keep Truth Card CTAs clear of fixed bottom-nav */
   #truth-cards-pilot {
     padding-bottom: calc(1.25rem + 72px + env(safe-area-inset-bottom, 0px));
@@ -2133,9 +2162,12 @@ body.vhq-open.vhq-mode-work .vhq-shell__body {
 }
 
 .demand-desk-robota {
-  font-size: 1.05rem;
-  font-weight: 600;
-  margin: 0.5rem 0;
+  font-size: 1.35rem;
+  font-weight: 700;
+  margin: 0.65rem 0 0.35rem;
+  letter-spacing: 0.02em;
+  line-height: 1.3;
+  color: var(--text-strong);
 }
 
 .demand-desk-header-meta {
@@ -2143,6 +2175,57 @@ body.vhq-open.vhq-mode-work .vhq-shell__body {
   flex-wrap: wrap;
   gap: 0.75rem 1.25rem;
   font-size: 0.9rem;
+  align-items: center;
+}
+
+.desk-cadence-chip {
+  display: inline-block;
+  padding: 0.15rem 0.5rem;
+  border-radius: 3px;
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  border: 1px solid var(--border-terminal, #2a3340);
+}
+
+.desk-cadence-chip--parked {
+  color: var(--action, #ffb020);
+  border-color: color-mix(in srgb, var(--action, #ffb020) 55%, transparent);
+  background: color-mix(in srgb, var(--action, #ffb020) 12%, transparent);
+}
+
+.desk-cadence-chip--unlocked {
+  color: var(--ok, #3dd68c);
+  border-color: color-mix(in srgb, var(--ok, #3dd68c) 55%, transparent);
+  background: color-mix(in srgb, var(--ok, #3dd68c) 12%, transparent);
+}
+
+.demand-desk-icp-details {
+  margin-top: 0.75rem;
+  max-width: 420px;
+}
+
+.demand-desk-icp-details > summary {
+  cursor: pointer;
+  min-height: var(--touch);
+  display: flex;
+  align-items: center;
+  color: var(--muted);
+  font-size: 0.85rem;
+}
+
+.demand-desk-human-line {
+  font-size: 0.95rem;
+  font-weight: 600;
+  margin: 0 0 0.5rem;
+  color: var(--text-strong);
+}
+
+.demand-desk-meta-line {
+  font-size: 0.8rem;
+  color: var(--muted);
+  margin: 0 0 0.35rem;
 }
 
 .demand-desk-cash-warn {
@@ -2348,6 +2431,12 @@ body.vhq-open.vhq-mode-work .vhq-shell__body {
   flex-wrap: wrap;
   align-items: center;
   gap: 0.5rem;
+}
+
+/* HTML hidden must win over display:flex (audit F1) */
+#desk-connection-banner[hidden],
+.demand-desk-banner[hidden] {
+  display: none !important;
 }
 
 .desk-badge {

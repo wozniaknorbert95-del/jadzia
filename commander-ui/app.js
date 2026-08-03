@@ -4955,7 +4955,25 @@ function renderDemandDesk(data) {
   const code = robota.code || "—";
   const robotaEl = document.getElementById("desk-robota");
   if (robotaEl) {
-    robotaEl.textContent = `Robota dnia: ${code}${robota.label ? ` — ${robota.label}` : ""}`;
+    const robotaTitle =
+      robota.title ||
+      `Robota dnia: ${code}${robota.label ? ` — ${robota.label}` : ""}`;
+    robotaEl.textContent = robotaTitle;
+  }
+
+  const cadence = String(diag.live_cadence || "PARKED").toUpperCase();
+  const cadenceChip = document.getElementById("desk-cadence-chip");
+  if (cadenceChip) {
+    const unlocked = cadence === "UNLOCKED" || cadence === "LIVE";
+    cadenceChip.className = unlocked
+      ? "desk-cadence-chip desk-cadence-chip--unlocked"
+      : "desk-cadence-chip desk-cadence-chip--parked";
+    cadenceChip.textContent = unlocked
+      ? "Cadence UNLOCKED · publish OPEN"
+      : "Cadence PARKED · publish LOCKED";
+    cadenceChip.title =
+      diag.live_cadence_note ||
+      "env GO ≠ unlock live publish — patrz UNLOCK-LIVE-P0.md";
   }
 
   deskSetText("desk-icp", data.icp_role_week || "—");
@@ -5012,7 +5030,7 @@ function renderDemandDesk(data) {
           return `<article class="desk-queue-row" tabindex="0" data-asset-id="${aid}">
             <p><strong>${aid}</strong> · ${st}${prepHint}${channel ? ` · ${channel}` : ""}</p>
             <div class="demand-desk-footer-actions">
-              <button type="button" class="desk-act-btn" data-desk-act="hitl" data-decision="GOTOWY" data-asset-id="${aid}"${dis}>GOTOWY</button>
+              <button type="button" class="desk-act-btn" data-desk-act="hitl" data-decision="GOTOWY" data-asset-id="${aid}"${dis}>GOTOWY (kalendarz · bez publish)</button>
               <button type="button" class="desk-act-btn secondary" data-desk-act="hitl" data-decision="BLOKADA" data-asset-id="${aid}"${dis}>BLOKADA</button>
             </div>
           </article>`;
@@ -5037,11 +5055,11 @@ function renderDemandDesk(data) {
           const badgeCls =
             ds === "SENT" ? "desk-badge--sent" : ds === "BLOCK" ? "desk-badge--block" : "desk-badge--ready";
           const can = deskCanAct();
-          const dis = can || ds === "SENT" ? " disabled" : "";
+          const dis = !can || ds === "SENT" ? " disabled" : "";
           return `<article class="desk-queue-row" tabindex="0" data-target-id="${tid}">
             <p><strong>${name}</strong> <span class="desk-badge ${badgeCls}">${ds}</span></p>
             <p class="hint">${draft || "1 wartość ICP + 1 CTA Wizard (dry)"}</p>
-            <button type="button" class="desk-act-btn" data-desk-act="hunt" data-target-id="${tid}" data-draft="${draft}"${dis}>Dry komentarz</button>
+            <button type="button" class="desk-act-btn" data-desk-act="hunt" data-target-id="${tid}" data-draft="${draft}"${dis}>Dry komentarz (mock)</button>
           </article>`;
         })
         .join("");
@@ -5127,6 +5145,20 @@ function renderDemandDesk(data) {
   const lrTs = lastReal.ts || "brak";
   const lrKind = lastReal.kind ? ` (${lastReal.kind})` : "";
   deskSetText("desk-last-real", `${lrTs}${lrKind}`);
+
+  const humanLine = document.getElementById("desk-human-line");
+  if (humanLine) {
+    let nextHint = "Następny: Odśwież desk";
+    if (dataMode === "EMPTY") {
+      nextHint = "Następny: sync set-now na VPS";
+    } else if ((screen.hitl_queue || []).length) {
+      nextHint = "Następny: HITL GOTOWY (kalendarz · bez publish)";
+    } else if ((screen.hunt_queue || []).length) {
+      nextHint = "Następny: dry hunt (mock · bez live FB)";
+    }
+    humanLine.textContent = `Zaufanie: ${dataMode} · Cadence: ${cadence} · ${nextHint}`;
+  }
+
   // doctor_ok is FULL doctor only; lightweight never claims OK (false-green guard)
   var doctorLabel = "—";
   if (footer.doctor_scope === "full") {
@@ -5158,7 +5190,11 @@ async function loadDemandDesk() {
     const conn = document.getElementById("desk-connection-banner");
     if (conn) {
       conn.hidden = false;
-      conn.textContent = "Zaloguj się — /commander lub JWT.";
+      conn.innerHTML =
+        'Zaloguj się — /commander lub JWT. <button type="button" id="desk-retry" class="desk-act-btn secondary">Ponów</button>';
+      document.getElementById("desk-retry")?.addEventListener("click", () => {
+        loadDemandDesk().catch((err) => toast(err.message));
+      });
     }
     return;
   }
@@ -5223,10 +5259,10 @@ async function deskHitlDecision(assetId, decision) {
     toast("Brak uprawnień (viewer)", "err");
     return;
   }
-  const ok = await confirmAction(
+  const confirmed = await confirmAction(
     `Oznaczyć ${decision} dla ${assetId} w kalendarzu? (bez publikacji)`
   );
-  if (!ok) return;
+  if (!confirmed?.ok) return;
   try {
     if (_deskRefreshTimer) {
       clearTimeout(_deskRefreshTimer);
@@ -5289,8 +5325,8 @@ async function deskHuntDry(targetId, draft) {
     toast("Brak uprawnień (viewer)", "err");
     return;
   }
-  const ok = await confirmAction(`Dry komentarz na ${targetId}? (mock — bez live FB)`);
-  if (!ok) return;
+  const confirmed = await confirmAction(`Dry komentarz na ${targetId}? (mock — bez live FB)`);
+  if (!confirmed?.ok) return;
   try {
     if (_deskRefreshTimer) {
       clearTimeout(_deskRefreshTimer);
