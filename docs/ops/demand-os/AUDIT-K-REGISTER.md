@@ -5,6 +5,8 @@ source_plan: ".cursor/plans/audit-k-roadmap.md"
 truth_plan: "audit-truth-recovery"
 rule: "DONE only with code + tests + required runtime/prod evidence"
 cache: desk-dash10
+deployed_sha: "bc2779c"
+deployed_at: "2026-08-03T17:08:00Z"
 ---
 
 # Audit K Register — truthful status
@@ -12,6 +14,8 @@ cache: desk-dash10
 Status enum: `not_started` · `in_progress` · `partial` · `blocked` · `done`
 
 **DONE rule:** code committed + item tests green + verify pack green (or pre-existing failures pinned) + required runtime/prod evidence + cache/rollback when UI + handoff with SHA/commands/blockers.
+
+**Ship note (2026-08-03):** tip `bc2779c` on VPS, cache `desk-dash10`, health OK. Items stay `partial` until item-specific prod evidence (GA4 live, screenshots, axe/LH, REAL attribution event).
 
 | ID | Item | Status | Owner | Depends | Evidence required for DONE | Test command | Rollback |
 |----|------|--------|-------|---------|----------------------------|--------------|----------|
