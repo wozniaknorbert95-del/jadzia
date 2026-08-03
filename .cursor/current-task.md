@@ -1,7 +1,7 @@
 # CURRENT TASK — AGENTS Etap 6 · live P0 PARKED
 
 **Gate:** `DEMAND-OS-MARKETING-4-00` · agents backlog: `MASTER-TODO-8` DONE → `MASTER-TODO-9`  
-**Prod tip:** `0930ea6` · cache `desk-dash13` · prod owner-verify **ok:true**  
+**Prod tip:** `ca86910` · cache `desk-dash13` · prod owner-verify **ok:true** · **maraton audit:** [`docs/handoffs/2026-08-03-MARATON-678-VERIFICATION-AUDIT.md`](../docs/handoffs/2026-08-03-MARATON-678-VERIFICATION-AUDIT.md) (punch lista C1-C8 = plan na jutro)  
 **Verify:** `python tools/demand_os_owner_verify.py` · `hub agents wave-check` · `hub agents run-due`  
 **Human:** [`docs/ops/demand-os/UNLOCK-LIVE-P0.md`](../docs/ops/demand-os/UNLOCK-LIVE-P0.md)  
 **Agents handoff:** [`docs/handoffs/2026-08-03-DEMAND-OS-AGENTS-8-WORKER-HARDENING.md`](../docs/handoffs/2026-08-03-DEMAND-OS-AGENTS-8-WORKER-HARDENING.md)  
