@@ -1,14 +1,14 @@
 {
   "project": "Jadzia-Core",
-  "last_updated": "2026-08-03 (AGENTS MASTER-TODO-7 verify+hardening DONE · tip 1981ad4 · desk-dash12 · prod owner-verify ok:true · live P0 PARKED)",
+  "last_updated": "2026-08-03 (AGENTS MASTER-TODO-8 worker+hardening DONE 10/10 · tip 44a7166 · desk-dash13 · live P0 PARKED)",
   "status": "active",
   "plan": "docs/ops/demand-os/PROGRAM-PHASES.md",
   "active_gate": "DEMAND-OS-MARKETING-4-00",
   "active_plan": "docs/ops/demand-os/PROGRAM-PHASES.md",
   "master_todo": "docs/ops/demand-os/MASTER-TODO-4.md",
   "master_workflow": ".agents/workflows/demand-os-master-loop.md",
-  "active_item": "4-TOOL-AGENTS-8-01",
-  "agents_last_done": "4-TOOL-AGENTS-7 (10/10, prod verified @1981ad4)",
+  "active_item": "4-TOOL-AGENTS-9-01",
+  "agents_last_done": "4-TOOL-AGENTS-8 (10/10, worker loop + hardening @44a7166)",
   "runtime_changes_allowed": false,
   "todo_schema": "todo.schema.json",
   "gate_machine": {
@@ -59,7 +59,6 @@
     "com_ai_50_ship_preclose": "docs/handoffs/2026-07-31-COM-AI-50-SHIP-PRECLOSE.md",
     "com_ai_50_ship_deploy": "docs/handoffs/2026-07-31-DEPLOY-COM-AI-50-SHIP-CLOSE.md",
     "com_ai_50_ship_verify": "docs/handoffs/2026-07-31-VERIFY-COM-AI-50-SHIP-POSTDEPLOY.md",
-
     "demand_os_target": "ACCEPTED · v5 INSIDER · docs/ops/SYSTEM-FIRM-OPERATING-SYSTEM-TARGET.md",
     "demand_os_strategy": "ACCEPTED · docs/ops/strategy/STRATEGY-PACK.md",
     "demand_os_map": "docs/ops/SYSTEM-FIRM-OPERATING-MAP.md",
@@ -83,7 +82,6 @@
     "demand_os_state": "docs/ops/demand-os/STATE.md",
     "demand_os_workflow": ".agents/workflows/demand-os-execute.md",
     "demand_os_phase0_check": "python tools/demand_os_phase0_check.py",
-
     "vhq_firm_ia_deploy_pass": "completed · DEPLOY PASS tip adafd83 · cache vhq-w66a · docs/handoffs/2026-07-31-DEPLOY-VHQ-FIRM-IA-00-CLOSE.md",
     "program_lanes_appendix": "docs/ops/PROGRAM-LANES-SOT.md",
     "vhq_program": "docs/ops/FLEXGRAFIK-VIRTUAL-HQ-PROGRAM.md",
@@ -155,12 +153,19 @@
     "vhq_w7_close": "docs/archive/handoffs/2026-07-31-VF-VHQ-W7-DOGFOOD-CLOSE.md",
     "unblocked": [],
     "ready_for_human": [],
-    "parked": ["MKT-ASSET-00", "VF-CAMPUS-W4", "VF-VHQ-3D-PARKED", "VF-PARK-PROCUREMENT", "VF-PARK-DISPATCH", "VF-PARK-PRINTPACK-SAAS", "VF-PARK-FINANCE-AGENT"],
+    "parked": [
+      "MKT-ASSET-00",
+      "VF-CAMPUS-W4",
+      "VF-VHQ-3D-PARKED",
+      "VF-PARK-PROCUREMENT",
+      "VF-PARK-DISPATCH",
+      "VF-PARK-PRINTPACK-SAAS",
+      "VF-PARK-FINANCE-AGENT"
+    ],
     "founder_override": "2026-07-27 VHQ = primary operational dashboard; Commander = control/data/audit/action engine; no content duplication — reorganize into MC + Work Views",
     "campus_prod_tip_legacy_ux_audit": "a49644c / runtime 06212d7 / cache vhq-w61a (superseded by P2-SNR tip 7e34940)",
     "pre_w6_jwt_dogfood": "completed · docs/archive/handoffs/2026-07-31-PRE-W6-JWT-DOGFOOD-CLOSE.md · evidence-vhq-w50-prod-jwt-dogfood/",
     "inc_ssh": "completed · CLOSE docs/archive/handoffs/2026-07-31-INC-SSH-RECOVERY-00-CLOSE.md · ssh_connection=ok",
-    "session_close": "docs/handoffs/2026-07-31-DEPLOY-VHQ-FINAL-00-CLOSE.md",
     "vhq_firm_ia_deploy": "docs/handoffs/2026-07-31-DEPLOY-VHQ-FIRM-IA-00-CLOSE.md",
     "session_handoff_di": "docs/archive/handoffs/2026-07-31-SESSION-HANDOFF-DI-SCORECARD-NEXT.md",
     "session_handoff_lanes": "docs/archive/handoffs/2026-07-31-PROGRAM-LANES-SOT-CLOSE.md",
@@ -205,7 +210,14 @@
     "vhq_w32_dogfood": "docs/archive/handoffs/2026-07-27-VF-VHQ-W3.2-FOUNDER-DOGFOOD.md",
     "vhq_w32_close": "docs/archive/handoffs/2026-07-27-VF-VHQ-W3.2-CONSOLE-CLEANUP-CLOSE.md",
     "vhq_w32_deploy": "docs/archive/handoffs/2026-07-27-DEPLOY-VHQ-W3.2-CLOSE.md",
-    "mvp_rooms": ["mission-control", "approval-vault", "ai-agent-health", "sales-room", "wizard-quote", "marketing-studio"],
+    "mvp_rooms": [
+      "mission-control",
+      "approval-vault",
+      "ai-agent-health",
+      "sales-room",
+      "wizard-quote",
+      "marketing-studio"
+    ],
     "mvp_room_labels": {
       "ai-agent-health": "Agent Operations",
       "ai-agent-health_subarea": "System Health / AI Health",
@@ -2144,7 +2156,9 @@
       "status": "completed",
       "priority": "critical",
       "owner": "agent",
-      "depends_on": ["VF-CAMPUS-01"],
+      "depends_on": [
+        "VF-CAMPUS-01"
+      ],
       "checklist": "docs/ops/FLEXGRAFIK-CAMPUS-PROGRAM.md",
       "runtime_changes_allowed": false,
       "evidence_required": "PROGRAM.md + Evidence Ledger snapshot + handoff P5 diff proof",
@@ -2157,7 +2171,9 @@
       "status": "parked",
       "priority": "critical",
       "owner": "agent",
-      "depends_on": ["VF-CAMPUS-PLAN-00"],
+      "depends_on": [
+        "VF-CAMPUS-PLAN-00"
+      ],
       "checklist": "docs/ops/marketing/ASSET-MATERIALS-PREP.md",
       "evidence_required": "Asset Cards + Experiment Card + folder or shoot plan",
       "note": "parked_by_founder 2026-07-27: Founder priority override: Campus/Mission Control only. No marketing work. NOT completed."
@@ -2182,7 +2198,9 @@
       "status": "completed",
       "priority": "high",
       "owner": "agent",
-      "depends_on": ["COM-AI-50-READY"],
+      "depends_on": [
+        "COM-AI-50-READY"
+      ],
       "checklist": "docs/handoffs/2026-07-31-COM-AI-50-SHIP-PRECLOSE.md",
       "evidence_required": "GO DEPLOY + prod smoke ai_disclosure on /api/v1/widget/chat",
       "runtime_changes_allowed": true,
@@ -2211,7 +2229,9 @@
       "status": "completed",
       "priority": "critical",
       "owner": "agent",
-      "depends_on": ["VF-VHQ-FINAL-00"],
+      "depends_on": [
+        "VF-VHQ-FINAL-00"
+      ],
       "checklist": "docs/superpowers/plans/2026-07-31-order-desk-sot-discovery.md",
       "evidence_required": "D1–D5 Founder accept",
       "runtime_changes_allowed": false,
@@ -2227,7 +2247,9 @@
       "status": "completed",
       "priority": "critical",
       "owner": "agent",
-      "depends_on": ["VF-ORDER-DESK-SOT-00"],
+      "depends_on": [
+        "VF-ORDER-DESK-SOT-00"
+      ],
       "checklist": "docs/superpowers/plans/2026-07-31-order-desk-wv.md",
       "evidence_required": "W1–W5 local + GO DEPLOY + prod dogfood vhq-w68a",
       "runtime_changes_allowed": true,
@@ -2254,7 +2276,9 @@
       "status": "completed",
       "priority": "critical",
       "owner": "agent",
-      "depends_on": ["VF-CAMPUS-PLAN-00"],
+      "depends_on": [
+        "VF-CAMPUS-PLAN-00"
+      ],
       "checklist": "docs/archive/handoffs/2026-07-27-VF-CAMPUS-W1-CLOSE.md",
       "runtime_changes_allowed": true,
       "note": "2026-07-27 CLOSED. Pre-close verify PASS (local dogfood :8765). Evidence in handoff. active_gate not auto-advanced. Next propose DEPLOY-CAMPUS-W1-00."
@@ -2266,7 +2290,9 @@
       "status": "completed",
       "priority": "critical",
       "owner": "agent",
-      "depends_on": ["VF-CAMPUS-W1"],
+      "depends_on": [
+        "VF-CAMPUS-W1"
+      ],
       "checklist": "docs/archive/handoffs/2026-07-27-DEPLOY-CAMPUS-W1-00-CLOSE.md",
       "runtime_changes_allowed": true,
       "note": "2026-07-27 DONE. VPS tip cc9aa0f · campus-w01 on prod HTTP 200 · jadzia active. Health degraded SSH pre-existing."
@@ -2278,7 +2304,10 @@
       "status": "completed",
       "priority": "high",
       "owner": "agent",
-      "depends_on": ["VF-CAMPUS-W1", "DEPLOY-CAMPUS-W1-00"],
+      "depends_on": [
+        "VF-CAMPUS-W1",
+        "DEPLOY-CAMPUS-W1-00"
+      ],
       "checklist": "docs/archive/handoffs/2026-07-27-VF-CAMPUS-W2-CLOSE.md",
       "runtime_changes_allowed": false,
       "note": "2026-07-27 CLOSED. Trust wave + F1-F7 status fixes. Evidence EV-W2-001..011; window 2026-07-27T14:22:44Z~14:26Z. Residuals: OS/VCMS PARTIAL post-auth; Knowledge UNVERIFIED; Analytics finance UNVERIFIED; Compliance chain needs session; SSH DEGRADED INC-SSH-RECOVERY-00. W3 unblocked not active. No commit/deploy in CLOSE."
@@ -2290,7 +2319,9 @@
       "status": "completed",
       "priority": "high",
       "owner": "agent",
-      "depends_on": ["VF-CAMPUS-W1"],
+      "depends_on": [
+        "VF-CAMPUS-W1"
+      ],
       "evidence_required": "HTTP chain + JSON status=ok",
       "checklist": "docs/archive/handoffs/2026-07-27-VF-CAMPUS-W2-CLOSE.md",
       "note": "2026-07-27 CLOSED with W2. EV-W2-006 GET health status=ok 2026-07-27T14:22:45Z. LIVE technical readiness probe — NOT Production desk."
@@ -2302,7 +2333,9 @@
       "status": "completed",
       "priority": "high",
       "owner": "agent",
-      "depends_on": ["VF-CAMPUS-W2"],
+      "depends_on": [
+        "VF-CAMPUS-W2"
+      ],
       "checklist": "docs/archive/handoffs/2026-07-27-VF-CAMPUS-W3-CLOSE.md",
       "runtime_changes_allowed": false,
       "note": "2026-07-27 CLOSED. Pilot cards: MC LIVE EV-W2-001; Wizard LIVE EV-W2-005; Marketing UNVERIFIED EV-W3-001; Order Desk PARKED EV-W2-010; Finance/Analytics UNVERIFIED EV-W2-008. Cache campus-w03b. F1-F7 fixes PASS. W4 proposed not active. No commit/deploy in CLOSE."
@@ -2314,7 +2347,9 @@
       "status": "parked",
       "priority": "medium",
       "owner": "agent",
-      "depends_on": ["VF-CAMPUS-W3"],
+      "depends_on": [
+        "VF-CAMPUS-W3"
+      ],
       "runtime_changes_allowed": false,
       "note": "2026-07-27 PARKED residual. Product vision moved to VF-VHQ-*. Do not auto-start. Separate GO only if Campus deep-link still needed."
     },
@@ -2325,12 +2360,26 @@
       "status": "completed",
       "priority": "critical",
       "owner": "agent",
-      "depends_on": ["VF-CAMPUS-W3"],
+      "depends_on": [
+        "VF-CAMPUS-W3"
+      ],
       "checklist": "docs/archive/handoffs/2026-07-27-VF-VHQ-PLAN-00-CLOSE.md",
-      "allowed_paths": ["docs/ops/FLEXGRAFIK-VIRTUAL-HQ-PROGRAM.md", "docs/ops/FLEXGRAFIK-VIRTUAL-HQ-ARCHITECTURE.md", "docs/archive/handoffs/2026-07-27-VF-VHQ-PLAN-00-CLOSE.md", "todo.json"],
+      "allowed_paths": [
+        "docs/ops/FLEXGRAFIK-VIRTUAL-HQ-PROGRAM.md",
+        "docs/ops/FLEXGRAFIK-VIRTUAL-HQ-ARCHITECTURE.md",
+        "docs/archive/handoffs/2026-07-27-VF-VHQ-PLAN-00-CLOSE.md",
+        "todo.json"
+      ],
       "runtime_changes_allowed": false,
       "risk_class": "docs-only",
-      "stop_conditions": ["no commander-ui", "no app.js", "no deploy", "no commit required", "no MKT edits", "no W4 Campus auto"],
+      "stop_conditions": [
+        "no commander-ui",
+        "no app.js",
+        "no deploy",
+        "no commit required",
+        "no MKT edits",
+        "no W4 Campus auto"
+      ],
       "evidence_required": "Evidence Baseline table + room registry + Ops Bus + phased gates",
       "note": "2026-07-27 CLOSED under Founder GO. Campus W1-W3 = foundation kept. Next propose VF-VHQ-DESIGN-00 (not active)."
     },
@@ -2341,11 +2390,24 @@
       "status": "completed",
       "priority": "critical",
       "owner": "agent",
-      "depends_on": ["VF-VHQ-PLAN-00"],
+      "depends_on": [
+        "VF-VHQ-PLAN-00"
+      ],
       "runtime_changes_allowed": false,
       "risk_class": "docs-design",
-      "allowed_paths": ["docs/design/**", "docs/ops/**", "docs/handoffs/**", "todo.json"],
-      "stop_conditions": ["no runtime UI", "no deploy", "no Ads", "no secrets", "no W1 auto"],
+      "allowed_paths": [
+        "docs/design/**",
+        "docs/ops/**",
+        "docs/handoffs/**",
+        "todo.json"
+      ],
+      "stop_conditions": [
+        "no runtime UI",
+        "no deploy",
+        "no Ads",
+        "no secrets",
+        "no W1 auto"
+      ],
       "evidence_required": "wireframes + schema draft + SVG blueprint + component/interaction specs",
       "dod": "Founder-accepted DESIGN pack; W1-SHELL proposed not auto-active",
       "checklist": "docs/archive/handoffs/2026-07-27-VF-VHQ-DESIGN-00-CLOSE.md",
@@ -2358,11 +2420,24 @@
       "status": "completed",
       "priority": "critical",
       "owner": "agent",
-      "depends_on": ["VF-VHQ-DESIGN-00"],
+      "depends_on": [
+        "VF-VHQ-DESIGN-00"
+      ],
       "runtime_changes_allowed": true,
       "risk_class": "UI-only",
-      "allowed_paths": ["commander-ui/**", "docs/handoffs/**", "todo.json"],
-      "stop_conditions": ["no 6th tab", "no 3D", "no fake agents", "no MKT publish", "deploy needs GO", "no W2 auto"],
+      "allowed_paths": [
+        "commander-ui/**",
+        "docs/handoffs/**",
+        "todo.json"
+      ],
+      "stop_conditions": [
+        "no 6th tab",
+        "no 3D",
+        "no fake agents",
+        "no MKT publish",
+        "deploy needs GO",
+        "no W2 auto"
+      ],
       "evidence_required": "local dogfood World View + teleport; status labels match registry",
       "dod": "Shell renders floors/MVP rooms; PARKED/UNVERIFIED honest; Commander 5 tabs intact; opaque overlay; floor filter no auto-open; focus trap; Esc restore",
       "checklist": "docs/archive/handoffs/2026-07-27-VF-VHQ-W1-SHELL-CLOSE.md",
@@ -2375,11 +2450,24 @@
       "status": "completed",
       "priority": "critical",
       "owner": "agent",
-      "depends_on": ["VF-VHQ-W1-SHELL"],
+      "depends_on": [
+        "VF-VHQ-W1-SHELL"
+      ],
       "runtime_changes_allowed": true,
       "risk_class": "UI + read integration",
-      "allowed_paths": ["commander-ui/**", "docs/**", "todo.json"],
-      "stop_conditions": ["no fake KPI", "no write actions beyond existing L1", "no Ads", "no auth lockout", "no 6th tab", "no W3 auto"],
+      "allowed_paths": [
+        "commander-ui/**",
+        "docs/**",
+        "todo.json"
+      ],
+      "stop_conditions": [
+        "no fake KPI",
+        "no write actions beyond existing L1",
+        "no Ads",
+        "no auth lockout",
+        "no 6th tab",
+        "no W3 auto"
+      ],
       "evidence_required": "≤30s Director loop checklist PASS with evidence IDs",
       "dod": "Seven questions answerable from Command View using real SoT or explicit insufficient_data; cold-open HQ→MC; Operations Console escape; no DOM clone; SSH DEGRADED in Brief; mobile Navigate HQ; focal=aria-current",
       "checklist": "docs/archive/handoffs/2026-07-27-VF-VHQ-W2-MISSION-CONTROL-CLOSE.md",
@@ -2392,11 +2480,23 @@
       "status": "completed",
       "priority": "high",
       "owner": "agent",
-      "depends_on": ["VF-VHQ-W2-MISSION-CONTROL"],
+      "depends_on": [
+        "VF-VHQ-W2-MISSION-CONTROL"
+      ],
       "runtime_changes_allowed": true,
       "risk_class": "UI + deeplink",
-      "allowed_paths": ["commander-ui/**", "docs/**", "todo.json"],
-      "stop_conditions": ["no Ads execute", "no fake campaign LIVE", "MKT dirty not auto-committed", "no Order Desk LIVE", "no W4 auto"],
+      "allowed_paths": [
+        "commander-ui/**",
+        "docs/**",
+        "todo.json"
+      ],
+      "stop_conditions": [
+        "no Ads execute",
+        "no fake campaign LIVE",
+        "MKT dirty not auto-committed",
+        "no Order Desk LIVE",
+        "no W4 auto"
+      ],
       "evidence_required": "Wizard LIVE hop; Sales disposition path; Marketing UNVERIFIED/PARKED label",
       "dod": "Commercial MVP rooms usable without inventing desks",
       "checklist": "docs/archive/handoffs/2026-07-27-VF-VHQ-W3-ROOMS-COMMERCIAL-CLOSE.md",
@@ -2409,11 +2509,24 @@
       "status": "completed",
       "priority": "critical",
       "owner": "agent",
-      "depends_on": ["VF-VHQ-W3-ROOMS-COMMERCIAL"],
+      "depends_on": [
+        "VF-VHQ-W3-ROOMS-COMMERCIAL"
+      ],
       "runtime_changes_allowed": true,
       "risk_class": "UI architecture",
-      "allowed_paths": ["commander-ui/**", "docs/handoffs/**", "todo.json"],
-      "stop_conditions": ["no 6th tab", "no W4 auto", "no Ads/Mollie", "no MKT dirty commit", "deploy needs GO", "legacy rollback must work"],
+      "allowed_paths": [
+        "commander-ui/**",
+        "docs/handoffs/**",
+        "todo.json"
+      ],
+      "stop_conditions": [
+        "no 6th tab",
+        "no W4 auto",
+        "no Ads/Mollie",
+        "no MKT dirty commit",
+        "deploy needs GO",
+        "legacy rollback must work"
+      ],
       "evidence_required": "primary + legacy final re-dogfood PASS; portal rollback visible; Esc ladder; Sign in JWT",
       "dod": "HQ is primary #view-hq view; Console secondary; 5 tabs; single queue; Esc room→MC→Console; history; ?vhq_shell=legacy portal rollback usable; Sign in→JWT",
       "checklist": "docs/archive/handoffs/2026-07-27-VF-VHQ-W3.1-PRIMARY-SHELL-CLOSE.md",
@@ -2426,11 +2539,25 @@
       "status": "completed",
       "priority": "critical",
       "owner": "agent",
-      "depends_on": ["VF-VHQ-W3.1-PRIMARY-SHELL"],
+      "depends_on": [
+        "VF-VHQ-W3.1-PRIMARY-SHELL"
+      ],
       "runtime_changes_allowed": true,
       "risk_class": "UI architecture / honesty SoT",
-      "allowed_paths": ["commander-ui/**", "docs/handoffs/**", "todo.json"],
-      "stop_conditions": ["no 6th tab", "no W4 auto", "no Ads/Mollie", "no MKT dirty commit", "deploy needs GO", "preserve primary+legacy", "no second status SoT"],
+      "allowed_paths": [
+        "commander-ui/**",
+        "docs/handoffs/**",
+        "todo.json"
+      ],
+      "stop_conditions": [
+        "no 6th tab",
+        "no W4 auto",
+        "no Ads/Mollie",
+        "no MKT dirty commit",
+        "deploy needs GO",
+        "preserve primary+legacy",
+        "no second status SoT"
+      ],
       "evidence_required": "Founder dogfood A–L PASS; vhqManifestPropagationTest 5/5; 13 screenshots; no VHQ_PULSE",
       "dod": "VHQ_ROOMS sole SoT; HQ primary; Console secondary collapsed Technical/Legacy; Return to HQ first; one queue; 5 tabs; primary+legacy; Marketing UNVERIFIED EV-W3-001; Order PARKED EV-W2-010; SSH DEGRADED EV-W2-011",
       "checklist": "docs/archive/handoffs/2026-07-27-VF-VHQ-W3.2-CONSOLE-CLEANUP-CLOSE.md",
@@ -2443,11 +2570,28 @@
       "status": "completed",
       "priority": "high",
       "owner": "agent",
-      "depends_on": ["VF-VHQ-W3.1-PRIMARY-SHELL", "VF-VHQ-W3.2-CONSOLE-CLEANUP", "DEPLOY-VHQ-PRIMARY-SHELL"],
+      "depends_on": [
+        "VF-VHQ-W3.1-PRIMARY-SHELL",
+        "VF-VHQ-W3.2-CONSOLE-CLEANUP",
+        "DEPLOY-VHQ-PRIMARY-SHELL"
+      ],
       "runtime_changes_allowed": true,
       "risk_class": "UI (+ data if Order SoT exists)",
-      "allowed_paths": ["commander-ui/**", "docs/handoffs/**", "todo.json", ".cursor/current-task.md"],
-      "stop_conditions": ["no fake Order Desk LIVE", "no invent production dashboard", "no Ads/Mollie", "no MKT dirty commit", "no 6th tab", "deploy needs GO", "no Order LIVE without desk SoT"],
+      "allowed_paths": [
+        "commander-ui/**",
+        "docs/handoffs/**",
+        "todo.json",
+        ".cursor/current-task.md"
+      ],
+      "stop_conditions": [
+        "no fake Order Desk LIVE",
+        "no invent production dashboard",
+        "no Ads/Mollie",
+        "no MKT dirty commit",
+        "no 6th tab",
+        "deploy needs GO",
+        "no Order LIVE without desk SoT"
+      ],
       "evidence_required": "EV-W2-010 preserved until desk SoT; shells labeled PARKED/PLANNED; local+prod dogfood vhq-w40b",
       "dod": [
         "4 Work Views open in-HQ via vhqApplyRoomChrome mode=work (order-desk, production-control, preflight-quality, dispatch-returns)",
@@ -2471,7 +2615,11 @@
       "status": "completed",
       "priority": "high",
       "owner": "agent",
-      "depends_on": ["VF-VHQ-DESIGN-00", "VF-VHQ-W2-MISSION-CONTROL", "VF-VHQ-W4-ROOMS-OPERATIONS"],
+      "depends_on": [
+        "VF-VHQ-DESIGN-00",
+        "VF-VHQ-W2-MISSION-CONTROL",
+        "VF-VHQ-W4-ROOMS-OPERATIONS"
+      ],
       "runtime_changes_allowed": false,
       "risk_class": "data integration",
       "allowed_paths": [
@@ -2490,7 +2638,16 @@
         "docs/archive/handoffs/2026-07-31-SESSION-CLOSE-W5-*.md",
         "docs/archive/handoffs/evidence-vhq-w50-dogfood/**"
       ],
-      "stop_conditions": ["no free-form agent chat bus", "no silent L3/L4", "schema + evidence required", "no W5 implement without Founder GO", "no MKT dirty", "no Ads/Mollie", "deploy needs GO", "preserve EV-W2-010"],
+      "stop_conditions": [
+        "no free-form agent chat bus",
+        "no silent L3/L4",
+        "schema + evidence required",
+        "no W5 implement without Founder GO",
+        "no MKT dirty",
+        "no Ads/Mollie",
+        "deploy needs GO",
+        "preserve EV-W2-010"
+      ],
       "evidence_required": "event catalog MVP + audit rows + EV-W5-001..005 + sales_cta emit test",
       "dod": "At least lead→wizard→order_created path typed with approval hooks",
       "checklist": "docs/archive/handoffs/2026-07-31-VF-VHQ-W5-OPERATIONS-BUS-CLOSE.md",
@@ -2503,7 +2660,9 @@
       "status": "completed",
       "priority": "high",
       "owner": "agent",
-      "depends_on": ["VF-VHQ-W5-OPERATIONS-BUS"],
+      "depends_on": [
+        "VF-VHQ-W5-OPERATIONS-BUS"
+      ],
       "runtime_changes_allowed": false,
       "risk_class": "action/approval risk",
       "allowed_paths": [
@@ -2515,7 +2674,13 @@
         "docs/archive/handoffs/2026-07-31-VF-VHQ-W6-DIRECTOR-APPROVALS-*.md",
         "docs/archive/handoffs/evidence-vhq-w60-dogfood/**"
       ],
-      "stop_conditions": ["no auto-approve L3/L4", "Gate D/Ads/Mollie still hard STOP", "Zasada 11 for deploy class", "no MKT dirty", "preserve EV-W2-010"],
+      "stop_conditions": [
+        "no auto-approve L3/L4",
+        "Gate D/Ads/Mollie still hard STOP",
+        "Zasada 11 for deploy class",
+        "no MKT dirty",
+        "preserve EV-W2-010"
+      ],
       "evidence_required": "approve/reject flow + audit evidence IDs · EV-W6-001..005",
       "dod": "Director can clear pending approvals without guessing source room",
       "checklist": "docs/archive/handoffs/2026-07-31-VF-VHQ-W6-DIRECTOR-APPROVALS-CLOSE.md",
@@ -2528,10 +2693,15 @@
       "status": "completed",
       "priority": "critical",
       "owner": "Dowódca",
-      "depends_on": ["VF-VHQ-W2-MISSION-CONTROL"],
+      "depends_on": [
+        "VF-VHQ-W2-MISSION-CONTROL"
+      ],
       "runtime_changes_allowed": false,
       "risk_class": "verify",
-      "stop_conditions": ["no scope creep mid-dogfood", "fail closed on missing evidence"],
+      "stop_conditions": [
+        "no scope creep mid-dogfood",
+        "fail closed on missing evidence"
+      ],
       "evidence_required": "dogfood checklist PASS with timestamps + screenshots/notes",
       "dod": "Founder PASS on 7 questions + honest gaps; unlock decision on 3D remains parked",
       "checklist": "docs/archive/handoffs/2026-07-31-VF-VHQ-W7-DOGFOOD-CLOSE.md",
@@ -2544,10 +2714,15 @@
       "status": "parked",
       "priority": "low",
       "owner": "Dowódca",
-      "depends_on": ["VF-VHQ-W7-DOGFOOD"],
+      "depends_on": [
+        "VF-VHQ-W7-DOGFOOD"
+      ],
       "runtime_changes_allowed": false,
       "risk_class": "roadmap-parked",
-      "stop_conditions": ["never start without explicit unpark GO", "2D/iso must remain default"],
+      "stop_conditions": [
+        "never start without explicit unpark GO",
+        "2D/iso must remain default"
+      ],
       "evidence_required": "W7 PASS + Founder unpark rationale",
       "dod": "N/A while parked",
       "note": "Hard park. Inspiration≠3D mandate."
@@ -2668,5 +2843,6 @@
       "checklist": "docs/archive/handoffs/2026-07-22-OPS-AGENT-SLA-01-DEPLOY-CLOSE.md",
       "note": "VERIFY_OK · dogfood Ops OK · SLA 0"
     }
-  ]
+  ],
+  "agents_todo": "docs/ops/demand-os/MASTER-TODO-8.md"
 }
