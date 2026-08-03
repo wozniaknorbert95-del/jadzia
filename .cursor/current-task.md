@@ -1,7 +1,7 @@
 # CURRENT TASK — AGENTS Etap 6 · live P0 PARKED
 
 **Gate:** `DEMAND-OS-MARKETING-4-00` · agents backlog: `MASTER-TODO-6`  
-**Prod tip:** `74683e2` · cache `desk-dash11` (desk-dash12 pending deploy)  
+**Prod tip:** `943fc8a` · cache `desk-dash12`  
 **Verify:** `python tools/demand_os_owner_verify.py` · `hub agents wave-check`  
 **Human:** [`docs/ops/demand-os/UNLOCK-LIVE-P0.md`](../docs/ops/demand-os/UNLOCK-LIVE-P0.md)  
 **Agents handoff:** [`docs/handoffs/2026-08-03-DEMAND-OS-AGENTS-TOOL100.md`](../docs/handoffs/2026-08-03-DEMAND-OS-AGENTS-TOOL100.md)  
