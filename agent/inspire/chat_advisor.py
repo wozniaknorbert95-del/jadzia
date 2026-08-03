@@ -565,6 +565,7 @@ def process_chat_turn(
     session_id: str | None,
     message: str,
     logo_filename: str | None = None,
+    logo_bytes: bytes | None = None,
     brand_colors: str | list[Any] | None = None,
     field_updates: dict[str, Any] | None = None,
     quick_reply_id: str | None = None,
@@ -582,6 +583,7 @@ def process_chat_turn(
             quick_reply_id=quick_reply_id,
             quick_reply_field=quick_reply_field,
             logo_filename=logo_filename,
+            logo_bytes=logo_bytes,
             locale=locale,
             brand_colors=colors or None,
         )

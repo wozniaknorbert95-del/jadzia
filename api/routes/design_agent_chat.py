@@ -166,19 +166,28 @@ async def design_agent_chat_multipart(
     quick_reply_field: str = Form(""),
     locale: str = Form(""),
     logo: UploadFile | None = File(None),
+    vehicle_photo: UploadFile | None = File(None),
     x_fg_design_agent_key: str | None = Header(None, alias="X-FG-Design-Agent-Key"),
 ) -> DesignAgentChatResponse:
-    """Chat turn with optional logo upload (multipart)."""
+    """Chat turn with optional logo + vehicle photo upload (multipart)."""
     _verify_api_key(x_fg_design_agent_key)
     client_ip = request.client.host if request.client else "unknown"
     loc = locale or None
     _check_chat_rate_limit(client_ip, session_id or None, locale=loc)
     logo_name = logo.filename if logo and logo.filename else None
+    logo_bytes: bytes | None = None
+    if logo and logo.filename:
+        logo_bytes = await logo.read()
+    if vehicle_photo and vehicle_photo.filename and message:
+        message = f"{message.strip()} [foto: {vehicle_photo.filename}]".strip()
+    elif vehicle_photo and vehicle_photo.filename:
+        message = message or f"Bus foto: {vehicle_photo.filename}"
     try:
         result = process_chat_turn(
             session_id=session_id or None,
             message=message,
             logo_filename=logo_name,
+            logo_bytes=logo_bytes,
             brand_colors=brand_colors,
             quick_reply_id=quick_reply_id or None,
             quick_reply_field=quick_reply_field or None,

@@ -147,6 +147,7 @@ def process_turn(
     quick_reply_id: str | None = None,
     quick_reply_field: str | None = None,
     logo_filename: str | None = None,
+    logo_bytes: bytes | None = None,
     brand_colors: list[str] | None = None,
     locale: str | None = None,
 ) -> ChatTurnResult:
@@ -182,21 +183,22 @@ def process_turn(
     if brand_colors:
         chat_bridge.apply_brand_colors(state.brief_draft, brand_colors)
 
-    if not message.strip() and not updates and not logo_filename and not brand_colors:
+    if not message.strip() and not updates and not logo_filename and not logo_bytes and not brand_colors:
         raise ValueError(error_message("empty_message", loc))
 
     # Logo upload already applied via apply_logo_upload — never parse UI
     # boilerplate into missing brief fields.
-    intake_message = "" if logo_filename else message.strip()
+    intake_message = "" if (logo_filename or logo_bytes) and not message.strip() else message.strip()
 
     turn = process_intake_turn(
         state,
         message=intake_message,
         field_updates=updates,
         locale=loc,
+        logo_bytes=logo_bytes,
     )
     reply = getattr(turn, "reply", None) or turn.reply_nl
-    if logo_filename and reply:
+    if (logo_filename or logo_bytes) and reply:
         ack = error_message("logo_received", loc)
         if ack.lower() not in reply.lower():
             reply = f"{ack}\n\n{reply}"
