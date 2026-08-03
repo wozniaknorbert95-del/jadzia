@@ -1,3 +1,6 @@
 date,channel,icp_role,asset_id,utm_link,publish_Y/N,comments_sent,hot_leads,wizard_starts,paid,notes
-2026-08-01,tiktok,installateur,tt_w32_install_01,https://zzpackage.flexgrafik.nl/wizard/?utm_source=tiktok&utm_medium=organic&utm_campaign=icp_installateur&utm_content=tt_w32_install_01,N,2,0,2,1,sanitized MIXED demo
-2026-08-02,facebook,installateur,fb_hunt_w32_d2,https://zzpackage.flexgrafik.nl/wizard/?utm_source=facebook&utm_medium=organic&utm_campaign=icp_installateur&utm_content=fb_hunt_w32_d2,N,1,0,1,0,sanitized hunt row
+2026-07-31,tiktok,installateur,tt_w31_install_01,https://zzpackage.flexgrafik.nl/wizard/?utm_source=tiktok&utm_medium=organic&utm_campaign=icp_installateur&utm_content=tt_w31_install_01,N,0,0,0,0,prep row
+2026-08-01,tiktok,installateur,tt_w31_install_01,https://zzpackage.flexgrafik.nl/wizard/?utm_source=tiktok&utm_medium=organic&utm_campaign=icp_installateur&utm_content=tt_w31_install_01,N,0,0,0,0,DELETED 2026-08-01 · was video/7669024279140388118 · CDP bridge proof only · was FROZEN · now GO ORGANIC RESUME
+2026-08-01,whatsapp,installateur,wa_w31_install_01,https://zzpackage.flexgrafik.nl/wizard/?utm_source=whatsapp&utm_medium=organic&utm_campaign=icp_installateur&utm_content=wa_w31_install_01,N,0,1,0,0,STL drill_stl_001 PASS
+2026-08-01,ops,installateur,sprint_organic_14d_d0,,N,0,0,0,0,ORGANIC AGENCY SPRINT START · Ads PARK cash · F1-F4 DONE · W1-03 unfrozen · W2 soft-start · see ORGANIC-AGENCY-SPRINT-14D.md
+2026-08-01,facebook,installateur,fb_hunt_w32_d1,https://zzpackage.flexgrafik.nl/wizard/?utm_source=facebook&utm_medium=organic&utm_campaign=icp_installateur&utm_content=fb_hunt_w32_d1,N,0,0,0,0,HUNT BLOCKED g2 personal membership verify pending · Val PASS · try again after admin OR use Page identity policy

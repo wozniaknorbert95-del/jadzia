@@ -1,7 +1,25 @@
-{
+﻿{
   "week": "2026-W32",
-  "updated": "2026-08-02T12:00:00+00:00",
+  "updated": "2026-08-01T12:18:38+00:00",
   "slots": [
+    {
+      "date": "2026-08-01",
+      "channel": "blog",
+      "asset_id": "blog_w31_install_bus50m",
+      "status": "validated",
+      "request_id": "4aa5ea20-1d62-480a-8db6-e216d56fe0a5",
+      "pass_token": null,
+      "notes": "icp_role=installateur | https://zzpackage.flexgrafik.nl/wizard/?utm_source=blog&utm_medium=organic&utm_campaign=icp_installateur&utm_content=blog_w31_install_bus50m | Val PASS 2026-08-01T12:08:58+00:00"
+    },
+    {
+      "date": "2026-08-01",
+      "channel": "tiktok",
+      "asset_id": "tt_w31_install_01",
+      "status": "skipped",
+      "request_id": null,
+      "pass_token": null,
+      "notes": "bridge proof DELETED Â· publish FROZEN"
+    },
     {
       "date": "2026-08-02",
       "channel": "tiktok",
@@ -9,7 +27,7 @@
       "status": "validated",
       "request_id": "215fb14a-71f5-4733-9e01-10502f42ab63",
       "pass_token": null,
-      "notes": "sanitized demo · Val PASS · no token in repo"
+      "notes": "Val PASS 2026-08-01T12:18:38+00:00"
     },
     {
       "date": "2026-08-03",
@@ -18,16 +36,43 @@
       "status": "planned",
       "request_id": null,
       "pass_token": null,
-      "notes": "PREP slot — przygotuj przed publikacją"
+      "notes": "50m herkenbaar â€” requires Val PASS before publish"
     },
     {
       "date": "2026-08-04",
-      "channel": "facebook",
-      "asset_id": "fb_hunt_w32_d2",
+      "channel": "tiktok",
+      "asset_id": "tt_w32_install_02",
       "status": "validated",
       "request_id": "9d734905-ca22-44e1-ab16-5bb27cbea243",
       "pass_token": null,
-      "notes": "sanitized hunt asset"
+      "notes": "Val PASS 2026-08-01T12:16:12+00:00"
+    },
+    {
+      "date": "2026-08-05",
+      "channel": "tiktok",
+      "asset_id": "tt_w31_install_03",
+      "status": "planned",
+      "request_id": null,
+      "pass_token": null,
+      "notes": "Premium Vakman â€” requires Val PASS before publish"
+    },
+    {
+      "date": "2026-08-06",
+      "channel": "blog",
+      "asset_id": "blog_w31_install_01",
+      "status": "planned",
+      "request_id": null,
+      "pass_token": null,
+      "notes": "HITL draft Â· Wave3 auto later"
+    },
+    {
+      "date": "2026-08-06",
+      "channel": "tiktok",
+      "asset_id": "tt_w32_install_03",
+      "status": "validated",
+      "request_id": "bd582d8e-4075-4d54-9da6-7e27399515f7",
+      "pass_token": null,
+      "notes": "Val PASS 2026-08-01T12:16:12+00:00"
     }
   ]
 }

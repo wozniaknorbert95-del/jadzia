@@ -1,18 +1,20 @@
 {
-  "max_groups": 3,
-  "updated": "2026-08-02",
+  "max_groups": 10,
+  "updated": "2026-08-01",
+  "research": "ALLOWLIST-RESEARCH.md",
+  "join_actor": "personal:Trebron Norbert",
   "targets": [
     {
-      "id": "fb_g2",
+      "id": "fb_own_page",
       "platform": "facebook",
-      "kind": "group_nl",
-      "name": "ZZP BOUW demo",
-      "external_id": "667616250015961",
-      "url": "https://www.facebook.com/groups/667616250015961/",
+      "kind": "own_page",
+      "name": "FlexGrafik Facebook profile",
+      "external_id": "env:FB_PAGE_ID",
+      "url": "",
       "status": "active",
-      "icp_score": 94,
-      "icp_role": "installateur",
-      "notes": "sanitized hunt target"
+      "icp_score": 100,
+      "icp_role": "all",
+      "notes": "reply 100% hot"
     },
     {
       "id": "tt_own",
@@ -24,7 +26,127 @@
       "status": "active",
       "icp_score": 100,
       "icp_role": "installateur",
-      "notes": "sanitized"
+      "notes": "own films engage <2h"
+    },
+    {
+      "id": "fb_g1",
+      "platform": "facebook",
+      "kind": "group_nl",
+      "name": "ZZP'ers in de bouw vanaf EUR 35",
+      "external_id": "1025556189445436",
+      "url": "https://www.facebook.com/groups/1025556189445436/",
+      "status": "join_requested",
+      "icp_score": 96,
+      "icp_role": "installateur",
+      "notes": "Join request as Trebron Norbert (personal) | private | await admin"
+    },
+    {
+      "id": "fb_g2",
+      "platform": "facebook",
+      "kind": "group_nl",
+      "name": "ZZP BOUW – Werk & Opdrachten Nederland",
+      "external_id": "667616250015961",
+      "url": "https://www.facebook.com/groups/667616250015961/",
+      "status": "active",
+      "icp_score": 94,
+      "icp_role": "installateur",
+      "notes": "Joined personal Trebron Norbert | 2026-08-01 comment BLOCKED: membership verify pending (UI banner) | Val hunt copy ready fb_hunt_w32_d1"
+    },
+    {
+      "id": "fb_g3",
+      "platform": "facebook",
+      "kind": "group_nl",
+      "name": "zzp'ers in de bouw",
+      "external_id": "1431018647683715",
+      "url": "https://www.facebook.com/groups/1431018647683715/",
+      "status": "active",
+      "icp_score": 90,
+      "icp_role": "installateur",
+      "notes": "Joined personal Trebron Norbert"
+    },
+    {
+      "id": "fb_g4",
+      "platform": "facebook",
+      "kind": "group_nl",
+      "name": "Zzp projecten door heel Nederland!",
+      "external_id": "1739498173690918",
+      "url": "https://www.facebook.com/groups/1739498173690918/",
+      "status": "active",
+      "icp_score": 88,
+      "icp_role": "installateur",
+      "notes": "Joined personal Trebron Norbert"
+    },
+    {
+      "id": "fb_g5",
+      "platform": "facebook",
+      "kind": "group_nl",
+      "name": "ZZP Bouw & Construction",
+      "external_id": "zzpbouw",
+      "url": "https://www.facebook.com/groups/zzpbouw/",
+      "status": "active",
+      "icp_score": 87,
+      "icp_role": "installateur",
+      "notes": "Joined personal Trebron Norbert"
+    },
+    {
+      "id": "fb_g6",
+      "platform": "facebook",
+      "kind": "group_nl",
+      "name": "Zzp opdrachten in de bouw en techniek",
+      "external_id": "covebozzp",
+      "url": "https://www.facebook.com/groups/covebozzp/",
+      "status": "active",
+      "icp_score": 84,
+      "icp_role": "installateur",
+      "notes": "Joined personal Trebron Norbert | prior Page KVK answers separate identity"
+    },
+    {
+      "id": "fb_g7",
+      "platform": "facebook",
+      "kind": "group_nl",
+      "name": "ZZP opdrachten: Bouw en Techniek (midden Nederland)",
+      "external_id": "verdowerktzzpopdrachten",
+      "url": "https://www.facebook.com/groups/verdowerktzzpopdrachten/",
+      "status": "join_requested",
+      "icp_score": 83,
+      "icp_role": "installateur",
+      "notes": "Join request as Trebron Norbert | await admin"
+    },
+    {
+      "id": "fb_g8",
+      "platform": "facebook",
+      "kind": "group_nl",
+      "name": "ZZP Community Nederland",
+      "external_id": "770960324732725",
+      "url": "https://www.facebook.com/groups/770960324732725/",
+      "status": "join_requested",
+      "icp_score": 78,
+      "icp_role": "multi",
+      "notes": "Personal only (Page blocked) | answers: FlexGrafik wrapping/branding + Eigen bedrijf | await admin"
+    },
+    {
+      "id": "fb_g9",
+      "platform": "facebook",
+      "kind": "group_nl",
+      "name": "Hoveniers gezocht NL | Tuinonderhoud & Aanleg",
+      "external_id": "hoveniersbedrijven",
+      "url": "https://www.facebook.com/groups/hoveniersbedrijven/",
+      "status": "active",
+      "icp_score": 82,
+      "icp_role": "hovenier",
+      "notes": "Joined personal | particulier/hovenier verify skipped (Nie teraz) | tiny group UI showed 2 members"
+    },
+    {
+      "id": "fb_g10",
+      "platform": "facebook",
+      "kind": "group_nl",
+      "name": "ZZP - Vraag en Aanbod",
+      "external_id": "vraag.aanbod.zzp",
+      "url": "https://www.facebook.com/groups/vraag.aanbod.zzp/",
+      "status": "join_requested",
+      "icp_score": 85,
+      "icp_role": "installateur",
+      "notes": "Join request as Trebron Norbert | await admin"
     }
   ]
 }
