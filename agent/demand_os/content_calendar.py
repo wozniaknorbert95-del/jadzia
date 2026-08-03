@@ -65,10 +65,11 @@ class ContentCalendar:
 
 
 def default_calendar_path() -> Path:
-    env = os.environ.get("DEMAND_OS_CONTENT_CALENDAR")
-    if env:
-        return Path(env)
-    return DEFAULT_CALENDAR_PATH
+    from agent.demand_os.state_paths import resolve_writable_path
+
+    return resolve_writable_path(
+        DEFAULT_CALENDAR_PATH.name, env_var="DEMAND_OS_CONTENT_CALENDAR"
+    )
 
 
 def load_calendar(path: Optional[Path] = None) -> ContentCalendar:
