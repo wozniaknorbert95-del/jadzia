@@ -13,6 +13,13 @@ from typing import Any, Dict, List, Optional
 _REPO = Path(__file__).resolve().parents[3]
 DEFAULT_SPAM_LOG = _REPO / "docs/ops/demand-os/set-now/ENGAGE-LOG.jsonl"
 
+
+def default_engage_log_path() -> Path:
+    """Writable engage log — prod set-now is read-only, fall back to data/."""
+    from agent.demand_os.state_paths import resolve_writable_path
+
+    return resolve_writable_path(DEFAULT_SPAM_LOG.name, env_var="DEMAND_OS_ENGAGE_LOG")
+
 # Sniper: one fingerprint may hit at most ONE group per calendar day.
 MAX_GROUP_TARGETS_PER_COPY_PER_DAY = 1
 
@@ -49,14 +56,14 @@ def _utc_now() -> str:
 
 
 def append_engage_log(record: Dict[str, Any], path: Optional[Path] = None) -> None:
-    out = path or DEFAULT_SPAM_LOG
+    out = path or default_engage_log_path()
     out.parent.mkdir(parents=True, exist_ok=True)
     with out.open("a", encoding="utf-8") as fh:
         fh.write(json.dumps(record, ensure_ascii=False) + "\n")
 
 
 def list_engage_log(path: Optional[Path] = None, *, limit: int = 200) -> List[Dict[str, Any]]:
-    src = path or DEFAULT_SPAM_LOG
+    src = path or default_engage_log_path()
     if not src.is_file():
         return []
     rows: List[Dict[str, Any]] = []
