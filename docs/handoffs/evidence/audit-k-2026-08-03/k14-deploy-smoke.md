@@ -2,7 +2,7 @@
 
 | Field | Value |
 |-------|-------|
-| SHA | `c04d1b4` |
+| SHA | `a763bdc` (closeout code `c04d1b4` + tip-sync) |
 | Host | VPS `/opt/jadzia` |
 | Cache | `desk-dash11` |
 | Backup | `/opt/jadzia/data/jadzia-pre-partial-closeout-20260803-194331.db` |

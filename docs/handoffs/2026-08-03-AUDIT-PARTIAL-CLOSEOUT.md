@@ -26,10 +26,10 @@ python tools/commander_release.py validate → ok
 ## Deploy
 
 In-session GO assumed from Dowódca (“do dzieła” / implement plan).  
-VPS tip **`c04d1b4`**: backup → hard reset → restart → smoke `desk-dash11` + `/health` ok.  
+VPS tip **`a763bdc`** (feature closeout `c04d1b4` + tip-sync): backup → hard reset → restart → smoke `desk-dash11` + `/health` ok.  
 Evidence: `docs/handoffs/evidence/audit-k-2026-08-03/k14-deploy-smoke.md`.
 
-**K2 prod:** SA file missing at configured path → fail-closed `unavailable` (`k2-ga4-status-prod.json`). `DEMAND_OS_GA4_LIVE` left off until real credentials file exists.
+**K2 prod:** SA file missing → fail-closed stub `unavailable` (`k2-ga4-status-prod.json`). `DEMAND_OS_GA4_LIVE` off until real credentials file exists.
 
 ## RECOMMENDED_NEXT
 

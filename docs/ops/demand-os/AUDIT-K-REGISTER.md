@@ -13,7 +13,7 @@ Status enum: `not_started` · `in_progress` · `partial` · `blocked` · `done`
 | ID | Item | Status | Evidence / note |
 |----|------|--------|-----------------|
 | **K1** | REV_R1 attribution | `done` (code) / prod event `blocked` | Wire sync-db+wave1; 7d window; `k1-attribution-local.json`. Prod REAL ops_bus event still needed for full end-to-end DONE. |
-| **K2** | GA4 desk signal | `done` (fail-closed) / live `blocked` | Prod tip `c04d1b4`: SA path set, file missing → unavailable (`k2-ga4-status-prod.json`). Live metric blocked until real SA file + GO. |
+| **K2** | GA4 desk signal | `done` (fail-closed) / live `blocked` | Prod tip `a763bdc`: SA path set, file missing → stub unavailable (`k2-ga4-status-prod.json`). Live metric blocked until real SA file + GO. |
 | **K3** | Auth simplify | `done` (code) | Cookie HttpOnly + probe + hasSession gates; browser cold-start dogfood after deploy. |
 | **K4** | Plain-language labels | `done` (desk primary) | Forbidden jargon tests; residual VHQ/marketing out of scope. |
 | **K5** | Dual SoT reconcile | `done` (code) | No ledger+events double-count; hub `sot-check`. Prod apply of export remains GO. |
@@ -34,7 +34,7 @@ Status enum: `not_started` · `in_progress` · `partial` · `blocked` · `done`
 | K1 local event | `docs/handoffs/evidence/audit-k-2026-08-03/k1-attribution-local.json` |
 | K2 local | `docs/handoffs/evidence/audit-k-2026-08-03/k2-ga4-status-local.json` |
 | K2 prod | `docs/handoffs/evidence/audit-k-2026-08-03/k2-ga4-status-prod.json` |
-| K14 smoke | `docs/handoffs/evidence/audit-k-2026-08-03/k14-deploy-smoke.md` (@ `c04d1b4`) |
+| K14 smoke | `docs/handoffs/evidence/audit-k-2026-08-03/k14-deploy-smoke.md` (@ `a763bdc`) |
 | K8 a11y | `docs/handoffs/evidence/audit-k-2026-08-03/k8-a11y-smoke.json` |
 | K9 perf | `docs/handoffs/evidence/audit-k-2026-08-03/k9-perf-smoke.json` |
 | K12 cov | `docs/handoffs/evidence/audit-k-2026-08-03/k12-coverage.txt` |
