@@ -1,16 +1,17 @@
-# K14 deploy smoke — 2026-08-03
+# K14 deploy smoke — Audit Partial Closeout 2026-08-03
 
 | Field | Value |
 |-------|-------|
-| SHA | `bc2779c` |
+| SHA | `c04d1b4` |
 | Host | VPS `/opt/jadzia` |
-| Cache | `desk-dash10` |
-| Backup | `/opt/jadzia/data/jadzia-pre-truth-recovery-20260803-190749.db` (integrity ok) |
+| Cache | `desk-dash11` |
+| Backup | `/opt/jadzia/data/jadzia-pre-partial-closeout-20260803-194331.db` |
 | `systemctl is-active jadzia` | `active` |
 | `/health` | `status: ok` |
-| `/worker/health` | `healthy`, worker_loop_alive |
-| `/commander/` | contains `desk-dash10`, SW `coi-commander-desk-dash10` |
+| `/commander/` | contains `desk-dash11` |
 
 Notes:
-- VPS had dirty tracked tree; deploy used `git reset --hard origin/master` after SQLite backup.
-- Live P0 still PARKED. GA4 live env not enabled (K2 remains fail-closed `unavailable` until separate GO).
+- Deploy: SQLite backup → `git reset --hard origin/master` → restart → smoke.
+- Live P0 still PARKED.
+- K2: env path for GA4 SA set but file absent → fail-closed `unavailable`; live metric blocked on credentials (no fake sessions).
+- Ledger-export.timer artifact committed; **not** enabled (needs separate GO).

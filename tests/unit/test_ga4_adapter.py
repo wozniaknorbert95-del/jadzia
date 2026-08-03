@@ -38,9 +38,11 @@ def test_live_without_creds_unavailable(monkeypatch):
     assert out["mode"] == "missing_config"
 
 
-def test_live_aggregate_ok_splits_sessions(monkeypatch):
+def test_live_aggregate_ok_splits_sessions(monkeypatch, tmp_path):
+    creds = tmp_path / "ga4.json"
+    creds.write_text("{}", encoding="utf-8")
     monkeypatch.setenv("DEMAND_OS_GA4_LIVE", "1")
-    monkeypatch.setenv("GOOGLE_APPLICATION_CREDENTIALS", "/tmp/fake.json")
+    monkeypatch.setenv("GOOGLE_APPLICATION_CREDENTIALS", str(creds))
     monkeypatch.setenv("GA4_PROPERTY_ID_ZZPACKAGE", "123456")
 
     snap = MagicMock()
@@ -62,9 +64,45 @@ def test_live_aggregate_ok_splits_sessions(monkeypatch):
     assert out["starts"] == []
 
 
-def test_live_error_unavailable(monkeypatch):
+def test_live_path_without_file_unavailable(monkeypatch):
     monkeypatch.setenv("DEMAND_OS_GA4_LIVE", "1")
-    monkeypatch.setenv("GOOGLE_APPLICATION_CREDENTIALS", "/tmp/fake.json")
+    monkeypatch.setenv(
+        "GOOGLE_APPLICATION_CREDENTIALS", "/opt/jadzia/secrets/missing-ga4.json"
+    )
+    monkeypatch.setenv("GA4_PROPERTY_ID_ZZPACKAGE", "123456")
+    monkeypatch.delenv("GA4_CREDENTIALS_JSON", raising=False)
+    out = fetch_wizard_starts(days=7)
+    assert out["ok"] is False
+    assert out["status"] == "unavailable"
+    assert out["mode"] == "missing_config"
+
+
+def test_live_sync_fail_null_sessions_unavailable(monkeypatch, tmp_path):
+    creds = tmp_path / "ga4.json"
+    creds.write_text("{}", encoding="utf-8")
+    monkeypatch.setenv("DEMAND_OS_GA4_LIVE", "1")
+    monkeypatch.setenv("GOOGLE_APPLICATION_CREDENTIALS", str(creds))
+    monkeypatch.setenv("GA4_PROPERTY_ID_ZZPACKAGE", "123456")
+    snap = MagicMock()
+    snap.sources.model_dump.return_value = {"zzpackage": {}}
+    snap.sync_status = "fail"
+    snap.fetched_at = None
+    snap.created_at = None
+    with patch(
+        "agent.nodes.analytics_node.fetch_analytics_snapshot",
+        return_value=snap,
+    ):
+        out = fetch_wizard_starts(days=7)
+    assert out["ok"] is False
+    assert out["status"] == "unavailable"
+    assert out["mode"] == "live_error"
+
+
+def test_live_error_unavailable(monkeypatch, tmp_path):
+    creds = tmp_path / "ga4.json"
+    creds.write_text("{}", encoding="utf-8")
+    monkeypatch.setenv("DEMAND_OS_GA4_LIVE", "1")
+    monkeypatch.setenv("GOOGLE_APPLICATION_CREDENTIALS", str(creds))
     monkeypatch.setenv("GA4_PROPERTY_ID_ZZPACKAGE", "123456")
 
     with patch(
@@ -109,9 +147,11 @@ def test_ga4_available_and_stub_alias(monkeypatch):
     assert stub["mode"] == "stub"
 
 
-def test_live_wizard_event_and_freshness(monkeypatch):
+def test_live_wizard_event_and_freshness(monkeypatch, tmp_path):
+    creds = tmp_path / "ga4.json"
+    creds.write_text("{}", encoding="utf-8")
     monkeypatch.setenv("DEMAND_OS_GA4_LIVE", "1")
-    monkeypatch.setenv("GOOGLE_APPLICATION_CREDENTIALS", "/tmp/fake.json")
+    monkeypatch.setenv("GOOGLE_APPLICATION_CREDENTIALS", str(creds))
     monkeypatch.setenv("GA4_PROPERTY_ID_ZZPACKAGE", "123456")
     monkeypatch.setenv("DEMAND_OS_GA4_WIZARD_START_EVENT", "wizard_start")
     snap = MagicMock()

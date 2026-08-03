@@ -15,13 +15,23 @@ from datetime import datetime, timezone
 from typing import Any, Dict, List, Optional
 
 
+def _credentials_present() -> bool:
+    """True when a usable SA path or inline JSON credentials exist on disk/env."""
+    path = os.getenv("GOOGLE_APPLICATION_CREDENTIALS", "").strip()
+    if path:
+        from pathlib import Path
+
+        if Path(path).is_file():
+            return True
+    inline = os.getenv("GA4_CREDENTIALS_JSON", "").strip()
+    if inline.startswith("{"):
+        return True
+    return False
+
+
 def ga4_available() -> bool:
     """True when credentials and a zzpackage/app/legacy property id exist."""
-    creds = (
-        os.getenv("GOOGLE_APPLICATION_CREDENTIALS", "").strip()
-        or os.getenv("GA4_CREDENTIALS_JSON", "").strip()
-    )
-    if not creds:
+    if not _credentials_present():
         return False
     return bool(
         os.getenv("GA4_PROPERTY_ID_ZZPACKAGE", "").strip()
@@ -112,6 +122,16 @@ def fetch_wizard_starts(*, days: int = 7) -> Dict[str, Any]:
             freshness = str(fetched_at)
         elif sync_status:
             freshness = str(sync_status)
+
+        sync_text = str(sync_status or "").lower()
+        sync_failed = sync_text in {"fail", "failed", "error", "unavailable"}
+        if sessions is None and wizard_starts is None and sync_failed:
+            return _unavailable(
+                mode="live_error",
+                reason=f"GA4 snapshot sync failed ({sync_status})",
+                days=days,
+                extra={"freshness": freshness or sync_text or None},
+            )
 
         return {
             "ok": True,

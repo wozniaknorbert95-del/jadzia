@@ -1,0 +1,17 @@
+{
+  "ok": false,
+  "status": "unavailable",
+  "mode": "missing_config_or_stub",
+  "ga4_sessions_7d": null,
+  "ga4_wizard_starts_7d": null,
+  "freshness": null,
+  "reason": "SA file missing at GOOGLE_APPLICATION_CREDENTIALS path; live metric blocked on credentials. Fail-closed path proven on VPS tip c04d1b4 (desk-dash11). DEMAND_OS_GA4_LIVE reverted after probe.",
+  "probe_notes": {
+    "tip": "c04d1b4",
+    "cache": "desk-dash11",
+    "env_path_set": true,
+    "sa_file_exists": false,
+    "filelock_installed_in_venv": true,
+    "live_enabled_after_closeout": false
+  }
+}
