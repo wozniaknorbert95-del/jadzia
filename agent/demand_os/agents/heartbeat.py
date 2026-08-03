@@ -8,10 +8,13 @@ Honesty: heartbeat proves a run happened, not that live cadence PASSed.
 from __future__ import annotations
 
 import json
+import logging
 import os
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any, Dict, Optional
+
+logger = logging.getLogger(__name__)
 
 _REPO = Path(__file__).resolve().parents[3]
 _DEFAULT_REL = Path("docs/ops/demand-os/set-now/AGENTS-HEARTBEAT.json")
@@ -19,10 +22,30 @@ STALE_DAYS = 7
 
 
 def default_heartbeat_path() -> Path:
+    """Resolve heartbeat path — env, else writable set-now, else data/ fallback.
+
+    Same contract as memory.default_memory_path: repo set-now is read-only on
+    prod (deploy checkout), so writes fall back to data/demand-os with a log.
+    """
     env = os.environ.get("DEMAND_OS_AGENTS_HEARTBEAT")
     if env:
         return Path(env)
-    return _REPO / _DEFAULT_REL
+    set_now = _REPO / _DEFAULT_REL.parent
+    try:
+        set_now.mkdir(parents=True, exist_ok=True)
+        probe = set_now / ".write_probe"
+        probe.write_text("", encoding="utf-8")
+        probe.unlink(missing_ok=True)
+        return set_now / _DEFAULT_REL.name
+    except OSError as exc:
+        fallback = _REPO / "data" / "demand-os" / _DEFAULT_REL.name
+        logger.warning(
+            "HEARTBEAT path fallback set_now_unwritable path=%s fallback=%s err=%s",
+            set_now / _DEFAULT_REL.name,
+            fallback,
+            exc,
+        )
+        return fallback
 
 
 def _utc_now_iso() -> str:

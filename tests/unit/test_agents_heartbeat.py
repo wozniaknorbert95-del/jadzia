@@ -65,6 +65,17 @@ def test_heartbeat_old_record_is_stale(tmp_path: Path):
     assert view["age_days"] >= 10
 
 
+def test_default_path_env_override(monkeypatch: pytest.MonkeyPatch, tmp_path: Path):
+    from agent.demand_os.agents.heartbeat import default_heartbeat_path
+
+    monkeypatch.setenv("DEMAND_OS_AGENTS_HEARTBEAT", str(tmp_path / "custom.json"))
+    assert default_heartbeat_path() == tmp_path / "custom.json"
+    monkeypatch.delenv("DEMAND_OS_AGENTS_HEARTBEAT")
+    # repo set-now is writable locally → default lands there (prod falls back to data/)
+    p = default_heartbeat_path()
+    assert p.name == "AGENTS-HEARTBEAT.json"
+
+
 def test_list_agents_includes_heartbeat(monkeypatch: pytest.MonkeyPatch, tmp_path: Path):
     p = tmp_path / "hb.json"
     monkeypatch.setenv("DEMAND_OS_AGENTS_HEARTBEAT", str(p))
