@@ -1,9 +1,11 @@
 # Handoff — Audit Truth-Recovery SHIP
 
 **Date:** 2026-08-03  
-**Status:** SHIP (commit + deploy GO in-session)  
+**Status:** SHIP DONE (commit + VPS deploy)  
+**SHA:** `bc2779c`  
 **Cache:** `desk-dash10`  
-**Register:** `docs/ops/demand-os/AUDIT-K-REGISTER.md` — K1–K14 remain `partial` until prod evidence captured post-deploy
+**Register:** `docs/ops/demand-os/AUDIT-K-REGISTER.md` — K1–K14 remain `partial` (prod tip shipped; item DoD evidence still open)  
+**Smoke:** `docs/handoffs/evidence/audit-k-2026-08-03/k14-deploy-smoke.md`
 
 ## Verification (shortcuts closed this wave)
 
