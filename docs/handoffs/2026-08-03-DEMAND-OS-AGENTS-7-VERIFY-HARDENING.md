@@ -52,9 +52,26 @@ regresyjnymi → rozliczenie pre-existing failures do zera → dogfood lokalny+V
 - Coverage agents modules po hardeningu: **90% total, min 82%** → K12 artifacts regenerowane.
 - Desk UI bez zmian → cache `desk-dash12` zostaje (brak zbędnego bumpu).
 
+## Post-deploy prod verify (domknięcie sesji)
+
+Deploy na VPS wymagał dwóch dodatkowych fixów (deploy-time findings, każdy = commit + re-verify):
+
+| Commit | Fix |
+|--------|-----|
+| `415306b` | `a2a_bus.py` → `state_paths.resolve_writable_path` (A2A-HANDOFFS.jsonl fallback); `wave_check` W4: check `a2a_bus_file` → `a2a_bus_writable` (kontrakt: plik powstaje przy pierwszym handoffie) |
+| `ca922ff` | `connectors/anti_spam.py` → writable path (ENGAGE-LOG.jsonl fallback) |
+| `1981ad4` | sanitized proof-pack parity: 13 plików `data/demand-os/set-now-sanitized/` było untracked (gitignore `data/`) → lokalnie doctor phase0 PASS, na VPS FAIL (`ICP-BRIEF-W1.md` missing). Dodane z `-f`; `pass_token` scrubbed → null (gitleaks hook) |
+
+**Final VPS owner-verify @ `1981ad4`: `ok: true`** — doctor ✓ · pointer_tests ✓ ·
+pytest `-k demand_os` 114/114 ✓ · footer_full ✓ · go_day_ready 100 ✓ ·
+agents_registry_contract 9 ról ✓ · agents_wave_check W1–W4 `tool_ready` ✓ · errors: [].
+
+SoT zsyncowane: `STATE.md` / `.cursor/current-task.md` / `todo.json` → tip `1981ad4`,
+`active_item = 4-TOOL-AGENTS-8-01`.
+
 ## RECOMMENDED_NEXT (tool)
 
-1. Kolejna iteracja cyklu: weryfikacja tej 10-ki na VPS po deploy (owner-verify + dogfood spot-check).
+1. MASTER-TODO-8: kolejna iteracja cyklu — zaczyna od weryfikacji tej 10-ki (VPS spot-check + pełna suita).
 2. Worker loop per rola (design przed kodem) → dopiero wtedy `shell:false` w registry.
 3. Dane operacyjne 5F/demand-os w working tree — osobny data-commit albo świadome porzucenie.
 4. GA4 live: credentials na VPS + `DEMAND_OS_GA4_LIVE=1` — po GO Dowódcy.
