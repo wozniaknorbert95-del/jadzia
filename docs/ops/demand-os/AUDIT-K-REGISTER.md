@@ -23,7 +23,7 @@ Status enum: `not_started` · `in_progress` · `partial` · `blocked` · `done`
 | **K9** | Performance | `blocked` | Tool present; LH CLI missing → SKIP until installed / 3-run evidence. |
 | **K10** | Error UX | `done` | Typed errors on desk load + actions. |
 | **K11** | Offline/cache | `done` (code) | desk_cache_v1 + SW no-/api/ + offline banner. |
-| **K12** | Desk coverage | `done` | ≥80% line on commander_status/desk_contract/ga4_adapter — see `k12-coverage.txt`. |
+| **K12** | Desk coverage | `done` | ≥80% line on commander_status/desk_contract/ga4_adapter — see `k12-coverage.txt`. Agents modules ≥80% (total 92%) — `k12-coverage-agents.txt/json`. |
 | **K13** | Ledger export | `done` (code) | Hub `ledger-export`; timer artifact **disabled** until GO. |
 | **K14** | Deploy automation | `done` (code) | validate / deploy blocked / rollback-hint. |
 
@@ -38,5 +38,6 @@ Status enum: `not_started` · `in_progress` · `partial` · `blocked` · `done`
 | K8 a11y | `docs/handoffs/evidence/audit-k-2026-08-03/k8-a11y-smoke.json` |
 | K9 perf | `docs/handoffs/evidence/audit-k-2026-08-03/k9-perf-smoke.json` |
 | K12 cov | `docs/handoffs/evidence/audit-k-2026-08-03/k12-coverage.txt` |
+| K12 agents cov | `docs/handoffs/evidence/audit-k-2026-08-03/k12-coverage-agents.txt` / `.json` |
 
 Live P0 remains **PARKED**.

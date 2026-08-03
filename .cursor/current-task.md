@@ -1,29 +1,26 @@
-# CURRENT TASK — AWAIT UNLOCK · live P0 PARKED
+# CURRENT TASK — AGENTS Etap 6 · live P0 PARKED
 
-**Gate:** `DEMAND-OS-MARKETING-4-00`  
-**Prod tip:** `74683e2` · cache `desk-dash11`  
-**Verify:** `python tools/demand_os_hub.py owner-verify` · `agents list` · `agents wave-check`  
+**Gate:** `DEMAND-OS-MARKETING-4-00` · agents backlog: `MASTER-TODO-6`  
+**Prod tip:** `74683e2` · cache `desk-dash11` (desk-dash12 pending deploy)  
+**Verify:** `python tools/demand_os_owner_verify.py` · `hub agents wave-check`  
 **Human:** [`docs/ops/demand-os/UNLOCK-LIVE-P0.md`](../docs/ops/demand-os/UNLOCK-LIVE-P0.md)  
-**Closeout:** [`docs/handoffs/2026-08-03-AUDIT-PARTIAL-CLOSEOUT.md`](../docs/handoffs/2026-08-03-AUDIT-PARTIAL-CLOSEOUT.md)  
-**Agents:** [`docs/handoffs/2026-08-03-DEMAND-OS-AGENTS-TOOL100.md`](../docs/handoffs/2026-08-03-DEMAND-OS-AGENTS-TOOL100.md)  
+**Agents handoff:** [`docs/handoffs/2026-08-03-DEMAND-OS-AGENTS-TOOL100.md`](../docs/handoffs/2026-08-03-DEMAND-OS-AGENTS-TOOL100.md)  
 **Coverage:** [`docs/ops/demand-os/OS-TARGET-V5-AGENTS-COVERAGE.md`](../docs/ops/demand-os/OS-TARGET-V5-AGENTS-COVERAGE.md)  
 **Register:** [`docs/ops/demand-os/AUDIT-K-REGISTER.md`](../docs/ops/demand-os/AUDIT-K-REGISTER.md)
 
 ## Status
 
-- TOOL 100% = SEALED  
-- OPS HARDENING = SEALED  
-- Audit Partial Closeout = SHIPPED (`desk-dash11`)  
-- Demand OS Agents = registry SoT + unified dispatch + hub `agents` + flow/wave-check + 32 tests
-- TARGET v5 pokrycie = W1–W4 `tool_ready`; live PASS = PARKED (human cadence)  
-- Live `4-P0-*` = PARKED until You sign unlock  
+- TOOL 100% = SEALED · OPS HARDENING = SEALED
+- MASTER-TODO-6 (10 zadań) = DONE: heartbeat per rola · owner-verify gate · coverage agents ≥80% · flow calendar+fatigue · W4 real checks · GA4 inline contract · desk tile Agenci (`desk-dash12`)
+- TARGET v5 pokrycie = W1–W4 `tool_ready`; live PASS = PARKED (human cadence)
+- Live `4-P0-*` = PARKED until You sign unlock
 
 ## Teraz (Dowódca)
 
-1. Otwórz `UNLOCK-LIVE-P0.md`  
-2. Albo podpisz UNLOCK (handoff) — albo zostaw parked  
-3. Agent nie publikuje  
+1. Desk po deploy: sekcja **Agenci Demand OS** pokazuje 9 ról + bieg/stale
+2. Albo podpisz UNLOCK (handoff) — albo zostaw parked
+3. Agent nie publikuje
 
 ## STOP
 
-Live marketing · Ads · fake ledger  
+Live marketing · Ads · fake ledger · `shell:false` bez worker loop

@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import json
+import os
 from copy import deepcopy
 from dataclasses import asdict, dataclass, field
 from datetime import date
@@ -63,8 +64,15 @@ class ContentCalendar:
         )
 
 
+def default_calendar_path() -> Path:
+    env = os.environ.get("DEMAND_OS_CONTENT_CALENDAR")
+    if env:
+        return Path(env)
+    return DEFAULT_CALENDAR_PATH
+
+
 def load_calendar(path: Optional[Path] = None) -> ContentCalendar:
-    src = path or DEFAULT_CALENDAR_PATH
+    src = path or default_calendar_path()
     if not src.is_file():
         return ContentCalendar(week="", slots=[], updated="")
     with src.open("r", encoding="utf-8") as fh:
@@ -74,7 +82,7 @@ def load_calendar(path: Optional[Path] = None) -> ContentCalendar:
 def save_calendar(cal: ContentCalendar, path: Optional[Path] = None) -> Path:
     from datetime import datetime, timezone
 
-    dest = path or DEFAULT_CALENDAR_PATH
+    dest = path or default_calendar_path()
     cal.updated = datetime.now(timezone.utc).replace(microsecond=0).isoformat()
     dest.parent.mkdir(parents=True, exist_ok=True)
     with dest.open("w", encoding="utf-8") as fh:

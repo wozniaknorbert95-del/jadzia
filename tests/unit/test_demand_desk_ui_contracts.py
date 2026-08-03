@@ -49,6 +49,8 @@ DESK_IDS = [
     "desk-kalendarz",
     "desk-week-calendar",
     "desk-shells-line",
+    "desk-agenci",
+    "desk-agents-list",
     "desk-footer",
     "desk-stale-hint",
     "desk-empty-data-hint",
@@ -77,6 +79,7 @@ CONTRACT_KEYS = [
     "dual_cash",
     "week_calendar",
     "shells_line",
+    "demand_agents",
     "data_mode",
     "last_real_event",
     "footer",
@@ -162,11 +165,30 @@ def test_desk_nav_desktop_and_more_sheet():
     assert 'id="more-to-demand-desk"' in HTML
 
 
-def test_cache_bust_desk_dash11():
-    assert HTML.count("desk-dash11") >= 2
+def test_cache_bust_desk_dash12():
+    assert HTML.count("desk-dash12") >= 2
+    assert "desk-dash11" not in HTML
     assert "desk-dash10" not in HTML
     assert "desk-dash09" not in HTML
-    assert "coi-commander-desk-dash11" in SW
+    assert "coi-commander-desk-dash12" in SW
+
+
+def test_desk_agents_tile_contract():
+    """6-10: desk shows agents registry honestly (shells, live gated, no publish push)."""
+    assert 'id="desk-agenci"' in HTML
+    assert 'id="desk-agents-list"' in HTML
+    assert "Agenci Demand OS" in HTML
+    section = _desk_js_section()
+    assert "data.demand_agents" in section
+    assert "desk-agent-chip--tool" in section
+    assert "desk-agent-chip--gated" in section
+    assert "desk-agent-chip--stale" in section
+    # honesty: no publish CTA inside the agents tile markup
+    tile = HTML[HTML.index('id="desk-agenci"') : HTML.index('id="desk-footer"')]
+    assert "desk-act-btn" not in tile
+    assert "Publikuj" not in tile
+    assert ".desk-agents-list" in CSS
+    assert ".desk-agent-chip--gated" in CSS
 
 
 def test_ux_repair_honesty_guards():

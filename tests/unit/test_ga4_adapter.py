@@ -147,6 +147,19 @@ def test_ga4_available_and_stub_alias(monkeypatch):
     assert stub["mode"] == "stub"
 
 
+def test_ga4_inline_credentials_must_be_json(monkeypatch):
+    # Inline contract: GA4_CREDENTIALS_JSON only counts when it is inline JSON
+    # (starts with "{") — a path or garbage here must not flip live mode on.
+    monkeypatch.delenv("GOOGLE_APPLICATION_CREDENTIALS", raising=False)
+    monkeypatch.setenv("GA4_CREDENTIALS_JSON", "/opt/jadzia/secrets/ga4.json")
+    monkeypatch.setenv("GA4_PROPERTY_ID", "999")
+    assert ga4_available() is False
+    monkeypatch.setenv("GA4_CREDENTIALS_JSON", "not-json")
+    assert ga4_available() is False
+    monkeypatch.setenv("GA4_CREDENTIALS_JSON", ' {"type":"service_account"}')
+    assert ga4_available() is True
+
+
 def test_live_wizard_event_and_freshness(monkeypatch, tmp_path):
     creds = tmp_path / "ga4.json"
     creds.write_text("{}", encoding="utf-8")

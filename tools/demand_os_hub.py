@@ -180,6 +180,19 @@ def cmd_agents_wave_check(_: argparse.Namespace) -> int:
     return 0 if out.get("ok") else 1
 
 
+def cmd_agents_heartbeat(args: argparse.Namespace) -> int:
+    """Record a role run (state write — act-class)."""
+    from agent.demand_os.agents.heartbeat import record_heartbeat
+
+    try:
+        rec = record_heartbeat(args.role, action=args.action)
+    except ValueError as exc:
+        _print({"ok": False, "error": str(exc), "roles": all_roles()})
+        return 1
+    _print({"ok": True, "heartbeat": rec})
+    return 0
+
+
 def cmd_ingest(args: argparse.Namespace) -> int:
     if args.fixture:
         path = Path(args.fixture)
@@ -561,11 +574,17 @@ def main(argv: list[str] | None = None) -> int:
     agf.set_defaults(func=cmd_agents_flow)
     agw = agsub.add_parser("wave-check", help="TARGET v5 §J wave readiness (tool/human split)")
     agw.set_defaults(func=cmd_agents_wave_check)
+    agh = agsub.add_parser("heartbeat", help="Record role run (last_run in agents list)")
+    agh.add_argument("--role", required=True, choices=all_roles())
+    agh.add_argument("--action", default="status")
+    agh.set_defaults(func=cmd_agents_heartbeat)
 
     args = p.parse_args(argv)
     cmd = args.cmd or ""
     if cmd == "memory" and getattr(args, "mem_cmd", None) in ("icp", "sync"):
         cmd = f"memory-{args.mem_cmd}"
+    elif cmd == "agents" and getattr(args, "agents_cmd", None) == "heartbeat":
+        cmd = "agents-heartbeat"
     elif cmd == "a2a" and getattr(args, "a2a_cmd", None) in ("emit", "ack"):
         cmd = f"a2a-{args.a2a_cmd}"
     elif cmd == "ledger" and getattr(args, "ensure_today", False):

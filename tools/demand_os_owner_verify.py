@@ -1,7 +1,8 @@
 #!/usr/bin/env python3
 """Demand OS owner verify — one-shot pack (exit 0 = green).
 
-Runs: doctor · pointer tests · pytest -k demand_os · footer full · go_day summary.
+Runs: doctor · pointer tests · pytest -k demand_os · footer full · go_day summary
+· agents registry contract · agents wave-check (tool side).
 """
 from __future__ import annotations
 
@@ -110,6 +111,36 @@ def main() -> int:
             "note": "artifact score ≠ Tool/OPS SEAL",
         }
     )
+
+    # 6) agents registry contract + wave readiness (TARGET v5 §J tool side)
+    from agent.demand_os.agents.registry import all_roles, list_agents
+    from agent.demand_os.agents.wave_check import wave_readiness
+
+    roles = all_roles()
+    listing = list_agents()
+    contract_ok = len(roles) == 9 and all(
+        r.get("shell") is True and "live_allowed" in r and "heartbeat" in r for r in listing
+    )
+    report["steps"].append(
+        {"name": "agents_registry_contract", "ok": contract_ok, "roles": len(roles)}
+    )
+    if not contract_ok:
+        errors.append("agents registry contract FAIL")
+
+    wr = wave_readiness()
+    waves_ok = wr.get("ok") is True
+    report["steps"].append(
+        {
+            "name": "agents_wave_check",
+            "ok": waves_ok,
+            "waves": [
+                {"wave": w["wave"], "overall": w["overall"]} for w in wr.get("waves", [])
+            ],
+            "note": "tool_ready ≠ live PASS (human cadence after unlock)",
+        }
+    )
+    if not waves_ok:
+        errors.append("agents wave-check FAIL (tool side)")
 
     report["ok"] = not errors and all(s.get("ok") for s in report["steps"] if s["name"] != "go_day_ready")
     report["errors"] = errors

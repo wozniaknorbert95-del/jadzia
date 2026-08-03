@@ -23,6 +23,7 @@ ACT_ACTIONS = frozenset(
         "engage-dry",
         "design-check",
         "audit-write",
+        "agents-heartbeat",
     }
 )
 

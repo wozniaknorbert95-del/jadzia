@@ -126,6 +126,37 @@ def build_demand_os_status(
             "error": str(exc)[:200],
         }
 
+    try:
+        from agent.demand_os.agents.registry import list_agents
+
+        agents_rows = [
+            {
+                "role": a["role"],
+                "wave": a["wave"],
+                "label": a["label"],
+                "kpi": a["kpi"],
+                "live_allowed": a["live_allowed"],
+                "blocked_reason": a["blocked_reason"],
+                "last_run_at": a["heartbeat"]["last_run_at"],
+                "stale": a["heartbeat"]["stale"],
+            }
+            for a in list_agents()
+        ]
+        demand_agents = {
+            "ok": True,
+            "roles": agents_rows,
+            "total": len(agents_rows),
+            "note": "orchestration shells — live PASS = human cadence after unlock",
+        }
+    except Exception as exc:
+        logger.warning("agents registry error in desk status: %s", exc)
+        demand_agents = {
+            "ok": False,
+            "roles": [],
+            "total": 0,
+            "error": str(exc)[:200],
+        }
+
     return {
         "ok": True,
         "gate": GATE,
@@ -180,6 +211,7 @@ def build_demand_os_status(
             "reason": ga4.get("reason") or ga4.get("error", ""),
         },
         "attribution": attribution,
+        "demand_agents": demand_agents,
         "footer": build_desk_footer(
             gate=GATE,
             data_mode=dm["data_mode"],

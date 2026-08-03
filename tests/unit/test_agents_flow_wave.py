@@ -45,6 +45,7 @@ def test_flow_validator_fail_blocks_chain():
 
 def test_flow_apply_emits_a2a_handoff(monkeypatch: pytest.MonkeyPatch, tmp_path: Path):
     monkeypatch.setenv("DEMAND_OS_A2A_BUS", str(tmp_path / "bus.jsonl"))
+    monkeypatch.setenv("DEMAND_OS_CONTENT_CALENDAR", str(tmp_path / "cal.json"))
     out = run_hub_spoke_flow(dry_run=False)
     assert out["ok"] is True
     handoff = out["steps"]["publish_request"]
@@ -55,6 +56,59 @@ def test_flow_apply_emits_a2a_handoff(monkeypatch: pytest.MonkeyPatch, tmp_path:
     bus = (tmp_path / "bus.jsonl").read_text(encoding="utf-8")
     assert "publish_request" in bus
     assert "Sniper_Validator" in bus
+
+
+def test_flow_apply_binds_calendar_slot(monkeypatch: pytest.MonkeyPatch, tmp_path: Path):
+    monkeypatch.setenv("DEMAND_OS_A2A_BUS", str(tmp_path / "bus.jsonl"))
+    cal_path = tmp_path / "cal.json"
+    monkeypatch.setenv("DEMAND_OS_CONTENT_CALENDAR", str(cal_path))
+    out = run_hub_spoke_flow(icp_role="installateur", dry_run=False)
+    assert out["ok"] is True
+    cal_step = out["steps"]["calendar"]
+    assert cal_step["ok"] is True
+    assert cal_step["status"] == "added"
+    cal = json.loads(cal_path.read_text(encoding="utf-8"))
+    slots = cal["slots"]
+    assert len(slots) == 1
+    slot = slots[0]
+    assert slot["status"] == "validated"
+    assert slot["asset_id"] == out["request"]["asset_id"]
+    assert slot["request_id"] == out["request"]["request_id"]
+    assert slot["pass_token"]  # minted by validator PASS
+    # re-run: same asset updates existing slot instead of duplicating
+    out2 = run_hub_spoke_flow(icp_role="installateur", dry_run=False)
+    assert out2["steps"]["calendar"]["status"] == "updated_existing"
+    cal2 = json.loads(cal_path.read_text(encoding="utf-8"))
+    assert len(cal2["slots"]) == 1
+
+
+def test_flow_dry_run_skips_calendar(monkeypatch: pytest.MonkeyPatch, tmp_path: Path):
+    cal_path = tmp_path / "cal.json"
+    monkeypatch.setenv("DEMAND_OS_CONTENT_CALENDAR", str(cal_path))
+    out = run_hub_spoke_flow()
+    assert out["ok"] is True
+    assert out["steps"]["calendar"]["status"] == "skipped_dry_run"
+    assert not cal_path.exists()
+
+
+def test_flow_fatigue_step_fresh_and_tired(monkeypatch: pytest.MonkeyPatch, tmp_path: Path):
+    # fresh asset: fatigue False
+    monkeypatch.setenv("DEMAND_OS_LEDGER", str(tmp_path / "LEDGER.csv"))
+    out = run_hub_spoke_flow(asset_id="tt_fresh_probe_01")
+    assert out["steps"]["fatigue"]["ok"] is True
+    assert out["steps"]["fatigue"]["fatigue"] is False
+    # tired asset: ledger row 30 days ago → B.4 warning, chain still proceeds
+    ledger = tmp_path / "LEDGER.csv"
+    old = "2026-06-01"
+    ledger.write_text(
+        "date,channel,icp_role,asset_id,utm_link,publish_Y/N,comments_sent,hot_leads,wizard_starts,paid,notes\n"
+        f"{old},tiktok,installateur,tt_tired_probe_01,https://x,Y,0,0,0,0,t\n",
+        encoding="utf-8",
+    )
+    out2 = run_hub_spoke_flow(asset_id="tt_tired_probe_01")
+    assert out2["ok"] is True  # fatigue is a soft B.4 warning, not a chain stop
+    assert out2["steps"]["fatigue"]["fatigue"] is True
+    assert "creative fatigue" in out2["steps"]["fatigue"]["warning"]
 
 
 def test_flow_live_mode_marks_publish_allowed(monkeypatch: pytest.MonkeyPatch):
@@ -79,6 +133,10 @@ def test_wave_readiness_shape_and_split(monkeypatch: pytest.MonkeyPatch):
     # tool side must be green after registry closeout
     assert out["ok"] is True
     assert all(w["overall"] == "tool_ready" for w in out["waves"])
+    # W4 real checks (6-08): episodic keys + fatigue probe + a2a bus file
+    w4 = next(w for w in out["waves"] if w["wave"] == 4)
+    names = {c["check"] for c in w4["tool_checks"]}
+    assert {"episodic_memory_layer", "fatigue_tool_probe", "a2a_bus_file"} <= names
 
 
 def test_wave_readiness_go_clears_block_reason(monkeypatch: pytest.MonkeyPatch):

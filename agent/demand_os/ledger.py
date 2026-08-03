@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import csv
+import os
 from datetime import date
 from pathlib import Path
 from typing import Any, Dict, List, Optional
@@ -26,7 +27,12 @@ COLUMNS = [
 
 
 def ledger_path(path: Optional[Path] = None) -> Path:
-    return path or DEFAULT_LEDGER
+    if path is not None:
+        return path
+    env = os.environ.get("DEMAND_OS_LEDGER")
+    if env:
+        return Path(env)
+    return DEFAULT_LEDGER
 
 
 def read_ledger(*, path: Optional[Path] = None) -> List[Dict[str, str]]:

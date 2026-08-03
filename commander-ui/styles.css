@@ -2300,6 +2300,65 @@ body.vhq-open.vhq-mode-work .vhq-shell__body {
   font-weight: 600;
 }
 
+.desk-agents-list {
+  list-style: none;
+  margin: 0.35rem 0 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+
+.desk-agent-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 0.4rem 0.6rem;
+  min-height: 44px;
+  padding: 0.35rem 0;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.desk-agent-row:last-child {
+  border-bottom: none;
+}
+
+.desk-agent-wave {
+  font-size: 0.75rem;
+  font-weight: 700;
+  opacity: 0.75;
+  min-width: 1.6rem;
+}
+
+.desk-agent-kpi {
+  flex: 1 1 auto;
+  min-width: 8rem;
+}
+
+.desk-agent-chip {
+  font-size: 0.72rem;
+  font-weight: 600;
+  padding: 0.12rem 0.5rem;
+  border-radius: 999px;
+  border: 1px solid rgba(255, 255, 255, 0.14);
+}
+
+.desk-agent-chip--tool {
+  color: var(--ok, #4ecb71);
+}
+
+.desk-agent-chip--gated {
+  color: var(--warn, #e6a700);
+}
+
+.desk-agent-chip--stale {
+  color: var(--muted, #9aa4b2);
+}
+
+.desk-agent-last {
+  font-size: 0.75rem;
+}
+
 .demand-desk-design-link {
   margin-top: 0.5rem;
 }

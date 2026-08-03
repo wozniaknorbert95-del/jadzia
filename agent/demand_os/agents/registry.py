@@ -114,30 +114,33 @@ def _live_allowed(spec: Dict[str, Any], mode: str) -> bool:
     return not (spec["live_gated"] and is_marketing_parked(marketing=mode))
 
 
-def list_agents() -> List[Dict[str, Any]]:
+def list_agents(*, with_heartbeat: bool = True) -> List[Dict[str, Any]]:
     """Registry projection for hub/CLI (and future desk tile). Honest shell marker."""
+    from agent.demand_os.agents.heartbeat import heartbeat_view
+
     mode = resolve_marketing_mode()
     out: List[Dict[str, Any]] = []
     for role in all_roles():
         spec = AGENT_REGISTRY[role]
         allowed = _live_allowed(spec, mode)
-        out.append(
-            {
-                "role": role,
-                "wave": spec["wave"],
-                "label": spec["label"],
-                "kpi": spec["kpi"],
-                "actions": list(spec["actions"]),
-                "mutating_actions": list(spec["mutating_actions"]),
-                "live_gated": spec["live_gated"],
-                "live_allowed": allowed,
-                "blocked_reason": (
-                    "" if allowed else "live gated until Dowódca unlock (marketing PARKED)"
-                ),
-                "shell": True,
-                "marketing": mode,
-            }
-        )
+        row = {
+            "role": role,
+            "wave": spec["wave"],
+            "label": spec["label"],
+            "kpi": spec["kpi"],
+            "actions": list(spec["actions"]),
+            "mutating_actions": list(spec["mutating_actions"]),
+            "live_gated": spec["live_gated"],
+            "live_allowed": allowed,
+            "blocked_reason": (
+                "" if allowed else "live gated until Dowódca unlock (marketing PARKED)"
+            ),
+            "shell": True,
+            "marketing": mode,
+        }
+        if with_heartbeat:
+            row["heartbeat"] = heartbeat_view(role)
+        out.append(row)
     return out
 
 

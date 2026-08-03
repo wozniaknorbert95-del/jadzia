@@ -68,11 +68,39 @@ def _tool_checks(wave: int) -> List[Dict[str, Any]]:
         out = dispatch("icp_brain", action="show")
         mem = out.get("result") or {}
         episodic = mem.get("episodic") if isinstance(mem, dict) else None
+        episodic_keys = sorted(episodic.keys()) if isinstance(episodic, dict) else []
         checks.append(
             {
                 "check": "episodic_memory_layer",
-                "ok": bool(out.get("ok")) and episodic is not None,
-                "detail": "episodic layer present" if episodic is not None else "missing",
+                "ok": bool(out.get("ok")) and bool(episodic_keys),
+                "detail": (
+                    f"keys={len(episodic_keys)} ({', '.join(episodic_keys[:4])})"
+                    if episodic_keys
+                    else "missing"
+                ),
+            }
+        )
+        from agent.demand_os.fatigue import fatigue_check
+
+        probe = fatigue_check("__wave_probe__")
+        checks.append(
+            {
+                "check": "fatigue_tool_probe",
+                "ok": probe.get("ok") is True and probe.get("fatigue") is False,
+                "detail": probe.get("note") or probe.get("error") or "B.4 probe",
+            }
+        )
+        from agent.demand_os.a2a_bus import default_bus_path
+
+        bus_path = default_bus_path()
+        bus_ok = bus_path.is_file()
+        checks.append(
+            {
+                "check": "a2a_bus_file",
+                "ok": bus_ok,
+                "detail": (
+                    f"{bus_path.name} present" if bus_ok else f"missing {bus_path}"
+                ),
             }
         )
     return checks

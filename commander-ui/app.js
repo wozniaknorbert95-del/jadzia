@@ -5349,6 +5349,37 @@ function renderDemandDesk(data) {
       .join("");
   }
 
+  const agentsBlock = data.demand_agents || {};
+  const agentsEl = document.getElementById("desk-agents-list");
+  if (agentsEl) {
+    const roles = agentsBlock.roles || [];
+    if (!roles.length) {
+      agentsEl.innerHTML = `<li class="hint state-empty">${deskEsc(
+        agentsBlock.error ? "Rejestr agentów niedostępny" : "Brak ról w rejestrze"
+      )}</li>`;
+    } else {
+      agentsEl.innerHTML = roles
+        .map((a) => {
+          const live = a.live_allowed === true;
+          const chip = live
+            ? '<span class="desk-agent-chip desk-agent-chip--tool">narzędzie</span>'
+            : '<span class="desk-agent-chip desk-agent-chip--gated">brama live</span>';
+          const stale = a.stale === true
+            ? '<span class="desk-agent-chip desk-agent-chip--stale">bez biegu >7d</span>'
+            : "";
+          const last = a.last_run_at ? deskEsc(String(a.last_run_at).slice(0, 10)) : "—";
+          return `<li class="desk-agent-row">
+            <span class="desk-agent-wave">W${deskEsc(String(a.wave ?? "?"))}</span>
+            <strong>${deskEsc(a.label || a.role || "?")}</strong>
+            <span class="desk-agent-kpi hint">${deskEsc(a.kpi || "")}</span>
+            ${chip}${stale}
+            <span class="desk-agent-last hint" title="Ostatni bieg: ${last}">bieg: ${last}</span>
+          </li>`;
+        })
+        .join("");
+    }
+  }
+
   deskSetText("desk-shells-line", data.shells_line || "—");
   const dataModeLabel = {REAL: "Dane produkcyjne", FIXTURE: "Dane testowe", MIXED: "Dane mieszane", EMPTY: "Brak danych"}[dataMode] || dataMode;
   deskSetText("desk-data-mode", dataModeLabel);
