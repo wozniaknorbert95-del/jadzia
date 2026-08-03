@@ -14,7 +14,7 @@ close_handoff: "docs/handoffs/2026-08-03-DEMAND-OS-OPS-HARDENING-SEAL-CLOSE.md"
 | program_phase | **Etap 4 · OPS HARDENING SEALED** · TOOL 100% SEALED |
 | master_todo | [`MASTER-TODO-4.md`](./MASTER-TODO-4.md) |
 | active_item | **4-OPS-HARDENING SEALED** · live `4-P0-*` PARKED |
-| prod_tip | **`a3deb59`** (runtime) |
+| prod_tip | **`a3deb59`** (OPS HARDENING runtime SEAL) |
 | marketing_hitl | env GO · **live_cadence PARKED** |
 | unlock | [`UNLOCK-LIVE-P0.md`](./UNLOCK-LIVE-P0.md) |
 | Ads | **PARK cash** |

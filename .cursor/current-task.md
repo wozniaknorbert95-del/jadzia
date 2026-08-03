@@ -1,7 +1,7 @@
 # CURRENT TASK — OPS HARDENING SEALED · live P0 PARKED
 
 **Gate:** `DEMAND-OS-MARKETING-4-00`  
-**Prod tip:** `a3deb59` (runtime)  
+**Prod tip:** `a3deb59` (OPS HARDENING runtime SEAL)  
 **Verify:** `python tools/demand_os_owner_verify.py`  
 **Unlock:** `docs/ops/demand-os/UNLOCK-LIVE-P0.md`  
 **Close:** `docs/handoffs/2026-08-03-DEMAND-OS-OPS-HARDENING-SEAL-CLOSE.md`

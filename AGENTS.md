@@ -15,7 +15,7 @@
 - **Deploy**: `.agents/workflows/jadzia-deploy.md`
 - **Post-coding**: `.agents/workflows/post-coding.md` (fresh GO for VPS)
 - **Latest handoffs**: `docs/handoffs/` (≤15 rolling; MBA archived)
-- **Marketing OS**: fazy = `PROGRAM-PHASES.md` · prod `2f68b64` · **TOOL 100% FIRST** · live P0 **PARKED** · publish tylko test+delete
+- **Marketing OS**: fazy = `PROGRAM-PHASES.md` · **Etap 4 OPS HARDENING SEALED** · prod `a3deb59` · live P0 **PARKED** · unlock = `UNLOCK-LIVE-P0.md`
 
 ## MBA
 
