@@ -1,12 +1,11 @@
-﻿# Session state — 2026-08-03 TOOL 100% SEALED
+﻿# Session state — 2026-08-03 OPS HARDENING SEALED
 
 | Field | Value |
 |-------|-------|
 | **gate** | `DEMAND-OS-MARKETING-4-00` |
-| **prod_tip** | `2f68b64` |
-| **direction** | **TOOL 100% SEALED** · live P0 **PARKED** |
-| **active_item** | `4-TOOL-100-SEALED` |
-| **rule** | `.cursor/rules/demand-os-tool-first.mdc` |
-| **close** | `docs/handoffs/2026-08-03-DEMAND-OS-TOOL-100-SEAL-CLOSE.md` |
+| **prod_tip_runtime** | `889258e` (+ OPS deploy pending/this tip) |
+| **direction** | TOOL+OPS SEALED · live P0 PARKED |
+| **active_item** | `4-OPS-HARDENING` SEALED |
+| **unlock** | `UNLOCK-LIVE-P0.md` |
 
-Await Dowódca unlock before any live TT/FB/blog.
+Await Dowódca unlock before live TT/FB/blog.

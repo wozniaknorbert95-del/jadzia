@@ -8,8 +8,8 @@ surface: "commander-ui #view-demand-desk"
 
 # Biuro Popytu — UI handoff (historical)
 
-> **ACTIVE program pointer:** [`MASTER-TODO-4.md`](./MASTER-TODO-4.md) → `4-TOOL-01` TOOL FIRST.  
-> Live P0 PARKED. Rule: `.cursor/rules/demand-os-tool-first.mdc`.
+> **ACTIVE program pointer:** [`MASTER-TODO-4.md`](./MASTER-TODO-4.md) → OPS HARDENING SEALED.  
+> Live P0 PARKED until [`UNLOCK-LIVE-P0.md`](./UNLOCK-LIVE-P0.md).
 
 ## Powierzchnia
 

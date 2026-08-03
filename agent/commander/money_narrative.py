@@ -95,6 +95,8 @@ def build_money_risk_narrative(
 
     marketing = resolve_marketing_mode()
     hitl_gate = marketing_hitl_gate(marketing=marketing)
+    # Policy: env GO may be LIVE while Dowódca cadence remains PARKED until UNLOCK-LIVE-P0
+    live_cadence = "PARKED"
 
     # Demand OS Hub §M — starts by UTM (never vanity views / euro)
     demand_os: Dict[str, Any] = {
@@ -103,6 +105,8 @@ def build_money_risk_narrative(
         "top_hook": "",
         "validator_fail": 0,
         "marketing": marketing,
+        "marketing_hitl_gate": hitl_gate,
+        "live_cadence": live_cadence,
         "source": "demand_os.money_check",
         "kill_vanity": True,
     }
@@ -120,6 +124,8 @@ def build_money_risk_narrative(
             "validator_fail": int(mc.get("validator_fail") or 0),
             "sniper_compliance": mc.get("sniper_compliance"),
             "marketing": marketing,
+            "marketing_hitl_gate": hitl_gate,
+            "live_cadence": live_cadence,
             "source": "demand_os.money_check",
             "kill_vanity": True,
         }
@@ -149,7 +155,8 @@ def build_money_risk_narrative(
         q1 = (
             f"Demand OS: {demand_os['starts_utm']} Wizard start(s) UTM · "
             f"top_hook={demand_os.get('top_hook') or 'none'} · "
-            f"marketing HITL {hitl_gate} — no live euro claimed."
+            f"marketing HITL {hitl_gate} · live_cadence={live_cadence} "
+            f"(env GO ≠ unlock) — no live euro claimed."
         )
         cta = {
             "label": "Demand OS status",

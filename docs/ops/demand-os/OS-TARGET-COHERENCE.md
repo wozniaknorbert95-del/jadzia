@@ -25,19 +25,17 @@ RBAC · §M UI · GDrive honesty · blog→pipeline · MCP calendar/gate/ga4-utm
 
 ## Current
 
-- **TOOL 100% SEALED** (2026-08-03) · live P0 PARKED
-- Doctor + pytest demand_os green under TOOL FIRST SoT
-- Connectors: registry/stub fail-closed (see [`CONNECTOR-BOUNDARY.md`](./CONNECTOR-BOUNDARY.md))
+- **TOOL 100% SEALED** + **OPS HARDENING SEALED** (2026-08-03)
+- Live P0 PARKED until [`UNLOCK-LIVE-P0.md`](./UNLOCK-LIVE-P0.md)
+- Connectors: registry/stub fail-closed ([`CONNECTOR-BOUNDARY.md`](./CONNECTOR-BOUNDARY.md))
 
 ## Verify
 
 ```bash
 export DEMAND_OS_SET_NOW=data/demand-os/set-now-sanitized
-python tools/demand_os_hub.py doctor
-python -m pytest tests -k demand_os -q
-python -m pytest tests/test_demand_os_tool_first_pointer.py -q
+python tools/demand_os_owner_verify.py
 ```
 
 ## Next program
 
-Finish `4-TOOL-01` residual → Tool 100% SEAL → **then** Dowódca may unlock live P0 (separate ceremony).
+Await Dowódca unlock ceremony — agents do not push live publish.

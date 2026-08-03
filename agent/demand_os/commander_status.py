@@ -149,5 +149,7 @@ def build_demand_os_status(
                 "marketing_hitl_gate": hitl_gate,
             },
             "marketing_hitl_gate": hitl_gate,
+            "live_cadence": "PARKED",
+            "note": "env GO ≠ cadence unlock — see UNLOCK-LIVE-P0.md",
         },
     }

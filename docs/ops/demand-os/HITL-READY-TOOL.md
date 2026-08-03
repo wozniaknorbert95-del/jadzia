@@ -11,7 +11,7 @@ Maszyna gotowa na rytm Foundera — **bez** autonomicznego publish.
 
 ## Historical note
 
-Ten dokument opisuje **dry gate pre-GO**. Aktualny pointer = `MASTER-TODO-4.md` **`4-TOOL-01` TOOL FIRST**; live P0 **PARKED**. Rule: `.cursor/rules/demand-os-tool-first.mdc`.
+Ten dokument opisuje **dry gate pre-GO**. Aktualny pointer = `MASTER-TODO-4.md` **OPS HARDENING SEALED** · live P0 **PARKED**. Unlock: `UNLOCK-LIVE-P0.md`.
 
 ## DoD (PASS)
 

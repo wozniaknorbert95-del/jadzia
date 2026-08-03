@@ -1,32 +1,32 @@
 ---
-status: "[ETAP 4 · TOOL 100% SEALED · live P0 PARKED]"
+status: "[ETAP 4 · OPS HARDENING SEALED · live P0 PARKED]"
 updated: "2026-08-03"
-last_step: "TOOL 100% SEAL — doctor/footer/waves/connectors/verify pack"
-next_action: "awaiting Dowódca unlock for live 4-P0-* (not auto)"
-prod_tip: "889258e · DEMAND_OS_MARKETING_HITL=GO · desk-dash08 · TOOL-100 SEAL"
-close_handoff: "docs/handoffs/2026-08-03-DEMAND-OS-TOOL-100-SEAL-CLOSE.md"
+last_step: "OPS HARDENING SEAL — sync/MEMORY/verify/unlock doc/cadence honesty"
+next_action: "await UNLOCK-LIVE-P0 (Dowódca only)"
+prod_tip: "889258e · DEMAND_OS_MARKETING_HITL=GO · desk-dash08 · OPS hardening pending tip sync"
+close_handoff: "docs/handoffs/2026-08-03-DEMAND-OS-OPS-HARDENING-SEAL-CLOSE.md"
 ---
 
 # Demand OS — STATE
 
 | Pole | Wartość |
 |------|---------|
-| program_phase | **Etap 4 · TOOL 100% SEALED** · live cadence PARKED |
+| program_phase | **Etap 4 · OPS HARDENING SEALED** · TOOL 100% SEALED |
 | master_todo | [`MASTER-TODO-4.md`](./MASTER-TODO-4.md) |
-| active_item | **4-TOOL-100 SEALED** · live `4-P0-*` PARKED |
-| prod_tip | **`889258e`** |
-| marketing_hitl | env GO possible · **live publish cadence PARKED** |
-| desk_ui | SEALED · `desk-dash08` · footer doctor honesty |
-| Ads | **PARK cash** (unchanged) |
+| active_item | **4-OPS-HARDENING SEALED** · live `4-P0-*` PARKED |
+| prod_tip | **`889258e`** (runtime) |
+| marketing_hitl | env GO · **live_cadence PARKED** |
+| unlock | [`UNLOCK-LIVE-P0.md`](./UNLOCK-LIVE-P0.md) |
+| Ads | **PARK cash** |
 
 ## Close
 
-[`2026-08-03-DEMAND-OS-TOOL-100-SEAL-CLOSE.md`](../handoffs/2026-08-03-DEMAND-OS-TOOL-100-SEAL-CLOSE.md)
+[`2026-08-03-DEMAND-OS-OPS-HARDENING-SEAL-CLOSE.md`](../handoffs/2026-08-03-DEMAND-OS-OPS-HARDENING-SEAL-CLOSE.md)
 
 ## STOP
 
-Live TT/FB/blog without Dowódca unlock · Ads · fake ledger · autonomous publish
+Live TT/FB/blog without unlock · Ads · fake ledger · autonomous publish
 
 ## Focus now
 
-Tool sealed. Unlock live P0 only by Dowódca ceremony — agents do not push publish.
+Maintain `owner_verify` green. Unlock only by Dowódca ceremony.

@@ -64,7 +64,10 @@ def test_demand_os_hub_partial_with_starts_go_env(monkeypatch):
     )
     assert out["status"] == "partial"
     assert out["demand_os"]["marketing"] == "HITL_LIVE"
+    assert out["demand_os"]["live_cadence"] == "PARKED"
     assert "marketing HITL READY" in out["q1"]
+    assert "live_cadence=PARKED" in out["q1"]
+    assert "env GO ≠ unlock" in out["q1"]
 
 
 def test_partial_with_hot_lead_counts_and_top_risk():

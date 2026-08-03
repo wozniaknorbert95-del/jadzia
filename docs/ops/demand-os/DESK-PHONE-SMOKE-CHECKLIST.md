@@ -1,20 +1,26 @@
 ---
-status: "[ACTIVE · HUMAN GATE]"
-title: "Biuro Popytu — phone smoke (Dowódca)"
-updated: "2026-08-02"
-gate: "DEMAND-OS-DESK-5F-00"
-master_todo: "docs/ops/demand-os/MASTER-TODO-5F.md"
-url: "https://api.zzpackage.flexgrafik.nl/commander/?cb=desk-dash06"
+status: "[ACTIVE · ETAP 4 OPS]"
+title: "Biuro Popytu — phone / prod smoke"
+updated: "2026-08-03"
+gate: "DEMAND-OS-MARKETING-4-00"
+master_todo: "docs/ops/demand-os/MASTER-TODO-4.md"
+url: "https://api.zzpackage.flexgrafik.nl/commander/?view=demand-desk&cb=desk-dash08"
 ---
 
-# Phone smoke — Biuro Popytu
+# Phone / prod smoke — Biuro Popytu (Etap 4 OPS)
 
-Po deploy GO + set-now sync. Dowódca only.
+## Footer honesty
 
-- [ ] Telegram OAuth login na telefonie
-- [ ] Biuro Popytu z More sheet (mobile)
-- [ ] Odśwież nie wylogowuje (JWT persists)
-- [ ] Touch targets ≥44px na HITL/Hunt
-- [ ] §8 design checklist 7/7 visual PASS
+- [ ] API status: `footer.doctor_scope` = `full`
+- [ ] `footer.doctor_ok` matches VPS `hub doctor` (no false green)
+- [ ] UI doctor chip shows OK/FAIL for full scope (not lightweight "files" as PASS)
 
-Evidence: wpis w `docs/handoffs/2026-08-02-DEMAND-DESK-5B-CLOSE.md`
+## Desk
+
+- [ ] Cache `desk-dash08`
+- [ ] `diagnostics.live_cadence` = PARKED (env GO ≠ unlock)
+- [ ] No agent push to live publish
+
+## Historical 5f
+
+Agent prod verify §8: [`2026-08-03-DEMAND-DESK-5F-P2-01-SECTION8-CLOSE.md`](../handoffs/2026-08-03-DEMAND-DESK-5F-P2-01-SECTION8-CLOSE.md)

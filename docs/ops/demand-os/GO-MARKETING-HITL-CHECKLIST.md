@@ -40,12 +40,15 @@ Scope: organic HITL only (TT + FB hunt + blog) · NO Ads
 - [ ] Verify: `marketing_hitl_gate: READY` w Desk / status API
 - [ ] Desk: brak bannera „PARKED - EUR nie powstaje…”
 
-## First actions (Dowódca · day 1 post-GO)
+## First actions (PARKED until UNLOCK)
 
-- [ ] TT HITL publish `tt_w32_install_01` (caption: `set-now/cap_tt_w32_01.txt`)
-- [ ] FB hunt 1 comment (allowlist · `FB-HUNT-DAILY.md`)
-- [ ] LEDGER wiersz za każdą akcję
-- [ ] Blog optional: `BLOG-HITL-SHIP.md` · `blog_w31_install_bus50m`
+> **env GO ≠ cadence unlock.** Day-1 publish is **PARKED**.  
+> Unlock ceremony: [`UNLOCK-LIVE-P0.md`](./UNLOCK-LIVE-P0.md)
+
+- [ ] ~~TT HITL publish~~ — PARKED until unlock record
+- [ ] ~~FB hunt live~~ — PARKED until unlock record
+- [ ] ~~Blog ship~~ — PARKED until unlock record
+- [ ] After unlock: LEDGER `publish=Y` only for REAL actions
 
 ## STOP
 

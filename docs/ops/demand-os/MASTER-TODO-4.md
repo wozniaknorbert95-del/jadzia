@@ -1,18 +1,17 @@
 ---
 gate: DEMAND-OS-MARKETING-4-00
-status: ACTIVE · TOOL 100% SEALED · live P0 PARKED
+status: ACTIVE · OPS HARDENING · TOOL 100% SEALED · live P0 PARKED
 updated: "2026-08-03"
 owner: agent-orchestrator
-human_gate: "Dowódca unlock live marketing (separate ceremony)"
-prerequisite: "Etap 5f SEALED · Hard DoD 15/15 · GO LIVE done · TOOL 100% SEAL"
-close_target: "awaiting Dowódca unlock for live 4-P0-*"
+human_gate: "UNLOCK-LIVE-P0.md (Dowódca only)"
+prerequisite: "Etap 5f SEALED · TOOL 100% SEAL · tip 889258e"
+close_target: "OPS HARDENING SEAL · then await UNLOCK-LIVE-P0"
 ---
 
-# MASTER TODO — Etap 4 (Marketing HITL · TOOL FIRST)
+# MASTER TODO — Etap 4 (Marketing HITL · TOOL FIRST · OPS)
 
-> **Kierunek Dowódcy (2026-08-03):** najpierw **narzędzie 100%**.  
-> Jakiekolwiek publikacje **tylko testowo** (proof → delete). Live `4-P0-*` PARKED.  
-> Rule: [`.cursor/rules/demand-os-tool-first.mdc`](../../../.cursor/rules/demand-os-tool-first.mdc)
+> **Kierunek:** tool 100% SEALED → **OPS HARDENING** → unlock tylko przez [`UNLOCK-LIVE-P0.md`](./UNLOCK-LIVE-P0.md).  
+> Live `4-P0-*` PARKED. Rule: [`.cursor/rules/demand-os-tool-first.mdc`](../../../.cursor/rules/demand-os-tool-first.mdc)
 
 ## Hierarchia SoT
 
@@ -22,20 +21,20 @@ close_target: "awaiting Dowódca unlock for live 4-P0-*"
 | 2 | [`GO-MARKETING-HITL-CHECKLIST.md`](./GO-MARKETING-HITL-CHECKLIST.md) | Ceremonia GO (human) |
 | 3 | [`STATE.md`](./STATE.md) | Faza · prod_tip |
 | 4 | [`.cursor/current-task.md`](../../../.cursor/current-task.md) | Jedno aktywne zadanie |
-| 5 | [`P0-HITL-PREFLIGHT.md`](./P0-HITL-PREFLIGHT.md) | Pakiet wejścia do P0 |
-| 6 | [`4-P0-01-TT-HITL-EXECUTION-PACKET.md`](./4-P0-01-TT-HITL-EXECUTION-PACKET.md) | Packet operatora TT |
-| 7 | [`ORGANIC-AGENCY-SPRINT-14D.md`](./ORGANIC-AGENCY-SPRINT-14D.md) | Rytm 14d organic |
-| 8 | [`HITL-READY-TOOL.md`](./HITL-READY-TOOL.md) | DoD maszyny dry |
+| 5 | [`UNLOCK-LIVE-P0.md`](./UNLOCK-LIVE-P0.md) | Ceremonia unlock cadence |
+| 6 | [`OWNER-VERIFY-COMMANDS.md`](./OWNER-VERIFY-COMMANDS.md) | Verify pack |
+| 7 | [`SYNC-SET-NOW.md`](./SYNC-SET-NOW.md) | Safe set-now sync |
+| 8 | [`P0-HITL-PREFLIGHT.md`](./P0-HITL-PREFLIGHT.md) | Pakiet P0 (parked) |
 
-## Stan wejścia (post 5f SEAL 2026-08-03)
+## Stan wejścia (post TOOL-100 deploy)
 
 | Pole | Wartość |
 |------|---------|
 | 5f | SEALED · Hard DoD 15/15 |
-| prod | `2f68b64` · gate READY · `5713cbc` desk-dash08 UI close |
-| go_day_ready | artifact score (≠ Tool SEAL) |
-| marketing_hitl_gate | env-dependent · live cadence **PARKED** |
-| GO switch | `DEMAND_OS_MARKETING_HITL=GO` on VPS (env-only) |
+| prod runtime | **`889258e`** TOOL 100% SEAL · desk-dash08 |
+| go_day_ready | artifact score (≠ Tool/OPS SEAL) |
+| marketing_hitl_gate | env may be READY · live cadence **PARKED** |
+| GO switch | `DEMAND_OS_MARKETING_HITL=GO` on VPS (env ≠ unlock) |
 | Ads | **PARK cash** · €0 spend |
 
 ## MASTER BACKLOG
@@ -58,14 +57,29 @@ Legenda: `open` · `in_progress` · `done` · `blocked` · `ready_for_human`
 | **4-GO-02** | VPS deploy `2f68b64` + env GO | Ops | `done` | EXEC-CLOSE handoff |
 | **4-GO-03** | Verify prod gate READY | Agent | `done` | VPS + browser prod |
 
-### TOOL — active now (before any live publish)
+### TOOL — sealed
 
 | ID | Zadanie | Owner | Status | DoD |
 |----|---------|-------|--------|-----|
-| **4-TOOL-01** | Demand OS tool 100% residual | Agent | `done` | doctor tip TOOL_FIRST · footer honesty · waves mode · connectors · verify pack |
-| **4-TOOL-02** | Test publish only if tool needs proof | Agent | `done` | dry gate path + [`4-TOOL-02-TEST-PUBLISH.md`](./4-TOOL-02-TEST-PUBLISH.md) · no live SEAL |
+| **4-TOOL-01** | Demand OS tool 100% residual | Agent | `done` | SEAL tip `889258e` |
+| **4-TOOL-02** | Test publish dry path | Agent | `done` | [`4-TOOL-02-TEST-PUBLISH.md`](./4-TOOL-02-TEST-PUBLISH.md) |
 
-### P0 — live HITL (PARKED until tool 100% + Dowódca unlock)
+### OPS — hardening (active)
+
+| ID | Zadanie | Owner | Status | DoD |
+|----|---------|-------|--------|-----|
+| **4-OPS-01** | SoT tip reconcile | Agent | `done` | no stale `2f68b64` in active pointers |
+| **4-OPS-02** | Safe set-now sync | Agent | `done` | dry-run default · no `--delete` · runtime exclude |
+| **4-OPS-03** | MEMORY write path | Agent | `done` | `DEMAND_OS_MEMORY` · log fallback |
+| **4-OPS-04** | Owner verify script | Agent | `done` | `tools/demand_os_owner_verify.py` exit 0 |
+| **4-OPS-05** | Pack coherence | Agent | `done` | sanitized README REQUIRED/OPTIONAL |
+| **4-OPS-06** | Unlock ceremony doc | Agent | `done` | [`UNLOCK-LIVE-P0.md`](./UNLOCK-LIVE-P0.md) |
+| **4-OPS-07** | Secondary pointer cleanup | Agent | `done` | no 4-TOOL-01 ACTIVE drift |
+| **4-OPS-08** | Prod desk footer smoke | Agent | `done` | phone checklist Etap 4 + evidence |
+| **4-OPS-09** | Money narrative cadence | Agent | `done` | `live_cadence=PARKED` |
+| **4-OPS-10** | OPS HARDENING SEAL | Agent | `done` | SEAL handoff |
+
+### P0 — live HITL (PARKED until UNLOCK-LIVE-P0)
 
 | ID | Zadanie | Owner | Status | DoD |
 |----|---------|-------|--------|-----|
@@ -92,23 +106,20 @@ Legenda: `open` · `in_progress` · `done` · `blocked` · `ready_for_human`
 ## Aktywne zadanie (pointer)
 
 ```
-CURRENT: 4-TOOL-100 SEAL (tool residual closed)
-NEXT:    awaiting Dowódca unlock for live 4-P0-* (not auto)
-BLOCKED: live 4-P0-01/02/03 until explicit Dowódca unlock
+CURRENT: 4-OPS-HARDENING SEALED
+NEXT:    await UNLOCK-LIVE-P0 (Dowódca only · not auto)
+BLOCKED: live 4-P0-01/02/03 until unlock handoff
 ```
 
 ## Verify (agent — każda sesja)
 
-Canonical pack: [`OWNER-VERIFY-COMMANDS.md`](./OWNER-VERIFY-COMMANDS.md)
-
 ```bash
 export DEMAND_OS_SET_NOW=data/demand-os/set-now-sanitized
-python tools/demand_os_hub.py doctor
-python -m pytest tests/test_demand_os_tool_first_pointer.py -q
-python -m pytest tests -k demand_os -q
+python tools/demand_os_owner_verify.py
 ```
 
-Note: `go_day_ready` score = artifact metric, **not** Tool 100% SEAL.
+Canonical detail: [`OWNER-VERIFY-COMMANDS.md`](./OWNER-VERIFY-COMMANDS.md)  
+Note: `go_day_ready` score = artifact metric, **not** Tool/OPS SEAL.
 
 ## STOP
 

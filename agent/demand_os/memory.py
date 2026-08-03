@@ -34,6 +34,10 @@ def _writable_data_memory_path() -> Path:
 
 
 def default_memory_path() -> Path:
+    """Resolve MEMORY path — prefer DEMAND_OS_MEMORY, else writable set-now, else data/.
+
+    Avoid silent split-brain: log when falling back from set-now to data/demand-os.
+    """
     env = os.environ.get("DEMAND_OS_MEMORY")
     if env:
         return Path(env)
@@ -45,8 +49,15 @@ def default_memory_path() -> Path:
         probe.write_text("", encoding="utf-8")
         probe.unlink(missing_ok=True)
         return set_now_mem
-    except OSError:
-        return _writable_data_memory_path()
+    except OSError as exc:
+        fallback = _writable_data_memory_path()
+        logger.warning(
+            "MEMORY path fallback set_now_unwritable path=%s fallback=%s err=%s",
+            set_now_mem,
+            fallback,
+            exc,
+        )
+        return fallback
 
 
 def _utc_now() -> str:
@@ -98,8 +109,13 @@ def save_memory(store: Dict[str, Any], *, path: Optional[Path] = None) -> Path:
     try:
         p.parent.mkdir(parents=True, exist_ok=True)
         p.write_text(json.dumps(store, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
+        logger.info("save_memory ok path=%s", p)
     except OSError as exc:
-        logger.warning("save_memory skipped (read-only?): %s %s", p, exc)
+        logger.error(
+            "save_memory skipped read_only=true path=%s err=%s hint=set DEMAND_OS_MEMORY writable",
+            p,
+            exc,
+        )
     return p
 
 
