@@ -15,7 +15,7 @@
 - **Deploy**: `.agents/workflows/jadzia-deploy.md`
 - **Post-coding**: `.agents/workflows/post-coding.md` (fresh GO for VPS)
 - **Latest handoffs**: `docs/handoffs/` (≤15 rolling; MBA archived)
-- **Marketing OS**: fazy = `PROGRAM-PHASES.md` · **Etap 4 PREP done** · SoT = `MASTER-TODO-4.md` · **GO MARKETING HITL pending** · 5f SEALED · Ads/VPS STOP until GO
+- **Marketing OS**: fazy = `PROGRAM-PHASES.md` · **Etap 4 GO LIVE** · prod `2f68b64` gate READY · P0 TT publish
 
 ## MBA
 

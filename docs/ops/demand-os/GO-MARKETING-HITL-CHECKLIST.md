@@ -29,8 +29,9 @@ By: Dowódca
 Scope: organic HITL only (TT + FB hunt + blog) · NO Ads
 ```
 
-- [ ] Powyższy wpis w handoff `docs/handoffs/YYYY-MM-DD-GO-MARKETING-HITL.md`
-- [ ] Potwierdzenie: €0 Ads · no boost · no Wave3 auto-publish
+- [x] Founder GO wpis — `2026-08-03-GO-MARKETING-HITL.md`
+- [x] VPS deploy `2f68b64` + env GO — 2026-08-03
+- [x] Prod verify gate READY — browser + VPS
 
 ## Ops (po GO — VPS)
 

@@ -51,9 +51,9 @@ Legenda: `open` · `in_progress` · `done` · `blocked` · `ready_for_human`
 
 | ID | Zadanie | Owner | Status | DoD |
 |----|---------|-------|--------|-----|
-| **4-GO-01** | Founder **`GO MARKETING HITL`** | Dowódca | `ready_for_human` | wpis w handoff + data |
-| **4-GO-02** | VPS env `DEMAND_OS_MARKETING_HITL=GO` | Ops | `open` | po GO-01 · restart jadzia |
-| **4-GO-03** | Verify prod gate READY | Agent | `open` | status API · Desk banner |
+| **4-GO-01** | Founder **`GO MARKETING HITL`** | Dowódca | `done` | `2026-08-03-GO-MARKETING-HITL.md` |
+| **4-GO-02** | VPS deploy `2f68b64` + env GO | Ops | `done` | EXEC-CLOSE handoff |
+| **4-GO-03** | Verify prod gate READY | Agent | `done` | VPS + browser prod |
 
 ### P0 — first HITL actions (post-GO)
 
@@ -82,9 +82,9 @@ Legenda: `open` · `in_progress` · `done` · `blocked` · `ready_for_human`
 ## Aktywne zadanie (pointer)
 
 ```
-CURRENT: 4-GO-01 (Founder GO MARKETING HITL)
-NEXT:    4-GO-02 VPS env → 4-GO-03 verify → 4-P0-01 TT publish
-BLOCKED: live publish until GO-01
+CURRENT: 4-P0-01 (TT publish tt_w32_install_01)
+NEXT:    4-P0-02 FB hunt · 4-P0-03 blog
+BLOCKED: none (GO LIVE)
 ```
 
 ## Verify (agent — każda sesja)

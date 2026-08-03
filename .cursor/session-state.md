@@ -1,27 +1,10 @@
-﻿# Session state — 2026-08-03
-
-## Gate / pointer
+﻿# Session state — 2026-08-03 GO LIVE
 
 | Field | Value |
 |-------|-------|
-| **active_gate** | `DEMAND-OS-MARKETING-4-00` |
-| **active_item** | `4-GO-01` Founder GO |
-| **Master TODO** | `MASTER-TODO-4.md` |
-| **5f** | SEALED · 15/15 |
-| **go_day_ready** | 100% |
-| **marketing gate** | BLOCKED (prod) |
+| **gate** | `DEMAND-OS-MARKETING-4-00` GO LIVE |
+| **prod_tip** | `2f68b64` |
+| **marketing gate** | **READY** |
+| **active_item** | `4-P0-01` TT publish |
 
-## Status
-
-- Etap 4 **PREP CLOSE** — env switch coded · checklist ready
-- **Blocked:** live publish until GO MARKETING HITL
-
-## Next
-
-1. Dowódca: GO + handoff wpis
-2. VPS: `DEMAND_OS_MARKETING_HITL=GO`
-3. Agent: verify READY · TT `tt_w32_install_01`
-
-## STOP
-
-Live bez GO · Ads · deploy kodu bez GO
+GO deploy+env+verify **DONE**. Next: TT + hunt + ledger (Dowódca).

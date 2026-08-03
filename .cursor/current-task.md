@@ -1,16 +1,18 @@
-# CURRENT TASK — Etap 4 Marketing HITL
+# CURRENT TASK — Etap 4 P0
 
-**Gate:** `DEMAND-OS-MARKETING-4-00` **ACTIVE (prep done)**  
-**Master TODO:** `docs/ops/demand-os/MASTER-TODO-4.md`  
-**Active item:** `4-GO-01` — Founder **GO MARKETING HITL**  
-**Prep close:** `docs/handoffs/2026-08-03-DEMAND-MARKETING-4-PREP-CLOSE.md`
+**Gate:** `DEMAND-OS-MARKETING-4-00` **GO LIVE**  
+**Prod:** `2f68b64` · gate **READY**  
+**Active item:** `4-P0-01` TT publish `tt_w32_install_01`  
+**Close:** `docs/handoffs/2026-08-03-GO-MARKETING-HITL-EXEC-CLOSE.md`
 
-## Cel
+## Teraz (Dowódca)
 
-Human: wpis GO + checklist [`GO-MARKETING-HITL-CHECKLIST.md`](docs/ops/demand-os/GO-MARKETING-HITL-CHECKLIST.md).
+1. TT publish — caption `docs/ops/demand-os/set-now/cap_tt_w32_01.txt`
+2. FB hunt 1× — `FB-HUNT-DAILY.md`
+3. LEDGER wiersz
 
-Po GO: VPS env → verify READY → TT publish `tt_w32_install_01`.
+Gate pre-check: `GATE ALLOW: tt_w32_install_01` ✓
 
 ## STOP
 
-Live publish · Ads · VPS kod bez GO
+Ads

@@ -23,7 +23,7 @@ ETAP 5c  IA NAV                          ← DONE
 ETAP 5d  IA SEAL                         ← DONE
 ETAP 5e  gap-close (boot, Praca-first)   ← DONE
 ETAP 5f  MASTER TODO dashboard 100%      ← SEALED 2026-08-03
-ETAP 4   MARKETING live                  ← PREP done · GO pending
+ETAP 4   MARKETING live                  ← GO LIVE 2026-08-03
 ```
 
 ## Etap 4 — Marketing HITL (**PREP done · GO pending**)
