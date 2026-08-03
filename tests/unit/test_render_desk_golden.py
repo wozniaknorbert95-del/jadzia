@@ -41,8 +41,8 @@ def test_golden_contract_keys_referenced_in_render():
 
 
 def test_render_dual_cash_columns_string():
-    assert "dual.columns" in _desk_js()
-    assert "verdict, offerte_only" in _desk_js()
+    assert "dual.open_fail" in _desk_js()
+    assert "dual.red" in _desk_js()
 
 
 def test_render_wow_format_helper():
@@ -52,7 +52,7 @@ def test_render_wow_format_helper():
 
 def test_render_prep_disables_hitl_actions():
     section = _desk_js()
-    assert "desk_action === \"PREP\"" in section or 'desk_action === "PREP"' in section
+    assert 'action === "PREP"' in section or "isPrep" in section
     assert "isPrep" in section
 
 

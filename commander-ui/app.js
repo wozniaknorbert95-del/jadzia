@@ -3,13 +3,21 @@ const API_BASE = (_apiOverride && /^https:\/\/api\.zzpackage\.flexgrafik\.nl\/?$
   ? _apiOverride.replace(/\/$/, "")
   : window.location.origin;
 const TOKEN_KEY = "coi_commander_jwt";
+const DESK_CACHE_KEY = "desk_cache_v1";
 let pendingUndoEntryId = null;
 let undoTimer = null;
 let selectedEntries = new Set();
 let roleMap = {};
+/** K3: HttpOnly cookie session (preferred); localStorage token is emergency fallback only. */
+let _cookieSession = false;
+let _sessionRole = "";
 
 function getToken() {
   return localStorage.getItem(TOKEN_KEY) || "";
+}
+
+function hasSession() {
+  return !!(getToken() || _cookieSession);
 }
 
 function setToken(t) {
@@ -18,8 +26,17 @@ function setToken(t) {
   updateAuthStatus();
 }
 
+function setCookieSession(ok, role) {
+  _cookieSession = !!ok;
+  if (role) _sessionRole = String(role || "").toLowerCase();
+  if (!ok) _sessionRole = "";
+  updateAuthStatus();
+}
+
 function clearToken() {
   localStorage.removeItem(TOKEN_KEY);
+  _cookieSession = false;
+  _sessionRole = "";
   const input = document.getElementById("jwt-input");
   if (input) input.value = "";
   updateAuthStatus();
@@ -33,20 +50,19 @@ function setAuthExpanded(expanded) {
   panel.classList.toggle("auth-collapsed", !expanded);
   body.hidden = !expanded;
   if (toggle) {
-    toggle.hidden = expanded || !getToken();
+    toggle.hidden = expanded || !hasSession();
     toggle.setAttribute("aria-expanded", expanded ? "true" : "false");
   }
 }
 
 function updateAuthStatus() {
-  const loggedIn = !!getToken();
+  const loggedIn = hasSession();
   const el = document.getElementById("auth-status");
   if (el) {
     el.textContent = loggedIn
-      ? "Zalogowano (sesja JWT w przeglądarce)."
+      ? "Zalogowano (sesja cookie, do 7 dni)."
       : "Telegram: /commander → jednorazowy link (15 min).";
   }
-  // Always sync chrome even if status node missing
   setAuthExpanded(!loggedIn);
   const input = document.getElementById("jwt-input");
   if (input && loggedIn) input.value = "";
@@ -56,6 +72,7 @@ async function exchangeLoginCode(code) {
   const res = await fetch(`${API_BASE}/api/v1/commander/auth/exchange`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
+    credentials: "include",
     body: JSON.stringify({ code }),
   });
   if (!res.ok) {
@@ -63,6 +80,51 @@ async function exchangeLoginCode(code) {
     throw new Error(err.detail || "Kod logowania nieważny lub wygasł");
   }
   return res.json();
+}
+
+async function logoutSession() {
+  try {
+    await fetch(`${API_BASE}/api/v1/commander/auth/logout`, {
+      method: "POST",
+      credentials: "include",
+    });
+  } catch (_e) {
+    /* still clear local */
+  }
+  clearToken();
+}
+
+async function probeSession() {
+  try {
+    const res = await fetch(`${API_BASE}/api/v1/commander/auth/session`, {
+      credentials: "include",
+      headers: getToken() ? { Authorization: `Bearer ${getToken()}` } : {},
+    });
+    if (!res.ok) {
+      setCookieSession(false);
+      return false;
+    }
+    const data = await res.json();
+    setCookieSession(true, data.role || "");
+    return true;
+  } catch (_e) {
+    setCookieSession(false);
+    return false;
+  }
+}
+
+function apiErrorMessage(status, detail) {
+  if (status === 403) return "Brak uprawnień do tej akcji.";
+  if (status === 404) return "Nie znaleziono zasobu.";
+  if (status === 408 || status === 504) return "Serwer nie odpowiada — spróbuj ponownie.";
+  if (status >= 500) return "Błąd serwera — spróbuj ponownie.";
+  if (detail && typeof detail === "object") {
+    return detail.message || detail.error || "Operacja nieudana.";
+  }
+  if (typeof detail === "string" && detail && !detail.trim().startsWith("{")) {
+    return detail;
+  }
+  return "Operacja nieudana.";
 }
 
 function stripAuthParamsFromUrl() {
@@ -93,20 +155,22 @@ async function api(path, options = {}) {
     // Call sites that pre-stringify still need JSON content-type
     headers["Content-Type"] = "application/json";
   }
-  const res = await fetch(`${API_BASE}${path}`, { ...options, headers });
+  const res = await fetch(`${API_BASE}${path}`, {
+    ...options,
+    headers,
+    credentials: "include",
+  });
   if (res.status === 401) {
     const authCritical = options.authCritical !== false;
     if (authCritical) {
       clearToken();
       setAuthExpanded(true);
     }
-    throw new Error("Sesja wygasła — Telegram /commander lub wklej token");
+    throw new Error("Sesja wygasła — otwórz link z Telegrama /commander");
   }
   if (!res.ok) {
     const err = await res.json().catch(() => ({}));
-    const detail = err.detail;
-    const msg = typeof detail === "object" ? detail.message || JSON.stringify(detail) : detail;
-    throw new Error(msg || res.statusText);
+    throw new Error(apiErrorMessage(res.status, err.detail));
   }
   return res.json();
 }
@@ -1686,6 +1750,14 @@ function showView(name) {
     const active = v.id === `view-${name}`;
     v.hidden = !active;
     v.classList.toggle("active", active);
+    // K6: hidden views must not be focusable / in a11y tree
+    if (active) {
+      v.removeAttribute("inert");
+      v.removeAttribute("aria-hidden");
+    } else {
+      v.setAttribute("inert", "");
+      v.setAttribute("aria-hidden", "true");
+    }
   });
   document.querySelectorAll(".nav-btn[data-view]").forEach((b) => {
     const on = b.dataset.view === name;
@@ -1695,6 +1767,47 @@ function showView(name) {
   });
   vhqSyncHqAccessibility();
 }
+
+/** K10 typed desk errors — user message + correlation id for Diagnostics. */
+function deskTypedError(kind, technical) {
+  const map = {
+    auth: "Sesja wygasła — zaloguj się ponownie przez Telegram.",
+    scope: "Brak uprawnień do tej akcji.",
+    timeout: "Serwer nie odpowiada — spróbuj ponownie za chwilę.",
+    server: "Błąd serwera — spróbuj ponownie.",
+    network: "Brak sieci — pokazuję ostatnie dane, jeśli są.",
+    malformed: "Odebrano uszkodzone dane — odśwież biuro.",
+    stale: "Dane mogą być nieaktualne — odśwież.",
+  };
+  const id = `ERR-${kind}-${Date.now().toString(36)}`;
+  return { kind, message: map[kind] || map.server, correlationId: id, technical: String(technical || "").slice(0, 200) };
+}
+
+function deskUpdateOfflineBanner() {
+  let el = document.getElementById("desk-offline-banner");
+  if (!el) {
+    const root = document.getElementById("view-demand-desk");
+    if (!root) return;
+    el = document.createElement("div");
+    el.id = "desk-offline-banner";
+    el.className = "demand-desk-banner demand-desk-banner--fixture";
+    el.hidden = true;
+    el.setAttribute("role", "status");
+    root.prepend(el);
+  }
+  if (!navigator.onLine) {
+    el.hidden = false;
+    el.textContent = "Offline — akcje zapisu wyłączone. Widoczne ostatnie dane lokalne.";
+    document.querySelectorAll("#view-demand-desk .desk-act-btn").forEach((btn) => {
+      if (btn.id !== "desk-refresh") btn.disabled = true;
+    });
+  } else {
+    el.hidden = true;
+  }
+}
+
+window.addEventListener("online", () => deskUpdateOfflineBanner());
+window.addEventListener("offline", () => deskUpdateOfflineBanner());
 
 function parkVhqForDeskView() {
   if (typeof vhqIsPrimary === "function" && vhqIsPrimary() && typeof vhqParkPrimaryShell === "function") {
@@ -4805,8 +4918,8 @@ document.getElementById("ticket-close").onclick = () => {
   document.getElementById("ticket-panel").hidden = true;
 };
 
-document.getElementById("auth-logout").onclick = () => {
-  clearToken();
+document.getElementById("auth-logout").onclick = async () => {
+  await logoutSession();
   setAuthExpanded(true);
   toast("Wylogowano");
 };
@@ -4821,7 +4934,9 @@ async function bootstrapAuth() {
   if (loginCode) {
     try {
       const data = await exchangeLoginCode(loginCode);
-      setToken(data.token);
+      // Cookie is HttpOnly SoT; do not persist bearer in localStorage (K3).
+      localStorage.removeItem(TOKEN_KEY);
+      setCookieSession(true, data.role || "dowodca");
       stripAuthParamsFromUrl();
       toast("Zalogowano (Telegram)");
       return;
@@ -4830,30 +4945,56 @@ async function bootstrapAuth() {
       toast(e.message || "Logowanie nieudane");
     }
   } else if (legacyJwt) {
-    // Compatibility only — prefer ?code= one-time exchange
-    setToken(legacyJwt);
+    // Reject JWT-in-URL for new sessions (K3) — strip and ask for Telegram code.
     stripAuthParamsFromUrl();
-    toast("Zalogowano (legacy jwt param)");
+    toast("Link z tokenem jest wyłączony — użyj /commander w Telegramie");
   }
 
   if (ticketParam && tokenParam) {
     openTicketFromDeeplink(ticketParam, tokenParam);
   } else if (ticketParam) {
     showView("home");
-    toast(`Ticket #${ticketParam} — /commander lub wklej JWT`);
+    toast(`Ticket #${ticketParam} — zaloguj się przez Telegram /commander`);
   }
 
   if (getToken()) {
-    document.getElementById("jwt-input").value = "";
+    const input = document.getElementById("jwt-input");
+    if (input) input.value = "";
     updateAuthStatus();
   } else {
-    updateAuthStatus();
+    await probeSession();
   }
 }
 
 // --- Demand Desk (Etap 5) ---
 let _deskRefreshTimer = null;
 let _deskLastData = null;
+
+/** Demand Desk primary-surface copy (no internal jargon). */
+const DESK_COPY = {
+  emptyHitlNoData: "Brak kalendarza treści na serwerze — zsynchronizuj dane operacyjne.",
+  emptyHitl: "Brak treści do zatwierdzenia — dodaj pozycję w kalendarzu.",
+  emptyHunt: "Brak celów kontaktowych — uzupełnij listę dozwolonych grup.",
+  emptyAssets: "Brak startów Wizard — pojawią się po pierwszym realnym wejściu.",
+  connBanner: "Brak połączenia — sprawdź logowanie i sieć.",
+  authRequired: "Zaloguj się, aby otworzyć Biuro Popytu.",
+  scopeViewer: "Tryb tylko odczyt — akcje wyłączone.",
+  scopeForbidden: "Brak uprawnień do Biura Popytu — tylko ograniczony odczyt.",
+  hitlErr: "Nie udało się zapisać decyzji — sprawdź pozycję w kalendarzu.",
+  huntConfirm: (target) => `Wysłać komentarz testowy do ${target}? (bez publikacji na FB)`,
+  huntOk: "Komentarz testowy wysłany",
+  huntErr: "Nie udało się wysłać komentarza testowego",
+  huntBadgeSent: "Wysłany",
+  moneyOk: (starts, paid) => `Kasa: ${starts} startów Wizard · ${paid} płatnych`,
+  moneyErr: "Nie udało się sprawdzić kasy",
+  ledgerOk: "Dziennik — wpis na dziś",
+  ledgerErr: "Nie udało się zapisać dziennika",
+  icpRequired: "Rola tygodnia i hasło (min 3 znaki) są wymagane",
+  icpSaved: "Rola tygodnia zapisana",
+  ga4Unavailable: "niedostępne",
+  ga4StubTitle: "GA4 wyłączone (brak trybu live)",
+  offlineStale: (ts) => `Offline — pokazuję ostatni odczyt z ${ts}. Akcje zapisu wyłączone.`,
+};
 
 function deskEsc(s) {
   return String(s ?? "")
@@ -4864,6 +5005,7 @@ function deskEsc(s) {
 }
 
 function jwtPayloadRole() {
+  if (_sessionRole) return _sessionRole;
   const t = getToken();
   if (!t) return "";
   try {
@@ -4878,10 +5020,34 @@ function jwtPayloadRole() {
 }
 
 function deskCanAct() {
-  if (!getToken()) return false;
+  if (!hasSession()) return false;
+  if (!navigator.onLine) return false;
   const role = jwtPayloadRole();
   if (!role) return true;
   return role !== "viewer";
+}
+
+function deskPersistCache(data) {
+  try {
+    localStorage.setItem(
+      DESK_CACHE_KEY,
+      JSON.stringify({ ts: new Date().toISOString(), data })
+    );
+  } catch (_e) {
+    /* quota / private mode */
+  }
+}
+
+function deskLoadPersistedCache() {
+  try {
+    const raw = localStorage.getItem(DESK_CACHE_KEY);
+    if (!raw) return null;
+    const parsed = JSON.parse(raw);
+    if (!parsed || !parsed.data) return null;
+    return parsed;
+  } catch (_e) {
+    return null;
+  }
 }
 
 function deskSetText(id, text) {
@@ -4905,9 +5071,9 @@ function deskApplyActButtons() {
     el.disabled = !can;
   });
   const hint = document.getElementById("desk-scope-banner");
-  if (hint && !can && getToken()) {
+  if (hint && !can && hasSession()) {
     hint.hidden = false;
-    hint.textContent = "Tryb tylko odczyt (viewer) — akcje wyłączone.";
+    hint.textContent = DESK_COPY.scopeViewer;
     hint.className = "demand-desk-banner";
   } else if (hint && can) {
     hint.hidden = true;
@@ -4946,7 +5112,7 @@ function renderDemandDesk(data) {
   if (fixBanner) {
     if (dataMode === "FIXTURE" || dataMode === "MIXED") {
       fixBanner.hidden = false;
-      fixBanner.textContent = `Tryb ${dataMode} — dane nie są wyłącznie REAL. Nie traktuj jako potwierdzonej kasy.`;
+      fixBanner.textContent = `Dane ${dataMode === "FIXTURE" ? "testowe" : "mieszane"} — nie traktuj jako potwierdzonej kasy.`;
     } else {
       fixBanner.hidden = true;
     }
@@ -4957,7 +5123,7 @@ function renderDemandDesk(data) {
   if (robotaEl) {
     const robotaTitle =
       robota.title ||
-      `Robota dnia: ${code}${robota.label ? ` — ${robota.label}` : ""}`;
+      `Zadanie dnia: ${robota.label || code}`;
     robotaEl.textContent = robotaTitle;
   }
 
@@ -4969,11 +5135,11 @@ function renderDemandDesk(data) {
       ? "desk-cadence-chip desk-cadence-chip--unlocked"
       : "desk-cadence-chip desk-cadence-chip--parked";
     cadenceChip.textContent = unlocked
-      ? "Cadence UNLOCKED · publish OPEN"
-      : "Cadence PARKED · publish LOCKED";
+      ? "Publikowanie aktywne"
+      : "Publikowanie wstrzymane";
     cadenceChip.title =
       diag.live_cadence_note ||
-      "env GO ≠ unlock live publish — patrz UNLOCK-LIVE-P0.md";
+      "Publikowanie wymaga osobnego odblokowania przez właściciela";
   }
 
   deskSetText("desk-icp", data.icp_role_week || "—");
@@ -4998,6 +5164,40 @@ function renderDemandDesk(data) {
     wowEl.classList.toggle("desk-wow--down", Number(wowDelta) < 0);
   }
   deskSetText("desk-kpi-paid", String(kpi.paid ?? 0));
+
+  const ga4 = data.ga4 || {};
+  const ga4El = document.getElementById("desk-kpi-ga4");
+  if (ga4El) {
+    const sessions = ga4.ga4_sessions_7d ?? ga4.sessions;
+    const ga4Ok = ga4.ok === true && ga4.status === "ok" && sessions != null;
+    if (ga4Ok) {
+      ga4El.textContent = String(sessions);
+      ga4El.title = `Sesje GA4 (7 dni)${ga4.freshness ? ` · ${ga4.freshness}` : ""} · to nie starty Wizard`;
+    } else {
+      ga4El.textContent = DESK_COPY.ga4Unavailable;
+      ga4El.title =
+        ga4.reason ||
+        ga4.error ||
+        (ga4.mode === "stub" ? DESK_COPY.ga4StubTitle : "brak danych GA4");
+    }
+  }
+  const attr = data.attribution || {};
+  const attrEl = document.getElementById("desk-kpi-attr");
+  if (attrEl) {
+    const attributed = (attr.by_status && attr.by_status.attributed) || 0;
+    const total = attr.total ?? 0;
+    if (attr.status === "ok" && total > 0) {
+      attrEl.textContent = String(attributed || total);
+      const top = (attr.top_assets && attr.top_assets[0]) || null;
+      attrEl.title = top
+        ? `Przypisane starty · top asset: ${top.asset_id || top[0] || "—"}`
+        : "Przypisane starty Wizard (SQLite)";
+    } else {
+      attrEl.textContent = DESK_COPY.ga4Unavailable;
+      attrEl.title = "Brak przypisanych startów w bazie — to nie sesje GA4";
+    }
+  }
+
   deskSetText("desk-kpi-hook", String(kpi.top_hook || "none"));
   deskSetText("desk-kpi-publish", String(kpi.publish_count ?? 0));
 
@@ -5012,26 +5212,31 @@ function renderDemandDesk(data) {
   const hitlEl = document.getElementById("desk-hitl-list");
   if (hitlEl) {
     if (!hitl.length) {
-      const emptyMsg =
-        dataMode === "EMPTY"
-          ? "Brak CONTENT-CALENDAR na serwerze — sync set-now (data/demand-os/set-now-sanitized README)."
-          : "Brak pozycji HITL — dodaj slot w CONTENT-CALENDAR lub sprawdź top_wizard_note.";
+      const emptyMsg = dataMode === "EMPTY" ? DESK_COPY.emptyHitlNoData : DESK_COPY.emptyHitl;
       hitlEl.innerHTML = `<p class="hint state-empty">${deskEsc(emptyMsg)}</p>`;
     } else {
       hitlEl.innerHTML = hitl
         .map((row) => {
           const aid = deskEsc(row.asset_id || "?");
-          const st = deskEsc(row.status || row.desk_action || "?");
-          const isPrep = st === "PREP" || row.desk_action === "PREP";
+          const action = String(row.desk_action || row.status || "?").toUpperCase();
+          const isPrep = action === "PREP";
+          const stLabel =
+            action === "PREP" || action === "PLANNED" || action === "READY_FOR_HUMAN"
+              ? "Do przygotowania"
+              : action === "GOTOWY" || action === "VALIDATED"
+                ? "Zaplanowany"
+                : action === "BLOKADA" || action === "BLOCKED"
+                  ? "Wstrzymany"
+                  : "W kalendarzu";
           const prepHint = isPrep ? " · przygotuj slot w kalendarzu" : "";
           const channel = deskEsc(row.channel || "");
           const can = deskCanAct() && !isPrep;
           const dis = can ? "" : " disabled";
           return `<article class="desk-queue-row" tabindex="0" data-asset-id="${aid}">
-            <p><strong>${aid}</strong> · ${st}${prepHint}${channel ? ` · ${channel}` : ""}</p>
+            <p><strong>${aid}</strong> · ${stLabel}${prepHint}${channel ? ` · ${channel}` : ""}</p>
             <div class="demand-desk-footer-actions">
-              <button type="button" class="desk-act-btn" data-desk-act="hitl" data-decision="GOTOWY" data-asset-id="${aid}"${dis}>GOTOWY (kalendarz · bez publish)</button>
-              <button type="button" class="desk-act-btn secondary" data-desk-act="hitl" data-decision="BLOKADA" data-asset-id="${aid}"${dis}>BLOKADA</button>
+              <button type="button" class="desk-act-btn" data-desk-act="hitl" data-decision="GOTOWY" data-asset-id="${aid}"${dis}>Zaplanuj (bez publikacji)</button>
+              <button type="button" class="desk-act-btn secondary" data-desk-act="hitl" data-decision="BLOKADA" data-asset-id="${aid}"${dis}>Wstrzymaj</button>
             </div>
           </article>`;
         })
@@ -5043,8 +5248,7 @@ function renderDemandDesk(data) {
   const huntEl = document.getElementById("desk-hunt-list");
   if (huntEl) {
     if (!hunt.length) {
-      huntEl.innerHTML =
-        '<p class="hint state-empty">Brak celów hunt — uzupełnij ALLOWLIST.json lub ENGAGE-LOG.</p>';
+      huntEl.innerHTML = `<p class="hint state-empty">${deskEsc(DESK_COPY.emptyHunt)}</p>`;
     } else {
       huntEl.innerHTML = hunt
         .map((row) => {
@@ -5054,12 +5258,13 @@ function renderDemandDesk(data) {
           const draft = deskEsc(row.draft || "");
           const badgeCls =
             ds === "SENT" ? "desk-badge--sent" : ds === "BLOCK" ? "desk-badge--block" : "desk-badge--ready";
+          const badgeLabel = ds === "SENT" ? "Wysłany" : ds === "BLOCK" ? "Wstrzymany" : "Gotowy";
           const can = deskCanAct();
           const dis = !can || ds === "SENT" ? " disabled" : "";
           return `<article class="desk-queue-row" tabindex="0" data-target-id="${tid}">
-            <p><strong>${name}</strong> <span class="desk-badge ${badgeCls}">${ds}</span></p>
-            <p class="hint">${draft || "1 wartość ICP + 1 CTA Wizard (dry)"}</p>
-            <button type="button" class="desk-act-btn" data-desk-act="hunt" data-target-id="${tid}" data-draft="${draft}"${dis}>Dry komentarz (mock)</button>
+            <p><strong>${name}</strong> <span class="desk-badge ${badgeCls}">${badgeLabel}</span></p>
+            <p class="hint">${draft || "1 wartość + 1 wezwanie do Wizard (test)"}</p>
+            <button type="button" class="desk-act-btn" data-desk-act="hunt" data-target-id="${tid}" data-draft="${draft}"${dis}>Wyślij komentarz testowy</button>
           </article>`;
         })
         .join("");
@@ -5069,9 +5274,12 @@ function renderDemandDesk(data) {
   const stlEl = document.getElementById("desk-stl");
   if (stlEl) {
     const breaches = stl.breaches ?? 0;
-    let stlText = `STL: open=${stl.open_hot ?? 0} · breach=${breaches} · overnight=${stl.overnight ?? 0} · med=${stl.median_min ?? "n/a"} min`;
+    const openH = stl.open_hot ?? 0;
+    const overnightH = stl.overnight ?? 0;
+    const medH = stl.median_min ?? "—";
+    let stlText = `${openH} otwartych · ${breaches} czeka >48h · ${overnightH} bez odpowiedzi · czas reakcji: ${medH} min`;
     if (breaches > 0) {
-      stlText += " · Sprawdź HOT-LEADS checklist (Gorące >48h).";
+      stlText += " — wymagają uwagi!";
     }
     stlEl.textContent = stlText;
     stlEl.classList.toggle("demand-desk-stl--breach", breaches > 0);
@@ -5080,9 +5288,10 @@ function renderDemandDesk(data) {
   const dualEl = document.getElementById("desk-dual-cash");
   if (dualEl) {
     const fail = dual.open_fail ?? 0;
-    const cols = (dual.columns || []).join(", ") || "verdict, offerte_only";
-    const rule = dual.rule ? ` · ${dual.rule}` : "";
-    dualEl.textContent = `Dual-cash open_fail: ${fail}${dual.red ? " · RED" : ""} · [${cols}]${rule}`;
+    const dualLabel = fail > 0
+      ? `${fail} niespójności kasy — sprawdź oferty bez zamówienia`
+      : "Kasa spójna — brak niespójności";
+    dualEl.textContent = dualLabel;
     dualEl.setAttribute("data-dual-fail", String(fail));
     if (dual.red || fail > 0) {
       dualEl.classList.add("demand-desk-dual-cash--warn");
@@ -5096,8 +5305,7 @@ function renderDemandDesk(data) {
   const assetsEl = document.getElementById("desk-top-assets");
   if (assetsEl) {
     if (!assets.length) {
-      const hint = topNote
-        || "Brak startów Wizard w REAL — top assety pojawią się po pierwszym evencie UTM.";
+      const hint = topNote || DESK_COPY.emptyAssets;
       assetsEl.innerHTML = `<li class="hint state-empty">${deskEsc(hint)}</li>`;
     } else {
       assetsEl.innerHTML = assets
@@ -5115,7 +5323,7 @@ function renderDemandDesk(data) {
   if (staleHint) {
     if (footer.stale_warn || lastReal.stale_warn) {
       staleHint.hidden = false;
-      staleHint.textContent = "Maszyna milczy >48h — sprawdź rytm publish/hunt i ledger.";
+      staleHint.textContent = "Brak aktywności >48h — sprawdź publikacje i kontakty.";
     } else {
       staleHint.hidden = true;
     }
@@ -5126,7 +5334,7 @@ function renderDemandDesk(data) {
     if (dataMode === "EMPTY") {
       emptyHint.hidden = false;
       emptyHint.textContent =
-        "Maszyna bez danych operacyjnych — ustaw DEMAND_OS_SET_NOW na VPS (patrz data/demand-os/set-now-sanitized/README.md).";
+        "Brak danych operacyjnych — skonfiguruj źródło danych na serwerze.";
     } else {
       emptyHint.hidden = true;
     }
@@ -5141,32 +5349,33 @@ function renderDemandDesk(data) {
   }
 
   deskSetText("desk-shells-line", data.shells_line || "—");
-  deskSetText("desk-data-mode", `data_mode: ${dataMode}`);
+  const dataModeLabel = {REAL: "Dane produkcyjne", FIXTURE: "Dane testowe", MIXED: "Dane mieszane", EMPTY: "Brak danych"}[dataMode] || dataMode;
+  deskSetText("desk-data-mode", dataModeLabel);
   const lrTs = lastReal.ts || "brak";
   const lrKind = lastReal.kind ? ` (${lastReal.kind})` : "";
   deskSetText("desk-last-real", `${lrTs}${lrKind}`);
 
   const humanLine = document.getElementById("desk-human-line");
   if (humanLine) {
-    let nextHint = "Następny: Odśwież desk";
+    let nextHint = "Następny krok: odśwież";
     if (dataMode === "EMPTY") {
-      nextHint = "Następny: sync set-now na VPS";
+      nextHint = "Następny krok: zsynchronizuj dane";
     } else if ((screen.hitl_queue || []).length) {
-      nextHint = "Następny: HITL GOTOWY (kalendarz · bez publish)";
+      nextHint = "Następny krok: zatwierdź treść w kalendarzu";
     } else if ((screen.hunt_queue || []).length) {
-      nextHint = "Następny: dry hunt (mock · bez live FB)";
+      nextHint = "Następny krok: wyślij komentarz testowy";
     }
-    humanLine.textContent = `Zaufanie: ${dataMode} · Cadence: ${cadence} · ${nextHint}`;
+    const cadenceLabel = cadence === "UNLOCKED" || cadence === "LIVE" ? "aktywne" : "wstrzymane";
+    humanLine.textContent = `Dane: ${dataModeLabel} · Publikowanie: ${cadenceLabel} · ${nextHint}`;
   }
 
-  // doctor_ok is FULL doctor only; lightweight never claims OK (false-green guard)
   var doctorLabel = "—";
   if (footer.doctor_scope === "full") {
-    doctorLabel = footer.doctor_ok === true ? "OK" : "FAIL";
+    doctorLabel = footer.doctor_ok === true ? "OK" : "Błąd";
   } else if (footer.doctor_files_ok === true) {
-    doctorLabel = "files";
+    doctorLabel = "Pliki OK";
   } else if (footer.doctor_files_ok === false) {
-    doctorLabel = "FAIL";
+    doctorLabel = "Błąd";
   }
   deskSetText("desk-doctor", doctorLabel);
   deskSetText("desk-gate", data.gate || "—");
@@ -5175,26 +5384,44 @@ function renderDemandDesk(data) {
   const icpInput = document.getElementById("desk-icp-input");
   if (icpInput && data.icp_role_week) icpInput.value = data.icp_role_week;
 
+  const attribution = data.attribution || {};
   const diagBody = document.getElementById("desk-diagnostics-body");
   if (diagBody) {
-    diagBody.textContent = JSON.stringify(diag, null, 2);
+    diagBody.textContent = JSON.stringify(
+      { diagnostics: diag, attribution, ga4: data.ga4 || {} },
+      null,
+      2
+    );
   }
 
   deskApplyActButtons();
+  deskUpdateOfflineBanner();
 }
 
 async function loadDemandDesk() {
   const root = document.getElementById("view-demand-desk");
   if (!root) return;
-  if (!getToken()) {
+  if (!hasSession()) {
+    await probeSession();
+  }
+  if (!hasSession()) {
     const conn = document.getElementById("desk-connection-banner");
     if (conn) {
       conn.hidden = false;
-      conn.innerHTML =
-        'Zaloguj się — /commander lub JWT. <button type="button" id="desk-retry" class="desk-act-btn secondary">Ponów</button>';
+      conn.innerHTML = `${deskEsc(DESK_COPY.authRequired)} <button type="button" id="desk-retry" class="desk-act-btn secondary">Ponów</button>`;
       document.getElementById("desk-retry")?.addEventListener("click", () => {
         loadDemandDesk().catch((err) => toast(err.message));
       });
+    }
+    const cachedBoot = deskLoadPersistedCache();
+    if (cachedBoot?.data) {
+      _deskLastData = cachedBoot.data;
+      renderDemandDesk(cachedBoot.data);
+      const offline = document.getElementById("desk-offline-banner");
+      if (offline) {
+        offline.hidden = false;
+        offline.textContent = DESK_COPY.offlineStale(cachedBoot.ts || "—");
+      }
     }
     return;
   }
@@ -5206,32 +5433,44 @@ async function loadDemandDesk() {
     if (root.classList.contains("demand-desk--loading")) {
       const robotaEl = document.getElementById("desk-robota");
       if (robotaEl && robotaEl.textContent.includes("Ładowanie")) {
-        robotaEl.textContent = _deskLastData ? "Robota dnia: (cache)" : "Robota dnia: —";
+        robotaEl.textContent = _deskLastData ? "Zadanie dnia: (cache)" : "Zadanie dnia: —";
       }
     }
   }, 15000);
   try {
     const data = await api("/api/v1/commander/demand-os/status");
     _deskLastData = data;
+    deskPersistCache(data);
     renderDemandDesk(data);
   } catch (e) {
+    const typed = deskTypedError(
+      !navigator.onLine ? "network" : String(e.message || "").includes("Sesja") ? "auth" : "server",
+      e.message
+    );
     const conn = document.getElementById("desk-connection-banner");
     if (conn) {
       conn.hidden = false;
-      const msg = e.message || "błąd API";
-      conn.innerHTML = `BRAK POŁĄCZENIA — ${deskEsc(msg)} <button type="button" id="desk-retry" class="desk-act-btn secondary">Ponów</button>`;
+      conn.innerHTML = `${deskEsc(typed.message)} <button type="button" id="desk-retry" class="desk-act-btn secondary">Ponów</button>`;
       document.getElementById("desk-retry")?.addEventListener("click", () => {
         loadDemandDesk().catch((err) => toast(err.message));
       });
     }
-    if (String(e.message || "").includes("403")) {
+    if (String(e.message || "").includes("uprawnień") || String(e.message || "").includes("403")) {
       const scope = document.getElementById("desk-scope-banner");
       if (scope) {
         scope.hidden = false;
-        scope.textContent = "Brak scope demand_os — tylko odczyt ograniczony.";
+        scope.textContent = DESK_COPY.scopeForbidden;
       }
     }
-    if (_deskLastData) renderDemandDesk(_deskLastData);
+    const cached = _deskLastData || deskLoadPersistedCache()?.data;
+    if (cached) {
+      _deskLastData = cached;
+      renderDemandDesk(cached);
+      const diagBody = document.getElementById("desk-diagnostics-body");
+      if (diagBody) {
+        diagBody.textContent = JSON.stringify({ lastError: typed, cache: true }, null, 2);
+      }
+    }
   } finally {
     clearTimeout(loadTimeout);
     root.classList.remove("demand-desk--loading");
@@ -5248,9 +5487,9 @@ async function deskMoneyCheck() {
     const mc = await api("/api/v1/commander/demand-os/money-check");
     const starts = mc.starts_utm ?? mc.wizard_starts_utm ?? 0;
     const paid = mc.paid ?? 0;
-    toast(`Money Check: starts UTM=${starts} · paid=${paid}`, "ok");
+    toast(DESK_COPY.moneyOk(starts, paid), "ok");
   } catch (e) {
-    toast(e.message || "Money Check błąd", "err");
+    toast(e.message || DESK_COPY.moneyErr, "err");
   }
 }
 
@@ -5260,7 +5499,7 @@ async function deskHitlDecision(assetId, decision) {
     return;
   }
   const confirmed = await confirmAction(
-    `Oznaczyć ${decision} dla ${assetId} w kalendarzu? (bez publikacji)`
+    `${decision === "GOTOWY" ? "Zaplanować" : "Wstrzymać"} ${assetId} w kalendarzu? (bez publikacji)`
   );
   if (!confirmed?.ok) return;
   try {
@@ -5272,13 +5511,10 @@ async function deskHitlDecision(assetId, decision) {
       method: "POST",
       body: { asset_id: assetId, decision },
     });
-    toast(`${decision} zapisane`, "ok");
+    toast(decision === "GOTOWY" ? "Zaplanowano (bez publikacji)" : "Wstrzymano", "ok");
     await loadDemandDesk();
   } catch (e) {
-    toast(
-      `${e.message || "HITL błąd"} — sprawdź slot w CONTENT-CALENDAR.json`,
-      "err"
-    );
+    toast(e.message || DESK_COPY.hitlErr, "err");
   }
 }
 
@@ -5291,7 +5527,7 @@ async function deskSubmitIcp(ev) {
   const role = (document.getElementById("desk-icp-input")?.value || "").trim();
   const hook = (document.getElementById("desk-hook-input")?.value || "").trim();
   if (!role || hook.length < 3) {
-    toast("ICP rola i hook (min 3 znaki) są wymagane", "err");
+    toast(DESK_COPY.icpRequired, "err");
     return;
   }
   try {
@@ -5299,10 +5535,10 @@ async function deskSubmitIcp(ev) {
       method: "POST",
       body: { icp_role: role, hook },
     });
-    toast("ICP zapisane", "ok");
+    toast(DESK_COPY.icpSaved, "ok");
     await loadDemandDesk();
   } catch (e) {
-    toast(e.message || "ICP błąd", "err");
+    toast(e.message || "Nie udało się zapisać roli tygodnia", "err");
   }
 }
 
@@ -5313,10 +5549,10 @@ async function deskEnsureLedger() {
   }
   try {
     await api("/api/v1/commander/demand-os/ledger/ensure-today", { method: "POST", body: {} });
-    toast("Ledger — wpis na dziś", "ok");
+    toast(DESK_COPY.ledgerOk, "ok");
     await loadDemandDesk();
   } catch (e) {
-    toast(e.message || "Ledger błąd", "err");
+    toast(e.message || DESK_COPY.ledgerErr, "err");
   }
 }
 
@@ -5325,7 +5561,7 @@ async function deskHuntDry(targetId, draft) {
     toast("Brak uprawnień (viewer)", "err");
     return;
   }
-  const confirmed = await confirmAction(`Dry komentarz na ${targetId}? (mock — bez live FB)`);
+  const confirmed = await confirmAction(DESK_COPY.huntConfirm(targetId));
   if (!confirmed?.ok) return;
   try {
     if (_deskRefreshTimer) {
@@ -5340,15 +5576,15 @@ async function deskHuntDry(targetId, draft) {
     if (row) {
       const badge = row.querySelector(".desk-badge");
       if (badge) {
-        badge.textContent = "SENT";
+        badge.textContent = DESK_COPY.huntBadgeSent;
         badge.className = "desk-badge desk-badge--sent";
       }
       row.querySelector("[data-desk-act='hunt']")?.setAttribute("disabled", "");
     }
-    toast("Hunt dry OK", "ok");
+    toast(DESK_COPY.huntOk, "ok");
     await loadDemandDesk();
   } catch (e) {
-    toast(e.message || "Hunt dry błąd", "err");
+    toast(e.message || DESK_COPY.huntErr, "err");
   }
 }
 

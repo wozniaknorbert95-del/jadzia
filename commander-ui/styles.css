@@ -2460,3 +2460,31 @@ body.vhq-open.vhq-mode-work .vhq-shell__body {
     grid-template-columns: 1fr;
   }
 }
+
+/* K7 — mobile-first desk: full width, safe bottom, 44px targets */
+@media (max-width: 480px) {
+  #view-demand-desk.demand-desk {
+    width: 100%;
+    max-width: 100%;
+    padding-bottom: calc(72px + env(safe-area-inset-bottom, 0px));
+    box-sizing: border-box;
+  }
+  #view-demand-desk .demand-desk-kpis {
+    grid-template-columns: 1fr 1fr;
+  }
+  #view-demand-desk .desk-act-btn,
+  #view-demand-desk .nav-btn {
+    min-height: 44px;
+    min-width: 44px;
+  }
+  #view-demand-desk .demand-desk-footer {
+    padding-bottom: 0.5rem;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .demand-desk--loading .demand-desk-kpis .kpi-value,
+  .demand-desk--loading .desk-skeleton {
+    animation: none;
+  }
+}

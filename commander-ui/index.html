@@ -14,7 +14,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" href="styles.css?v=desk-dash09" />
+  <link rel="stylesheet" href="styles.css?v=desk-dash10" />
 </head>
 <body data-vhq-w2="1" data-vhq-w3="1" data-vhq-w31="1" data-vhq-w32="1" data-vhq-w4="1" data-vhq-w5="1" data-vhq-primary="1">
   <a class="skip-link" href="#main">Przejdź do treści</a>
@@ -47,12 +47,18 @@
       <button type="button" id="auth-toggle" class="secondary" hidden>Sesja</button>
     </div>
     <div id="auth-body" class="auth-body">
-      <label for="jwt-input">Token JWT (fallback)</label>
-      <input id="jwt-input" type="password" autocomplete="off" placeholder="Bearer token" />
+      <p class="hint">Zaloguj się przez Telegram: <strong>/commander</strong> → jednorazowy link.</p>
       <div class="auth-actions">
-        <button type="button" id="auth-save">Zapisz token</button>
         <button type="button" id="auth-logout" class="secondary">Wyloguj</button>
       </div>
+      <details class="auth-advanced">
+        <summary>Zaawansowane (awaryjny token)</summary>
+        <label for="jwt-input">Awaryjny token sesji</label>
+        <input id="jwt-input" type="password" autocomplete="off" placeholder="tylko awaryjnie" />
+        <div class="auth-actions">
+          <button type="button" id="auth-save">Zapisz awaryjny token</button>
+        </div>
+      </details>
       <p class="hint">UI po polsku · treści biznesowe NL</p>
     </div>
   </section>
@@ -315,7 +321,7 @@
               <div class="vhq-panel__actions" id="vhq-panel-actions"></div>
             </aside>
           </div>
-          <p class="vhq-shell__hint hint">Esc: room → Mission Control · Więcej → VHQ · Cache desk-dash09</p>
+          <p class="vhq-shell__hint hint">Esc: room → Mission Control · Więcej → VHQ · Cache desk-dash10</p>
         </div>
     </section>
 
@@ -389,29 +395,29 @@
     <section id="view-demand-desk" class="view demand-desk" aria-labelledby="demand-desk-title" hidden>
       <header id="desk-header" class="demand-desk-header panel">
         <h2 id="demand-desk-title">Biuro Popytu</h2>
-        <p class="hint">Demand Desk v2.1 · jedyna powierzchnia operacji dnia (HITL + Hunt + puls).</p>
+        <p class="hint">Centrum operacyjne dnia — treści, kontakty, kasa.</p>
         <div id="desk-scope-banner" class="demand-desk-banner" hidden role="alert"></div>
         <div id="desk-connection-banner" class="demand-desk-banner demand-desk-banner--err" hidden role="alert">
-          BRAK POŁĄCZENIA — sprawdź auth i API.
+          Brak połączenia — sprawdź logowanie i sieć.
           <button type="button" id="desk-retry" class="desk-act-btn secondary">Ponów</button>
         </div>
         <div id="desk-fixture-banner" class="demand-desk-banner demand-desk-banner--fixture demand-desk-banner--prominent" hidden role="alert" aria-live="polite"></div>
-        <p id="desk-robota" class="demand-desk-robota" aria-live="polite">Ładowanie robota dnia…</p>
+        <p id="desk-robota" class="demand-desk-robota" aria-live="polite">Ładowanie zadania dnia…</p>
         <div class="demand-desk-header-meta">
-          <span id="desk-cadence-chip" class="desk-cadence-chip desk-cadence-chip--parked" role="status">Cadence PARKED · publish LOCKED</span>
-          <span>ICP: <strong id="desk-icp">—</strong></span>
+          <span id="desk-cadence-chip" class="desk-cadence-chip desk-cadence-chip--parked" role="status">Publikowanie wstrzymane</span>
+          <span>Rola: <strong id="desk-icp">—</strong></span>
           <span>Tydzień: <strong id="desk-week">—</strong></span>
           <span>Stan: <strong id="desk-state">—</strong></span>
         </div>
         <p id="desk-cash-warning" class="demand-desk-cash-warn" hidden aria-live="polite"></p>
         <details class="demand-desk-icp-details">
-          <summary>Edytuj ICP tygodnia (opcjonalnie)</summary>
+          <summary>Edytuj rolę tygodnia (opcjonalnie)</summary>
           <form id="desk-icp-form" class="demand-desk-icp-form">
-            <label for="desk-icp-input">ICP tygodnia (rola)</label>
+            <label for="desk-icp-input">Rola tygodnia</label>
             <input id="desk-icp-input" type="text" maxlength="80" placeholder="installateur" />
-            <label for="desk-hook-input">Hook (min 3 znaki)</label>
+            <label for="desk-hook-input">Hasło / hook (min 3 znaki)</label>
             <input id="desk-hook-input" type="text" maxlength="120" placeholder="bus 50m²" />
-            <button type="submit" id="desk-icp-submit" class="desk-act-btn">Zapisz ICP</button>
+            <button type="submit" id="desk-icp-submit" class="desk-act-btn">Zapisz rolę</button>
           </form>
         </details>
       </header>
@@ -419,11 +425,11 @@
       <div id="desk-ab-row" class="demand-desk-ab-row">
         <section id="desk-praca" class="demand-desk-praca demand-desk-section--primary" aria-label="Praca dziś">
           <div id="desk-praca-hitl" class="panel demand-desk-section demand-desk-section--hitl">
-            <h3>HITL — kalendarz (bez publikacji)</h3>
+            <h3>Treści do zatwierdzenia</h3>
             <div id="desk-hitl-list" class="desk-queue-list"><p class="hint state-empty desk-skeleton">Ładowanie…</p></div>
           </div>
           <div id="desk-praca-hunt" class="panel demand-desk-section demand-desk-section--hunt">
-            <h3>Hunt — dry komentarze</h3>
+            <h3>Komentarze testowe</h3>
             <div id="desk-hunt-list" class="desk-queue-list"><p class="hint state-empty desk-skeleton">Ładowanie…</p></div>
           </div>
         </section>
@@ -431,11 +437,13 @@
         <section id="desk-puls" class="panel demand-desk-section demand-desk-section--puls" aria-label="Puls kasy">
           <h3>Puls kasy</h3>
           <div class="kpi-grid demand-desk-kpis">
-            <div class="kpi-tile"><span class="kpi-label">Starts UTM</span><span id="desk-kpi-starts" class="kpi-value">—</span></div>
-            <div class="kpi-tile"><span class="kpi-label">WoW Δ</span><span id="desk-kpi-wow" class="kpi-value">—</span></div>
-            <div class="kpi-tile"><span class="kpi-label">Paid</span><span id="desk-kpi-paid" class="kpi-value">—</span></div>
-            <div class="kpi-tile"><span class="kpi-label">Top hook</span><span id="desk-kpi-hook" class="kpi-value">—</span></div>
-            <div class="kpi-tile"><span class="kpi-label">Publish</span><span id="desk-kpi-publish" class="kpi-value">—</span></div>
+            <div class="kpi-tile"><span class="kpi-label">Starty Wizard</span><span id="desk-kpi-starts" class="kpi-value">—</span></div>
+            <div class="kpi-tile"><span class="kpi-label">vs. tydzień</span><span id="desk-kpi-wow" class="kpi-value">—</span></div>
+            <div class="kpi-tile"><span class="kpi-label">Płatne</span><span id="desk-kpi-paid" class="kpi-value">—</span></div>
+            <div class="kpi-tile"><span class="kpi-label">Najlepszy hook</span><span id="desk-kpi-hook" class="kpi-value">—</span></div>
+            <div class="kpi-tile"><span class="kpi-label">Publikacje</span><span id="desk-kpi-publish" class="kpi-value">—</span></div>
+            <div class="kpi-tile"><span class="kpi-label">Sesje GA4 (7d)</span><span id="desk-kpi-ga4" class="kpi-value">—</span></div>
+            <div class="kpi-tile"><span class="kpi-label">Przypisane starty (7d)</span><span id="desk-kpi-attr" class="kpi-value">—</span></div>
           </div>
         </section>
       </div>
@@ -443,19 +451,19 @@
       <div id="desk-cd-row" class="demand-desk-cd-row">
         <section id="desk-jakosc" class="panel demand-desk-section" aria-label="Jakość">
           <h3>Jakość</h3>
-          <p>Validator fail: <strong id="desk-val-fail">—</strong></p>
+          <p>Błędy walidacji: <strong id="desk-val-fail">—</strong></p>
           <p>Komentarze wysłane: <strong id="desk-comments">—</strong></p>
         </section>
 
         <section id="desk-gorace" class="panel demand-desk-section" aria-label="Gorące">
-          <h3>Gorące</h3>
+          <h3>Gorące leady</h3>
           <p id="desk-stl" class="hint">—</p>
           <p id="desk-dual-cash" class="demand-desk-dual-cash" aria-live="polite">—</p>
         </section>
       </div>
 
-      <section id="desk-skad" class="panel demand-desk-section" aria-label="Skąd wizard">
-        <h3>Top assety Wizard</h3>
+        <section id="desk-skad" class="panel demand-desk-section" aria-label="Najlepsze treści">
+        <h3>Najlepsze treści (starty Wizard)</h3>
         <ul id="desk-top-assets" class="desk-asset-list"><li class="hint state-empty">Ładowanie…</li></ul>
       </section>
 
@@ -469,15 +477,15 @@
         <p id="desk-stale-hint" class="demand-desk-banner demand-desk-banner--fixture" hidden aria-live="polite"></p>
         <p id="desk-empty-data-hint" class="hint" hidden aria-live="polite"></p>
         <p id="desk-human-line" class="demand-desk-human-line" aria-live="polite">—</p>
-        <p class="demand-desk-meta-line"><span id="desk-data-mode">—</span> · ostatni REAL: <span id="desk-last-real">—</span></p>
+        <p class="demand-desk-meta-line"><span id="desk-data-mode">—</span> · ostatnie dane: <span id="desk-last-real">—</span></p>
         <div class="demand-desk-footer-actions">
           <button type="button" id="desk-refresh" class="desk-act-btn secondary">Odśwież</button>
-          <button type="button" id="desk-money-check" class="desk-act-btn secondary">Money Check</button>
-          <button type="button" id="desk-ledger-ensure" class="desk-act-btn">Ledger dziś</button>
+          <button type="button" id="desk-money-check" class="desk-act-btn secondary">Sprawdź kasę</button>
+          <button type="button" id="desk-ledger-ensure" class="desk-act-btn">Dziennik dziś</button>
         </div>
         <details class="demand-desk-diagnostics">
           <summary>Diagnostyka</summary>
-          <p class="hint">Doctor: <span id="desk-doctor">—</span> · Gate: <span id="desk-gate">—</span> · Kontrakt: <span id="desk-contract-version">—</span></p>
+          <p class="hint">System: <span id="desk-doctor">—</span> · Bramka: <span id="desk-gate">—</span> · Wersja: <span id="desk-contract-version">—</span></p>
           <pre id="desk-diagnostics-body" class="hint"></pre>
         </details>
         <p class="hint demand-desk-design-link">
@@ -693,6 +701,6 @@
 
 
   <div id="toast" class="toast" role="status" aria-live="polite" hidden></div>
-  <script src="app.js?v=desk-dash09"></script>
+  <script src="app.js?v=desk-dash10"></script>
 </body>
 </html>

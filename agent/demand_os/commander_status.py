@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import csv
+import logging
 from pathlib import Path
 from typing import Any, Dict, Optional
 
@@ -24,6 +25,9 @@ from agent.demand_os.desk_contract import (
     top_wizard_assets,
     validator_fail_display,
 )
+from agent.demand_os.attribution import attribution_summary
+from agent.demand_os.desk_copy import CASH_WARNING_PARKED, EMPTY_TOP_ASSETS_NOTE
+from agent.demand_os.ga4_adapter import fetch_wizard_starts
 from agent.demand_os.marketing_mode import (
     is_marketing_parked,
     marketing_hitl_gate,
@@ -32,6 +36,8 @@ from agent.demand_os.marketing_mode import (
 from agent.demand_os.observability import build_screen, money_check
 from agent.demand_os.stl_monitor import stl_report
 from agent.demand_os.week_ritual import go_day_ready
+
+logger = logging.getLogger(__name__)
 
 GATE = "DEMAND-OS-DESK-CONTRACT-00"
 DESK = "Demand Desk v2.1"
@@ -73,9 +79,7 @@ def build_demand_os_status(
     screen_dict = screen.to_dict()
     screen_dict["hunt_queue"] = hunt
     screen_dict["top_wizard_assets"] = top5
-    screen_dict["top_wizard_note"] = (
-        "" if top5 else "brak starts UTM — pusta lista (nie fixture fake)"
-    )
+    screen_dict["top_wizard_note"] = "" if top5 else EMPTY_TOP_ASSETS_NOTE
     screen_dict["hitl_queue"] = screen_dict.get("hitl_queue") or []
 
     files_ok = lightweight_doctor_ok()
@@ -88,6 +92,38 @@ def build_demand_os_status(
         doctor_ok = run_doctor().ok
 
     hitl_gate = marketing_hitl_gate(marketing=marketing)
+
+    try:
+        ga4 = fetch_wizard_starts(days=7)
+    except Exception as exc:
+        logger.warning("GA4 adapter error in desk status: %s", exc)
+        ga4 = {
+            "ok": False,
+            "status": "unavailable",
+            "mode": "error",
+            "starts": [],
+            "ga4_sessions_7d": None,
+            "ga4_wizard_starts_7d": None,
+            "error": str(exc)[:200],
+            "reason": str(exc)[:200],
+        }
+    ga4_status = ga4.get("status") or ("ok" if ga4.get("ok") else "unavailable")
+    ga4_sessions = ga4.get("ga4_sessions_7d")
+    if ga4_sessions is None and ga4.get("ok") and ga4.get("aggregate"):
+        ga4_sessions = ga4["aggregate"].get("sessions")
+    ga4_wizard_starts = ga4.get("ga4_wizard_starts_7d")
+    try:
+        attribution = attribution_summary()
+    except Exception as exc:
+        logger.warning("attribution summary error: %s", exc)
+        attribution = {
+            "ok": False,
+            "status": "unavailable",
+            "total": 0,
+            "by_status": {},
+            "top_assets": [],
+            "error": str(exc)[:200],
+        }
 
     return {
         "ok": True,
@@ -117,6 +153,7 @@ def build_demand_os_status(
         },
         "kpi": {
             "wizard_starts_utm": starts if starts else 0,
+            "utm_attributed_starts": starts if starts else 0,
             "wizard_starts_wow_delta": wow,
             "paid": mc.get("paid") or 0,
             "validator_fail": validator_fail_display(
@@ -126,7 +163,22 @@ def build_demand_os_status(
             "top_hook": mc.get("top_hook") or "none",
             "publish_count": publish,
             "comments_sent": mc.get("comments_sent") or 0,
+            "ga4_sessions_7d": ga4_sessions,
+            "ga4_wizard_starts_7d": ga4_wizard_starts,
         },
+        "ga4": {
+            "ok": bool(ga4.get("ok")),
+            "status": ga4_status,
+            "mode": ga4.get("mode", "stub"),
+            "sessions": ga4_sessions,
+            "ga4_sessions_7d": ga4_sessions,
+            "ga4_wizard_starts_7d": ga4_wizard_starts,
+            "utm_attributed_starts": starts if starts else 0,
+            "freshness": ga4.get("freshness"),
+            "error": ga4.get("error", ""),
+            "reason": ga4.get("reason") or ga4.get("error", ""),
+        },
+        "attribution": attribution,
         "footer": build_desk_footer(
             gate=GATE,
             data_mode=dm["data_mode"],
@@ -136,9 +188,7 @@ def build_demand_os_status(
             doctor_files_ok=files_ok,
         ),
         "cash_warning": (
-            "PARKED - EUR nie powstaje z Desk dopoki brak GO MARKETING HITL"
-            if is_marketing_parked(marketing=marketing)
-            else None
+            CASH_WARNING_PARKED if is_marketing_parked(marketing=marketing) else None
         ),
         "diagnostics": {
             "go_ready": {

@@ -21,7 +21,8 @@ from agent.db import (
 logger = logging.getLogger(__name__)
 
 LOGIN_CODE_TTL_MINUTES = 15
-SESSION_JWT_HOURS = 24
+SESSION_JWT_HOURS = 24 * 7  # founder frictionless return (K3)
+SESSION_COOKIE_NAME = "coi_commander_session"
 
 
 def _utc_now() -> datetime:

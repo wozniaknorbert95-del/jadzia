@@ -8,11 +8,12 @@ import os
 from datetime import datetime, timezone
 from typing import Any, Dict, List, Literal, Optional
 
-from fastapi import APIRouter, Depends, HTTPException, Query
+from fastapi import APIRouter, Depends, HTTPException, Query, Request, Response
+from fastapi.responses import JSONResponse
 from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
 from pydantic import BaseModel, Field
 
-from api.dependencies import require_scope, verify_jwt
+from api.dependencies import SESSION_COOKIE_NAME, require_scope, verify_jwt
 from agent.commander.agents_registry import list_agents, pause_agent, resume_agent
 from agent.commander.audit import list_audit
 from agent.commander.deeplink import mint_deeplink, verify_deeplink_token
@@ -87,18 +88,55 @@ class TicketDispositionRequest(BaseModel):
 
 
 @router.post("/api/v1/commander/auth/exchange")
-async def exchange_commander_login_code(body: LoginExchangeRequest) -> dict:
-    """One-time login code → session JWT (MOBILE-02). No Bearer required."""
-    from agent.commander.session_login import exchange_login_code
+async def exchange_commander_login_code(
+    body: LoginExchangeRequest,
+    request: Request,
+) -> JSONResponse:
+    """One-time login code → session JWT + HttpOnly cookie (K3). No Bearer required."""
+    from agent.commander.session_login import SESSION_JWT_HOURS, exchange_login_code
 
     result = exchange_login_code(body.code)
     if not result:
         raise HTTPException(status_code=401, detail="Invalid or expired login code")
-    return {
+    payload = {
         "token": result["token"],
         "role": result["role"],
         "sub": result["sub"],
         "expires_at": result["expires_at"],
+        "session": "cookie+bearer",
+    }
+    response = JSONResponse(payload)
+    secure = request.url.scheme == "https"
+    response.set_cookie(
+        key=SESSION_COOKIE_NAME,
+        value=result["token"],
+        httponly=True,
+        secure=secure,
+        samesite="lax",
+        max_age=SESSION_JWT_HOURS * 3600,
+        path="/",
+    )
+    return response
+
+
+@router.post("/api/v1/commander/auth/logout")
+async def logout_commander_session(response: Response) -> dict:
+    """Clear HttpOnly session cookie (K3)."""
+    response.delete_cookie(key=SESSION_COOKIE_NAME, path="/")
+    return {"ok": True, "logged_out": True}
+
+
+@router.get("/api/v1/commander/auth/session")
+async def get_commander_session(_auth=Depends(require_scope("commander:read"))) -> dict:
+    """Probe cookie/Bearer session without exposing the token (K3)."""
+    from agent.commander.authz import resolve_role
+
+    auth = _auth or {}
+    return {
+        "ok": True,
+        "role": resolve_role(auth) if auth else "",
+        "sub": str(auth.get("sub") or "") if isinstance(auth, dict) else "",
+        "expires_at": auth.get("exp") if isinstance(auth, dict) else None,
     }
 
 

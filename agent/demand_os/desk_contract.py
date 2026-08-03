@@ -87,17 +87,27 @@ def resolve_robota_dnia(
     plan = week_plan(day=day)
     d = plan["day"]
     base = _DAY_TO_ROBOTA.get(d, "REST")
+    _ROBOTA_LABELS = {
+        "MONEY_CHECK": "Sprawdź kasę",
+        "ICP_ASSET": "Treść dla ICP",
+        "PUBLISH": "Publikuj",
+        "BLOG": "Napisz blog",
+        "HUNT": "Kontaktuj klientów",
+        "REST": "Odpoczynek",
+    }
     parked = (marketing or "").upper().startswith("PARKED")
     if parked and base in ("PUBLISH", "BLOG", "HUNT"):
         code = "PARKED_STOP"
-        note = "marketing PARKED - EUR nie powstaje z Desk (Backend Trap warning)"
+        label = _ROBOTA_LABELS.get(base, base)
+        note = f"Publikowanie wstrzymane (plan: {label})"
     else:
         code = base
-        note = (plan.get("job") or {}).get("title") or code
+        note = (plan.get("job") or {}).get("title") or _ROBOTA_LABELS.get(code, code)
     return {
         "code": code,
         "day": d,
         "title": note,
+        "label": _ROBOTA_LABELS.get(code, code),
         "parked": parked,
         "week_job": plan.get("job"),
     }
@@ -199,7 +209,7 @@ def build_hunt_queue(*, set_now: Optional[Path] = None, limit: int = 8) -> List[
             desk_status = "READY" if t.status == ACTIVE else "JOIN_OR_PREP"
         draft = ""
         if t.status == ACTIVE:
-            draft = "1 wartość ICP + 1 CTA Wizard (dry)"
+            draft = "1 wartość + 1 wezwanie do Wizard (test)"
         queue.append(
             {
                 "target_id": t.id,
@@ -473,17 +483,21 @@ def format_desk_pretty(status: Dict[str, Any]) -> str:
     warn = status.get("cash_warning") or ""
     warn_ascii = warn.replace("€", "EUR")
     title = str(r.get("title") or "").replace("€", "EUR")
+    hitl_n = len((status.get("screen") or {}).get("hitl_queue") or [])
+    hunt_n = len((status.get("screen") or {}).get("hunt_queue") or [])
+    stl_open = (status.get("stl") or {}).get("open_hot")
+    dual_fail = (status.get("dual_cash") or {}).get("open_fail")
     lines = [
         f"FLEXGRAFIK | BIURO POPYTU {status.get('desk')} ({status.get('contract_version')})",
-        f"ICP: {status.get('icp_role_week')}  Stan: {status.get('state')}  Tydzien: {status.get('iso_week')}",
-        f"* ROBOTA DNIA: {r.get('code')} - {title}",
-        f"A PULS: starts={kpi.get('wizard_starts_utm')} dWoW={kpi.get('wizard_starts_wow_delta')} "
-        f"paid={kpi.get('paid')} publish={kpi.get('publish_count')} val={kpi.get('validator_fail')}",
-        f"B HITL: {len((status.get('screen') or {}).get('hitl_queue') or [])}  "
-        f"HUNT: {len((status.get('screen') or {}).get('hunt_queue') or [])}",
-        f"D STL open={(status.get('stl') or {}).get('open_hot')}  "
-        f"dual_cash={(status.get('dual_cash') or {}).get('open_fail')}",
-        f"data_mode={status.get('data_mode')}  cash_warning={warn_ascii}",
+        f"Rola tygodnia: {status.get('icp_role_week')}  Stan: {status.get('state')}  "
+        f"Tydzien: {status.get('iso_week')}",
+        f"* ZADANIE DNIA: {r.get('code')} - {title}",
+        f"A PULS: starty={kpi.get('wizard_starts_utm')} dWoW={kpi.get('wizard_starts_wow_delta')} "
+        f"platne={kpi.get('paid')} publikacje={kpi.get('publish_count')} "
+        f"walidacja={kpi.get('validator_fail')}",
+        f"B Tresci do zatwierdzenia: {hitl_n}  Komentarze testowe: {hunt_n}",
+        f"D Gorace leady: open={stl_open}  niespojnosc kasy={dual_fail}",
+        f"tryb_danych={status.get('data_mode')}  ostrzezenie={warn_ascii}",
         f"shells: {status.get('shells_line')}",
     ]
     return "\n".join(lines)

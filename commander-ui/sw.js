@@ -1,5 +1,5 @@
-/* COI Commander shell SW — cache static UI only; never cache /api/ */
-const CACHE = "coi-commander-desk-dash09";
+/* COI Commander shell SW — static assets only; never cache /api/ (K11) */
+const CACHE = "coi-commander-desk-dash10";
 const SHELL = [
   "./",
   "./index.html",
@@ -36,7 +36,17 @@ self.addEventListener("fetch", (event) => {
   if (req.method !== "GET") return;
   const url = new URL(req.url);
   if (url.pathname.includes("/api/")) return;
+  // Stale-while-revalidate for shell assets only
   event.respondWith(
-    caches.match(req).then((cached) => cached || fetch(req).then((res) => res))
+    caches.open(CACHE).then(async (cache) => {
+      const cached = await cache.match(req);
+      const network = fetch(req)
+        .then((res) => {
+          if (res && res.ok) cache.put(req, res.clone());
+          return res;
+        })
+        .catch(() => cached);
+      return cached || network;
+    })
   );
 });

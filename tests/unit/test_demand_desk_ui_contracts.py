@@ -30,6 +30,8 @@ DESK_IDS = [
     "desk-kpi-paid",
     "desk-kpi-hook",
     "desk-kpi-publish",
+    "desk-kpi-ga4",
+    "desk-kpi-attr",
     "desk-fixture-banner",
     "desk-praca-hitl",
     "desk-hitl-list",
@@ -68,6 +70,8 @@ CONTRACT_KEYS = [
     "state",
     "cash_warning",
     "kpi",
+    "ga4",
+    "attribution",
     "screen",
     "stl",
     "dual_cash",
@@ -80,6 +84,23 @@ CONTRACT_KEYS = [
     "contract_version",
     "gate",
 ]
+
+# Forbidden on Demand Desk primary surface (empty/error/CTA strings).
+# Diagnostics JSON dump is allowed to keep technical keys.
+DESK_PRIMARY_FORBIDDEN = (
+    "CONTENT-CALENDAR",
+    "ALLOWLIST.json",
+    "ENGAGE-LOG",
+    "set-now",
+    "DEMAND_OS_",
+    "fixture fake",
+    "Dry komentarz",
+    "BRAK POŁĄCZENIA",
+    "Ledger dziś",
+    "Money Check błąd",
+    "Hunt dry OK",
+    "Hunt dry błąd",
+)
 
 
 def _desk_js_section() -> str:
@@ -140,10 +161,10 @@ def test_desk_nav_desktop_and_more_sheet():
     assert 'id="more-to-demand-desk"' in HTML
 
 
-def test_cache_bust_desk_dash09():
-    assert HTML.count("desk-dash09") >= 2
-    assert "desk-dash08" not in HTML
-    assert "coi-commander-desk-dash09" in SW
+def test_cache_bust_desk_dash10():
+    assert HTML.count("desk-dash10") >= 2
+    assert "desk-dash09" not in HTML
+    assert "coi-commander-desk-dash10" in SW
 
 
 def test_ux_repair_honesty_guards():
@@ -154,9 +175,71 @@ def test_ux_repair_honesty_guards():
     assert "demand-desk-icp-details" in HTML
     section = _desk_js_section()
     assert "live_cadence" in section
-    assert "kalendarz · bez publish" in section
+    assert "bez publikacji" in section
     assert "if (!confirmed?.ok) return" in section
     assert '!can || ds === "SENT"' in section
+
+
+def test_desk_primary_surface_no_internal_jargon():
+    """K4: empty/error/CTA strings must be plain language."""
+    section = _desk_js_section()
+    # Exclude diagnostics JSON dump which may stringify technical keys.
+    primary = section
+    if "desk-diagnostics-body" in primary:
+        # Keep full section but assert forbidden tokens are not in user-facing string literals.
+        pass
+    for token in DESK_PRIMARY_FORBIDDEN:
+        assert token not in section, f"forbidden jargon on desk surface: {token}"
+    assert "DESK_COPY" in section
+    assert "niedostępne" in section
+    assert "Dziennik" in HTML
+    assert "Sesje GA4" in HTML
+    assert "Brak połączenia" in HTML
+
+
+def test_desk_ga4_tile_honest_unavailable():
+    section = _desk_js_section()
+    assert "ga4_sessions_7d" in section
+    assert 'ga4.status === "ok"' in section
+    assert "DESK_COPY.ga4Unavailable" in section
+    assert "to nie starty Wizard" in section
+
+
+def test_k6_show_view_sets_inert_on_hidden():
+    assert 'v.setAttribute("inert"' in APP or 'setAttribute("inert"' in APP
+    assert 'aria-hidden", "true"' in APP
+
+
+def test_k7_mobile_css_safe_area_and_touch():
+    assert "safe-area-inset-bottom" in CSS
+    assert "min-height: 44px" in CSS
+
+
+def test_k10_typed_errors_helper():
+    assert "function deskTypedError" in APP
+    assert "correlationId" in APP
+
+
+def test_k11_offline_banner_and_sw_stale_while_revalidate():
+    assert "deskUpdateOfflineBanner" in APP
+    assert "desk-offline-banner" in APP
+    assert "deskPersistCache" in APP
+    assert "desk_cache_v1" in APP
+    assert "Stale-while-revalidate" in SW or "stale-while-revalidate" in SW.lower()
+    assert "/api/" in SW
+
+
+def test_k3_cookie_session_probe_and_no_jwt_url():
+    assert "probeSession" in APP
+    assert "hasSession" in APP
+    assert "auth/session" in APP
+    assert "Link z tokenem jest wyłączony" in APP
+    assert "Zaawansowane (awaryjny token)" in HTML
+
+
+def test_k10_api_errors_not_raw_json():
+    assert "function apiErrorMessage" in APP
+    assert "JSON.stringify(detail)" not in APP.split("// --- Demand Desk")[0]
 
 
 def test_vhq_lazy_manifest_deferred():
@@ -241,8 +324,8 @@ def test_refresh_only_loads_desk_when_active():
 
 def test_dual_cash_columns_in_render():
     section = _desk_js_section()
-    assert "dual.columns" in section
-    assert "verdict, offerte_only" in section
+    assert "dual.open_fail" in section
+    assert "dual.red" in section
 
 
 def test_desk_css_states():

@@ -6,7 +6,7 @@ import os
 from typing import AsyncIterator, Optional
 
 import jwt
-from fastapi import Depends, HTTPException
+from fastapi import Depends, HTTPException, Request
 from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
 
 from core.config import require_secrets_enabled
@@ -22,6 +22,7 @@ from core.services import (
 _bearer = HTTPBearer(auto_error=False)
 
 JWT_SECRET: Optional[str] = os.getenv("JWT_SECRET")
+SESSION_COOKIE_NAME = "coi_commander_session"
 
 
 # ──────────────────────────────────────────────
@@ -61,19 +62,25 @@ async def get_notification_service(
 # ──────────────────────────────────────────────
 
 async def verify_jwt(
+    request: Request,
     credentials: Optional[HTTPAuthorizationCredentials] = Depends(_bearer),
 ) -> Optional[dict]:
     """
-    When JWT_SECRET is set (or REQUIRE_SECRETS/production mode), require Bearer token.
+    When JWT_SECRET is set (or REQUIRE_SECRETS/production mode), require auth.
+    Accepts Bearer header OR HttpOnly session cookie (K3). Prefer Bearer if both.
     When JWT_SECRET is not set and not in production mode, auth is disabled (dev/CI).
     """
     if not JWT_SECRET:
         if require_secrets_enabled():
             raise HTTPException(status_code=500, detail="JWT_SECRET not configured")
         return None
-    if not credentials:
+    token = None
+    if credentials and credentials.credentials:
+        token = credentials.credentials
+    else:
+        token = (request.cookies.get(SESSION_COOKIE_NAME) or "").strip() or None
+    if not token:
         raise HTTPException(status_code=401, detail="Missing Authorization header")
-    token = credentials.credentials
     try:
         payload = jwt.decode(token, JWT_SECRET, algorithms=["HS256"])
         return payload

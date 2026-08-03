@@ -449,8 +449,16 @@ def _init_schema(conn: sqlite3.Connection):
     _init_marketing_f1_schema(conn)
     _init_marketing_governance_schema(conn)
     _init_ops_bus_schema(conn)
+    _init_demand_attribution_schema(conn)
 
     conn.commit()
+
+
+def _init_demand_attribution_schema(conn: sqlite3.Connection) -> None:
+    """K1 REV_R1 — SQLite authority for attributed wizard starts."""
+    from agent.demand_os.attribution import ensure_attribution_schema
+
+    ensure_attribution_schema(conn)
 
 
 def _init_ops_bus_schema(conn: sqlite3.Connection) -> None:
