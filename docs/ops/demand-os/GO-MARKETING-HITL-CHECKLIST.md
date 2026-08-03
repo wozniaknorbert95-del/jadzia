@@ -1,0 +1,56 @@
+---
+status: "[READY_FOR_HUMAN · GO ceremony]"
+title: "GO MARKETING HITL — Founder checklist"
+updated: "2026-08-03"
+gate: "DEMAND-OS-MARKETING-4-00"
+master_todo: "docs/ops/demand-os/MASTER-TODO-4.md"
+prerequisite: "Etap 5f SEALED · go_day_ready 100%"
+---
+
+# GO MARKETING HITL — checklist
+
+**Jedyna ścieżka unpark marketing live.** Agent nie wykonuje bez tego GO.
+
+## Pre-flight (agent PASS 2026-08-03)
+
+- [x] Etap 5f SEALED · Hard DoD 15/15
+- [x] HITL-READY dry PASS
+- [x] go_day_ready score **100%**
+- [x] Env switch `DEMAND_OS_MARKETING_HITL=GO` (kod gotowy)
+- [x] Ads **PARK cash** · ADS-FREEZE active
+- [x] First asset Val PASS: `tt_w32_install_01`
+
+## Founder GO (wpisz datę + initial)
+
+```
+GO MARKETING HITL
+Date: ___________
+By: Dowódca
+Scope: organic HITL only (TT + FB hunt + blog) · NO Ads
+```
+
+- [ ] Powyższy wpis w handoff `docs/handoffs/YYYY-MM-DD-GO-MARKETING-HITL.md`
+- [ ] Potwierdzenie: €0 Ads · no boost · no Wave3 auto-publish
+
+## Ops (po GO — VPS)
+
+- [ ] `DEMAND_OS_MARKETING_HITL=GO` w `/opt/jadzia/.env`
+- [ ] `systemctl restart jadzia`
+- [ ] Verify: `marketing_hitl_gate: READY` w Desk / status API
+- [ ] Desk: brak bannera „PARKED - EUR nie powstaje…”
+
+## First actions (Dowódca · day 1 post-GO)
+
+- [ ] TT HITL publish `tt_w32_install_01` (caption: `set-now/cap_tt_w32_01.txt`)
+- [ ] FB hunt 1 comment (allowlist · `FB-HUNT-DAILY.md`)
+- [ ] LEDGER wiersz za każdą akcję
+- [ ] Blog optional: `BLOG-HITL-SHIP.md` · `blog_w31_install_bus50m`
+
+## STOP
+
+- Meta/Google Ads
+- Live bez Val PASS + pass_token
+- Multi-CTA / spam
+- VPS deploy bez GO powyżej
+
+Evidence close: `docs/handoffs/DEMAND-MARKETING-4-CLOSE.md` (po P2)

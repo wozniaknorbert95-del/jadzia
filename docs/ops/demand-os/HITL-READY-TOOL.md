@@ -14,7 +14,7 @@ Maszyna gotowa na rytm Foundera — **bez** autonomicznego publish.
 2. `GET …/demand-os/money-check` (read)
 3. `POST …/demand-os/hitl/decision` GOTOWY|BLOKADA → calendar+audit · `publish: false`
 4. `hub engage-dry` → ENGAGE-LOG → `hunt_queue.desk_status` SENT|BLOCK
-5. `diagnostics.marketing_hitl_gate: BLOCKED` dopóki brak GO
+5. `diagnostics.marketing_hitl_gate: BLOCKED` dopóki brak GO (env `DEMAND_OS_MARKETING_HITL=GO` → READY)
 6. RBAC: viewer nie mutuje hitl
 7. doctor + pytest demand_os PASS
 

@@ -1,42 +1,38 @@
 ---
-status: "[ETAP 5f · P0 done · P1 code shipped · §8 pending]"
-updated: "2026-08-02"
-last_step: "5F-P0+P1 deploy desk-dash08"
+status: "[ETAP 4 prep · awaiting GO MARKETING HITL]"
+updated: "2026-08-03"
+last_step: "Marketing 4 PREP CLOSE · env switch · MASTER-TODO-4"
 phase_program: "docs/ops/demand-os/PROGRAM-PHASES.md"
-master_todo: "docs/ops/demand-os/MASTER-TODO-5F.md"
+master_todo: "docs/ops/demand-os/MASTER-TODO-4.md"
 workflow: ".agents/workflows/demand-os-master-loop.md"
-next_action: "5F-P2-01 Dowódca §8 phone smoke"
-close_handoff: "pending DEMAND-DESK-5F-CLOSE"
-prod_tip: "b6c0382 (prod) · local 9e3e5c5 desk-dash08 PENDING_DEPLOY"
+next_action: "Founder GO MARKETING HITL (4-GO-01)"
+close_handoff: "pending DEMAND-MARKETING-4-CLOSE"
+prod_tip: "5713cbc · desk-dash08 LIVE"
 ---
 
 # Demand OS — STATE
 
 | Pole | Wartość |
 |------|---------|
-| program_phase | **Etap 5f MASTER TODO (ACTIVE)** |
-| master_todo | [`MASTER-TODO-5F.md`](./MASTER-TODO-5F.md) |
-| active_item | **5F-P2-01** Dowódca §8 (human) |
-| desk_ui | `#view-demand-desk` default · cache **desk-dash08** |
+| program_phase | **Etap 4 Marketing HITL (PREP done · GO pending)** |
+| master_todo | [`MASTER-TODO-4.md`](./MASTER-TODO-4.md) |
+| active_item | **4-GO-01** Founder GO MARKETING HITL |
+| desk_ui | SEALED · cache **desk-dash08** |
 | desk_contract | **SEALED v2.1.1** |
-| tool_100 | **IN_PROGRESS** → 100% per surface |
-| hard_dod | **14/15** · #12 Dowódca §8 prod |
-| marketing_hitl | **PARKED_LAST** |
+| tool_100 | **UI SEALED** (5f) |
+| hard_dod | **15/15** (5f) |
+| marketing_hitl | **PARKED_LAST** · gate **BLOCKED** |
+| go_day_ready | **100%** tool side |
+| go_switch | `DEMAND_OS_MARKETING_HITL=GO` (env · not set prod) |
 
-## Etap 5f — dashboard 100% (enterprise audit)
+## Etap 4 — prep CLOSE
 
-Backlog: [`MASTER-TODO-5F.md`](./MASTER-TODO-5F.md) · loop: [`demand-os-master-loop.md`](../../../.agents/workflows/demand-os-master-loop.md)
+Handoff: [`2026-08-03-DEMAND-MARKETING-4-PREP-CLOSE.md`](../handoffs/2026-08-03-DEMAND-MARKETING-4-PREP-CLOSE.md)
 
-| Priorytet | Open | Cel |
-|-----------|------|-----|
-| P0 | 0 | done (deploy desk-dash08) |
-| P1 | 0 | code shipped — browser proof post-deploy |
-| P2 | 2 | §8 human + SEAL |
+## Historia
 
-## Historia (done — nie cofać)
-
-5e gap-close · 5d IA · 5c landing · 5b hardening — handoffs w `docs/handoffs/`
+5f SEAL · 5e–5b · tool backend — `docs/handoffs/`
 
 ## STOP
 
-Fałszywy SEAL · marketing live · równoległe gate bez CLOSE
+Live publish bez GO · Ads · fałszywy SEAL Etap 4

@@ -1,14 +1,16 @@
-# CURRENT TASK — Etap 5f MASTER TODO
+# CURRENT TASK — Etap 4 Marketing HITL
 
-**Gate:** `DEMAND-OS-DESK-5F-00` **ACTIVE**  
-**Master TODO:** `docs/ops/demand-os/MASTER-TODO-5F.md`  
-**Active item:** `5F-P2-01` — Dowódca §8 phone smoke (human)  
-**UI cache:** `desk-dash08`
+**Gate:** `DEMAND-OS-MARKETING-4-00` **ACTIVE (prep done)**  
+**Master TODO:** `docs/ops/demand-os/MASTER-TODO-4.md`  
+**Active item:** `4-GO-01` — Founder **GO MARKETING HITL**  
+**Prep close:** `docs/handoffs/2026-08-03-DEMAND-MARKETING-4-PREP-CLOSE.md`
 
 ## Cel
 
-Human: 7/7 checkbox `DESK-PHONE-SMOKE-CHECKLIST.md` on prod `?cb=desk-dash08`.
+Human: wpis GO + checklist [`GO-MARKETING-HITL-CHECKLIST.md`](docs/ops/demand-os/GO-MARKETING-HITL-CHECKLIST.md).
+
+Po GO: VPS env → verify READY → TT publish `tt_w32_install_01`.
 
 ## STOP
 
-Marketing live · fałszywy SEAL · commit set-now secrets
+Live publish · Ads · VPS kod bez GO

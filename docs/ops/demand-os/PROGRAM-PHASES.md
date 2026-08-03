@@ -1,8 +1,9 @@
 ---
 status: "[ACTIVE · PROGRAM SoT]"
 updated: "2026-08-02"
-gate: "DEMAND-OS-DESK-5F-00"
-master_todo: "docs/ops/demand-os/MASTER-TODO-5F.md"
+gate: "DEMAND-OS-MARKETING-4-00"
+master_todo: "docs/ops/demand-os/MASTER-TODO-4.md"
+status: "PREP CLOSE · GO pending"
 sot_tool: "docs/ops/SYSTEM-FIRM-OPERATING-SYSTEM-TARGET.md"
 desk_design: "docs/ops/demand-os/DEMAND-CONTROL-PANEL-DESIGN.md"
 desk_contract: "docs/ops/demand-os/DESK-CONTRACT.md"
@@ -21,19 +22,20 @@ ETAP 5   DASHBOARD build                 ← DEPLOYED
 ETAP 5c  IA NAV                          ← DONE
 ETAP 5d  IA SEAL                         ← DONE
 ETAP 5e  gap-close (boot, Praca-first)   ← DONE
-ETAP 5f  MASTER TODO dashboard 100%      ← ACTIVE
-ETAP 4   MARKETING live                  ← PARKED_LAST
+ETAP 5f  MASTER TODO dashboard 100%      ← SEALED 2026-08-03
+ETAP 4   MARKETING live                  ← PREP done · GO pending
 ```
 
-## Etap 5f — MASTER TODO (**ACTIVE**)
+## Etap 4 — Marketing HITL (**PREP done · GO pending**)
 
-**SoT:** [`MASTER-TODO-5F.md`](./MASTER-TODO-5F.md)  
-**Loop:** [`.agents/workflows/demand-os-master-loop.md`](../../.agents/workflows/demand-os-master-loop.md)
+**SoT:** [`MASTER-TODO-4.md`](./MASTER-TODO-4.md)  
+**GO checklist:** [`GO-MARKETING-HITL-CHECKLIST.md`](./GO-MARKETING-HITL-CHECKLIST.md)  
+**Prep close:** [`2026-08-03-DEMAND-MARKETING-4-PREP-CLOSE.md`](../handoffs/2026-08-03-DEMAND-MARKETING-4-PREP-CLOSE.md)
 
-- P0: VHQ off-DOM · Kolejka clean · URL · banner MIXED · hunt SENT · connection banner
-- P1: Analityka · Agenci · Marketing legacy · STL context
-- P2: Dowódca §8 · Hard DoD 15/15 SEAL
+- go_day_ready **100%** · env switch `DEMAND_OS_MARKETING_HITL=GO`
+- **Blocked:** live publish until Founder GO
+- Ads **PARK cash** unchanged
 
-## Sesja 1-1-1
+## Etap 5f — SEALED (archiwum)
 
-Teraz: **5F-P0-01** → jeden item → prove → close → next. Marketing **OUT**.
+**Close:** [`2026-08-03-DEMAND-DESK-5F-CLOSE.md`](../handoffs/2026-08-03-DEMAND-DESK-5F-CLOSE.md)

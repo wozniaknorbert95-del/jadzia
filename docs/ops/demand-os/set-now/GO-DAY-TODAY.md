@@ -1,34 +1,33 @@
 ---
-title: "TOOL BUILD FIRST — marketing PARKED_LAST"
-date: "2026-08-01"
-todo: DOS-TOOL-*
-status: "PARKED_LAST"
-founder_go: "OS TARGET Tool Complete before any marketing HITL"
+title: "GO DAY — Marketing HITL (post 5f SEAL)"
+date: "2026-08-03"
+status: "awaiting GO MARKETING HITL"
+master_todo: "docs/ops/demand-os/MASTER-TODO-4.md"
 ---
 
-# GO DAY — TOOL FIRST
+# GO DAY — Marketing HITL
 
-Marketing / live publish / FB hunt = **PARKED_LAST**.  
-Cel: 100% [`SYSTEM-FIRM-OPERATING-SYSTEM-TARGET.md`](../../SYSTEM-FIRM-OPERATING-SYSTEM-TARGET.md).
+**5f SEALED · go_day_ready 100%.** Marketing unpark tylko przez Founder GO.
 
 | Reguła | Wartość |
 |--------|---------|
-| priority | Demand OS TOOL residual → dashboard tip |
-| publish live | **STOP** (dry-run / mock / fixture OK) |
+| priority | `4-GO-01` GO MARKETING HITL |
+| publish live | **STOP** until GO + VPS env |
 | Ads | **PARK cash** |
-| VPS | STOP bez GO |
-| unpark marketing | tylko Founder `GO MARKETING HITL` po TOOL PASS |
+| VPS kod | STOP · env-only po GO |
+| checklist | [`GO-MARKETING-HITL-CHECKLIST.md`](../GO-MARKETING-HITL-CHECKLIST.md) |
 
-## Agent dziś
+## Agent verify (prep done)
 
 ```bash
-python tools/demand_os_hub.py status
-python tools/demand_os_phase0_check.py
+python -c "from agent.demand_os.week_ritual import go_day_ready; print(go_day_ready()['score'])"
+python -m pytest tests/test_demand_os_marketing_mode.py -q
 ```
 
-Runner: `/demand-os-execute` · STATE: [`../STATE.md`](../STATE.md)
+## Po GO
 
-## PARKED (nie dziś)
+1. VPS `DEMAND_OS_MARKETING_HITL=GO` · restart
+2. TT HITL `tt_w32_install_01`
+3. FB hunt · ledger
 
-- TT live publish · FB hunt · Blog HITL ship  
-- Organic sprint: [`../ORGANIC-AGENCY-SPRINT-14D.md`](../ORGANIC-AGENCY-SPRINT-14D.md)
+Sprint: [`ORGANIC-AGENCY-SPRINT-14D.md`](../ORGANIC-AGENCY-SPRINT-14D.md)

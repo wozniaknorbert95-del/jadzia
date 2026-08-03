@@ -24,13 +24,17 @@ from agent.demand_os.desk_contract import (
     top_wizard_assets,
     validator_fail_display,
 )
+from agent.demand_os.marketing_mode import (
+    is_marketing_parked,
+    marketing_hitl_gate,
+    resolve_marketing_mode,
+)
 from agent.demand_os.observability import build_screen, money_check
 from agent.demand_os.stl_monitor import stl_report
 from agent.demand_os.week_ritual import go_day_ready
 
 GATE = "DEMAND-OS-DESK-CONTRACT-00"
 DESK = "Demand Desk v2.1"
-MARKETING = "PARKED_LAST"
 
 
 def build_demand_os_status(
@@ -41,11 +45,12 @@ def build_demand_os_status(
 ) -> Dict[str, Any]:
     screen = build_screen(set_now=set_now, events_path=events_path)
     mc = money_check(set_now=set_now, events_path=events_path)
+    marketing = resolve_marketing_mode()
     starts = int(mc.get("starts_utm") or 0)
     publish = int(mc.get("publish_count") or 0)
     go = go_day_ready()
     stl = stl_report()
-    robota = resolve_robota_dnia(marketing=MARKETING)
+    robota = resolve_robota_dnia(marketing=marketing)
     hunt = build_hunt_queue(set_now=set_now)
     dual = dual_cash_report(set_now=set_now)
     icp = resolve_icp_week(set_now=set_now)
@@ -79,7 +84,7 @@ def build_demand_os_status(
 
         doctor_ok = run_doctor().ok
 
-    hitl_gate = "BLOCKED" if MARKETING.startswith("PARKED") else "READY"
+    hitl_gate = marketing_hitl_gate(marketing=marketing)
 
     return {
         "ok": True,
@@ -87,12 +92,12 @@ def build_demand_os_status(
         "tool": "desk_contract_active",
         "desk": DESK,
         "contract_version": CONTRACT_VERSION,
-        "marketing": MARKETING,
+        "marketing": marketing,
         "robota_dnia": robota,
         "icp_role_week": icp["icp_role_week"],
         "icp": icp,
         "iso_week": iso_week_label(),
-        "state": desk_state(marketing=MARKETING),
+        "state": desk_state(marketing=marketing),
         "week_calendar": build_week_calendar(),
         "shells_line": shells_line(),
         "screen": screen_dict,
@@ -127,7 +132,7 @@ def build_demand_os_status(
         ),
         "cash_warning": (
             "PARKED - EUR nie powstaje z Desk dopoki brak GO MARKETING HITL"
-            if MARKETING.startswith("PARKED")
+            if is_marketing_parked(marketing=marketing)
             else None
         ),
         "diagnostics": {

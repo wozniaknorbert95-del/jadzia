@@ -7,6 +7,10 @@ from typing import Any, Dict, List
 
 from agent.demand_os.content_factory import build_brief
 from agent.demand_os.ledger import ledger_summary
+from agent.demand_os.marketing_mode import (
+    marketing_hitl_gate,
+    resolve_marketing_mode,
+)
 from agent.demand_os.observability import money_check
 from agent.demand_os.stl_monitor import stl_report
 from agent.demand_os.weekly_tune import weekly_success_report
@@ -92,13 +96,18 @@ def go_day_ready() -> Dict[str, Any]:
 
     ok_n = sum(1 for c in checks if c["ok"])
     score = round(100.0 * ok_n / max(len(checks), 1), 1)
+    marketing = resolve_marketing_mode()
     return {
         "ok": score >= 90,
         "score": score,
         "checks": checks,
         "unlock_date": "2026-08-02",
-        "blocker_live": "Founder GO MARKETING HITL",
-        "marketing_hitl_gate": "BLOCKED",
-        "marketing": "PARKED_LAST",
+        "blocker_live": (
+            "Founder GO MARKETING HITL"
+            if marketing_hitl_gate(marketing=marketing) == "BLOCKED"
+            else None
+        ),
+        "marketing_hitl_gate": marketing_hitl_gate(marketing=marketing),
+        "marketing": marketing,
         "note": "tool ready ≠ live publish done",
     }
