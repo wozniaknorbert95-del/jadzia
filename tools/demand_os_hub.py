@@ -101,6 +101,23 @@ def cmd_doctor(_: argparse.Namespace) -> int:
     return 0 if report.ok else 1
 
 
+def cmd_owner_verify(_: argparse.Namespace) -> int:
+    """Delegate to tools/demand_os_owner_verify.py (exit 0 = green)."""
+    import subprocess
+
+    script = ROOT / "tools" / "demand_os_owner_verify.py"
+    env = {**os.environ, "PYTHONPATH": str(ROOT)}
+    env.setdefault("DEMAND_OS_SET_NOW", "data/demand-os/set-now-sanitized")
+    env.setdefault("PYTHONIOENCODING", "utf-8")
+    proc = subprocess.run(
+        [sys.executable, str(script)],
+        cwd=str(ROOT),
+        env=env,
+        timeout=600,
+    )
+    return int(proc.returncode)
+
+
 def cmd_ingest(args: argparse.Namespace) -> int:
     if args.fixture:
         path = Path(args.fixture)
@@ -307,6 +324,12 @@ def main(argv: list[str] | None = None) -> int:
 
     d = sub.add_parser("doctor", help="PROGRAM SEAL integrity check")
     d.set_defaults(func=cmd_doctor)
+
+    ov = sub.add_parser(
+        "owner-verify",
+        help="One-shot owner pack (doctor + pointers + pytest demand_os + footer)",
+    )
+    ov.set_defaults(func=cmd_owner_verify)
 
     ing = sub.add_parser("ingest", help="Ingest wizard_start/paid (fixture or row)")
     ing.add_argument("--fixture", default="")

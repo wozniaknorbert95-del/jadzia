@@ -20,7 +20,7 @@ Live cadence remains **PARKED**. Unlock = [`UNLOCK-LIVE-P0.md`](../ops/demand-os
 |---|------|--------|
 | 1 | SoT tip reconcile | active pointers tip `a3deb59` · no stale CURRENT `2f68b64` |
 | 2 | Safe sync | `tools/demand_os_sync_set_now.sh` dry-run default · no `--delete` |
-| 3 | MEMORY path | fallback log + `DEMAND_OS_MEMORY` in `.env.example` |
+| 3 | MEMORY path | fallback log + `DEMAND_OS_MEMORY` in `.env.example` · VPS writable `…/set-now/MEMORY.json` |
 | 4 | Owner verify | `tools/demand_os_owner_verify.py` exit 0 |
 | 5 | Pack coherence | sanitized README REQUIRED/OPTIONAL |
 | 6 | Unlock ceremony | `UNLOCK-LIVE-P0.md` |
@@ -38,10 +38,11 @@ pytest memory_path + money_narrative → green
 
 ## Deploy evidence
 
-- Commit: `a3deb59` → `origin/master`
-- VPS: `deployment/rev-demand-01-deploy-vps.sh a3deb59` PASS
-- Backup: `jadzia-pre-rev-demand-01-20260803-163828.db`
+- Runtime SEAL: `a3deb59` → `origin/master` · VPS deploy PASS
+- Tip-doc / hygiene: `3f88590` (AGENTS tip drop `2f68b64`)
+- Backup (runtime): `jadzia-pre-rev-demand-01-20260803-163828.db`
 - Prod: `doctor_scope=full` · `live_cadence=PARKED`
+- VPS MEMORY: `DEMAND_OS_MEMORY=/opt/jadzia/data/demand-os/set-now/MEMORY.json` · writable=yes
 
 ## What Is Left
 

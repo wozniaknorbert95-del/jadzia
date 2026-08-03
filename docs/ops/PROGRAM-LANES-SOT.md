@@ -33,7 +33,7 @@ demand_os_plan: "docs/ops/DEMAND-OS-ACTION-PLAN.md"
 | C1 | Order Desk thin WV (mirror RO) | **DONE · DEPLOY PASS** `vhq-w68a` |
 | B | Growth / Demand (COM-AI) | **SHIP DEPLOYED** · **TOOL BUILD FIRST** (OS TARGET) · **Ads PARK cash** (F5 parked) |
 | B2 | Demand OS Organic Sprint 14D | **live P0 PARKED** · `UNLOCK-LIVE-P0.md` · TOOL+OPS SEALED |
-| B3 | Demand OS TOOL / OPS | **SEALED** · tip `889258e` · `demand_os_owner_verify.py` |
+| B3 | Demand OS TOOL / OPS | **SEALED** · tip `a3deb59` · `demand_os_owner_verify.py` / hub `owner-verify` |
 | B4 | Demand OS Dashboard tune | **DONE local** · Commander demand-os/status · hub weekly · PROGRAM SEAL |
 | B5 | Demand OS Program Seal | **DONE / SEALED** · hub doctor PASS · tool-integrity seal close |
 | B6 | Demand OS MASTER residual | **DONE local** · sync-db/leads · GA4 wrap · Wave1 agents · doctor · GO already recorded |

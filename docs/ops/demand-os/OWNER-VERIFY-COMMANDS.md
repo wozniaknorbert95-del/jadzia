@@ -11,6 +11,8 @@ pack: TOOL-100-OWNER-VERIFY
 ```bash
 export DEMAND_OS_SET_NOW=data/demand-os/set-now-sanitized
 python tools/demand_os_owner_verify.py
+# equivalent:
+python tools/demand_os_hub.py owner-verify
 ```
 
 Exit `0` = green. Includes: doctor · pointer tests · `pytest -k demand_os` · footer full · go_day summary.
@@ -29,7 +31,7 @@ python -c "from agent.demand_os.commander_status import build_demand_os_status; 
 
 | Check | Pass |
 |-------|------|
-| doctor | `ok: true` · tip `TOOL_FIRST/PARKED` |
+| doctor | `ok: true` · tip check green (STATE TOOL/OPS + live P0 PARKED) |
 | pointer | `4-TOOL-*` or `4-OPS-*` · no stale `2f68b64` in active pointers |
 | pytest demand_os | green |
 | footer | `doctor_scope=full` · `doctor_ok` matches doctor |

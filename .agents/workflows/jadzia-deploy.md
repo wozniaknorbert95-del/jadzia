@@ -65,14 +65,20 @@ curl -sf http://127.0.0.1:8000/health
 
 ## Demand OS set-now (post-deploy, GO only)
 
+SoT: [`docs/ops/demand-os/SYNC-SET-NOW.md`](../../docs/ops/demand-os/SYNC-SET-NOW.md).  
+Default = **dry-run** (no wipe). Never pass `--delete`. Runtime LEDGER/MEMORY/jsonl excluded.
+
 When prod desk shows `data_mode: EMPTY`:
 
 ```bash
 bash tools/demand_os_sync_set_now.sh jadzia@VPS:/opt/jadzia/data/demand-os/set-now
+# review plan, then:
+bash tools/demand_os_sync_set_now.sh --apply jadzia@VPS:/opt/jadzia/data/demand-os/set-now
 # VPS .env: DEMAND_OS_SET_NOW=/opt/jadzia/data/demand-os/set-now
-#           DEMAND_OS_MEMORY=/opt/jadzia/data/demand-os/MEMORY.json
+#           DEMAND_OS_MEMORY=/opt/jadzia/data/demand-os/set-now/MEMORY.json
 sudo systemctl restart jadzia
 python tools/demand_os_hub.py doctor
+python tools/demand_os_hub.py owner-verify
 ```
 
 ## Output
