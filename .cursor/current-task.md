@@ -1,7 +1,7 @@
 # CURRENT TASK — AWAIT UNLOCK · live P0 PARKED
 
 **Gate:** `DEMAND-OS-MARKETING-4-00`  
-**Prod tip:** (see latest deploy) · cache `desk-dash11`  
+**Prod tip:** `d867ae8` · cache `desk-dash11`  
 **Verify:** `python tools/demand_os_hub.py owner-verify` · `python tools/demand_os_hub.py agents list`  
 **Human:** [`docs/ops/demand-os/UNLOCK-LIVE-P0.md`](../docs/ops/demand-os/UNLOCK-LIVE-P0.md)  
 **Closeout:** [`docs/handoffs/2026-08-03-AUDIT-PARTIAL-CLOSEOUT.md`](../docs/handoffs/2026-08-03-AUDIT-PARTIAL-CLOSEOUT.md)  
