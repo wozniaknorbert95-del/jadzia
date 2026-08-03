@@ -1,17 +1,19 @@
 # CURRENT TASK — AWAIT UNLOCK · live P0 PARKED
 
 **Gate:** `DEMAND-OS-MARKETING-4-00`  
-**Prod tip:** `a763bdc` · cache `desk-dash11`  
-**Verify:** `python tools/demand_os_hub.py owner-verify`  
+**Prod tip:** (see latest deploy) · cache `desk-dash11`  
+**Verify:** `python tools/demand_os_hub.py owner-verify` · `python tools/demand_os_hub.py agents list`  
 **Human:** [`docs/ops/demand-os/UNLOCK-LIVE-P0.md`](../docs/ops/demand-os/UNLOCK-LIVE-P0.md)  
 **Closeout:** [`docs/handoffs/2026-08-03-AUDIT-PARTIAL-CLOSEOUT.md`](../docs/handoffs/2026-08-03-AUDIT-PARTIAL-CLOSEOUT.md)  
+**Agents:** [`docs/handoffs/2026-08-03-DEMAND-OS-AGENTS-TOOL100.md`](../docs/handoffs/2026-08-03-DEMAND-OS-AGENTS-TOOL100.md)  
 **Register:** [`docs/ops/demand-os/AUDIT-K-REGISTER.md`](../docs/ops/demand-os/AUDIT-K-REGISTER.md)
 
 ## Status
 
 - TOOL 100% = SEALED  
 - OPS HARDENING = SEALED  
-- Audit Partial Closeout = SHIPPED (`desk-dash11` @ `a763bdc`)  
+- Audit Partial Closeout = SHIPPED (`desk-dash11`)  
+- Demand OS Agents = registry SoT + unified dispatch + hub `agents` + 24 tests  
 - Live `4-P0-*` = PARKED until You sign unlock  
 
 ## Teraz (Dowódca)

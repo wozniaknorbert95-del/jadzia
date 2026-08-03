@@ -1,5 +1,9 @@
 #!/usr/bin/env python3
-"""Demand OS agent shells CLI — Wave1–3 · no live publish."""
+"""Demand OS agent shells CLI — registry-backed · no live publish.
+
+Thin CLI over agent.demand_os.agents.registry.dispatch. Mutating actions stay
+dry-run by default (pass --apply to execute).
+"""
 
 from __future__ import annotations
 
@@ -12,18 +16,14 @@ ROOT = Path(__file__).resolve().parents[1]
 if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))
 
-from agent.demand_os.agents.wave1 import WAVE1_ROLES, run_agent  # noqa: E402
-from agent.demand_os.agents.wave2 import run_wave2  # noqa: E402
-from agent.demand_os.agents.wave3 import WAVE3_ROLES, run_wave3  # noqa: E402
-
-ALL_ROLES = sorted(WAVE1_ROLES | {"cf", "fb"} | WAVE3_ROLES)
+from agent.demand_os.agents.registry import AGENT_REGISTRY, all_roles, dispatch  # noqa: E402
 
 
 def main(argv: list[str] | None = None) -> int:
-    p = argparse.ArgumentParser(description="Demand OS agent shells")
-    p.add_argument("--role", required=True, choices=ALL_ROLES)
+    p = argparse.ArgumentParser(description="Demand OS agent shells (registry)")
+    p.add_argument("--role", required=True, choices=all_roles())
     p.add_argument("--action", default="status")
-    p.add_argument("--dry-run", action="store_true")
+    p.add_argument("--apply", action="store_true", help="execute mutating action (default dry-run)")
     p.add_argument("--icp-role", default="", dest="icp_role")
     p.add_argument("--hook", default="")
     p.add_argument("--limit", type=int, default=10)
@@ -32,35 +32,22 @@ def main(argv: list[str] | None = None) -> int:
     p.add_argument("--label", default="")
     args = p.parse_args(argv)
 
-    if args.role in WAVE1_ROLES:
-        out = run_agent(
-            args.role,
-            action=args.action,
-            dry_run=args.dry_run,
-            icp_role=args.icp_role or None,
-            hook=args.hook or None,
-            limit=args.limit,
-        )
-    elif args.role in WAVE3_ROLES:
-        out = run_wave3(
-            args.role,
-            action=args.action,
-            limit=args.limit,
-            icp_role=args.icp_role or "installateur",
-            asset_id=args.asset_id or None,
-        )
-    else:
-        out = run_wave2(
-            args.role,
-            action=args.action,
-            dry_run=args.dry_run,
-            channel=args.channel,
-            asset_id=args.asset_id or None,
-            limit=args.limit,
-            label=args.label,
-        )
+    spec = AGENT_REGISTRY[args.role]
+    act = (args.action or "status").strip().lower()
+    kwargs: dict = {
+        "limit": args.limit,
+        "icp_role": args.icp_role or None,
+        "hook": args.hook or None,
+        "channel": args.channel,
+        "asset_id": args.asset_id or None,
+        "label": args.label,
+    }
+    if act in spec["mutating_actions"]:
+        kwargs["dry_run"] = not args.apply
+
+    out = dispatch(args.role, action=act, **kwargs)
     print(json.dumps(out, ensure_ascii=True, indent=2))
-    return 0
+    return 0 if out.get("ok") else 1
 
 
 if __name__ == "__main__":

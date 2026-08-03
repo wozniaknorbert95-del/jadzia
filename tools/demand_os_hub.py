@@ -51,6 +51,13 @@ from agent.demand_os.utm_lock import build_wizard_utm  # noqa: E402
 from agent.demand_os.week_ritual import go_day_ready, week_plan  # noqa: E402
 from agent.demand_os.weekly_tune import weekly_success_report  # noqa: E402
 from agent.demand_os.widget_leads import sync_hot_leads_to_a2a  # noqa: E402
+from agent.demand_os.agents.registry import (  # noqa: E402
+    AGENT_REGISTRY,
+    all_roles,
+    dispatch,
+    get_agent,
+    list_agents,
+)
 
 
 def _print(obj: object) -> None:
@@ -116,6 +123,40 @@ def cmd_owner_verify(_: argparse.Namespace) -> int:
         timeout=600,
     )
     return int(proc.returncode)
+
+
+def cmd_agents_list(args: argparse.Namespace) -> int:
+    rows = list_agents()
+    if getattr(args, "wave", None):
+        rows = [r for r in rows if r["wave"] == int(args.wave)]
+    _print({"ok": True, "count": len(rows), "agents": rows})
+    return 0
+
+
+def cmd_agents_run(args: argparse.Namespace) -> int:
+    """Read-only dispatch. Mutating actions route to dedicated hub subcommands."""
+    spec = get_agent(args.role)
+    if spec is None:
+        _print({"ok": False, "error": f"unknown role {args.role!r}", "roles": all_roles()})
+        return 1
+    act = (args.action or "status").strip().lower()
+    if act in spec["mutating_actions"]:
+        _print(
+            {
+                "ok": False,
+                "role": args.role,
+                "action": act,
+                "error": (
+                    f"mutating action {act!r} must go through dedicated hub subcommand "
+                    "(sync-db / sync-leads / memory-icp / memory-sync)"
+                ),
+                "registry": AGENT_REGISTRY[args.role]["mutating_actions"],
+            }
+        )
+        return 1
+    out = dispatch(args.role, action=act, limit=int(getattr(args, "limit", 10)))
+    _print(out)
+    return 0 if out.get("ok") else 1
 
 
 def cmd_ingest(args: argparse.Namespace) -> int:
@@ -476,6 +517,17 @@ def main(argv: list[str] | None = None) -> int:
     eg.add_argument("--asset-id", default="engage_dry", dest="asset_id")
     eg.add_argument("--icp-role", default="installateur", dest="icp_role")
     eg.set_defaults(func=cmd_engage_dry)
+
+    ag = sub.add_parser("agents", help="Demand OS agent registry (SoT) — list / read-only run")
+    agsub = ag.add_subparsers(dest="agents_cmd", required=True)
+    agl = agsub.add_parser("list", help="Registry projection with live-gate honesty")
+    agl.add_argument("--wave", type=int, default=0, choices=[0, 1, 2, 3])
+    agl.set_defaults(func=cmd_agents_list)
+    agr = agsub.add_parser("run", help="Dispatch read-only action via unified envelope")
+    agr.add_argument("--role", required=True, choices=all_roles())
+    agr.add_argument("--action", default="status")
+    agr.add_argument("--limit", type=int, default=10)
+    agr.set_defaults(func=cmd_agents_run)
 
     args = p.parse_args(argv)
     cmd = args.cmd or ""
