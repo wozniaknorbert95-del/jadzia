@@ -125,7 +125,7 @@ Pełne kontrakty: `flexgrafik-meta/docs/core/integration-contracts.md`
 - **Globalne zasady:** `flexgrafik-meta/docs/core/global-rules.md` (VCMS = pointer)
 - **Workflow:** `.agents/workflows/README.md` → start `/vibe-init`
 - **PRD:** `docs/PRD-core.md`
-- **Prod tip:** `889258e` (TOOL 100% SEAL deploy) · cache `desk-dash08`
+- **Prod tip:** `a3deb59` (OPS HARDENING SEAL) · cache `desk-dash08`
 - **Handoffs LIVE:** `docs/handoffs/` (≤15; cold → `docs/archive/handoffs/`)
 
 ## 8) Workflow Framework (v2.2)

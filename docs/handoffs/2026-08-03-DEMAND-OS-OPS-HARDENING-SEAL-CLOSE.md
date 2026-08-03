@@ -18,7 +18,7 @@ Live cadence remains **PARKED**. Unlock = [`UNLOCK-LIVE-P0.md`](../ops/demand-os
 
 | # | Item | Result |
 |---|------|--------|
-| 1 | SoT tip reconcile | active pointers tip `889258e` · no stale CURRENT `2f68b64` |
+| 1 | SoT tip reconcile | active pointers tip `a3deb59` · no stale CURRENT `2f68b64` |
 | 2 | Safe sync | `tools/demand_os_sync_set_now.sh` dry-run default · no `--delete` |
 | 3 | MEMORY path | fallback log + `DEMAND_OS_MEMORY` in `.env.example` |
 | 4 | Owner verify | `tools/demand_os_owner_verify.py` exit 0 |
@@ -36,20 +36,26 @@ python tools/demand_os_owner_verify.py → ok: true · errors: []
 pytest memory_path + money_narrative → green
 ```
 
+## Deploy evidence
+
+- Commit: `a3deb59` → `origin/master`
+- VPS: `deployment/rev-demand-01-deploy-vps.sh a3deb59` PASS
+- Backup: `jadzia-pre-rev-demand-01-20260803-163828.db`
+- Prod: `doctor_scope=full` · `live_cadence=PARKED`
+
 ## What Is Left
 
-1. Commit + deploy OPS runtime (diagnostics.live_cadence + money_narrative) if not yet on tip
-2. Dowódca may unlock via UNLOCK-LIVE-P0 — agents do not push
+1. Dowódca may unlock via UNLOCK-LIVE-P0 — agents do not push
 
 ```text
-DONE: [OPS HARDENING 10/10 · owner_verify green · unlock doc · safe sync · cadence honesty]
-LEFT: [deploy tip sync if needed · Dowódca UNLOCK-LIVE-P0 optional]
+DONE: [OPS HARDENING 10/10 · tip a3deb59 · owner_verify green · unlock doc · live_cadence PARKED]
+LEFT: [Dowódca UNLOCK-LIVE-P0 optional]
 RISKS: [stale handoffs saying Founder publish — SUPERSEDED]
 NEXT_COMMAND_FOR_NEW_AGENT: [python tools/demand_os_owner_verify.py · do not @blast 4-P0-01]
 
 ---
 CURRENT_STAGE: F6-Iterate
 RECOMMENDED_NEXT: await Dowódca UNLOCK-LIVE-P0
-WHY_NEXT: Ops sealed; live marketing is human-gated only.
+WHY_NEXT: Ops sealed on prod a3deb59; live marketing is human-gated only.
 ---
 ```

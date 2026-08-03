@@ -1,6 +1,6 @@
 {
   "project": "Jadzia-Core",
-  "last_updated": "2026-08-03 (OPS HARDENING · TOOL 100% SEALED · prod 889258e)",
+  "last_updated": "2026-08-03 (OPS HARDENING SEALED · prod a3deb59 · live P0 PARKED)",
   "status": "active",
   "plan": "docs/ops/demand-os/PROGRAM-PHASES.md",
   "active_gate": "DEMAND-OS-MARKETING-4-00",
@@ -18,8 +18,8 @@
     "active_item": "4-OPS-HARDENING",
     "demand_desk_v21": "ACCEPTED · §8 prod PASS · 5f SEALED",
     "demand_desk_contract": "SEALED v2.1.1 · DESK-CONTRACT.md",
-    "demand_tool_100": "SEALED · tip 889258e · rule demand-os-tool-first.mdc",
-    "demand_marketing_4": "TOOL 100% SEALED · OPS HARDENING · live 4-P0-* PARKED · UNLOCK-LIVE-P0",
+    "demand_tool_100": "SEALED · tip a3deb59 · rule demand-os-tool-first.mdc",
+    "demand_marketing_4": "TOOL 100% + OPS HARDENING SEALED · tip a3deb59 · live 4-P0-* PARKED · UNLOCK-LIVE-P0",
     "demand_desk_5b_close": "docs/handoffs/2026-08-02-DEMAND-DESK-5B-CLOSE.md",
     "demand_desk_5e_close": "docs/handoffs/2026-08-02-DEMAND-DESK-5E-GAP-CLOSE.md",
     "demand_marketing": "HITL_LIVE · organic only · Ads PARK",
@@ -385,7 +385,7 @@
       "checklist": "docs/ops/demand-os/MASTER-TODO-4.md",
       "workflow": ".agents/workflows/demand-os-master-loop.md",
       "active_item": "4-OPS-HARDENING",
-      "note": "2026-08-03 OPS HARDENING after TOOL 100% SEAL tip 889258e. live P0 PARKED until UNLOCK-LIVE-P0."
+      "note": "2026-08-03 OPS HARDENING SEALED tip a3deb59. live P0 PARKED until UNLOCK-LIVE-P0."
     },
     {
       "id": "DEMAND-OS-DESK-5F-00",
