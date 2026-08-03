@@ -19,6 +19,7 @@ ACT_ACTIONS = frozenset(
         "memory-icp",
         "memory-sync",
         "ledger-ensure",
+        "ledger-export",
         "engage-dry",
         "design-check",
         "audit-write",

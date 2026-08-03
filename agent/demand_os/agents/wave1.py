@@ -9,6 +9,7 @@ from __future__ import annotations
 from typing import Any, Dict
 
 from agent.demand_os.commander_status import build_demand_os_status
+from agent.demand_os.attribution import sync_ops_bus_to_attribution
 from agent.demand_os.db_utm import sync_wizard_starts_from_ops_bus
 from agent.demand_os.doctor import run_doctor
 from agent.demand_os.marketing_mode import resolve_marketing_mode
@@ -51,12 +52,15 @@ def _growth_lead(action: str, **kwargs: Any) -> Dict[str, Any]:
     if action == "doctor":
         return {"role": "growth_lead", "action": action, "result": run_doctor().to_dict()}
     if action == "sync_starts":
+        dry = bool(kwargs.get("dry_run", True))
         return {
             "role": "growth_lead",
             "action": action,
-            "result": sync_wizard_starts_from_ops_bus(
-                dry_run=bool(kwargs.get("dry_run", True))
-            ),
+            "result": {
+                "growth_events": sync_wizard_starts_from_ops_bus(dry_run=dry),
+                "attribution": sync_ops_bus_to_attribution(dry_run=dry),
+                "dry_run": dry,
+            },
         }
     return {
         "role": "growth_lead",

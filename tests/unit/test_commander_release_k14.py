@@ -37,3 +37,16 @@ def test_validate_runs():
     # ok depends on suite; structure must exist
     assert "errors" in data
     assert data["mode"] == "validate"
+
+
+def test_rollback_hint_runs():
+    proc = subprocess.run(
+        [sys.executable, "tools/commander_release.py", "rollback-hint"],
+        cwd=str(ROOT),
+        capture_output=True,
+        text=True,
+    )
+    assert proc.returncode == 0
+    data = json.loads(proc.stdout)
+    assert data["mode"] == "rollback_hint"
+    assert "commands" in data

@@ -146,10 +146,41 @@ def cmd_weekly(_: argparse.Namespace) -> int:
 
 
 def cmd_sync_db(args: argparse.Namespace) -> int:
-    result = sync_wizard_starts_from_ops_bus(
+    from agent.demand_os.attribution import sync_ops_bus_to_attribution
+
+    growth = sync_wizard_starts_from_ops_bus(
         limit=args.limit,
         dry_run=args.dry_run,
     )
+    attr = sync_ops_bus_to_attribution(
+        limit=args.limit,
+        dry_run=args.dry_run,
+    )
+    result = {
+        "ok": bool(growth.get("ok")) and bool(attr.get("ok")),
+        "growth_events": growth,
+        "attribution": attr,
+        "dry_run": bool(args.dry_run),
+    }
+    _print(result)
+    return 0 if result.get("ok") else 1
+
+
+def cmd_sot_check(args: argparse.Namespace) -> int:
+    from agent.demand_os.sot_reconcile import reconcile_dual_sot
+
+    report = reconcile_dual_sot(dry_run=not bool(getattr(args, "apply", False)))
+    # apply reserved — reconcile never writes today
+    report["apply_requested"] = bool(getattr(args, "apply", False))
+    report["note"] = "dry-run only; use ledger-export --apply for projection write"
+    _print(report)
+    return 0 if report.get("ok") else 2
+
+
+def cmd_ledger_export(args: argparse.Namespace) -> int:
+    from agent.demand_os.ledger_export import export_ledger
+
+    result = export_ledger(dry_run=not bool(args.apply))
     _print(result)
     return 0 if result.get("ok") else 1
 
@@ -343,10 +374,28 @@ def main(argv: list[str] | None = None) -> int:
     w = sub.add_parser("weekly", help="Success tune — 1 improvement, no live publish CTA")
     w.set_defaults(func=cmd_weekly)
 
-    sd = sub.add_parser("sync-db", help="ops_bus wizard_started → growth_events")
+    sd = sub.add_parser(
+        "sync-db",
+        help="ops_bus wizard_started → growth_events + SQLite attribution",
+    )
     sd.add_argument("--limit", type=int, default=50)
     sd.add_argument("--dry-run", action="store_true")
     sd.set_defaults(func=cmd_sync_db)
+
+    sc = sub.add_parser("sot-check", help="K5 dual SoT reconcile (dry-run default)")
+    sc.add_argument(
+        "--apply",
+        action="store_true",
+        help="Reserved; reconcile remains read-only (use ledger-export --apply)",
+    )
+    sc.set_defaults(func=cmd_sot_check)
+
+    le = sub.add_parser(
+        "ledger-export",
+        help="K13 LEDGER projection from SQLite attribution (dry-run default)",
+    )
+    le.add_argument("--apply", action="store_true", help="Atomic write LEDGER.csv + manifest")
+    le.set_defaults(func=cmd_ledger_export)
 
     sl = sub.add_parser("sync-leads", help="hot leads → A2A lead_hot")
     sl.add_argument("--limit", type=int, default=10)

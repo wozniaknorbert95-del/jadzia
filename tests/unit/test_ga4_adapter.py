@@ -5,7 +5,13 @@ from __future__ import annotations
 import os
 from unittest.mock import MagicMock, patch
 
-from agent.demand_os.ga4_adapter import fetch_wizard_starts, fetch_wizard_starts_by_utm
+from agent.demand_os.ga4_adapter import (
+    fetch_wizard_starts,
+    fetch_wizard_starts_by_utm,
+    fetch_wizard_starts_stub,
+    ga4_available,
+    pull_ga4_into_dtl,
+)
 
 
 def test_stub_is_unavailable_not_ok_zero(monkeypatch):
@@ -89,3 +95,71 @@ def test_utm_csv_import(monkeypatch, tmp_path):
     assert out["ok"] is True
     assert out["status"] == "ok"
     assert out["starts_by_utm"]["https://x?utm_content=a"] == 3
+
+
+def test_ga4_available_and_stub_alias(monkeypatch):
+    monkeypatch.delenv("GOOGLE_APPLICATION_CREDENTIALS", raising=False)
+    monkeypatch.delenv("GA4_CREDENTIALS_JSON", raising=False)
+    assert ga4_available() is False
+    monkeypatch.setenv("GA4_CREDENTIALS_JSON", '{"type":"service_account"}')
+    monkeypatch.setenv("GA4_PROPERTY_ID", "999")
+    assert ga4_available() is True
+    monkeypatch.delenv("DEMAND_OS_GA4_LIVE", raising=False)
+    stub = fetch_wizard_starts_stub(days=7)
+    assert stub["mode"] == "stub"
+
+
+def test_live_wizard_event_and_freshness(monkeypatch):
+    monkeypatch.setenv("DEMAND_OS_GA4_LIVE", "1")
+    monkeypatch.setenv("GOOGLE_APPLICATION_CREDENTIALS", "/tmp/fake.json")
+    monkeypatch.setenv("GA4_PROPERTY_ID_ZZPACKAGE", "123456")
+    monkeypatch.setenv("DEMAND_OS_GA4_WIZARD_START_EVENT", "wizard_start")
+    snap = MagicMock()
+    snap.sources.model_dump.return_value = {
+        "zzpackage": {"sessions": 10, "events": {"wizard_start": "5"}}
+    }
+    snap.sync_status = None
+    snap.fetched_at = None
+    snap.created_at = "2026-08-03T12:00:00Z"
+    with patch(
+        "agent.nodes.analytics_node.fetch_analytics_snapshot",
+        return_value=snap,
+    ):
+        out = fetch_wizard_starts(days=7)
+    assert out["ok"] is True
+    assert out["ga4_wizard_starts_7d"] == 5
+    assert out["freshness"]
+
+
+def test_pull_ga4_into_dtl_paths(monkeypatch):
+    monkeypatch.delenv("DEMAND_OS_GA4_LIVE", raising=False)
+    skipped = pull_ga4_into_dtl()
+    assert skipped["status"] == "unavailable"
+    monkeypatch.setenv("DEMAND_OS_GA4_LIVE", "1")
+    with patch(
+        "agent.marketing.dtl.ga4.ingest_ga4_snapshot",
+        return_value={"status": "ok"},
+    ):
+        ok = pull_ga4_into_dtl()
+    assert ok["ok"] is True
+    with patch(
+        "agent.marketing.dtl.ga4.ingest_ga4_snapshot",
+        side_effect=RuntimeError("nope"),
+    ):
+        err = pull_ga4_into_dtl()
+    assert err["mode"] == "dtl_error"
+
+
+def test_utm_csv_missing_file_and_bad_starts(monkeypatch, tmp_path):
+    monkeypatch.setenv("DEMAND_OS_GA4_UTM_CSV", str(tmp_path / "missing.csv"))
+    out = fetch_wizard_starts_by_utm(days=7)
+    assert out["mode"] == "missing_file"
+    csv_path = tmp_path / "utm.csv"
+    csv_path.write_text(
+        "utm_link,starts\nhttps://x?utm_content=a,bad\nhttps://y?utm_content=b,2\n",
+        encoding="utf-8",
+    )
+    monkeypatch.setenv("DEMAND_OS_GA4_UTM_CSV", str(csv_path))
+    out2 = fetch_wizard_starts_by_utm(days=7)
+    assert out2["ok"] is True
+    assert out2["starts_by_utm"] == {"https://y?utm_content=b": 2}

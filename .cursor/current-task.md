@@ -1,16 +1,17 @@
 # CURRENT TASK — AWAIT UNLOCK · live P0 PARKED
 
 **Gate:** `DEMAND-OS-MARKETING-4-00`  
-**Prod tip:** `4093179` · cache `desk-dash09` (OPS floor `a3deb59`)  
+**Prod tip:** (see latest deploy) · cache `desk-dash11`  
 **Verify:** `python tools/demand_os_hub.py owner-verify`  
 **Human:** [`docs/ops/demand-os/UNLOCK-LIVE-P0.md`](../docs/ops/demand-os/UNLOCK-LIVE-P0.md)  
-**PARK leave:** [`docs/handoffs/2026-08-03-DEMAND-OS-PARK-LEAVE-AWAIT-UNLOCK.md`](../docs/handoffs/2026-08-03-DEMAND-OS-PARK-LEAVE-AWAIT-UNLOCK.md)
+**Closeout:** [`docs/handoffs/2026-08-03-AUDIT-PARTIAL-CLOSEOUT.md`](../docs/handoffs/2026-08-03-AUDIT-PARTIAL-CLOSEOUT.md)  
+**Register:** [`docs/ops/demand-os/AUDIT-K-REGISTER.md`](../docs/ops/demand-os/AUDIT-K-REGISTER.md)
 
 ## Status
 
 - TOOL 100% = SEALED  
 - OPS HARDENING = SEALED  
-- Desk UX repair = SEALED (`desk-dash09`)  
+- Audit Partial Closeout = SHIPPING (`desk-dash11`)  
 - Live `4-P0-*` = PARKED until You sign unlock  
 
 ## Teraz (Dowódca)

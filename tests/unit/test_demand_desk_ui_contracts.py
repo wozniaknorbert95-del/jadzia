@@ -100,6 +100,7 @@ DESK_PRIMARY_FORBIDDEN = (
     "Money Check błąd",
     "Hunt dry OK",
     "Hunt dry błąd",
+    "Brak uprawnień (viewer)",
 )
 
 
@@ -161,10 +162,11 @@ def test_desk_nav_desktop_and_more_sheet():
     assert 'id="more-to-demand-desk"' in HTML
 
 
-def test_cache_bust_desk_dash10():
-    assert HTML.count("desk-dash10") >= 2
+def test_cache_bust_desk_dash11():
+    assert HTML.count("desk-dash11") >= 2
+    assert "desk-dash10" not in HTML
     assert "desk-dash09" not in HTML
-    assert "coi-commander-desk-dash10" in SW
+    assert "coi-commander-desk-dash11" in SW
 
 
 def test_ux_repair_honesty_guards():
@@ -235,11 +237,28 @@ def test_k3_cookie_session_probe_and_no_jwt_url():
     assert "auth/session" in APP
     assert "Link z tokenem jest wyłączony" in APP
     assert "Zaawansowane (awaryjny token)" in HTML
+    # Auth gates prefer hasSession over bare getToken checks in shell paths
+    assert APP.count("if (!hasSession())") >= 3
 
 
 def test_k10_api_errors_not_raw_json():
     assert "function apiErrorMessage" in APP
     assert "JSON.stringify(detail)" not in APP.split("// --- Demand Desk")[0]
+
+
+def test_k10_desk_actions_use_typed_errors():
+    section = _desk_js_section()
+    assert "function deskToastTyped" in section
+    assert "deskToastTyped(" in section
+    assert "DESK_COPY.scopeActDenied" in section
+
+
+def test_k6_initial_html_hidden_views_inert():
+    assert 'id="view-home"' in HTML and "inert" in HTML.split('id="view-home"')[1][:80]
+    assert 'id="view-marketing"' in HTML and "inert" in HTML.split('id="view-marketing"')[1][:80]
+    # Demand desk is eager (no inert on open)
+    desk_chunk = HTML.split('id="view-demand-desk"')[1][:120]
+    assert "inert" not in desk_chunk.split(">")[0]
 
 
 def test_vhq_lazy_manifest_deferred():

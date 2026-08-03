@@ -10,7 +10,7 @@ import hashlib
 import json
 import logging
 import sqlite3
-from datetime import datetime, timezone
+from datetime import datetime, timedelta, timezone
 from pathlib import Path
 from typing import Any, Dict, List, Optional
 from urllib.parse import parse_qs, urlparse
@@ -278,8 +278,13 @@ def sync_ops_bus_to_attribution(
     }
 
 
-def attribution_summary(*, db_path: Optional[Path] = None) -> Dict[str, Any]:
+def attribution_summary(
+    *,
+    db_path: Optional[Path] = None,
+    days: int = 7,
+) -> Dict[str, Any]:
     path = db_path or _db_path()
+    window_days = max(1, min(int(days or 7), 90))
     if not path.is_file():
         return {
             "ok": True,
@@ -287,8 +292,10 @@ def attribution_summary(*, db_path: Optional[Path] = None) -> Dict[str, Any]:
             "total": 0,
             "by_status": {},
             "top_assets": [],
+            "window_days": window_days,
             "contract": CONTRACT_VERSION,
         }
+    cutoff = (datetime.now(timezone.utc) - timedelta(days=window_days)).isoformat()
     conn = sqlite3.connect(str(path))
     try:
         ensure_attribution_schema(conn, commit=False)
@@ -296,8 +303,10 @@ def attribution_summary(*, db_path: Optional[Path] = None) -> Dict[str, Any]:
             """
             SELECT attribution_status, COUNT(*)
             FROM demand_wizard_starts
+            WHERE ts_utc >= ?
             GROUP BY attribution_status
-            """
+            """,
+            (cutoff,),
         ).fetchall()
         by_status = {r[0]: int(r[1]) for r in rows}
         total = sum(by_status.values())
@@ -306,10 +315,12 @@ def attribution_summary(*, db_path: Optional[Path] = None) -> Dict[str, Any]:
             SELECT asset_id, COUNT(*) AS n
             FROM demand_wizard_starts
             WHERE asset_id IS NOT NULL AND asset_id != ''
+              AND ts_utc >= ?
             GROUP BY asset_id
             ORDER BY n DESC
             LIMIT 5
-            """
+            """,
+            (cutoff,),
         ).fetchall()
         return {
             "ok": True,
@@ -317,6 +328,7 @@ def attribution_summary(*, db_path: Optional[Path] = None) -> Dict[str, Any]:
             "total": total,
             "by_status": by_status,
             "top_assets": [{"asset_id": r[0], "starts": int(r[1])} for r in top],
+            "window_days": window_days,
             "contract": CONTRACT_VERSION,
         }
     finally:

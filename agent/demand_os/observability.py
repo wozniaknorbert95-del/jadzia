@@ -120,9 +120,9 @@ def build_screen(
 
     publish = 0
     comments = 0
-    paid = 0
-    starts_by: Dict[str, int] = defaultdict(int)
-    hook_scores: Dict[str, int] = defaultdict(int)
+    ledger_paid = 0
+    ledger_starts_by: Dict[str, int] = defaultdict(int)
+    ledger_hook_scores: Dict[str, int] = defaultdict(int)
 
     for r in rows:
         if (r.get("publish_Y/N") or "").strip().upper() == "Y":
@@ -132,7 +132,7 @@ def build_screen(
         except ValueError:
             pass
         try:
-            paid += int(r.get("paid") or 0)
+            ledger_paid += int(r.get("paid") or 0)
         except ValueError:
             pass
         try:
@@ -142,25 +142,36 @@ def build_screen(
         utm = (r.get("utm_link") or "").strip()
         asset = (r.get("asset_id") or "").strip() or "unknown"
         if starts and utm:
-            starts_by[utm] += starts
+            ledger_starts_by[utm] += starts
         if starts:
-            hook_scores[asset] += starts
-        if asset and asset not in hook_scores:
-            hook_scores[asset] += 0
+            ledger_hook_scores[asset] += starts
+        if asset and asset not in ledger_hook_scores:
+            ledger_hook_scores[asset] += 0
 
-    # Prefer growth_events under set_now (no silent fall-back to repo default)
+    # K5: starts/paid from GROWTH-EVENTS when present; never sum ledger+events.
+    # LEDGER is hygiene/export projection — used only as legacy/fixture fallback.
     ev_path = events_path if events_path is not None else (root / "GROWTH-EVENTS.jsonl")
     if ev_path.is_file():
         agg = aggregate_starts_from_events(events_path=ev_path)
-        for utm, n in (agg.get("starts_by_utm") or {}).items():
-            starts_by[utm] += int(n)
-        paid += int(agg.get("paid") or 0)
-        if agg.get("top_hook"):
-            hook_scores[agg["top_hook"]] = hook_scores.get(agg["top_hook"], 0) + int(
-                agg.get("starts_utm") or 0
-            )
     else:
         agg = {"starts_by_utm": {}, "starts_utm": 0, "paid": 0, "top_hook": ""}
+
+    events_starts = int(agg.get("starts_utm") or 0)
+    events_paid = int(agg.get("paid") or 0)
+    use_events = events_starts > 0 or events_paid > 0 or bool(agg.get("starts_by_utm"))
+
+    if use_events:
+        starts_by = {str(u): int(n) for u, n in (agg.get("starts_by_utm") or {}).items()}
+        paid = events_paid
+        hook_scores: Dict[str, int] = defaultdict(int)
+        if agg.get("top_hook"):
+            hook_scores[str(agg["top_hook"])] = events_starts or 1
+        starts_source = "growth_events"
+    else:
+        starts_by = dict(ledger_starts_by)
+        paid = ledger_paid
+        hook_scores = ledger_hook_scores
+        starts_source = "ledger_fallback"
 
     for e in engage:
         if e.get("ok") is True and e.get("action") == "comment":
@@ -179,7 +190,7 @@ def build_screen(
     if any(hook_scores.values()):
         top_hook = max(hook_scores.items(), key=lambda kv: kv[1])[0]
     elif agg.get("top_hook"):
-        top_hook = agg["top_hook"]
+        top_hook = str(agg["top_hook"])
     elif rows:
         for r in reversed(rows):
             aid = (r.get("asset_id") or "").strip()
@@ -197,7 +208,7 @@ def build_screen(
         top_hook=top_hook,
         hitl_queue=hitl,
         ledger_rows=len(rows),
-        notes="OS §M — vanity metrics excluded; starts from growth_events+ledger",
+        notes=f"OS §M — vanity excluded; starts from {starts_source} (no ledger+events sum)",
     )
 
 

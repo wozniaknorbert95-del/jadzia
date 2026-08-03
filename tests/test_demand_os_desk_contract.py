@@ -12,6 +12,7 @@ from agent.demand_os.desk_contract import (
     CONTRACT_VERSION,
     ROBOTA,
     detect_data_mode,
+    format_desk_pretty,
     resolve_robota_dnia,
     starts_wow_delta,
     validator_fail_display,
@@ -173,3 +174,33 @@ def test_hitl_decision_dry(tmp_path: Path):
     assert out["calendar_status"] == "validated"
     out2 = record_hitl_decision("tt_hitl", "BLOKADA", calendar_path=cal)
     assert out2["calendar_status"] == "blocked"
+
+
+def test_format_desk_pretty_plain_pl():
+    text = format_desk_pretty(
+        {
+            "desk": "Biuro Popytu",
+            "contract_version": CONTRACT_VERSION,
+            "icp_role_week": "installateur",
+            "state": "OK",
+            "iso_week": "2026-W31",
+            "robota_dnia": {"code": "MONEY_CHECK", "title": "Sprawdz kase"},
+            "kpi": {
+                "wizard_starts_utm": 1,
+                "wizard_starts_wow_delta": 0,
+                "paid": 0,
+                "publish_count": 0,
+                "validator_fail": "n/a",
+            },
+            "screen": {"hitl_queue": [], "hunt_queue": []},
+            "stl": {"open_hot": 0},
+            "dual_cash": {"open_fail": 0},
+            "data_mode": "FIXTURE",
+            "cash_warning": "",
+            "shells_line": "ok",
+        }
+    )
+    assert "BIURO POPYTU" in text
+    assert "Tresci do zatwierdzenia" in text
+    assert "HITL" not in text
+    assert "STL" not in text

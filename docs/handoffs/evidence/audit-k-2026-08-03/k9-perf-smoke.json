@@ -1,0 +1,12 @@
+{
+  "generated_at": "2026-08-03T17:41:51.543272+00:00",
+  "tool": "desk_perf_smoke",
+  "html": "C:\\Users\\FlexGrafik\\FlexGrafik\\github\\jadzia-core\\commander-ui\\index.html",
+  "budget": {
+    "performance": 80,
+    "lcp_ms": 2500,
+    "cls": 0.1
+  },
+  "status": "SKIP",
+  "reason": "lighthouse CLI not installed"
+}

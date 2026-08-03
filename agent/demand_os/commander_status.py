@@ -113,7 +113,7 @@ def build_demand_os_status(
         ga4_sessions = ga4["aggregate"].get("sessions")
     ga4_wizard_starts = ga4.get("ga4_wizard_starts_7d")
     try:
-        attribution = attribution_summary()
+        attribution = attribution_summary(days=7)
     except Exception as exc:
         logger.warning("attribution summary error: %s", exc)
         attribution = {
@@ -122,6 +122,7 @@ def build_demand_os_status(
             "total": 0,
             "by_status": {},
             "top_assets": [],
+            "window_days": 7,
             "error": str(exc)[:200],
         }
 

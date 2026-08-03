@@ -1,0 +1,13 @@
+# K13 — daily ledger export timer (DISABLED by default; enable only with Dowódca GO)
+[Unit]
+Description=Daily Demand OS ledger export (SQLite → LEDGER.csv)
+Requires=demand-os-ledger-export.service
+
+[Timer]
+OnCalendar=*-*-* 06:15:00
+Persistent=true
+Unit=demand-os-ledger-export.service
+
+[Install]
+# WantedBy intentionally omitted — do not auto-enable on deploy
+# WantedBy=timers.target

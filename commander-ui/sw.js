@@ -1,5 +1,5 @@
 /* COI Commander shell SW — static assets only; never cache /api/ (K11) */
-const CACHE = "coi-commander-desk-dash10";
+const CACHE = "coi-commander-desk-dash11";
 const SHELL = [
   "./",
   "./index.html",

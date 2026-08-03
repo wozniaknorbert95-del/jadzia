@@ -1,0 +1,18 @@
+# K13 — LEDGER export from SQLite attribution (DO NOT enable without Dowódca GO)
+# Activate only after: systemctl enable --now demand-os-ledger-export.timer
+[Unit]
+Description=Demand OS ledger export from SQLite attribution
+After=network.target jadzia.service
+
+[Service]
+Type=oneshot
+User=jadzia
+Group=jadzia
+WorkingDirectory=/opt/jadzia
+Environment=DEMAND_OS_SET_NOW=/opt/jadzia/data/demand-os/set-now
+ExecStart=/opt/jadzia/venv/bin/python /opt/jadzia/tools/demand_os_hub.py ledger-export --apply
+Nice=10
+
+[Install]
+# WantedBy intentionally omitted — enable only with explicit GO
+# WantedBy=multi-user.target

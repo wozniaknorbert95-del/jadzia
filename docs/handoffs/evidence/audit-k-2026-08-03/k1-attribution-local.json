@@ -1,0 +1,25 @@
+{
+  "event": {
+    "ok": true,
+    "event_id": "ev-proof-1",
+    "attribution_status": "attributed",
+    "asset_id": "tt_w31_install_01",
+    "duplicate": false
+  },
+  "summary": {
+    "ok": true,
+    "status": "ok",
+    "total": 1,
+    "by_status": {
+      "attributed": 1
+    },
+    "top_assets": [
+      {
+        "asset_id": "tt_w31_install_01",
+        "starts": 1
+      }
+    ],
+    "window_days": 7,
+    "contract": "rev_r1.v1"
+  }
+}

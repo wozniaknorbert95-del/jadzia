@@ -106,13 +106,33 @@ def deploy(*, go_token: str) -> dict:
     return manifest
 
 
+def rollback_hint() -> dict:
+    MANIFEST_DIR.mkdir(parents=True, exist_ok=True)
+    manifests = sorted(MANIFEST_DIR.glob("commander-*.json"), key=lambda p: p.stat().st_mtime)
+    latest = manifests[-1] if manifests else None
+    prev = manifests[-2] if len(manifests) >= 2 else None
+    return {
+        "ok": True,
+        "mode": "rollback_hint",
+        "latest_manifest": str(latest) if latest else "",
+        "previous_manifest": str(prev) if prev else "",
+        "generated_at": _utc(),
+        "commands": [
+            "ssh … 'cd /opt/jadzia && git rev-parse --short HEAD'",
+            "Use previous_manifest sha: git reset --hard <sha> && systemctl restart jadzia",
+        ],
+    }
+
+
 def main() -> int:
     p = argparse.ArgumentParser(description="Commander UI release (GO-gated)")
-    p.add_argument("command", choices=["validate", "deploy"])
+    p.add_argument("command", choices=["validate", "deploy", "rollback-hint"])
     p.add_argument("--go", default="", help="Fresh GO token matching COMMANDER_DEPLOY_GO")
     args = p.parse_args()
     if args.command == "validate":
         report = validate()
+    elif args.command == "rollback-hint":
+        report = rollback_hint()
     else:
         report = deploy(go_token=args.go)
     print(json.dumps(report, indent=2, ensure_ascii=False))

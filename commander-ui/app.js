@@ -938,7 +938,7 @@ async function loadMarketing() {
   const draftBody = document.getElementById("weekly-draft-body");
   const railSummary = document.getElementById("mkt-rail-summary");
   const calEntries = document.getElementById("calendar-entries");
-  if (!getToken()) {
+  if (!hasSession()) {
     if (draftBody) draftBody.textContent = "Zaloguj się (/commander lub JWT), aby załadować draft.";
     if (railSummary) railSummary.textContent = "Sesja wymagana.";
     if (calEntries) {
@@ -1367,7 +1367,7 @@ async function loadAnalytics() {
   const ordersEl = document.getElementById("orders-list");
   const leadsEl = document.getElementById("leads-list");
   if (!tiles || !ordersEl || !leadsEl) return;
-  if (!getToken()) {
+  if (!hasSession()) {
     tiles.innerHTML = '<p class="state-empty">Zaloguj się (/commander lub JWT), aby załadować analitykę.</p>';
     if (kpiEl) kpiEl.innerHTML = "";
     ordersEl.innerHTML = "";
@@ -1514,7 +1514,7 @@ async function loadAgents() {
   const listEl = document.getElementById("agents-list");
   const mapEl = document.getElementById("ai-os-map");
   if (!listEl) return;
-  if (!getToken()) {
+  if (!hasSession()) {
     listEl.innerHTML = '<p class="state-empty">Zaloguj się (/commander lub JWT), aby załadować rejestr agentów.</p>';
     if (mapEl) mapEl.innerHTML = "";
     return;
@@ -3115,7 +3115,7 @@ function vhqUpdateSessionBanner() {
   const banner = document.getElementById("vhq-session-banner");
   const signIn = document.getElementById("vhq-sign-in");
   if (!banner) return;
-  const hasToken = typeof getToken === "function" && !!getToken();
+  const hasToken = typeof getToken === "function" && hasSession();
   if (!hasToken) {
     banner.hidden = false;
     banner.dataset.state = "nosession";
@@ -3196,7 +3196,7 @@ function vhqRenderFloorCards() {
 let _vhqOpsBusCache = { events: [], fetchedAt: 0 };
 
 async function vhqFetchOpsBusEvents(limit = 40) {
-  if (!getToken()) {
+  if (!hasSession()) {
     _vhqOpsBusCache = { events: [], fetchedAt: Date.now() };
     return [];
   }
@@ -3245,7 +3245,7 @@ function vhqBindWizardCtaBeacon() {
     if (el.dataset.vhqBusBound === "1") return;
     el.dataset.vhqBusBound = "1";
     el.addEventListener("click", () => {
-      if (!getToken()) return;
+      if (!hasSession()) return;
       api("/api/v1/commander/ops-bus/ingest", {
         method: "POST",
         body: {
@@ -3321,7 +3321,7 @@ function vhqRenderCriticalPin() {
 }
 
 async function vhqFetchPendingApprovals() {
-  if (!getToken()) return { events: [], total: 0, enabled: true, authed: false };
+  if (!hasSession()) return { events: [], total: 0, enabled: true, authed: false };
   try {
     const data = await api(
       "/api/v1/commander/ops-bus/events?approval_state=pending&type=approval_needed&limit=40"
@@ -3398,7 +3398,7 @@ async function vhqRenderVaultPending() {
     sessionHint.hidden = true;
     sessionHint.textContent = "";
   }
-  if (!getToken()) {
+  if (!hasSession()) {
     if (sessionHint) {
       sessionHint.hidden = false;
       sessionHint.textContent =
@@ -3728,7 +3728,7 @@ function vhqRenderOrderDeskMirror() {
   const hint = document.getElementById("vhq-work-order-mirror-hint");
   if (!body) return;
   vhqClear(body);
-  const hasToken = typeof getToken === "function" && !!getToken();
+  const hasToken = typeof getToken === "function" && hasSession();
   if (!hasToken) {
     if (hint) {
       hint.textContent =
@@ -4278,7 +4278,7 @@ function vhqShowWorkPanel(roomId) {
 function vhqUpdateWorkSessionBanner() {
   const banner = document.getElementById("vhq-work-session-banner");
   if (!banner) return;
-  const hasToken = typeof getToken === "function" && !!getToken();
+  const hasToken = typeof getToken === "function" && hasSession();
   if (!hasToken) {
     banner.hidden = false;
     banner.dataset.state = "nosession";
@@ -4429,7 +4429,7 @@ function vhqAttachFocusGuard() {
     if (shell.contains(e.target)) return;
     e.preventDefault();
     const nodes = vhqFocusableNodes();
-    const hasToken = typeof getToken === "function" && !!getToken();
+    const hasToken = typeof getToken === "function" && hasSession();
     const fallback =
       (!hasToken && document.getElementById("vhq-sign-in")) ||
       document.getElementById("vhq-to-console") ||
@@ -4535,7 +4535,7 @@ function vhqOpenShell(roomId) {
   vhqSetBackdropInert(true);
   vhqRenderRoom(roomId || "mission-control", { historyMode: "none" });
   vhqAttachFocusGuard();
-  const hasToken = typeof getToken === "function" && !!getToken();
+  const hasToken = typeof getToken === "function" && hasSession();
   const focusBtn = !hasToken
     ? document.getElementById("vhq-sign-in") || document.getElementById("vhq-to-console")
     : document.getElementById("vhq-to-console") || document.getElementById("vhq-close");
@@ -4957,7 +4957,7 @@ async function bootstrapAuth() {
     toast(`Ticket #${ticketParam} — zaloguj się przez Telegram /commander`);
   }
 
-  if (getToken()) {
+  if (hasSession()) {
     const input = document.getElementById("jwt-input");
     if (input) input.value = "";
     updateAuthStatus();
@@ -4980,6 +4980,7 @@ const DESK_COPY = {
   authRequired: "Zaloguj się, aby otworzyć Biuro Popytu.",
   scopeViewer: "Tryb tylko odczyt — akcje wyłączone.",
   scopeForbidden: "Brak uprawnień do Biura Popytu — tylko ograniczony odczyt.",
+  scopeActDenied: "Brak uprawnień — tryb tylko odczyt.",
   hitlErr: "Nie udało się zapisać decyzji — sprawdź pozycję w kalendarzu.",
   huntConfirm: (target) => `Wysłać komentarz testowy do ${target}? (bez publikacji na FB)`,
   huntOk: "Komentarz testowy wysłany",
@@ -5198,12 +5199,12 @@ function renderDemandDesk(data) {
     }
   }
 
-  deskSetText("desk-kpi-hook", String(kpi.top_hook || "none"));
+  deskSetText("desk-kpi-hook", String(kpi.top_hook || "—"));
   deskSetText("desk-kpi-publish", String(kpi.publish_count ?? 0));
 
   const valFail =
     kpi.validator_fail === "n/a" || (kpi.publish_count === 0 && kpi.validator_fail == null)
-      ? "n/a"
+      ? "—"
       : String(kpi.validator_fail ?? 0);
   deskSetText("desk-val-fail", valFail);
   deskSetText("desk-comments", String(kpi.comments_sent ?? screen.comments_sent ?? 0));
@@ -5478,9 +5479,24 @@ async function loadDemandDesk() {
   }
 }
 
+function deskToastTyped(kind, technical, fallback) {
+  const typed = deskTypedError(kind, technical || fallback);
+  toast(typed.message, "err");
+  const diagBody = document.getElementById("desk-diagnostics-body");
+  if (diagBody) {
+    try {
+      const prev = diagBody.textContent ? JSON.parse(diagBody.textContent) : {};
+      diagBody.textContent = JSON.stringify({ ...prev, lastError: typed }, null, 2);
+    } catch (_e) {
+      diagBody.textContent = JSON.stringify({ lastError: typed }, null, 2);
+    }
+  }
+  return typed;
+}
+
 async function deskMoneyCheck() {
   if (!deskCanAct()) {
-    toast("Brak uprawnień (viewer)", "err");
+    toast(DESK_COPY.scopeActDenied, "err");
     return;
   }
   try {
@@ -5489,13 +5505,13 @@ async function deskMoneyCheck() {
     const paid = mc.paid ?? 0;
     toast(DESK_COPY.moneyOk(starts, paid), "ok");
   } catch (e) {
-    toast(e.message || DESK_COPY.moneyErr, "err");
+    deskToastTyped("server", e.message, DESK_COPY.moneyErr);
   }
 }
 
 async function deskHitlDecision(assetId, decision) {
   if (!deskCanAct()) {
-    toast("Brak uprawnień (viewer)", "err");
+    toast(DESK_COPY.scopeActDenied, "err");
     return;
   }
   const confirmed = await confirmAction(
@@ -5514,14 +5530,14 @@ async function deskHitlDecision(assetId, decision) {
     toast(decision === "GOTOWY" ? "Zaplanowano (bez publikacji)" : "Wstrzymano", "ok");
     await loadDemandDesk();
   } catch (e) {
-    toast(e.message || DESK_COPY.hitlErr, "err");
+    deskToastTyped("server", e.message, DESK_COPY.hitlErr);
   }
 }
 
 async function deskSubmitIcp(ev) {
   ev.preventDefault();
   if (!deskCanAct()) {
-    toast("Brak uprawnień (viewer)", "err");
+    toast(DESK_COPY.scopeActDenied, "err");
     return;
   }
   const role = (document.getElementById("desk-icp-input")?.value || "").trim();
@@ -5538,13 +5554,13 @@ async function deskSubmitIcp(ev) {
     toast(DESK_COPY.icpSaved, "ok");
     await loadDemandDesk();
   } catch (e) {
-    toast(e.message || "Nie udało się zapisać roli tygodnia", "err");
+    deskToastTyped("server", e.message, "Nie udało się zapisać roli tygodnia");
   }
 }
 
 async function deskEnsureLedger() {
   if (!deskCanAct()) {
-    toast("Brak uprawnień (viewer)", "err");
+    toast(DESK_COPY.scopeActDenied, "err");
     return;
   }
   try {
@@ -5552,13 +5568,13 @@ async function deskEnsureLedger() {
     toast(DESK_COPY.ledgerOk, "ok");
     await loadDemandDesk();
   } catch (e) {
-    toast(e.message || DESK_COPY.ledgerErr, "err");
+    deskToastTyped("server", e.message, DESK_COPY.ledgerErr);
   }
 }
 
 async function deskHuntDry(targetId, draft) {
   if (!deskCanAct()) {
-    toast("Brak uprawnień (viewer)", "err");
+    toast(DESK_COPY.scopeActDenied, "err");
     return;
   }
   const confirmed = await confirmAction(DESK_COPY.huntConfirm(targetId));
@@ -5584,7 +5600,7 @@ async function deskHuntDry(targetId, draft) {
     toast(DESK_COPY.huntOk, "ok");
     await loadDemandDesk();
   } catch (e) {
-    toast(e.message || DESK_COPY.huntErr, "err");
+    deskToastTyped("server", e.message, DESK_COPY.huntErr);
   }
 }
 
