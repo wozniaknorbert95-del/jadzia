@@ -4,8 +4,8 @@ status: ACTIVE · OPS HARDENING · TOOL 100% SEALED · live P0 PARKED
 updated: "2026-08-03"
 owner: agent-orchestrator
 human_gate: "UNLOCK-LIVE-P0.md (Dowódca only)"
-prerequisite: "Etap 5f SEALED · TOOL 100% SEAL · OPS HARDENING tip a3deb59"
-close_target: "OPS HARDENING SEAL · then await UNLOCK-LIVE-P0"
+prerequisite: "Etap 5f SEALED · TOOL 100% SEAL · OPS HARDENING · UX desk-dash09"
+close_target: "Await UNLOCK-LIVE-P0 · then 4-P0-* HITL"
 ---
 
 # MASTER TODO — Etap 4 (Marketing HITL · TOOL FIRST · OPS)
@@ -31,7 +31,7 @@ close_target: "OPS HARDENING SEAL · then await UNLOCK-LIVE-P0"
 | Pole | Wartość |
 |------|---------|
 | 5f | SEALED · Hard DoD 15/15 |
-| prod runtime | **`a3deb59`** OPS HARDENING SEAL · desk-dash08 |
+| prod runtime | **`a8fdcf4`** · cache **desk-dash09** · OPS floor `a3deb59` |
 | go_day_ready | artifact score (≠ Tool/OPS SEAL) |
 | marketing_hitl_gate | env may be READY · live cadence **PARKED** |
 | GO switch | `DEMAND_OS_MARKETING_HITL=GO` on VPS (env ≠ unlock) |

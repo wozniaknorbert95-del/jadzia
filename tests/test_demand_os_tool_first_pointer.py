@@ -54,11 +54,13 @@ def test_current_task_and_state_tool_first() -> None:
     assert "4-P0-01 ready_for_human" not in current
     assert "2f68b64" not in current
     assert "2f68b64" not in session
-    # Tip floor: TOOL-100 889258e · OPS HARDENING runtime a3deb59
+    # Tip floor: current a8fdcf4 · UX 96131f8 · OPS a3deb59 · TOOL-100 889258e
     tip_ok = any(
-        tip in current or tip in state for tip in ("a3deb59", "889258e")
+        tip in current or tip in state
+        for tip in ("a8fdcf4", "96131f8", "a3deb59", "889258e")
     )
-    assert tip_ok, "active pointers must cite prod tip a3deb59 (or seal floor 889258e)"
+    assert tip_ok, "active pointers must cite prod tip a8fdcf4 (or seal floor a3deb59/889258e)"
+    assert "desk-dash09" in current or "desk-dash09" in state or "a8fdcf4" in current
     assert "2f68b64" not in (ROOT / "AGENTS.md").read_text(encoding="utf-8")
     assert "PARKED" in state.upper()
     assert "TOOL" in state.upper() or "UNLOCK" in state.upper() or "OPS" in state.upper()

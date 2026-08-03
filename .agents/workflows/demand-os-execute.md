@@ -1,5 +1,5 @@
 ---
-description: Demand OS execute — TOOL FIRST (Etap 4). Live publish PARKED.
+description: Demand OS execute — TOOL+OPS SEALED · AWAIT UNLOCK. Live publish PARKED.
 ---
 
 # /demand-os-execute
@@ -12,21 +12,28 @@ description: Demand OS execute — TOOL FIRST (Etap 4). Live publish PARKED.
 
 ## Goal
 
-Maintain / finish Demand OS **tool 100%**.  
-Marketing live publish = **PARKED**. Test publish only if tool proof needs it (then delete).
+Maintain Demand OS **after tool 100% SEAL**.  
+Marketing live publish = **PARKED** until [`UNLOCK-LIVE-P0.md`](../../docs/ops/demand-os/UNLOCK-LIVE-P0.md).  
+Test publish only if tool proof needs it (then delete).
 
 ## Hard rules
 
-1. **No-ask** — follow MASTER-TODO-4 pointer (`4-TOOL-*`).
-2. **STOP:** live TT/FB/blog · Ads · VPS bez GO · fake ledger · “Founder publish now”.
-3. Seal history (5f / integrity) ≠ permission for live cadence.
+1. **No-ask** — follow MASTER-TODO-4 pointer (`4-AWAIT-UNLOCK` / post-unlock `4-P0-*` only with unlock handoff).
+2. **STOP:** live TT/FB/blog without unlock · Ads · VPS bez GO · fake ledger · “Founder publish now”.
+3. Seal history (5f / TOOL / OPS / UX) ≠ permission for live cadence.
 
 ## Verify (each session)
 
 ```bash
 export DEMAND_OS_SET_NOW=data/demand-os/set-now-sanitized
-python tools/demand_os_hub.py doctor
-python -m pytest tests -k demand_os -q
+python tools/demand_os_hub.py owner-verify
 ```
 
-Target: green · no live-publish pointer drift.
+Target: green · `live_cadence=PARKED` · no live-publish pointer drift.
+
+## Post-unlock (only)
+
+When `docs/handoffs/*-UNLOCK-LIVE-P0.md` exists with `UNLOCK LIVE P0`:
+1. Unpark `4-P0-01` in MASTER
+2. Execute HITL pack one item at a time
+3. Ledger `publish=Y` only after REAL evidence

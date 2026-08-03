@@ -11,18 +11,19 @@ workflow: ".agents/workflows/demand-os-master-loop.md"
 ## Active
 
 **4-AWAIT-UNLOCK** · `ready_for_human`  
-Runtime tip `a3deb59` · HEAD `9b0efb2`  
-Unlock only via [`UNLOCK-LIVE-P0.md`](./UNLOCK-LIVE-P0.md) (preflight PASS)
+Prod tip **`a8fdcf4`** · cache **`desk-dash09`** · OPS floor `a3deb59`  
+Unlock only via [`UNLOCK-LIVE-P0.md`](./UNLOCK-LIVE-P0.md)
 
 | Priorytet | Item | Status |
 |-----------|------|--------|
 | DONE | TOOL 100% SEAL | sealed |
 | DONE | 4-OPS-01…10 | sealed |
-| DONE | 4-UNLOCK-PREP | preflight PASS |
+| DONE | Desk UX repair desk-dash09 | sealed |
+| DONE | Post-TOOL pointer hygiene | sealed |
 | HUMAN | sign UNLOCK or keep parked | ready_for_human |
 | PARKED | live 4-P0-* | blocked |
 
-Verify: `python tools/demand_os_hub.py owner-verify`
+Verify pack: [`OWNER-VERIFY-COMMANDS.md`](./OWNER-VERIFY-COMMANDS.md)
 
 ## PARKED
 

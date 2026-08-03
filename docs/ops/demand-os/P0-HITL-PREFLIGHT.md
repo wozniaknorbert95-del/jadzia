@@ -3,8 +3,8 @@ status: PARKED
 updated: "2026-08-03"
 gate: DEMAND-OS-MARKETING-4-00
 owner: agent-orchestrator
-active: 4-TOOL-01
-note: "live P0 parked — tool 100% first"
+active: 4-AWAIT-UNLOCK
+note: "live P0 parked — unlock via UNLOCK-LIVE-P0.md only"
 ---
 
 # Etap 4 P0 — HITL Preflight Pack

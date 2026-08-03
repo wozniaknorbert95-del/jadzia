@@ -23,4 +23,4 @@ superseded_by: "docs/handoffs/2026-08-03-DEMAND-OS-TOOL-INTEGRITY-SEAL-CLOSE.md"
 | 10 | F5 / VPS | parked_cash · STOP |
 
 **Phase B (dashboard tip):** DONE local (`DOS-DASH-01..03`).  
-**Next:** `MASTER-TODO-4.md` → **`4-TOOL-01`** (TOOL FIRST). Live P0 PARKED. Rule: `.cursor/rules/demand-os-tool-first.mdc`.
+**Next (ACTIVE):** `MASTER-TODO-4.md` → **`4-AWAIT-UNLOCK`**. TOOL 100% SEALED. Live P0 PARKED until `UNLOCK-LIVE-P0.md`. Rule: `.cursor/rules/demand-os-tool-first.mdc`.

@@ -26,7 +26,8 @@ ETAP 5e  gap-close (boot, Praca-first)   ← DONE
 ETAP 5f  MASTER TODO dashboard 100%      ← SEALED 2026-08-03
 ETAP 4   MARKETING                       ← env GO possible · live cadence PARKED
          TOOL 100%                       ← SEALED 2026-08-03
-         OPS HARDENING                   ← SEALED 2026-08-03 tip a3deb59
+         OPS HARDENING                   ← SEALED 2026-08-03 floor a3deb59
+         UX desk-dash09                  ← SEALED tip a8fdcf4 · AWAIT UNLOCK
 ```
 
 ## Etap 4 — Marketing HITL (**TOOL+OPS SEALED · live P0 PARKED**)

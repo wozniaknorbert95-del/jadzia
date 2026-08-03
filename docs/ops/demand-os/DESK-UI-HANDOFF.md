@@ -20,7 +20,7 @@ surface: "commander-ui #view-demand-desk"
 - **API:** `GET /api/v1/commander/demand-os/status` (full doctor in footer)
 - **Deep link:** `?view=demand-desk` (opcjonalny; default bez parametru)
 - **Cache:** `desk-dash09` (UX repair post-audit)
-- **Master TODO (active):** [`MASTER-TODO-4.md`](./MASTER-TODO-4.md) · `4-TOOL-01`
+- **Master TODO (active):** [`MASTER-TODO-4.md`](./MASTER-TODO-4.md) · `4-AWAIT-UNLOCK`
 - **UI SEAL archive:** [`MASTER-TODO-5F.md`](./MASTER-TODO-5F.md) · SEALED (not active)
 
 ## Footer honesty

@@ -11,7 +11,7 @@ Maszyna gotowa na rytm Foundera — **bez** autonomicznego publish.
 
 ## Historical note
 
-Ten dokument opisuje **dry gate pre-GO**. Aktualny pointer = `MASTER-TODO-4.md` **OPS HARDENING SEALED** · live P0 **PARKED**. Unlock: `UNLOCK-LIVE-P0.md`.
+Ten dokument opisuje **dry gate pre-GO** (HISTORICAL). Aktualny pointer = `MASTER-TODO-4.md` **`4-AWAIT-UNLOCK`** · TOOL+OPS SEALED · live P0 **PARKED**. Unlock: `UNLOCK-LIVE-P0.md`.
 
 ## DoD (PASS)
 
@@ -26,7 +26,7 @@ Ten dokument opisuje **dry gate pre-GO**. Aktualny pointer = `MASTER-TODO-4.md` 
 ## Backend Trap (zakaz)
 
 Po tym PASS historycznie następował Founder `GO MARKETING HITL`.  
-Po GO / seal: **nie** skacz do live P0. Najpierw tool 100% residual; publish tylko test→delete; live P0 po jawnym unlock Dowódcy.
+Po GO / seal: **nie** skacz do live P0. Tool 100% już SEALED; live P0 tylko po jawnym unlock Dowódcy (`UNLOCK-LIVE-P0.md`).
 
 ## STOP
 
