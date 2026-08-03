@@ -31,7 +31,7 @@ close_target: "Await UNLOCK-LIVE-P0 · then 4-P0-* HITL"
 | Pole | Wartość |
 |------|---------|
 | 5f | SEALED · Hard DoD 15/15 |
-| prod runtime | **`a8fdcf4`** · cache **desk-dash09** · OPS floor `a3deb59` |
+| prod runtime | **`1545415`** · cache **desk-dash09** · OPS floor `a3deb59` |
 | go_day_ready | artifact score (≠ Tool/OPS SEAL) |
 | marketing_hitl_gate | env may be READY · live cadence **PARKED** |
 | GO switch | `DEMAND_OS_MARKETING_HITL=GO` on VPS (env ≠ unlock) |
@@ -107,9 +107,10 @@ Legenda: `open` · `in_progress` · `done` · `blocked` · `ready_for_human`
 ## Aktywne zadanie (pointer)
 
 ```
-CURRENT: 4-AWAIT-UNLOCK · ready_for_human
+CURRENT: 4-AWAIT-UNLOCK · ready_for_human · PARK leave recorded
 NEXT:    Dowódca signs UNLOCK-LIVE-P0 (or keep parked)
 BLOCKED: live 4-P0-01/02/03 until unlock handoff exists
+HYGIENE: Post-TOOL N1–N7 CLOSE · tip 1545415 · desk-dash09
 ```
 
 ## Verify (agent — każda sesja)

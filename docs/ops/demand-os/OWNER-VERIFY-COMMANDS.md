@@ -2,7 +2,7 @@
 status: ACTIVE
 updated: "2026-08-03"
 pack: POST-TOOL-OWNER-VERIFY
-tip: a8fdcf4
+tip: 1545415
 ---
 
 # Owner Verify Commands (canonical)

@@ -1,10 +1,10 @@
 # CURRENT TASK — AWAIT UNLOCK · live P0 PARKED
 
 **Gate:** `DEMAND-OS-MARKETING-4-00`  
-**Prod tip:** `a8fdcf4` · cache `desk-dash09` (OPS floor `a3deb59`)  
+**Prod tip:** `1545415` · cache `desk-dash09` (OPS floor `a3deb59`)  
 **Verify:** `python tools/demand_os_hub.py owner-verify`  
 **Human:** [`docs/ops/demand-os/UNLOCK-LIVE-P0.md`](../docs/ops/demand-os/UNLOCK-LIVE-P0.md)  
-**Preflight:** refresh @ tip `a8fdcf4`
+**PARK leave:** [`docs/handoffs/2026-08-03-DEMAND-OS-PARK-LEAVE-AWAIT-UNLOCK.md`](../docs/handoffs/2026-08-03-DEMAND-OS-PARK-LEAVE-AWAIT-UNLOCK.md)
 
 ## Status
 

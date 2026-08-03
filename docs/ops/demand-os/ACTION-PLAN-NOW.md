@@ -11,17 +11,18 @@ workflow: ".agents/workflows/demand-os-master-loop.md"
 ## Active
 
 **4-AWAIT-UNLOCK** · `ready_for_human`  
-Prod tip **`a8fdcf4`** · cache **`desk-dash09`** · OPS floor `a3deb59`  
-Unlock only via [`UNLOCK-LIVE-P0.md`](./UNLOCK-LIVE-P0.md)
+Prod tip **`1545415`** · cache **`desk-dash09`** · OPS floor `a3deb59`  
+Unlock only via [`UNLOCK-LIVE-P0.md`](./UNLOCK-LIVE-P0.md)  
+PARK leave: [`2026-08-03-DEMAND-OS-PARK-LEAVE-AWAIT-UNLOCK.md`](../../handoffs/2026-08-03-DEMAND-OS-PARK-LEAVE-AWAIT-UNLOCK.md)
 
 | Priorytet | Item | Status |
 |-----------|------|--------|
 | DONE | TOOL 100% SEAL | sealed |
 | DONE | 4-OPS-01…10 | sealed |
 | DONE | Desk UX repair desk-dash09 | sealed |
-| DONE | Post-TOOL pointer hygiene | sealed |
-| HUMAN | sign UNLOCK or keep parked | ready_for_human |
-| PARKED | live 4-P0-* | blocked |
+| DONE | Post-TOOL N1–N7 hygiene | sealed |
+| HUMAN | sign UNLOCK or keep parked | ready_for_human · PARK leave |
+| PARKED | live 4-P0-* (N9/N10) | blocked |
 
 Verify pack: [`OWNER-VERIFY-COMMANDS.md`](./OWNER-VERIFY-COMMANDS.md)
 
