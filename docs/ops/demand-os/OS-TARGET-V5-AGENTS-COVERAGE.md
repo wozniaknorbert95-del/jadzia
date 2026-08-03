@@ -23,7 +23,7 @@ Legenda: `done` (kod + testy) · `waiting` (tool gotowy, brak części) · `park
 | MCP: content_calendar | `done` | `content_calendar.py` + F2 calendar/gate |
 | MCP: GA4 | `waiting` | fail-closed stub `done`; live = brak credentials. Contract: plik SA (`GOOGLE_APPLICATION_CREDENTIALS` musi istnieć na dysku) **lub** inline `GA4_CREDENTIALS_JSON='{"type":"service_account",...}'` — path/garbage w inline nie włącza live (test) |
 | MCP: publish path | `parked` | test-only publish→delete; live gated |
-| MCP: GDrive | `waiting` | `list_cf_assets_stub` — real GDrive connector TO-BE |
+| MCP: GDrive | `done` (tool) | Drive v3 files.list client (SA + httpx, fail-closed, injectable transport; 8-03). Live = `DEMAND_OS_GDRIVE_LIVE=1` + folder/creds — `parked` do GO |
 | MCP: widget/leads | `done` | `widget_leads.py` hot leads + A2A sync |
 | MCP: social connectors read/comment | `parked` | TARGET mówi TO-BE; `engage-dry` mock only |
 
@@ -52,7 +52,7 @@ Legenda: `done` (kod + testy) · `waiting` (tool gotowy, brak części) · `park
 ## Co CZEKA (kolejność, tool-only)
 
 1. GA4 live — credentials (plik SA lub inline JSON) na VPS + `DEMAND_OS_GA4_LIVE=1` (GO).
-2. GDrive real connector (zastąpić stub) — bez GO na network.
+2. ~~GDrive real connector~~ — `done` tool-side (8-03); live gated env+creds (GO).
 3. Desk tile „Demand OS Agenci” z `list_agents()` (w realizacji — MASTER-TODO-6 6-10).
 4. Worker loop per rola → dopiero wtedy `shell: false`.
 

@@ -1,0 +1,11 @@
+# Every 15 min — due-dispatch is cheap (read-only when nothing is due).
+[Unit]
+Description=Demand OS agents worker timer
+
+[Timer]
+OnBootSec=5min
+OnUnitActiveSec=15min
+Persistent=true
+
+[Install]
+WantedBy=timers.target

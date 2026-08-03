@@ -5364,15 +5364,20 @@ function renderDemandDesk(data) {
           const chip = live
             ? '<span class="desk-agent-chip desk-agent-chip--tool">narzędzie</span>'
             : '<span class="desk-agent-chip desk-agent-chip--gated">brama live</span>';
-          const stale = a.stale === true
-            ? '<span class="desk-agent-chip desk-agent-chip--stale">bez biegu >7d</span>'
-            : "";
+          const age = typeof a.age_days === "number" ? a.age_days : null;
+          const ageChip = age === null
+            ? '<span class="desk-agent-chip desk-agent-chip--stale">nigdy</span>'
+            : age <= 2
+              ? `<span class="desk-agent-chip desk-agent-chip--fresh">${age < 1 ? "dziś" : `${Math.floor(age)}d`}</span>`
+              : age <= 7
+                ? `<span class="desk-agent-chip desk-agent-chip--aging">${Math.floor(age)}d</span>`
+                : `<span class="desk-agent-chip desk-agent-chip--stale">${Math.floor(age)}d</span>`;
           const last = a.last_run_at ? deskEsc(String(a.last_run_at).slice(0, 10)) : "—";
           return `<li class="desk-agent-row">
             <span class="desk-agent-wave">W${deskEsc(String(a.wave ?? "?"))}</span>
             <strong>${deskEsc(a.label || a.role || "?")}</strong>
             <span class="desk-agent-kpi hint">${deskEsc(a.kpi || "")}</span>
-            ${chip}${stale}
+            ${chip}${ageChip}
             <span class="desk-agent-last hint" title="Ostatni bieg: ${last}">bieg: ${last}</span>
           </li>`;
         })

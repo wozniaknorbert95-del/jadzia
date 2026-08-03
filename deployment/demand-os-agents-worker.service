@@ -1,0 +1,17 @@
+# Demand OS — agents worker loop (design: docs/ops/demand-os/AGENTS-WORKER-LOOP-DESIGN.md)
+# One-shot; cadence lives in agent/demand_os/agents/worker.py CADENCE map.
+# Tool-only: live_gated roles are never dispatched by run-due.
+[Unit]
+Description=Demand OS agents worker (run-due dispatch)
+After=network.target
+
+[Service]
+Type=oneshot
+User=jadzia
+Group=jadzia
+WorkingDirectory=/opt/jadzia
+EnvironmentFile=/opt/jadzia/.env
+ExecStart=/opt/jadzia/venv/bin/python -m tools.demand_os_hub agents run-due --apply
+# Worker output = audit trail; keep in journal.
+StandardOutput=journal
+StandardError=journal

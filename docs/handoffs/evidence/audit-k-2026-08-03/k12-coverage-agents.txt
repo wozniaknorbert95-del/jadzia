@@ -1,17 +1,7 @@
-﻿..............................................                           [100%]
-=============================== tests coverage ================================
-______________ coverage: platform win32, python 3.13.11-final-0 _______________
-
-Name                                   Stmts   Miss  Cover   Missing
---------------------------------------------------------------------
-agent\demand_os\agents\__init__.py         3      0   100%
-agent\demand_os\agents\flow.py            76      7    91%   99, 105, 134, 206-209
-agent\demand_os\agents\heartbeat.py       65      9    86%   40-48, 61-62, 98, 101-102
-agent\demand_os\agents\registry.py        47      3    94%   157-160
-agent\demand_os\agents\wave1.py           60     11    82%   33, 51, 53, 55-56, 76-79, 81, 111
-agent\demand_os\agents\wave2.py           34      4    88%   22, 24, 26, 46
-agent\demand_os\agents\wave3.py           28      3    89%   22, 32-41
-agent\demand_os\agents\wave_check.py      44      0   100%
---------------------------------------------------------------------
-TOTAL                                    357     37    90%
-46 passed in 2.05s
+agent.demand_os.agents.registry: 93.6% line
+agent.demand_os.agents.flow: 90.8% line
+agent.demand_os.agents.wave_check: 97.8% line
+agent.demand_os.agents.heartbeat: 92.5% line
+agent.demand_os.agents.worker: 94.7% line
+agent.demand_os.agents.wave1: 88.3% line
+floor=80.0

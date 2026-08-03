@@ -138,6 +138,7 @@ def build_demand_os_status(
                 "live_allowed": a["live_allowed"],
                 "blocked_reason": a["blocked_reason"],
                 "last_run_at": a["heartbeat"]["last_run_at"],
+                "age_days": a["heartbeat"]["age_days"],
                 "stale": a["heartbeat"]["stale"],
             }
             for a in list_agents()

@@ -19,7 +19,26 @@ if str(ROOT) not in sys.path:
 from agent.demand_os.agents.registry import AGENT_REGISTRY, all_roles, dispatch  # noqa: E402
 
 
+def _run_due(argv: list[str]) -> int:
+    from agent.demand_os.agents.worker import run_due
+
+    p = argparse.ArgumentParser(description="Demand OS agents worker loop (due dispatch)")
+    p.add_argument("--apply", action="store_true", help="dispatch due actions (default dry-run)")
+    p.add_argument("--heartbeat", default="", help="override heartbeat file (tests)")
+    args = p.parse_args(argv)
+    out = run_due(
+        dry_run=not args.apply,
+        path=Path(args.heartbeat) if args.heartbeat else None,
+    )
+    print(json.dumps(out, ensure_ascii=True, indent=2))
+    return 0 if out.get("ok") else 1
+
+
 def main(argv: list[str] | None = None) -> int:
+    args_list = list(argv if argv is not None else sys.argv[1:])
+    if args_list and args_list[0] == "run-due":
+        return _run_due(args_list[1:])
+
     p = argparse.ArgumentParser(description="Demand OS agent shells (registry)")
     p.add_argument("--role", required=True, choices=all_roles())
     p.add_argument("--action", default="status")

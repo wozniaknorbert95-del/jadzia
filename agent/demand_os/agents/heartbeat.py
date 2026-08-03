@@ -22,30 +22,10 @@ STALE_DAYS = 7
 
 
 def default_heartbeat_path() -> Path:
-    """Resolve heartbeat path — env, else writable set-now, else data/ fallback.
+    """Resolve heartbeat path via the shared writable-path contract."""
+    from agent.demand_os.state_paths import resolve_writable_path
 
-    Same contract as memory.default_memory_path: repo set-now is read-only on
-    prod (deploy checkout), so writes fall back to data/demand-os with a log.
-    """
-    env = os.environ.get("DEMAND_OS_AGENTS_HEARTBEAT")
-    if env:
-        return Path(env)
-    set_now = _REPO / _DEFAULT_REL.parent
-    try:
-        set_now.mkdir(parents=True, exist_ok=True)
-        probe = set_now / ".write_probe"
-        probe.write_text("", encoding="utf-8")
-        probe.unlink(missing_ok=True)
-        return set_now / _DEFAULT_REL.name
-    except OSError as exc:
-        fallback = _REPO / "data" / "demand-os" / _DEFAULT_REL.name
-        logger.warning(
-            "HEARTBEAT path fallback set_now_unwritable path=%s fallback=%s err=%s",
-            set_now / _DEFAULT_REL.name,
-            fallback,
-            exc,
-        )
-        return fallback
+    return resolve_writable_path(_DEFAULT_REL.name, env_var="DEMAND_OS_AGENTS_HEARTBEAT")
 
 
 def _utc_now_iso() -> str:

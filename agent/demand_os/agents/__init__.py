@@ -12,6 +12,7 @@ from agent.demand_os.agents.registry import (
     list_agents,
 )
 from agent.demand_os.agents.wave1 import run_agent
+from agent.demand_os.agents.worker import CADENCE, due_actions, run_due
 
 __all__ = [
     "AGENT_REGISTRY",
@@ -20,4 +21,7 @@ __all__ = [
     "get_agent",
     "list_agents",
     "run_agent",
+    "CADENCE",
+    "due_actions",
+    "run_due",
 ]

@@ -2355,6 +2355,14 @@ body.vhq-open.vhq-mode-work .vhq-shell__body {
   color: var(--muted, #9aa4b2);
 }
 
+.desk-agent-chip--fresh {
+  color: var(--ok, #4ecb71);
+}
+
+.desk-agent-chip--aging {
+  color: var(--warn, #e6a700);
+}
+
 .desk-agent-last {
   font-size: 0.75rem;
 }

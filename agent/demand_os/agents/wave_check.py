@@ -54,6 +54,7 @@ def _tool_checks(wave: int) -> List[Dict[str, Any]]:
         checks.append(
             {"check": "ledger_operational", "ok": led.get("ok") is True, "detail": f"rows={led.get('rows')}"}
         )
+        checks.append(_state_writers_check())
     if wave == 3:
         out = dispatch("blog", action="status")
         drafts = (out.get("result") or {}).get("draft_count")
@@ -110,7 +111,111 @@ def _tool_checks(wave: int) -> List[Dict[str, Any]]:
             checks.append(
                 {"check": "a2a_bus_writable", "ok": False, "detail": str(exc)[:200]}
             )
+    checks.append(_heartbeat_staleness_check())
     return checks
+
+
+# Every Demand OS runtime writer with a default-path resolver (8-06). Each
+# resolver must route through state_paths.resolve_writable_path (env override →
+# writable set-now → data/demand-os fallback). The check probes the resolved
+# parent dir for real writability — catches the prod PermissionError class
+# (D8 writable-path defect family) before any publish path depends on it.
+def _state_writer_resolvers() -> List[Any]:
+    from agent.demand_os.a2a_bus import default_bus_path
+    from agent.demand_os.agents.heartbeat import default_heartbeat_path
+    from agent.demand_os.audit_log import default_audit_path
+    from agent.demand_os.blog_pipeline import default_drafts_dir
+    from agent.demand_os.connectors.anti_spam import default_engage_log_path
+    from agent.demand_os.content_calendar import default_calendar_path
+    from agent.demand_os.growth_events import default_events_path
+    from agent.demand_os.memory import default_memory_path
+    from agent.demand_os.validator import default_validator_log_path
+
+    return [
+        ("a2a_bus", default_bus_path),
+        ("agents_heartbeat", default_heartbeat_path),
+        ("audit_log", default_audit_path),
+        ("blog_drafts", default_drafts_dir),
+        ("engage_log", default_engage_log_path),
+        ("content_calendar", default_calendar_path),
+        ("growth_events", default_events_path),
+        ("memory", default_memory_path),
+        ("validator_log", default_validator_log_path),
+    ]
+
+
+def _state_writers_check() -> Dict[str, Any]:
+    failures: List[str] = []
+    resolved: List[str] = []
+    for name, resolver in _state_writer_resolvers():
+        try:
+            path = resolver()
+            parent = path if path.suffix == "" else path.parent
+            parent.mkdir(parents=True, exist_ok=True)
+            probe = parent / ".writers_probe"
+            probe.write_text("", encoding="utf-8")
+            probe.unlink(missing_ok=True)
+            resolved.append(name)
+        except Exception as exc:  # noqa: BLE001 — report every writer, not first
+            failures.append(f"{name}: {str(exc)[:120]}")
+    return {
+        "check": "state_writers_resolvable",
+        "ok": not failures,
+        "detail": (
+            f"{len(resolved)}/{len(_state_writer_resolvers())} writers resolvable+writable"
+            if not failures
+            else f"unwritable: {'; '.join(failures)}"
+        ),
+    }
+
+
+# Must match worker.CADENCE — checked mechanically in tests (single contract:
+# "every cadence role has a staleness check in wave readiness").
+_STALE_LIMITS_H: Dict[str, float] = {
+    "growth_lead": 48.0,
+    "sales": 12.0,
+    "validator": 48.0,
+    "icp_brain": 48.0,
+    "cre": 48.0,
+}
+
+
+def _heartbeat_staleness_check() -> Dict[str, Any]:
+    """Heartbeat recency for cadence (worker-supervised) roles.
+
+    ok=False signals "agent not running on cadence" — the exact failure mode the
+    worker loop exists to prevent. Read-only: never writes the heartbeat file.
+    Limits default to 2x worker CADENCE (drift margin), overridable via
+    DEMAND_OS_HB_STALE_<ROLE> env (hours).
+    """
+    import os
+
+    from agent.demand_os.agents.heartbeat import heartbeat_age_days, load_heartbeats
+    from agent.demand_os.agents.worker import CADENCE
+
+    beats = load_heartbeats()
+    stale: List[str] = []
+    for role in sorted(CADENCE):
+        limit_h = float(
+            os.environ.get(
+                f"DEMAND_OS_HB_STALE_{role.upper()}",
+                _STALE_LIMITS_H.get(role, 48.0),
+            )
+        )
+        age = heartbeat_age_days(beats.get(role) or {})
+        limit_d = limit_h / 24.0
+        if age is None or age > limit_d:
+            age_txt = "never" if age is None else f"{age * 24.0:.1f}h"
+            stale.append(f"{role}({age_txt}>{limit_h:.0f}h)")
+    return {
+        "check": "heartbeat_staleness",
+        "ok": not stale,
+        "detail": (
+            "all cadence roles fresh"
+            if not stale
+            else f"stale: {', '.join(stale)} — run: tools.demand_os_hub agents run-due --apply"
+        ),
+    }
 
 
 def wave_readiness() -> Dict[str, Any]:

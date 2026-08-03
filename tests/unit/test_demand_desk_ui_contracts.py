@@ -165,12 +165,15 @@ def test_desk_nav_desktop_and_more_sheet():
     assert 'id="more-to-demand-desk"' in HTML
 
 
-def test_cache_bust_desk_dash12():
-    assert HTML.count("desk-dash12") >= 2
-    assert "desk-dash11" not in HTML
-    assert "desk-dash10" not in HTML
-    assert "desk-dash09" not in HTML
-    assert "coi-commander-desk-dash12" in SW
+def test_cache_bust_consistent():
+    """Cache tag must be one desk-dashNN tag, identical in HTML and SW."""
+    import re
+
+    html_tags = set(re.findall(r"desk-dash\d+", HTML))
+    sw_tags = set(re.findall(r"coi-commander-(desk-dash\d+)", SW))
+    assert len(html_tags) == 1, f"multiple cache tags in HTML: {html_tags}"
+    assert html_tags == sw_tags, f"HTML {html_tags} != SW {sw_tags}"
+    assert HTML.count(next(iter(html_tags))) >= 2
 
 
 def test_desk_agents_tile_contract():
@@ -183,6 +186,15 @@ def test_desk_agents_tile_contract():
     assert "desk-agent-chip--tool" in section
     assert "desk-agent-chip--gated" in section
     assert "desk-agent-chip--stale" in section
+
+
+def test_desk_agents_staleness_chip_contract():
+    """8-08: staleness chip uses age_days with fresh/aging/stale bands."""
+    section = _desk_js_section()
+    assert "a.age_days" in section
+    assert "desk-agent-chip--fresh" in section
+    assert "desk-agent-chip--aging" in section
+    assert "nigdy" in section
     # honesty: no publish CTA inside the agents tile markup
     tile = HTML[HTML.index('id="desk-agenci"') : HTML.index('id="desk-footer"')]
     assert "desk-act-btn" not in tile

@@ -29,35 +29,11 @@ def _set_now() -> Path:
     return _repo_root() / "docs" / "ops" / "demand-os" / "set-now"
 
 
-def _writable_data_memory_path() -> Path:
-    return _repo_root() / "data" / "demand-os" / "MEMORY.json"
-
-
 def default_memory_path() -> Path:
-    """Resolve MEMORY path — prefer DEMAND_OS_MEMORY, else writable set-now, else data/.
+    """Resolve MEMORY path via the shared writable-path contract."""
+    from agent.demand_os.state_paths import resolve_writable_path
 
-    Avoid silent split-brain: log when falling back from set-now to data/demand-os.
-    """
-    env = os.environ.get("DEMAND_OS_MEMORY")
-    if env:
-        return Path(env)
-    set_now = _set_now()
-    set_now_mem = set_now / "MEMORY.json"
-    try:
-        set_now.mkdir(parents=True, exist_ok=True)
-        probe = set_now / ".write_probe"
-        probe.write_text("", encoding="utf-8")
-        probe.unlink(missing_ok=True)
-        return set_now_mem
-    except OSError as exc:
-        fallback = _writable_data_memory_path()
-        logger.warning(
-            "MEMORY path fallback set_now_unwritable path=%s fallback=%s err=%s",
-            set_now_mem,
-            fallback,
-            exc,
-        )
-        return fallback
+    return resolve_writable_path("MEMORY.json", env_var="DEMAND_OS_MEMORY")
 
 
 def _utc_now() -> str:

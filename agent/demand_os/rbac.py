@@ -24,6 +24,7 @@ ACT_ACTIONS = frozenset(
         "design-check",
         "audit-write",
         "agents-heartbeat",
+        "agents-run-due",
     }
 )
 

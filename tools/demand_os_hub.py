@@ -193,6 +193,15 @@ def cmd_agents_heartbeat(args: argparse.Namespace) -> int:
     return 0
 
 
+def cmd_agents_run_due(args: argparse.Namespace) -> int:
+    """Worker loop — dispatch cadence-due actions (act-class, tool-only)."""
+    from agent.demand_os.agents.worker import run_due
+
+    out = run_due(dry_run=not args.apply)
+    _print(out)
+    return 0 if out.get("ok") else 1
+
+
 def cmd_ingest(args: argparse.Namespace) -> int:
     if args.fixture:
         path = Path(args.fixture)
@@ -578,6 +587,9 @@ def main(argv: list[str] | None = None) -> int:
     agh.add_argument("--role", required=True, choices=all_roles())
     agh.add_argument("--action", default="status")
     agh.set_defaults(func=cmd_agents_heartbeat)
+    agr = agsub.add_parser("run-due", help="Worker loop: dispatch cadence-due actions (tool-only)")
+    agr.add_argument("--apply", action="store_true", help="dispatch (default dry-run)")
+    agr.set_defaults(func=cmd_agents_run_due)
 
     args = p.parse_args(argv)
     cmd = args.cmd or ""
@@ -585,6 +597,8 @@ def main(argv: list[str] | None = None) -> int:
         cmd = f"memory-{args.mem_cmd}"
     elif cmd == "agents" and getattr(args, "agents_cmd", None) == "heartbeat":
         cmd = "agents-heartbeat"
+    elif cmd == "agents" and getattr(args, "agents_cmd", None) == "run-due":
+        cmd = "agents-run-due"
     elif cmd == "a2a" and getattr(args, "a2a_cmd", None) in ("emit", "ack"):
         cmd = f"a2a-{args.a2a_cmd}"
     elif cmd == "ledger" and getattr(args, "ensure_today", False):

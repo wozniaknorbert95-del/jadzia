@@ -147,8 +147,68 @@ def test_flow_live_mode_marks_publish_allowed(monkeypatch: pytest.MonkeyPatch):
     assert out["live_publish"] is False  # flow never publishes regardless
 
 
-def test_wave_readiness_shape_and_split(monkeypatch: pytest.MonkeyPatch):
+def test_state_writers_check_green_and_covers_all_writers():
+    from agent.demand_os.agents.wave_check import _state_writers_check
+
+    out = _state_writers_check()
+    assert out["ok"] is True, out["detail"]
+    assert "9/9" in out["detail"]
+
+
+def test_state_writers_check_reports_failure(monkeypatch: pytest.MonkeyPatch):
+    from agent.demand_os.agents import wave_check
+
+    def _boom():
+        raise OSError("read-only file system")
+
+    monkeypatch.setattr(wave_check, "_state_writer_resolvers", lambda: [("memory", _boom)])
+    out = wave_check._state_writers_check()
+    assert out["ok"] is False
+    assert "memory" in out["detail"]
+
+
+def test_stale_limits_match_worker_cadence():
+    """_STALE_LIMITS_H keys must equal worker CADENCE keys (single contract)."""
+    from agent.demand_os.agents import wave_check
+    from agent.demand_os.agents.worker import CADENCE
+
+    assert set(wave_check._STALE_LIMITS_H) == set(CADENCE)
+
+
+def test_wave_staleness_red_when_no_heartbeat(monkeypatch: pytest.MonkeyPatch, tmp_path: Path):
+    monkeypatch.setenv("DEMAND_OS_AGENTS_HEARTBEAT", str(tmp_path / "missing.json"))
+    out = wave_readiness()
+    wave1 = next(w for w in out["waves"] if w["wave"] == 1)
+    stale = next(c for c in wave1["tool_checks"] if c["check"] == "heartbeat_staleness")
+    assert stale["ok"] is False
+    assert "never" in stale["detail"]
+
+
+def test_wave_staleness_green_after_fresh_heartbeat(
+    monkeypatch: pytest.MonkeyPatch, tmp_path: Path
+):
+    from agent.demand_os.agents.heartbeat import record_heartbeat
+    from agent.demand_os.agents.worker import CADENCE
+
+    monkeypatch.setenv("DEMAND_OS_AGENTS_HEARTBEAT", str(tmp_path / "hb.json"))
+    for role in CADENCE:
+        record_heartbeat(role, action="status")
+    out = wave_readiness()
+    wave1 = next(w for w in out["waves"] if w["wave"] == 1)
+    stale = next(c for c in wave1["tool_checks"] if c["check"] == "heartbeat_staleness")
+    assert stale["ok"] is True
+
+
+def test_wave_readiness_shape_and_split(monkeypatch: pytest.MonkeyPatch, tmp_path: Path):
+    from agent.demand_os.agents.heartbeat import record_heartbeat
+    from agent.demand_os.agents.worker import CADENCE
+
     monkeypatch.delenv("DEMAND_OS_MARKETING_HITL", raising=False)
+    # Hermetic: staleness check (8-05) is part of tool_ok — seed fresh heartbeats
+    # for all cadence roles so the test asserts shape, not host state.
+    monkeypatch.setenv("DEMAND_OS_AGENTS_HEARTBEAT", str(tmp_path / "hb.json"))
+    for role in CADENCE:
+        record_heartbeat(role, action="status")
     out = wave_readiness()
     assert out["marketing"] == "PARKED_LAST"
     assert [w["wave"] for w in out["waves"]] == [1, 2, 3, 4]
