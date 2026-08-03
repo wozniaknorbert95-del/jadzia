@@ -158,10 +158,10 @@ def test_wave_readiness_shape_and_split(monkeypatch: pytest.MonkeyPatch):
     # tool side must be green after registry closeout
     assert out["ok"] is True
     assert all(w["overall"] == "tool_ready" for w in out["waves"])
-    # W4 real checks (6-08): episodic keys + fatigue probe + a2a bus file
+    # W4 real checks (6-08): episodic keys + fatigue probe + a2a bus writable
     w4 = next(w for w in out["waves"] if w["wave"] == 4)
     names = {c["check"] for c in w4["tool_checks"]}
-    assert {"episodic_memory_layer", "fatigue_tool_probe", "a2a_bus_file"} <= names
+    assert {"episodic_memory_layer", "fatigue_tool_probe", "a2a_bus_writable"} <= names
 
 
 def test_wave_readiness_go_clears_block_reason(monkeypatch: pytest.MonkeyPatch):

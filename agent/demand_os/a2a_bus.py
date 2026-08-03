@@ -38,10 +38,9 @@ def _repo_root() -> Path:
 
 
 def default_bus_path() -> Path:
-    env = os.environ.get("DEMAND_OS_A2A_BUS")
-    if env:
-        return Path(env)
-    return _repo_root() / _DEFAULT_REL
+    from agent.demand_os.state_paths import resolve_writable_path
+
+    return resolve_writable_path(_DEFAULT_REL.name, env_var="DEMAND_OS_A2A_BUS")
 
 
 def _utc_now() -> datetime:

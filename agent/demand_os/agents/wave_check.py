@@ -92,17 +92,24 @@ def _tool_checks(wave: int) -> List[Dict[str, Any]]:
         )
         from agent.demand_os.a2a_bus import default_bus_path
 
-        bus_path = default_bus_path()
-        bus_ok = bus_path.is_file()
-        checks.append(
-            {
-                "check": "a2a_bus_file",
-                "ok": bus_ok,
-                "detail": (
-                    f"{bus_path.name} present" if bus_ok else f"missing {bus_path}"
-                ),
-            }
-        )
+        try:
+            bus_path = default_bus_path()
+            exists = bus_path.is_file()
+            checks.append(
+                {
+                    "check": "a2a_bus_writable",
+                    "ok": True,
+                    "detail": (
+                        f"{bus_path.name} present"
+                        if exists
+                        else f"resolvable at {bus_path.parent.name}/ (created on first handoff)"
+                    ),
+                }
+            )
+        except Exception as exc:  # noqa: BLE001
+            checks.append(
+                {"check": "a2a_bus_writable", "ok": False, "detail": str(exc)[:200]}
+            )
     return checks
 
 
