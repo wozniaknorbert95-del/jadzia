@@ -46,6 +46,9 @@ def test_flow_validator_fail_blocks_chain():
 def test_flow_apply_emits_a2a_handoff(monkeypatch: pytest.MonkeyPatch, tmp_path: Path):
     monkeypatch.setenv("DEMAND_OS_A2A_BUS", str(tmp_path / "bus.jsonl"))
     monkeypatch.setenv("DEMAND_OS_CONTENT_CALENDAR", str(tmp_path / "cal.json"))
+    # Hermetic: prod .env may set DEMAND_OS_MARKETING_HITL=GO — the publish gate
+    # must stay PARKED regardless of the host env.
+    monkeypatch.delenv("DEMAND_OS_MARKETING_HITL", raising=False)
     out = run_hub_spoke_flow(dry_run=False)
     assert out["ok"] is True
     handoff = out["steps"]["publish_request"]

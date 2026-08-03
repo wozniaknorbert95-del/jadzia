@@ -16,7 +16,10 @@ from typing import Any, Dict, List, Optional, Tuple
 
 from dotenv import load_dotenv
 
-load_dotenv()
+# Unit tests must be hermetic (tests/conftest.py sets the flag) — loading the
+# host .env there leaks prod config (JWT/JADZIA_ENV/webhooks) into assertions.
+if os.environ.get("JADZIA_TEST_NO_DOTENV") != "1":
+    load_dotenv()
 
 
 # ──────────────────────────────────────────────

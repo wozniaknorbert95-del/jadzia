@@ -15,10 +15,12 @@ def test_env_override_wins(monkeypatch: pytest.MonkeyPatch, tmp_path: Path):
     assert resolve_writable_path("X.jsonl", env_var="TEST_STATE_ENV") == p
 
 
-def test_writable_set_now_default():
-    # dev checkout is writable → set-now wins, no fallback
+def test_default_resolution_never_raises():
+    # Contract: resolves to set-now when the checkout is writable (dev) or to
+    # the data/demand-os fallback on read-only prod — both are valid, so this
+    # must pass on any host. Writable/unwritable branches are covered below.
     out = resolve_writable_path("__probe_state__.jsonl")
-    assert out.parent.name == "set-now"
+    assert out.parent.name in {"set-now", "demand-os"}
 
 
 def test_unwritable_set_now_falls_back(monkeypatch: pytest.MonkeyPatch, tmp_path: Path):
