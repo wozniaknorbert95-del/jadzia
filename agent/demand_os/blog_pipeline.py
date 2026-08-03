@@ -23,6 +23,15 @@ from agent.demand_os.validator import ValidatorDecision, evaluate_publish_reques
 _REPO = Path(__file__).resolve().parents[2]
 DEFAULT_DRAFTS_DIR = _REPO / "docs/ops/demand-os/set-now/BLOG-DRAFTS"
 
+
+def default_drafts_dir() -> Path:
+    """Writable drafts dir — prod set-now is read-only, fall back to data/."""
+    from agent.demand_os.state_paths import resolve_writable_path
+
+    return resolve_writable_path(
+        DEFAULT_DRAFTS_DIR.name, env_var="DEMAND_OS_BLOG_DRAFTS"
+    )
+
 # ICP roles allowed for Demand OS content (extend deliberately)
 ALLOWED_ICP_ROLES = frozenset(
     {
@@ -261,7 +270,7 @@ def validate_article(
 
 
 def persist_article(article: BlogArticle, drafts_dir: Optional[Path] = None) -> Path:
-    root = drafts_dir or DEFAULT_DRAFTS_DIR
+    root = drafts_dir or default_drafts_dir()
     root.mkdir(parents=True, exist_ok=True)
     json_path = root / f"{article.asset_id}.json"
     md_path = root / f"{article.asset_id}.md"
@@ -355,7 +364,7 @@ def run_pipeline(
 
 
 def list_drafts(drafts_dir: Optional[Path] = None) -> List[Dict[str, Any]]:
-    root = drafts_dir or DEFAULT_DRAFTS_DIR
+    root = drafts_dir or default_drafts_dir()
     if not root.exists():
         return []
     out: List[Dict[str, Any]] = []

@@ -12,6 +12,13 @@ _REPO = Path(__file__).resolve().parents[2]
 DEFAULT_AUDIT = _REPO / "docs/ops/demand-os/set-now/CONTROL-AUDIT.jsonl"
 
 
+def default_audit_path() -> Path:
+    """Writable audit path — prod set-now is read-only, fall back to data/."""
+    from agent.demand_os.state_paths import resolve_writable_path
+
+    return resolve_writable_path(DEFAULT_AUDIT.name, env_var="DEMAND_OS_AUDIT_LOG")
+
+
 def _utc() -> str:
     return datetime.now(timezone.utc).replace(microsecond=0).isoformat()
 
@@ -23,7 +30,7 @@ def append_audit(
     detail: Optional[Dict[str, Any]] = None,
     path: Optional[Path] = None,
 ) -> Dict[str, Any]:
-    dest = path or DEFAULT_AUDIT
+    dest = path or default_audit_path()
     dest.parent.mkdir(parents=True, exist_ok=True)
     rec = {
         "id": f"aud_{uuid4().hex[:12]}",

@@ -78,6 +78,15 @@ _REPO = Path(__file__).resolve().parents[2]
 _DEFAULT_LOG = _REPO / "docs/ops/demand-os/set-now/VALIDATOR-LOG.csv"
 
 
+def default_validator_log_path() -> Path:
+    """Writable log path — prod set-now is read-only, fall back to data/."""
+    from agent.demand_os.state_paths import resolve_writable_path
+
+    return resolve_writable_path(
+        _DEFAULT_LOG.name, env_var="DEMAND_OS_VALIDATOR_LOG"
+    )
+
+
 @dataclass
 class ValidatorDecision:
     request_id: str
@@ -247,7 +256,7 @@ def evaluate_publish_request(
     )
 
     if log:
-        append_validator_log(result, path=log_path or _DEFAULT_LOG, publish_intended="N")
+        append_validator_log(result, path=log_path or default_validator_log_path(), publish_intended="N")
     if emit_events:
         append_growth_event(
             "cta_validated" if result.ok else "cta_rejected",
