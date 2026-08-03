@@ -43,3 +43,10 @@ python tools/demand_os_hub.py agents list → 9 ról, honest live_allowed
 1. Desk tile „Demand OS Agenci” z `list_agents()` (osobny item, po GO na UI diff).
 2. Worker loop per rola → dopiero wtedy `shell: false`.
 3. Live P0 nadal PARKED do `UNLOCK-LIVE-P0.md`.
+
+## Follow-up (2026-08-03) — TARGET v5 pokrycie
+
+- `hub agents flow` — TARGET v5 §E chain ICP→CF→Validator→publish_request (dry default; emit A2A na `--apply`; publish zawsze gated).
+- `hub agents wave-check` — TARGET v5 §J readiness per wave: W1–W4 `tool_ready`, live PASS `parked` (human cadence).
+- Coverage map: `docs/ops/demand-os/OS-TARGET-V5-AGENTS-COVERAGE.md` (done/waiting/parked per §E/§H/§J).
+- Testy: `tests/unit/test_agents_flow_wave.py` (8) — chain ok, validator fail stop, apply emit, GO mode, wave split, CLI.

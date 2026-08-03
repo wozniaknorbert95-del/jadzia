@@ -58,6 +58,8 @@ from agent.demand_os.agents.registry import (  # noqa: E402
     get_agent,
     list_agents,
 )
+from agent.demand_os.agents.flow import run_hub_spoke_flow  # noqa: E402
+from agent.demand_os.agents.wave_check import wave_readiness  # noqa: E402
 
 
 def _print(obj: object) -> None:
@@ -155,6 +157,25 @@ def cmd_agents_run(args: argparse.Namespace) -> int:
         )
         return 1
     out = dispatch(args.role, action=act, limit=int(getattr(args, "limit", 10)))
+    _print(out)
+    return 0 if out.get("ok") else 1
+
+
+def cmd_agents_flow(args: argparse.Namespace) -> int:
+    """TARGET v5 §E chain: ICP→CF→Validator→publish_request draft (dry default)."""
+    out = run_hub_spoke_flow(
+        icp_role=args.icp_role,
+        channel=args.channel,
+        asset_id=args.asset_id or None,
+        caption=args.caption,
+        dry_run=not args.apply,
+    )
+    _print(out)
+    return 0 if out.get("ok") else 1
+
+
+def cmd_agents_wave_check(_: argparse.Namespace) -> int:
+    out = wave_readiness()
     _print(out)
     return 0 if out.get("ok") else 1
 
@@ -528,6 +549,18 @@ def main(argv: list[str] | None = None) -> int:
     agr.add_argument("--action", default="status")
     agr.add_argument("--limit", type=int, default=10)
     agr.set_defaults(func=cmd_agents_run)
+    agf = agsub.add_parser(
+        "flow",
+        help="TARGET v5 §E hub-spoke chain ICP→CF→Validator→publish_request (dry default)",
+    )
+    agf.add_argument("--icp-role", default="installateur", dest="icp_role")
+    agf.add_argument("--channel", default="tiktok")
+    agf.add_argument("--asset-id", default="", dest="asset_id")
+    agf.add_argument("--caption", default="")
+    agf.add_argument("--apply", action="store_true", help="emit A2A handoff (still no live publish)")
+    agf.set_defaults(func=cmd_agents_flow)
+    agw = agsub.add_parser("wave-check", help="TARGET v5 §J wave readiness (tool/human split)")
+    agw.set_defaults(func=cmd_agents_wave_check)
 
     args = p.parse_args(argv)
     cmd = args.cmd or ""
