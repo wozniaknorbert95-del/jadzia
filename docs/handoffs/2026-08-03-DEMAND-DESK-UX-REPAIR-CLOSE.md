@@ -12,8 +12,7 @@ live_publish: none
 
 ## Verdict
 
-**PASS (local / static)** — Critical/High z audytu UX naprawione w `commander-ui`.  
-**Prod:** wymaga deploy + smoke `?cb=desk-dash09` (Zasada 11 — brak autonowego deploy w tej sesji).
+**PASS (prod)** — tip `96131f8` · cache `desk-dash09` · browser + static smoke OK.
 
 ## DoD
 
@@ -46,11 +45,23 @@ pytest tests/unit/test_demand_desk_ui_contracts.py tests/unit/test_commander_com
 # → 46 passed
 ```
 
-Prod (po GO deploy):
+### Deploy
 
-```text
-https://api.zzpackage.flexgrafik.nl/commander/?view=demand-desk&cb=desk-dash09
-```
+- Commit: `96131f8` → `origin/master`
+- VPS: `rev-demand-01-deploy-vps.sh 96131f8` → **PASS** · `systemctl active` · health OK
+- URL: `https://api.zzpackage.flexgrafik.nl/commander/?view=demand-desk&cb=desk-dash09&_sw=1`
+
+### Prod browser smoke (375 + desktop)
+
+| Check | Result |
+|-------|--------|
+| F1 sticky disconnect | PASS — `hidden=true` · computed `display:none` |
+| F2 cadence chip | PASS — `Cadence PARKED · publish LOCKED` |
+| F3 phone + Diagnostyka | PASS — full-width · summary click · clear of bottom-nav |
+| F4 robota / ICP | PASS — robota visible · ICP in details |
+| F5 GOTOWY copy | PASS — `(kalendarz · bez publish)` |
+| F6 Anuluj dry | PASS — `apiCalled=false` po Anuluj |
+| F7 human footer | PASS — `Zaufanie: MIXED · Cadence: PARKED · Następny: …` |
 
 Checklist: [`DESK-PHONE-SMOKE-CHECKLIST.md`](../ops/demand-os/DESK-PHONE-SMOKE-CHECKLIST.md)
 
@@ -62,5 +73,5 @@ Checklist: [`DESK-PHONE-SMOKE-CHECKLIST.md`](../ops/demand-os/DESK-PHONE-SMOKE-C
 
 ## NEXT
 
-1. Dowódca: GO deploy tip + smoke phone 375 na `desk-dash09`
-2. Live P0 nadal PARKED — tylko po podpisie [`UNLOCK-LIVE-P0.md`](../ops/demand-os/UNLOCK-LIVE-P0.md)
+1. Live P0 nadal PARKED — tylko po podpisie [`UNLOCK-LIVE-P0.md`](../ops/demand-os/UNLOCK-LIVE-P0.md)
+2. (opcjonalnie) fala H9/H10 po trust seal

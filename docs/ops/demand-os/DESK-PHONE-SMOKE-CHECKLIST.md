@@ -9,16 +9,16 @@ url: "https://api.zzpackage.flexgrafik.nl/commander/?view=demand-desk&cb=desk-da
 
 # Phone / prod smoke — Biuro Popytu (Etap 4 OPS)
 
-## UX repair (desk-dash09)
+## UX repair (desk-dash09) — prod tip `96131f8` PASS 2026-08-03
 
-- [ ] Cache `desk-dash09` (HTML/SW)
-- [ ] F1: brak sticky `BRAK POŁĄCZENIA` przy status 200 (`#desk-connection-banner[hidden]` → display none)
-- [ ] F2: chip `Cadence PARKED · publish LOCKED` w header (API `diagnostics.live_cadence`)
-- [ ] F3: phone 375 — jedna kolumna; Diagnostyka / footer actions klikalne nad bottom-nav
-- [ ] F4: Robota dnia czytelna w first viewport; ICP w `<details>`
-- [ ] F5: GOTOWY label zawiera `(kalendarz · bez publish)`
-- [ ] F6: Anuluj w confirm → brak API (toast tylko po Potwierdź)
-- [ ] F7: footer human line (Zaufanie · Cadence · Następny); Doctor/Gate w Diagnostyka
+- [x] Cache `desk-dash09` (HTML/SW)
+- [x] F1: brak sticky `BRAK POŁĄCZENIA` przy status 200 (`#desk-connection-banner[hidden]` → display none)
+- [x] F2: chip `Cadence PARKED · publish LOCKED` w header (API `diagnostics.live_cadence`)
+- [x] F3: phone 375 — jedna kolumna; Diagnostyka / footer actions klikalne nad bottom-nav
+- [x] F4: Robota dnia czytelna w first viewport; ICP w `<details>`
+- [x] F5: GOTOWY label zawiera `(kalendarz · bez publish)`
+- [x] F6: Anuluj w confirm → brak API (toast tylko po Potwierdź)
+- [x] F7: footer human line (Zaufanie · Cadence · Następny); Doctor/Gate w Diagnostyka
 
 ## Footer honesty
 
