@@ -12,8 +12,14 @@ ROOT = Path(__file__).resolve().parents[1]
 def test_todo_active_item_is_tool_or_ops_lane() -> None:
     todo = json.loads((ROOT / "todo.json").read_text(encoding="utf-8"))
     active = str(todo.get("active_item") or "")
-    assert active.startswith("4-TOOL-") or active.startswith("4-OPS-"), (
-        f"active_item={active!r} — expected 4-TOOL-* or 4-OPS-* while live P0 PARKED"
+    allowed = (
+        active.startswith("4-TOOL-")
+        or active.startswith("4-OPS-")
+        or active.startswith("4-AWAIT-UNLOCK")
+        or active.startswith("4-UNLOCK-")
+    )
+    assert allowed, (
+        f"active_item={active!r} — expected tool/ops/await-unlock while live P0 PARKED"
     )
     assert "2f68b64" not in str(todo.get("last_updated") or "")
     nh = str(todo.get("next_human") or "").lower()
@@ -27,14 +33,23 @@ def test_master_todo_current_is_not_live_p0() -> None:
     current = block.group(0)
     assert "4-P0-01 ready_for_human" not in current
     assert "Dowódca publish tt_w32" not in current
-    assert "4-TOOL-" in current or "4-OPS-" in current
+    assert (
+        "4-TOOL-" in current
+        or "4-OPS-" in current
+        or "4-AWAIT-UNLOCK" in current
+        or "4-UNLOCK-" in current
+    )
 
 
 def test_current_task_and_state_tool_first() -> None:
     current = (ROOT / ".cursor/current-task.md").read_text(encoding="utf-8")
     state = (ROOT / "docs/ops/demand-os/STATE.md").read_text(encoding="utf-8")
     session = (ROOT / ".cursor/session-state.md").read_text(encoding="utf-8")
-    assert "TOOL" in current.upper() or "OPS" in current.upper()
+    assert (
+        "TOOL" in current.upper()
+        or "OPS" in current.upper()
+        or "UNLOCK" in current.upper()
+    )
     assert "PARKED" in current.upper()
     assert "4-P0-01 ready_for_human" not in current
     assert "2f68b64" not in current
@@ -45,7 +60,8 @@ def test_current_task_and_state_tool_first() -> None:
     )
     assert tip_ok, "active pointers must cite prod tip a3deb59 (or seal floor 889258e)"
     assert "2f68b64" not in (ROOT / "AGENTS.md").read_text(encoding="utf-8")
-    assert "TOOL" in state.upper() and "PARKED" in state.upper()
+    assert "PARKED" in state.upper()
+    assert "TOOL" in state.upper() or "UNLOCK" in state.upper() or "OPS" in state.upper()
 
 
 def test_tool_first_rule_files_exist() -> None:

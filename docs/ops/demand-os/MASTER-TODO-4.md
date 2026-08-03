@@ -64,7 +64,7 @@ Legenda: `open` · `in_progress` · `done` · `blocked` · `ready_for_human`
 | **4-TOOL-01** | Demand OS tool 100% residual | Agent | `done` | SEAL tip `889258e` → OPS `a3deb59` |
 | **4-TOOL-02** | Test publish dry path | Agent | `done` | [`4-TOOL-02-TEST-PUBLISH.md`](./4-TOOL-02-TEST-PUBLISH.md) |
 
-### OPS — hardening (active)
+### OPS — hardening (sealed)
 
 | ID | Zadanie | Owner | Status | DoD |
 |----|---------|-------|--------|-----|
@@ -78,6 +78,7 @@ Legenda: `open` · `in_progress` · `done` · `blocked` · `ready_for_human`
 | **4-OPS-08** | Prod desk footer smoke | Agent | `done` | phone checklist Etap 4 + evidence |
 | **4-OPS-09** | Money narrative cadence | Agent | `done` | `live_cadence=PARKED` |
 | **4-OPS-10** | OPS HARDENING SEAL | Agent | `done` | SEAL handoff |
+| **4-UNLOCK-PREP** | Unlock preflight (no publish) | Agent | `done` | preconditions checked · ready_for_human |
 
 ### P0 — live HITL (PARKED until UNLOCK-LIVE-P0)
 
@@ -106,9 +107,9 @@ Legenda: `open` · `in_progress` · `done` · `blocked` · `ready_for_human`
 ## Aktywne zadanie (pointer)
 
 ```
-CURRENT: 4-OPS-HARDENING SEALED
-NEXT:    await UNLOCK-LIVE-P0 (Dowódca only · not auto)
-BLOCKED: live 4-P0-01/02/03 until unlock handoff
+CURRENT: 4-AWAIT-UNLOCK · ready_for_human
+NEXT:    Dowódca signs UNLOCK-LIVE-P0 (or keep parked)
+BLOCKED: live 4-P0-01/02/03 until unlock handoff exists
 ```
 
 ## Verify (agent — każda sesja)

@@ -1,22 +1,23 @@
-# CURRENT TASK — OPS HARDENING SEALED · live P0 PARKED
+# CURRENT TASK — AWAIT UNLOCK · live P0 PARKED
 
 **Gate:** `DEMAND-OS-MARKETING-4-00`  
-**Prod tip:** `a3deb59` (OPS HARDENING runtime SEAL)  
-**Verify:** `python tools/demand_os_owner_verify.py`  
-**Unlock:** `docs/ops/demand-os/UNLOCK-LIVE-P0.md`  
-**Close:** `docs/handoffs/2026-08-03-DEMAND-OS-OPS-HARDENING-SEAL-CLOSE.md`
+**Prod tip:** `a3deb59` runtime · HEAD `9b0efb2`  
+**Verify:** `python tools/demand_os_hub.py owner-verify`  
+**Human:** [`docs/ops/demand-os/UNLOCK-LIVE-P0.md`](../docs/ops/demand-os/UNLOCK-LIVE-P0.md)  
+**Preflight:** PASS 2026-08-03
 
 ## Status
 
 - TOOL 100% = SEALED  
 - OPS HARDENING = SEALED  
-- Live `4-P0-*` = PARKED  
+- Unlock preflight = PASS  
+- Live `4-P0-*` = PARKED until You sign unlock  
 
-## Teraz
+## Teraz (Dowódca)
 
-1. Keep `owner_verify` green  
-2. Do not push live publish  
-3. Await Dowódca unlock ceremony  
+1. Otwórz `UNLOCK-LIVE-P0.md`  
+2. Albo podpisz UNLOCK (handoff) — albo zostaw parked  
+3. Agent nie publikuje  
 
 ## STOP
 

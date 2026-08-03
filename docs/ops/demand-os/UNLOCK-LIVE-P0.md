@@ -2,6 +2,7 @@
 status: READY_FOR_HUMAN
 updated: "2026-08-03"
 gate: DEMAND-OS-MARKETING-4-00
+preflight: PASS
 ---
 
 # Unlock live P0 — Dowódca ceremony
@@ -9,14 +10,16 @@ gate: DEMAND-OS-MARKETING-4-00
 **env `DEMAND_OS_MARKETING_HITL=GO` ≠ cadence unlock.**  
 Tool 100% SEALED + OPS hardening do not authorize live TT/FB/blog.
 
-## Preconditions
+## Preconditions (agent preflight 2026-08-03)
 
-- [ ] TOOL 100% SEAL + OPS HARDENING SEAL recorded
-- [ ] `python tools/demand_os_owner_verify.py` green (local)
-- [ ] VPS `hub doctor` green
-- [ ] Ads remain PARK cash
+- [x] TOOL 100% SEAL + OPS HARDENING SEAL recorded (`a3deb59` runtime · tip `9b0efb2`)
+- [x] `python tools/demand_os_owner_verify.py` green (local · `ok: true`)
+- [x] VPS `hub doctor` green (`doctor_ok True` @ `9b0efb2`)
+- [x] Ads remain PARK cash
 
-## Unlock record (Founder)
+## Unlock record (Founder — tylko Ty)
+
+Wklej do nowego handoffu gdy chcesz odblokować cadence:
 
 ```
 UNLOCK LIVE P0

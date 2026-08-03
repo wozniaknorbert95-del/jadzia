@@ -11,7 +11,8 @@ Live marketing P0 **PARKED** aż do jawnego unlock Dowódcy.
 
 **SoT:** `docs/ops/demand-os/MASTER-TODO-4.md`  
 **HARD rule:** `.cursor/rules/demand-os-tool-first.mdc`  
-**Verify:** `python tools/demand_os_owner_verify.py`  
+**Verify:** `python tools/demand_os_hub.py owner-verify`  
+**Active:** `4-AWAIT-UNLOCK` · unlock preflight PASS · no live publish  
 **Pointer:** `.cursor/current-task.md` + `docs/ops/demand-os/STATE.md`  
 **Unlock:** `docs/ops/demand-os/UNLOCK-LIVE-P0.md` (human only)
 
