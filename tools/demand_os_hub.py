@@ -413,6 +413,18 @@ def cmd_engage_dry(args: argparse.Namespace) -> int:
 
 
 def main(argv: list[str] | None = None) -> int:
+    # Load host .env like the app does (core/services contract): prod wires all
+    # state writers to data/demand-os/set-now via DEMAND_OS_* vars. Without this
+    # the CLI resolved set-now while the service (ProtectSystem=strict) fell
+    # back to data/ — split-brain (D9-02: desk read Aug-3 file, worker wrote
+    # repo set-now). Tests stub dotenv in conftest (JADZIA_TEST_NO_DOTENV=1).
+    if os.environ.get("JADZIA_TEST_NO_DOTENV") != "1":
+        try:
+            from dotenv import load_dotenv
+
+            load_dotenv(ROOT / ".env")
+        except Exception:  # noqa: BLE001 — CLI must run even without dotenv
+            pass
     p = argparse.ArgumentParser(description="Demand OS Hub — control plane")
     sub = p.add_subparsers(dest="cmd", required=True)
 
