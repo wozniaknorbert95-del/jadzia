@@ -6,6 +6,7 @@ import json
 from pathlib import Path
 
 from agent.commander.authz import has_scope
+from agent.demand_os.agents.worker import CADENCE
 from agent.demand_os.fatigue import fatigue_check
 from agent.demand_os.ga4_adapter import fetch_wizard_starts_by_utm
 from agent.demand_os.gdrive_cf import list_cf_assets
@@ -87,6 +88,50 @@ def test_hub_rbac_viewer_blocked(monkeypatch):
     monkeypatch.delenv("DEMAND_OS_ROLE", raising=False)
     rc2 = hub.main(["doctor"])
     assert rc2 == 0
+
+
+def test_hub_rbac_viewer_blocked_run_due(monkeypatch):
+    """S9: worker dispatcher (agents-run-due) is act-class — viewer must be denied."""
+    import tools.demand_os_hub as hub
+
+    monkeypatch.setenv("DEMAND_OS_ROLE", "viewer")
+    rc = hub.main(["agents", "run-due", "--apply"])
+    assert rc == 1, "viewer must not dispatch worker actions"
+    rc_dry = hub.main(["agents", "run-due"])  # dry-run is still act-class (dispatch surface)
+    assert rc_dry == 1
+
+
+def test_doctor_surfaces_agents_staleness(monkeypatch, tmp_path):
+    """S1: doctor aliases wave-check staleness — owner sees worker health via doctor."""
+    from datetime import datetime, timedelta, timezone
+
+    from agent.demand_os.doctor import run_doctor
+
+    hb = tmp_path / "hb.json"
+    monkeypatch.setenv("DEMAND_OS_AGENTS_HEARTBEAT", str(hb))
+
+    fresh = datetime.now(timezone.utc).isoformat()
+    hb.write_text(
+        json.dumps(
+            {r: {"role": r, "last_run_at": fresh, "run_count": 1} for r in CADENCE}
+        ),
+        encoding="utf-8",
+    )
+    rep = run_doctor()
+    chk = next(c for c in rep.checks if c["name"] == "agents_staleness")
+    assert chk["ok"] is True
+
+    old = (datetime.now(timezone.utc) - timedelta(days=10)).isoformat()
+    hb.write_text(
+        json.dumps(
+            {r: {"role": r, "last_run_at": old, "run_count": 1} for r in CADENCE}
+        ),
+        encoding="utf-8",
+    )
+    rep2 = run_doctor()
+    chk2 = next(c for c in rep2.checks if c["name"] == "agents_staleness")
+    assert chk2["ok"] is False
+    assert "sales" in chk2["detail"]  # advisory, not blocking (wave-check is the hard gate)
 
 
 def test_hub_engage_dry_reflects_go_env(tmp_path: Path, monkeypatch, capsys):

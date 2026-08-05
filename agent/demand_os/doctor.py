@@ -327,7 +327,21 @@ def run_doctor(*, root: Optional[Path] = None) -> DoctorReport:
         checks.append(_check("desk_contract_v21", False, str(exc)[:160]))
         errors.append(f"desk_contract: {exc}")
 
-    ok = not errors and all(c["ok"] for c in checks)
+    # S1: doctor surfaces worker-loop health (alias of wave-check staleness) —
+    # an owner running `doctor` should see a dead/stale worker without knowing
+    # the wave-check exists. ADVISORY on purpose: wave-check is the hard gate
+    # (owner-verify), doctor also runs on dev machines with no worker loop —
+    # failing doctor there would be crying wolf. Visible, not blocking.
+    try:
+        from agent.demand_os.agents.wave_check import _heartbeat_staleness_check
+
+        stale = _heartbeat_staleness_check()
+        checks.append(_check("agents_staleness", bool(stale["ok"]), stale["detail"]))
+    except Exception as exc:
+        checks.append(_check("agents_staleness", False, str(exc)[:160]))
+
+    _ADVISORY = {"agents_staleness"}  # visible in report, never blocks doctor.ok
+    ok = not errors and all(c["ok"] for c in checks if c["name"] not in _ADVISORY)
     state_text = (
         (repo / "docs/ops/demand-os/STATE.md").read_text(encoding="utf-8")
         if (repo / "docs/ops/demand-os/STATE.md").is_file()
