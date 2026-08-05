@@ -25,6 +25,7 @@
 | G6 | **Screenshot E2E słabej jakości** — sekcja Agenci na krawędzi kadru, chipy nieczytelne; "dowód" niesprawdzalny wizualnie | review PNG v1 | retake: scroll-into-view, 9 kart × chip `dziś · bieg: 2026-08-05`, dash13 w stopce → `desk-agents-live-prod-v2.png` | **FIXED** |
 | G7 | OWNER-VERIFY-COMMANDS bez uwagi o venv python na VPS (`python` nie istnieje na prod) | `bash: python: command not found` | +1 linia w doc + wiersz doctor opisuje advisory/blocking | **FIXED** |
 | G8 | **Różnica liczników suite nieudokumentowana** — local 716 vs VPS 712 | VPS `-rs`: 21 skips (zzpackage brain assets, flexgrafik-inspire engine, vehicle template — assety zewnętrzne, nie logika Demand OS) | dokumentacja tutaj; bez akcji kodowej | **CLOSED (doc)** |
+| G9 | **G1×G5 kolizja znaleziona własną weryfikacją** — prod `.env` (blocking flag, ładowany przez G5 dotenv) dziedziczył do subprocessu pytest w owner-verify → `pytest_demand_os ok:false` na VPS | pierwszy owner-verify po restarcie: `ok: False` przy doctor True | conftest `delenv(DEMAND_OS_STALENESS_BLOCKING)` (autouse) + owner-verify subprocess env hygiene (`JADZIA_TEST_NO_DOTENV=1`, pop flag) · dowód: blocking env + fresh hb → ok:true 7/7 lokalnie | **FIXED** (`d77dc9d`) |
 
 ## C. Uczciwe noty procesowe (nie defekty, ale do jawności)
 
@@ -41,9 +42,14 @@
 ## E. Wykonanie (commity)
 
 - A: code+tests+docs+archive → `9d0cff0`
-- B: SoT sync + ten register → ten commit (tip)
-- Deploy VPS + `DEMAND_OS_STALENESS_BLOCKING=1` w `/opt/jadzia/.env` + restart `jadzia` + owner-verify blocking green → dowody w sekcji F po ship.
+- B: SoT sync → `e35616a`
+- C: G9 hermetic subprocess → `d77dc9d`
+- D: SoT sync + ten register → ten commit (tip)
+- Deploy VPS: ff-only do tipa · `DEMAND_OS_STALENESS_BLOCKING=1` w `/opt/jadzia/.env` · restart `jadzia` (active) · root-owned 0
 
 ## F. Ship verify (po deploy)
 
-- TBD
+- VPS owner-verify **blocking mode**: ok:true 7/7 (po G9 fix)
+- VPS unit suite: pełny rerun + tree czyste
+- Tip pointer: STATE `prod_tip=d77dc9d` == HEAD~1 obie strony
+- Lokalny root suite: 1057/0 (pre-G9) + G9 targeted 24/0
