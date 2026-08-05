@@ -162,8 +162,16 @@ def _record_run_heartbeat(role: str, action: str) -> None:
         )
 
 
-def dispatch(role: str, *, action: str = "status", **kwargs: Any) -> Dict[str, Any]:
-    """Unified envelope over wave shells. Never raises for bad input."""
+def dispatch(
+    role: str, *, action: str = "status", probe: bool = False, **kwargs: Any
+) -> Dict[str, Any]:
+    """Unified envelope over wave shells. Never raises for bad input.
+
+    `probe=True` marks observability calls (wave-check role probes, status
+    pings): they must NOT record a heartbeat — otherwise the staleness check
+    measures its own measurement and can never go red (D9-01). Heartbeat means
+    "agent did work" (worker run-due, manual run), not "someone looked".
+    """
     mode = resolve_marketing_mode()
     r = (role or "").strip().lower()
     spec = AGENT_REGISTRY.get(r)
@@ -202,7 +210,8 @@ def dispatch(role: str, *, action: str = "status", **kwargs: Any) -> Dict[str, A
             "marketing": mode,
             "live_allowed": allowed,
         }
-    _record_run_heartbeat(r, act)
+    if not probe:
+        _record_run_heartbeat(r, act)
     return {
         "ok": True,
         "role": r,

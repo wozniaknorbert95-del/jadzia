@@ -85,6 +85,44 @@ def test_dispatch_records_auto_heartbeat(monkeypatch: pytest.MonkeyPatch, tmp_pa
     assert "bogus" not in load_heartbeats(path=p)
 
 
+def test_probe_dispatch_never_records_heartbeat(monkeypatch: pytest.MonkeyPatch, tmp_path: Path):
+    """D9-01 regression: observability probes must not touch heartbeat —
+    otherwise staleness measures its own measurement and can never go red."""
+    p = tmp_path / "hb.json"
+    monkeypatch.setenv("DEMAND_OS_AGENTS_HEARTBEAT", str(p))
+    from agent.demand_os.agents.registry import dispatch
+
+    out = dispatch("validator", action="compliance", probe=True)
+    assert out["ok"] is True
+    assert load_heartbeats(path=p) == {}, "probe must not record heartbeat"
+    # sanity: non-probe still records
+    dispatch("validator", action="compliance")
+    assert load_heartbeats(path=p)["validator"]["run_count"] == 1
+
+
+def test_wave_check_does_not_refresh_heartbeats(monkeypatch: pytest.MonkeyPatch, tmp_path: Path):
+    """D9-01 regression: wave_readiness must leave heartbeat file untouched."""
+    from datetime import datetime, timedelta, timezone
+
+    p = tmp_path / "hb.json"
+    monkeypatch.setenv("DEMAND_OS_AGENTS_HEARTBEAT", str(p))
+    old = (datetime.now(timezone.utc) - timedelta(days=30)).isoformat()
+    p.write_text(
+        json.dumps({"sales": {"role": "sales", "last_run_at": old, "last_action": "list_hot", "run_count": 7}}),
+        encoding="utf-8",
+    )
+    before = p.read_text(encoding="utf-8")
+    from agent.demand_os.agents.wave_check import wave_readiness
+
+    out = wave_readiness()
+    assert p.read_text(encoding="utf-8") == before, "wave-check must not write heartbeats"
+    # and with 30d-old heartbeat the staleness check must be RED (sales limit 12h)
+    wave1 = next(w for w in out["waves"] if w["wave"] == 1)
+    stale = next(c for c in wave1["tool_checks"] if c["check"] == "heartbeat_staleness")
+    assert stale["ok"] is False
+    assert "sales" in stale["detail"]
+
+
 def test_default_path_env_override(monkeypatch: pytest.MonkeyPatch, tmp_path: Path):
     from agent.demand_os.agents.heartbeat import default_heartbeat_path
 

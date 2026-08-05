@@ -39,7 +39,7 @@ def _role_tool_check(role: str) -> Dict[str, Any]:
         (a for a in spec["actions"] if a not in spec["mutating_actions"]),
         spec["actions"][0],
     )
-    out = dispatch(role, action=action)
+    out = dispatch(role, action=action, probe=True)
     return {
         "check": f"role_{role}",
         "ok": bool(out.get("ok")),
@@ -56,7 +56,7 @@ def _tool_checks(wave: int) -> List[Dict[str, Any]]:
         )
         checks.append(_state_writers_check())
     if wave == 3:
-        out = dispatch("blog", action="status")
+        out = dispatch("blog", action="status", probe=True)
         drafts = (out.get("result") or {}).get("draft_count")
         checks.append(
             {
@@ -66,7 +66,7 @@ def _tool_checks(wave: int) -> List[Dict[str, Any]]:
             }
         )
     if wave == 4:
-        out = dispatch("icp_brain", action="show")
+        out = dispatch("icp_brain", action="show", probe=True)
         mem = out.get("result") or {}
         episodic = mem.get("episodic") if isinstance(mem, dict) else None
         episodic_keys = sorted(episodic.keys()) if isinstance(episodic, dict) else []
