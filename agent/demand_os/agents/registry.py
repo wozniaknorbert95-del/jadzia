@@ -114,6 +114,9 @@ def _live_allowed(spec: Dict[str, Any], mode: str) -> bool:
     return not (spec["live_gated"] and is_marketing_parked(marketing=mode))
 
 
+_WORKER_CADENCE_ROLES = frozenset({"growth_lead", "icp_brain", "sales", "validator", "cre"})
+
+
 def list_agents(*, with_heartbeat: bool = True) -> List[Dict[str, Any]]:
     """Registry projection for hub/CLI (and future desk tile). Honest shell marker."""
     from agent.demand_os.agents.heartbeat import heartbeat_view
@@ -135,7 +138,11 @@ def list_agents(*, with_heartbeat: bool = True) -> List[Dict[str, Any]]:
             "blocked_reason": (
                 "" if allowed else "live gated until Dowódca unlock (marketing PARKED)"
             ),
-            "shell": True,
+            # Cadence roles are worker-driven (deployment/demand-os-agents-worker.timer,
+            # 15 min) — dispatcher live and proven on prod (D9-01 fix + first dispatch
+            # 2026-08-05), so the honest shell marker flips to False for them.
+            # tt/cf/fb/blog stay shells: flow + HITL paths exist but no autonomous loop.
+            "shell": role not in _WORKER_CADENCE_ROLES,
             "marketing": mode,
         }
         if with_heartbeat:

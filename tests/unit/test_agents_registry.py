@@ -56,7 +56,10 @@ def test_list_agents_honest_projection(monkeypatch: pytest.MonkeyPatch):
     by_role = {r["role"]: r for r in rows}
     for role in EXPECTED_ROLES:
         row = by_role[role]
-        assert row["shell"] is True
+        # Cadence roles flipped to worker-driven (shell=False) after worker
+        # proven on prod; flow/HITL-only roles remain shells until replaced.
+        expected_shell = role in {"tt", "cf", "fb", "blog"}
+        assert row["shell"] is expected_shell, role
         assert row["marketing"] == "PARKED_LAST"
         assert row["actions"]
     for gated in ("tt", "cf", "fb", "blog"):
@@ -144,7 +147,9 @@ def test_hub_agents_list_cli():
     payload = json.loads(proc.stdout)
     assert payload["ok"] is True
     assert payload["count"] == len(EXPECTED_ROLES)
-    assert payload["agents"][0]["shell"] is True
+    shells = {a["role"]: a["shell"] for a in payload["agents"]}
+    assert shells["cre"] is False  # worker-driven (cadence)
+    assert shells["tt"] is True    # flow/HITL only, no autonomous loop
 
 
 def test_hub_agents_list_wave_filter():
