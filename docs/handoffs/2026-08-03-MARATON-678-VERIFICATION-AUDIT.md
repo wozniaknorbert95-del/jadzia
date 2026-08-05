@@ -43,6 +43,30 @@
 | S14 | Desk tile po dash13: brak E2E w przeglądarce na prod (tylko unit/golden/curl tag) | niska-średnia | jutro: browser check sekcji Agenci na prod |
 | S15 | `.gitignore` ma `data/`, ale 21 plików `data/demand-os/set-now-sanitized/` tracked (przed ignore) — celowe (proof pack), ale koncepcyjna kolizja z runtime fallback `data/demand-os/` | niska | udokumentować w state_paths docstring |
 
+## B2. S-register — rozliczenie 2026-08-05 (punch lista C wykonana)
+
+| ID | Status | Dowód |
+|----|--------|-------|
+| S1 | **ZAMKNIĘTE** | doctor `agents_staleness` advisory check + test (`a02c3ae`) |
+| S2 | **ZAMKNIĘTE** | OWNER-VERIFY-COMMANDS += coverage gates + dash13 + worker timer row (`a02c3ae`) |
+| S3 | **ZAMKNIĘTE** | **timer LIVE** na prod (GO 2026-08-05): enable --now, pierwszy cykl SUCCESS 09:21, dispatch sales 09:22, staleness green z realnego biegu |
+| S4 | **ZAMKNIĘTE** | 9/9 stashy dropped po review — zero utraconej treści (tabela decyzji w handoffie 2026-08-05) |
+| S5 | **ZAMKNIĘTE** | gitignore `secrets/`+`output/` na prod (`62f5769`), katalog `" "` usunięty, check-ignore dowód |
+| S6 | **ZAMKNIĘTE** | GROWTH-EVENTS artifact usunięty (lokal+VPS), scoped gitignore path, `.superpowers/`+`assets/` ignored (`62f5769`) |
+| S7 | **ZAMKNIĘTE** | `JADZIA_EVIDENCE_WRITE=1` gate w obu gate tests + conftest state-tmp fixture — suite 1055/0 zostawia **czyste tree** obie strony (`81a8fe1`) |
+| S8 | **ZAMKNIĘTE** | playbook ownership rule + `find ! -user jadzia` gate (`6646957`); egzekwowane przez całą sesję (0 root-owned przy każdym deploy) |
+| S9 | **ZAMKNIĘTE** | `test_hub_rbac_viewer_blocked_run_due` — viewer denied apply+dry (`a02c3ae`) |
+| S10 | **ODROCZONE → 9-02** | desk chip STALE_DAYS=7 vs wave-check per-rola — backlog MASTER-TODO-9 zadanie 2 |
+| S11 | **ZAMKNIĘTE** (wcześniej) | parity przy deploy 8-10 |
+| S12 | **ODROCZONE (by design)** | per-rola heartbeat dokumentowane; per-action gdy cadence się rozjedzie |
+| S13 | **ODROCZONE (by design)** | GDrive czeka na GO + creds (jak GA4) |
+| S14 | **ZAMKNIĘTE** | E2E browser prod: sekcja Agenci live `dziś / bieg: 2026-08-05`, screenshot w `docs/handoffs/evidence/c7-e2e-2026-08-05/` |
+| S15 | **ZAMKNIĘTE** | scoped gitignore path dla set-now GROWTH-EVENTS (sanitized pack zostaje tracked); state_paths docstring już opisuje fallback |
+
+**Bonus znaleziska tej sesji (nowe defekty, zamknięte):**
+- **D9-01**: staleness check self-defeating — wave-check probes auto-heartbeatiły każdą rolę przed pomiarem → zawsze green. Fix: `dispatch(probe=True)` bez heartbeat + 2 testy regresji (`10f5f9f`).
+- **D9-02**: split-brain runtime paths — app (ProtectSystem=strict) → `data/` fallback, worker/CLI → repo set-now → desk pokazywał Aug-3 file. Fix: hub CLI ładuje .env (`2b4ad6b`) + 8 env overrides w prod `.env` → **jeden canonical path** `data/demand-os/set-now/`.
+
 ## C. Punch lista na jutro (kolejność = priorytet)
 
 1. **[GO Dowódcy]** Aktywacja workera: `sudo cp deployment/demand-os-agents-worker.{service,timer} /etc/systemd/system/ && systemctl enable --now …timer` → potem `shell:false` w registry + pierwszy realny przebieg (verify staleness green po 15 min). (S3)
