@@ -47,9 +47,13 @@
 - D: SoT sync + ten register → ten commit (tip)
 - Deploy VPS: ff-only do tipa · `DEMAND_OS_STALENESS_BLOCKING=1` w `/opt/jadzia/.env` · restart `jadzia` (active) · root-owned 0
 
-## F. Ship verify (po deploy)
+## F. Ship verify (po deploy — actuals)
 
-- VPS owner-verify **blocking mode**: ok:true 7/7 (po G9 fix)
-- VPS unit suite: pełny rerun + tree czyste
-- Tip pointer: STATE `prod_tip=d77dc9d` == HEAD~1 obie strony
-- Lokalny root suite: 1057/0 (pre-G9) + G9 targeted 24/0
+- VPS @ `0f15de8` · root-owned 0 · service+timer active · `DEMAND_OS_STALENESS_BLOCKING=1` w `.env`
+- VPS owner-verify **blocking mode**: **ok:true 7/7** (`d77dc9d` fix potwierdzony na prod)
+- VPS doctor: `"agents_staleness", ok: true, "all cadence roles fresh [blocking]"` — hard gate AKTYWNY
+- VPS unit: **714 passed / 21 skipped / 0 failed** · tree po suite: 0 zmian
+- Local root: **1058 passed / 0 failed** (+3 testy regresji G1/G5) · tree po suite: 0 zmian
+- Tip pointer: green obie strony · commity: A `9d0cff0` · B `e35616a` · C `d77dc9d` · D `0f15de8` · E (ten)
+
+**Werdykt self-auditu:** 9/9 gapów FIXED/CLOSED + 5 odroczonych-by-design udokumentowanych. Zero otwartych bez decyzji.
