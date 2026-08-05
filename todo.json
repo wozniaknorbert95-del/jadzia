@@ -1,6 +1,6 @@
 {
   "project": "Jadzia-Core",
-  "last_updated": "2026-08-05 (PUNCH LISTA C1-C8 DONE · worker timer LIVE 15min · D9-01/D9-02 fixed · stash 0 · suite clean-tree · prod a84ddcd ok:true · live P0 PARKED)",
+  "last_updated": "2026-08-05 (PUNCH LISTA C DONE + SELF-AUDIT 8 gapow G1-G8 FIXED · doctor staleness blocking prod · owner-verify canonical fix · handoffs <=15 · prod 9d0cff0 ok:true · live P0 PARKED)",
   "status": "active",
   "plan": "docs/ops/demand-os/PROGRAM-PHASES.md",
   "active_gate": "DEMAND-OS-MARKETING-4-00",
@@ -8,7 +8,7 @@
   "master_todo": "docs/ops/demand-os/MASTER-TODO-4.md",
   "master_workflow": ".agents/workflows/demand-os-master-loop.md",
   "active_item": "4-TOOL-AGENTS-9",
-  "agents_last_done": "4-TOOL-PUNCH-LISTA-C (8/8, worker timer LIVE + hardening, prod verified @a84ddcd)",
+  "agents_last_done": "4-TOOL-PUNCH-LISTA-C (8/8) + SELF-AUDIT G1-G8 (8/8, prod verified @9d0cff0)",
   "runtime_changes_allowed": false,
   "todo_schema": "todo.schema.json",
   "gate_machine": {

@@ -40,6 +40,10 @@
 
 ## E. Wykonanie (commity)
 
-- A: code+tests+docs+archive → `TBD-A`
-- B: SoT sync + ten register → `TBD-B`
-- Deploy VPS + `DEMAND_OS_STALENESS_BLOCKING=1` w `/opt/jadzia/.env` + restart `jadzia` + owner-verify blocking green → dowody poniżej po ship.
+- A: code+tests+docs+archive → `9d0cff0`
+- B: SoT sync + ten register → ten commit (tip)
+- Deploy VPS + `DEMAND_OS_STALENESS_BLOCKING=1` w `/opt/jadzia/.env` + restart `jadzia` + owner-verify blocking green → dowody w sekcji F po ship.
+
+## F. Ship verify (po deploy)
+
+- TBD
