@@ -1,10 +1,10 @@
 # CURRENT TASK — AGENTS Etap 6 · live P0 PARKED
 
 **Gate:** `DEMAND-OS-MARKETING-4-00` · agents backlog: `MASTER-TODO-8` DONE → `MASTER-TODO-9`  
-**Prod tip:** `a892ce0` · cache `desk-dash13` · prod owner-verify **ok:true** · **worker timer LIVE** (15 min) · doctor staleness **blocking** na prod  
+**Prod tip:** `28a2e8a` · cache `desk-dash13` · prod owner-verify **ok:true** · **worker timer LIVE** (15 min) · doctor staleness **blocking** na prod — **canary 9-09 PASS** (alarm RED→green udowodniony, [`close`](../docs/handoffs/2026-08-05-MT9-09-CANARY-CLOSE.md))  
 **Self-audit:** [`docs/handoffs/2026-08-05-PUNCH-LISTA-C-SELF-AUDIT.md`](../docs/handoffs/2026-08-05-PUNCH-LISTA-C-SELF-AUDIT.md) — 9 gapów (G1-G9) domkniętych + senior review (dangling links fixed)  
 **Close:** [`docs/handoffs/2026-08-05-SELF-AUDIT-REVIEW-CLOSE.md`](../docs/handoffs/2026-08-05-SELF-AUDIT-REVIEW-CLOSE.md)  
-**Next:** [`MASTER-TODO-9`](../docs/ops/demand-os/MASTER-TODO-9.md) kolumna **Kolejność** — 1: 9-01 (2026-08-12) · 2: 9-09 canary · 3: 9-02 desk chip limits  
+**Next:** [`MASTER-TODO-9`](../docs/ops/demand-os/MASTER-TODO-9.md) kolumna **Kolejność** — 1: 9-01 (2026-08-12) · ~~2: 9-09~~ DONE · 3: 9-02 desk chip limits  
 **Verify:** `python tools/demand_os_owner_verify.py` · `hub agents wave-check` · `journalctl -u demand-os-agents-worker.service`  
 **Human:** [`docs/ops/demand-os/UNLOCK-LIVE-P0.md`](../docs/ops/demand-os/UNLOCK-LIVE-P0.md)  
 **Coverage:** [`docs/ops/demand-os/OS-TARGET-V5-AGENTS-COVERAGE.md`](../docs/ops/demand-os/OS-TARGET-V5-AGENTS-COVERAGE.md)  

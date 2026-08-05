@@ -19,7 +19,7 @@ prod `a892ce0` owner-verify ok:true (blocking mode).
 | # | ID | Kolejność | Temat | DoD |
 |---|----|-----------|-------|-----|
 | 1 | 9-01 | **1** (2026-08-12) | **Weryfikacja workera po tygodniu** | Journal audit: `journalctl -u demand-os-agents-worker.service --since -7d` — każdy tick rc=0 · faktyczny cadence per rola vs CADENCE map (tabela) · staleness trend (7 snapshotów wave-check) · zero `errors>0` |
-| 2 | 9-09 | **2** | **Blocking-mode canary na prod** (nowe, z self-auditu G1) | Kontrolowany backdate heartbeat 1 roli (−8d, plik w `data/…/AGENTS-HEARTBEAT.json`) → doctor prod: `agents_staleness ok:false [blocking]` + `doctor.ok=false` + owner-verify FAIL → restore (real dispatch lub cp backupu) → doctor green · dowód: log obu stanów w handoffu · okno RED < 5 min · rollback = 1 cp |
+| 2 | 9-09 | ~~2~~ **DONE 2026-08-05** | **Blocking-mode canary na prod** (nowe, z self-auditu G1) | ✅ [`2026-08-05-MT9-09-CANARY-CLOSE.md`](../handoffs/2026-08-05-MT9-09-CANARY-CLOSE.md): backdate sales −8d → doctor RED `sales(194.2h>12h) [blocking]` + owner-verify exit 1 + desk footer `doctor_ok:false` → restore → green · okno 2:26 < 5 min |
 | 3 | 9-02 | **3** | Desk chip stale vs cadence limits (S10) | `heartbeat_view.stale` (STALE_DAYS=7) używa limitów per-rola z wave_check (`_STALE_LIMITS_H`) lub wspólnego źródła · chip `stale` na desk zgodny z wave-check · test kontraktu |
 | 4 | 9-03 | **4** | Worker journal → evidence snapshot | Cotygodniowy eksport `journalctl` do `docs/handoffs/evidence/worker/` (skrypt + cron/timer albo manualny krok w 9-01) · evidence w handoffie |
 | 5 | 9-04 | **5** | `agents run-due` dry w desk diagnostics | Desk "Diagnostyka" pokazuje `due=[]/due=[...]` read-only (bez dispatch) · test UI kontraktu |

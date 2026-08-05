@@ -6,7 +6,6 @@
 
 | File | Role |
 |------|------|
-| `2026-08-03-DEMAND-OS-P0-EXECUTION-PACKET-HANDOFF.md` | P0 packet (parked) |
 | `2026-08-03-DEMAND-OS-PARK-LEAVE-AWAIT-UNLOCK.md` | park-leave decision |
 | `2026-08-03-DEMAND-OS-POINTER-PURGE-CLOSE.md` | stale pointer purge |
 | `2026-08-03-DEMAND-OS-POST-TOOL-HYGIENE-CLOSE.md` | post-tool hygiene |
@@ -21,3 +20,4 @@
 | `2026-08-05-PUNCH-LISTA-C-CLOSE.md` | punch lista C1-C8 + worker timer LIVE |
 | `2026-08-05-PUNCH-LISTA-C-SELF-AUDIT.md` | self-audit G1-G9 + plan naprawczy |
 | `2026-08-05-SELF-AUDIT-REVIEW-CLOSE.md` | self-audit ship + senior review + MT-9 refresh |
+| `2026-08-05-MT9-09-CANARY-CLOSE.md` | 9-09 blocking-mode canary PASS (alarm RED→green na prod) |
