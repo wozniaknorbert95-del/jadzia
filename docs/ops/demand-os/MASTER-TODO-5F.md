@@ -6,7 +6,7 @@ owner: agent-orchestrator
 human_gate: "DONE · §8 agent prod PASS"
 supersedes_gate: DEMAND-OS-DESK-5B-00
 close_target: "tool_100 SEALED · Commander dashboard 100% per surface"
-close_handoff: "docs/handoffs/2026-08-03-DEMAND-DESK-5F-CLOSE.md"
+close_handoff: "docs/archive/handoffs/2026-08-03-DEMAND-DESK-5F-CLOSE.md"
 ---
 
 # MASTER TODO — Etap 5f (Commander Dashboard 100%)
@@ -122,7 +122,7 @@ Legenda status: `open` · `in_progress` · `done` · `blocked` · `ready_for_hum
 
 ```
 CURRENT: — (SEALED)
-CLOSE:   docs/handoffs/2026-08-03-DEMAND-DESK-5F-CLOSE.md
+CLOSE:   docs/archive/handoffs/2026-08-03-DEMAND-DESK-5F-CLOSE.md
 NEXT:    GO MARKETING HITL (PARKED_LAST · human)
 ```
 

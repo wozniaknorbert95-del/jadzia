@@ -35,7 +35,7 @@ ETAP 4   MARKETING                       ← env GO possible · live cadence PAR
 **SoT:** [`MASTER-TODO-4.md`](./MASTER-TODO-4.md)  
 **Rule:** [`.cursor/rules/demand-os-tool-first.mdc`](../../../.cursor/rules/demand-os-tool-first.mdc)  
 **TOOL SEAL:** [`2026-08-03-DEMAND-OS-TOOL-100-SEAL-CLOSE.md`](../handoffs/2026-08-03-DEMAND-OS-TOOL-100-SEAL-CLOSE.md)  
-**OPS SEAL:** [`2026-08-03-DEMAND-OS-OPS-HARDENING-SEAL-CLOSE.md`](../handoffs/2026-08-03-DEMAND-OS-OPS-HARDENING-SEAL-CLOSE.md)  
+**OPS SEAL:** [`2026-08-03-DEMAND-OS-OPS-HARDENING-SEAL-CLOSE.md`](../archive/handoffs/2026-08-03-DEMAND-OS-OPS-HARDENING-SEAL-CLOSE.md)  
 **Unlock:** [`UNLOCK-LIVE-P0.md`](./UNLOCK-LIVE-P0.md) (Dowódca only · env GO ≠ unlock)
 
 - Tool residual **SEALED** · OPS hardening **SEALED** · doctor/footer/waves/connectors honest
@@ -45,4 +45,4 @@ ETAP 4   MARKETING                       ← env GO possible · live cadence PAR
 
 ## Etap 5f — SEALED (archiwum)
 
-**Close:** [`2026-08-03-DEMAND-DESK-5F-CLOSE.md`](../handoffs/2026-08-03-DEMAND-DESK-5F-CLOSE.md)
+**Close:** [`2026-08-03-DEMAND-DESK-5F-CLOSE.md`](../archive/handoffs/2026-08-03-DEMAND-DESK-5F-CLOSE.md)

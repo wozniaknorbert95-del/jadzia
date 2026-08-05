@@ -51,4 +51,4 @@ surface: "commander-ui #view-demand-desk"
 
 ## Closed
 
-§8 prod smoke · Hard DoD 15/15 — [`2026-08-03-DEMAND-DESK-5F-CLOSE.md`](../handoffs/2026-08-03-DEMAND-DESK-5F-CLOSE.md)
+§8 prod smoke · Hard DoD 15/15 — [`2026-08-03-DEMAND-DESK-5F-CLOSE.md`](../archive/handoffs/2026-08-03-DEMAND-DESK-5F-CLOSE.md)

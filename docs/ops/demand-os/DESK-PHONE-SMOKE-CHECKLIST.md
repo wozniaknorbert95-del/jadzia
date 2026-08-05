@@ -33,4 +33,4 @@ url: "https://api.zzpackage.flexgrafik.nl/commander/?view=demand-desk&cb=desk-da
 
 ## Historical 5f
 
-Agent prod verify §8: [`2026-08-03-DEMAND-DESK-5F-P2-01-SECTION8-CLOSE.md`](../../handoffs/2026-08-03-DEMAND-DESK-5F-P2-01-SECTION8-CLOSE.md)
+Agent prod verify §8: [`2026-08-03-DEMAND-DESK-5F-P2-01-SECTION8-CLOSE.md`](../../archive/handoffs/2026-08-03-DEMAND-DESK-5F-P2-01-SECTION8-CLOSE.md)
