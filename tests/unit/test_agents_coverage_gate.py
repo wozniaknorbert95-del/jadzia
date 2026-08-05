@@ -7,6 +7,7 @@ subprocess, write evidence, fail under the floor.
 from __future__ import annotations
 
 import json
+import os
 import subprocess
 import sys
 from pathlib import Path
@@ -34,8 +35,15 @@ def test_agents_package_exports_worker_surface():
     assert callable(reg.list_agents)
 
 
-def test_agents_modules_line_coverage_gate():
-    """Fail if agents modules drop below 80% line coverage."""
+def test_agents_modules_line_coverage_gate(tmp_path: Path):
+    """Fail if agents modules drop below 80% line coverage.
+
+    S7: evidence writes to docs/handoffs/evidence only when
+    JADZIA_EVIDENCE_WRITE=1 (local/CI refresh). Default run writes to tmp —
+    a test suite must leave a clean git tree.
+    """
+    write_evidence = os.environ.get("JADZIA_EVIDENCE_WRITE") == "1"
+    cov_json = (EVIDENCE_DIR if write_evidence else tmp_path) / "k12-coverage-agents.json"
     cmd = [
         sys.executable,
         "-m",
@@ -46,14 +54,13 @@ def test_agents_modules_line_coverage_gate():
         "tests/unit/test_agents_worker.py",
         "--cov=agent.demand_os.agents",
         "--cov-report=term-missing",
-        f"--cov-report=json:{EVIDENCE_DIR}/k12-coverage-agents.json",
+        f"--cov-report=json:{cov_json}",
         "-q",
     ]
     proc = subprocess.run(cmd, cwd=str(ROOT), capture_output=True, text=True)
     assert proc.returncode == 0, proc.stdout + proc.stderr
-    cov_path = EVIDENCE_DIR / "k12-coverage-agents.json"
-    assert cov_path.is_file(), "coverage json missing"
-    data = json.loads(cov_path.read_text(encoding="utf-8"))
+    assert cov_json.is_file(), "coverage json missing"
+    data = json.loads(cov_json.read_text(encoding="utf-8"))
     files = data.get("files") or {}
     lines = []
     for mod in MODULES:
@@ -66,6 +73,7 @@ def test_agents_modules_line_coverage_gate():
         pct = float(summary.get("percent_covered") or 0)
         lines.append(f"{mod}: {pct:.1f}% line")
         assert pct >= LINE_FLOOR, f"{mod} coverage {pct:.1f}% < {LINE_FLOOR}%"
-    (EVIDENCE_DIR / "k12-coverage-agents.txt").write_text(
-        "\n".join(lines) + f"\nfloor={LINE_FLOOR}\n", encoding="utf-8"
-    )
+    if write_evidence:
+        (EVIDENCE_DIR / "k12-coverage-agents.txt").write_text(
+            "\n".join(lines) + f"\nfloor={LINE_FLOOR}\n", encoding="utf-8"
+        )

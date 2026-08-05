@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import json
+import os
 import subprocess
 import sys
 from pathlib import Path
@@ -35,8 +36,14 @@ def test_desk_modules_export_expected_surfaces():
     assert callable(lex.export_ledger)
 
 
-def test_desk_core_modules_line_coverage_gate():
-    """Fail if core desk modules drop below 80% line coverage."""
+def test_desk_core_modules_line_coverage_gate(tmp_path: Path):
+    """Fail if core desk modules drop below 80% line coverage.
+
+    S7: evidence writes to docs/handoffs/evidence only when
+    JADZIA_EVIDENCE_WRITE=1. Default run writes to tmp — clean git tree.
+    """
+    write_evidence = os.environ.get("JADZIA_EVIDENCE_WRITE") == "1"
+    cov_json = (EVIDENCE.parent if write_evidence else tmp_path) / "k12-coverage.json"
     cmd = [
         sys.executable,
         "-m",
@@ -53,14 +60,13 @@ def test_desk_core_modules_line_coverage_gate():
         "--cov=agent.demand_os.desk_contract",
         "--cov=agent.demand_os.ga4_adapter",
         "--cov-report=term-missing",
-        "--cov-report=json:docs/handoffs/evidence/audit-k-2026-08-03/k12-coverage.json",
+        f"--cov-report=json:{cov_json}",
         "-q",
     ]
     proc = subprocess.run(cmd, cwd=str(ROOT), capture_output=True, text=True)
     assert proc.returncode == 0, proc.stdout + proc.stderr
-    cov_path = ROOT / "docs" / "handoffs" / "evidence" / "audit-k-2026-08-03" / "k12-coverage.json"
-    assert cov_path.is_file(), "coverage json missing"
-    data = json.loads(cov_path.read_text(encoding="utf-8"))
+    assert cov_json.is_file(), "coverage json missing"
+    data = json.loads(cov_json.read_text(encoding="utf-8"))
     files = data.get("files") or {}
     lines = []
     for mod in MODULES:
@@ -71,5 +77,6 @@ def test_desk_core_modules_line_coverage_gate():
         pct = float(summary.get("percent_covered") or 0)
         lines.append(f"{mod}: {pct:.1f}% line")
         assert pct >= LINE_FLOOR, f"{mod} coverage {pct:.1f}% < {LINE_FLOOR}%"
-    EVIDENCE.parent.mkdir(parents=True, exist_ok=True)
-    EVIDENCE.write_text("\n".join(lines) + f"\nfloor={LINE_FLOOR}\n", encoding="utf-8")
+    if write_evidence:
+        EVIDENCE.parent.mkdir(parents=True, exist_ok=True)
+        EVIDENCE.write_text("\n".join(lines) + f"\nfloor={LINE_FLOOR}\n", encoding="utf-8")

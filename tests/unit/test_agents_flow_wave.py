@@ -255,6 +255,13 @@ def test_hub_agents_flow_cli_dry():
 
 
 def test_hub_agents_wave_check_cli():
+    # S7 fixture redirects heartbeat to an empty tmp → staleness would be RED.
+    # Seed a fresh record per cadence role (same env the subprocess inherits).
+    from agent.demand_os.agents.heartbeat import record_heartbeat
+    from agent.demand_os.agents.worker import CADENCE
+
+    for role in CADENCE:
+        record_heartbeat(role, action="status")
     proc = _run_hub("agents", "wave-check")
     assert proc.returncode == 0, proc.stderr
     payload = json.loads(proc.stdout)
