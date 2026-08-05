@@ -40,3 +40,12 @@ tmp/
 
 # Demand OS runtime agent state (per-environment, never committed)
 docs/ops/demand-os/set-now/AGENTS-HEARTBEAT.json
+docs/ops/demand-os/set-now/GROWTH-EVENTS.jsonl
+
+# VPS-local runtime secrets/outputs — never committable from any host (S5)
+secrets/
+output/
+
+# Other tools' working files, not repo content (S6)
+.superpowers/
+assets/
