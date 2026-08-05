@@ -1,6 +1,6 @@
 {
   "project": "Jadzia-Core",
-  "last_updated": "2026-08-05 (MT-9 9-09 CANARY PASS: alarm staleness RED->green na prod udowodniony, okno 2:26 · self-audit 9/9 + senior review · doctor staleness BLOCKING prod · prod 28a2e8a ok:true · live P0 PARKED)",
+  "last_updated": "2026-08-05 (MT-9 batch K1-K10: 9/10 DONE · canary 9-06 alert path PASS (OnFailure->ALERTS->doctor RED->desk->GREEN) · desk chip UI z backend stale (S10 domknięte w UI) · repo+VPS hygiene 6.5G->6.2G · prod f545dc4 ok:true blocking · live P0 PARKED)",
   "status": "active",
   "plan": "docs/ops/demand-os/PROGRAM-PHASES.md",
   "active_gate": "DEMAND-OS-MARKETING-4-00",
@@ -8,7 +8,7 @@
   "master_todo": "docs/ops/demand-os/MASTER-TODO-4.md",
   "master_workflow": ".agents/workflows/demand-os-master-loop.md",
   "active_item": "4-TOOL-AGENTS-9",
-  "agents_last_done": "MT-9 9-09 CANARY (PASS, prod alarm verified) + SELF-AUDIT G1-G9 (9/9) + senior review close (prod @28a2e8a)",
+  "agents_last_done": "MT-9 batch K1-K10 (9-02 SoT limits + UI chip, 9-04 agents_due, 9-03 journal export + first evidence, 9-05 cov 100%, 9-06 OPT-B alert path + canary PASS, 9-07/9-08 docs, 9-10 upkeep+hygiene) @f545dc4",
   "runtime_changes_allowed": false,
   "todo_schema": "todo.schema.json",
   "gate_machine": {

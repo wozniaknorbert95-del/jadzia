@@ -13,7 +13,7 @@ workflow: ".agents/workflows/demand-os-master-loop.md"
 **4-AWAIT-UNLOCK** · `ready_for_human`  
 Prod tip **`4093179`** · cache **`desk-dash09`** · OPS floor `a3deb59`  
 Unlock only via [`UNLOCK-LIVE-P0.md`](./UNLOCK-LIVE-P0.md)  
-PARK leave: [`2026-08-03-DEMAND-OS-PARK-LEAVE-AWAIT-UNLOCK.md`](../../handoffs/2026-08-03-DEMAND-OS-PARK-LEAVE-AWAIT-UNLOCK.md)
+PARK leave: [`2026-08-03-DEMAND-OS-PARK-LEAVE-AWAIT-UNLOCK.md`](../../archive/handoffs/2026-08-03-DEMAND-OS-PARK-LEAVE-AWAIT-UNLOCK.md)
 
 | Priorytet | Item | Status |
 |-----------|------|--------|
