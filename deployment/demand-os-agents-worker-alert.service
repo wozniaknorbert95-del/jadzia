@@ -1,0 +1,13 @@
+# Demand OS — worker failure sink (MT-9/9-06 OPT-B, decision: ALERT-PATH-DECISION.md)
+# Fires ONLY via OnFailure= from demand-os-agents-worker.service.
+# Deliberately dumb: system python3 + stdlib — must survive a broken venv.
+[Unit]
+Description=Demand OS agents worker failure sink (ALERTS.jsonl)
+
+[Service]
+Type=oneshot
+User=jadzia
+Group=jadzia
+Environment=ALERTS_PATH=/opt/jadzia/data/demand-os/set-now/ALERTS.jsonl
+ExecStart=/usr/bin/python3 -c "import json,os,datetime,pathlib; p=pathlib.Path(os.environ['ALERTS_PATH']); p.parent.mkdir(parents=True,exist_ok=True); rec={'ts':datetime.datetime.now(datetime.timezone.utc).isoformat(timespec='seconds'),'unit':'demand-os-agents-worker.service','kind':'onfailure','source':'systemd','resolved':False}; f=p.open('a',encoding='utf-8'); f.write(json.dumps(rec)+'\n'); f.close()"
+# No [Install] — never enable standalone; OnFailure= invokes it.

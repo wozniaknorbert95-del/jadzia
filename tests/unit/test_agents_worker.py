@@ -37,6 +37,27 @@ def test_due_respects_fresh_heartbeat(tmp_path: Path):
     assert due_actions(path=hb) == []
 
 
+def test_due_skips_live_gated_and_actions_not_in_registry(
+    monkeypatch: pytest.MonkeyPatch, tmp_path: Path
+):
+    """Defensive branches: live_gated cadence role excluded (belt-and-braces —
+    worker is tool-only), cadence action missing from registry spec skipped."""
+    monkeypatch.setattr(
+        worker,
+        "AGENT_REGISTRY",
+        {
+            "growth_lead": {"live_gated": True, "actions": ["sync_starts"]},
+            "sales": {"actions": ["list_hot"]},
+        },
+    )
+    monkeypatch.setattr(
+        worker,
+        "CADENCE",
+        {"growth_lead": {"sync_starts": 24.0}, "sales": {"sync_hot": 6.0}},
+    )
+    assert due_actions(path=tmp_path / "hb.json") == []
+
+
 def test_due_sales_overdue_at_6h(tmp_path: Path):
     hb = tmp_path / "hb.json"
     _seed_heartbeat(hb, "sales", age_hours=7.0)

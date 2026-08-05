@@ -140,6 +140,7 @@ def build_demand_os_status(
                 "last_run_at": a["heartbeat"]["last_run_at"],
                 "age_days": a["heartbeat"]["age_days"],
                 "stale": a["heartbeat"]["stale"],
+                "stale_limit_h": a["heartbeat"].get("stale_limit_h"),
             }
             for a in list_agents()
         ]
@@ -157,6 +158,20 @@ def build_demand_os_status(
             "total": 0,
             "error": str(exc)[:200],
         }
+
+    try:
+        from agent.demand_os.agents.worker import due_actions
+
+        due_items = due_actions()
+        agents_due = {
+            "count": len(due_items),
+            "items": due_items,
+            "mode": "read_only",
+            "source": "worker.due_actions — no dispatch",
+        }
+    except Exception as exc:  # diagnostics must never break status
+        logger.warning("agents due_actions error in desk status: %s", exc)
+        agents_due = {"count": None, "items": [], "mode": "read_only", "error": str(exc)[:200]}
 
     return {
         "ok": True,
@@ -234,6 +249,7 @@ def build_demand_os_status(
             },
             "marketing_hitl_gate": hitl_gate,
             "live_cadence": "PARKED",
+            "agents_due": agents_due,
             "note": "env GO ≠ cadence unlock — see UNLOCK-LIVE-P0.md",
         },
     }

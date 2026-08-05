@@ -56,7 +56,7 @@
 | S7 | **ZAMKNIĘTE** | `JADZIA_EVIDENCE_WRITE=1` gate w obu gate tests + conftest state-tmp fixture — suite 1055/0 zostawia **czyste tree** obie strony (`81a8fe1`) |
 | S8 | **ZAMKNIĘTE** | playbook ownership rule + `find ! -user jadzia` gate (`6646957`); egzekwowane przez całą sesję (0 root-owned przy każdym deploy) |
 | S9 | **ZAMKNIĘTE** | `test_hub_rbac_viewer_blocked_run_due` — viewer denied apply+dry (`a02c3ae`) |
-| S10 | **ODROCZONE → 9-02** | desk chip STALE_DAYS=7 vs wave-check per-rola — backlog MASTER-TODO-9 zadanie 2 |
+| S10 | **FIXED 2026-08-05 (9-02)** | desk chip STALE_DAYS=7 vs wave-check per-rola — wspólne źródło `heartbeat.STALE_LIMITS_H` + `stale_limit_hours()`; heartbeat_view i wave_check używają tej samej polityki · test kontraktu `test_desk_chip_matches_wave_staleness` |
 | S11 | **ZAMKNIĘTE** (wcześniej) | parity przy deploy 8-10 |
 | S12 | **ODROCZONE (by design)** | per-rola heartbeat dokumentowane; per-action gdy cadence się rozjedzie |
 | S13 | **ODROCZONE (by design)** | GDrive czeka na GO + creds (jak GA4) |

@@ -4,6 +4,7 @@
 [Unit]
 Description=Demand OS agents worker (run-due dispatch)
 After=network.target
+OnFailure=demand-os-agents-worker-alert.service
 
 [Service]
 Type=oneshot

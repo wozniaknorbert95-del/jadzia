@@ -26,6 +26,8 @@ MODULES = (
     "agent.demand_os.agents.wave1",
 )
 LINE_FLOOR = 80.0
+# 9-05: worker.py is the heart of the dispatch loop — stricter floor.
+MODULE_FLOORS = {"agent.demand_os.agents.worker": 90.0}
 
 
 def test_agents_package_exports_worker_surface():
@@ -71,9 +73,11 @@ def test_agents_modules_line_coverage_gate(tmp_path: Path):
         assert match is not None, f"missing coverage for {mod}"
         summary = match.get("summary") or {}
         pct = float(summary.get("percent_covered") or 0)
-        lines.append(f"{mod}: {pct:.1f}% line")
-        assert pct >= LINE_FLOOR, f"{mod} coverage {pct:.1f}% < {LINE_FLOOR}%"
+        floor = MODULE_FLOORS.get(mod, LINE_FLOOR)
+        lines.append(f"{mod}: {pct:.1f}% line (floor {floor:.0f}%)")
+        assert pct >= floor, f"{mod} coverage {pct:.1f}% < {floor}%"
     if write_evidence:
         (EVIDENCE_DIR / "k12-coverage-agents.txt").write_text(
-            "\n".join(lines) + f"\nfloor={LINE_FLOOR}\n", encoding="utf-8"
+            "\n".join(lines) + f"\nfloor={LINE_FLOOR} worker={MODULE_FLOORS['agent.demand_os.agents.worker']}\n",
+            encoding="utf-8",
         )

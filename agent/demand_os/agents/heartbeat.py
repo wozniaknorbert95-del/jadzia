@@ -20,6 +20,29 @@ _REPO = Path(__file__).resolve().parents[3]
 _DEFAULT_REL = Path("docs/ops/demand-os/set-now/AGENTS-HEARTBEAT.json")
 STALE_DAYS = 7
 
+# Per-role staleness policy for worker-supervised (cadence) roles — single
+# source of truth shared by heartbeat_view (desk chip) and wave_check
+# (readiness gate). Values = 2x worker CADENCE (drift margin).
+STALE_LIMITS_H: Dict[str, float] = {
+    "growth_lead": 48.0,
+    "sales": 12.0,
+    "validator": 48.0,
+    "icp_brain": 48.0,
+    "cre": 48.0,
+}
+
+
+def stale_limit_hours(role: str, *, default_h: float) -> float:
+    """Single staleness policy: env override > per-role table > caller default.
+
+    Env override DEMAND_OS_HB_STALE_<ROLE> (hours) wins; then the per-role
+    table; then the caller's default (wave_check: 48h, desk view: STALE_DAYS).
+    """
+    env = os.environ.get(f"DEMAND_OS_HB_STALE_{(role or '').strip().upper()}")
+    if env:
+        return float(env)
+    return float(STALE_LIMITS_H.get(role, default_h))
+
 
 def default_heartbeat_path() -> Path:
     """Resolve heartbeat path via the shared writable-path contract."""
@@ -86,10 +109,12 @@ def heartbeat_age_days(rec: Dict[str, Any]) -> Optional[float]:
 def heartbeat_view(role: str, *, path: Optional[Path] = None) -> Dict[str, Any]:
     rec = load_heartbeats(path=path).get(role) or {}
     age = heartbeat_age_days(rec) if rec else None
+    limit_h = stale_limit_hours(role, default_h=STALE_DAYS * 24.0)
     return {
         "last_run_at": rec.get("last_run_at"),
         "last_action": rec.get("last_action"),
         "run_count": rec.get("run_count") or 0,
         "age_days": age,
-        "stale": (age is None) or age > STALE_DAYS,
+        "stale": (age is None) or age * 24.0 > limit_h,
+        "stale_limit_h": limit_h,
     }

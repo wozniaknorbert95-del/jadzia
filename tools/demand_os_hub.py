@@ -199,7 +199,12 @@ def cmd_agents_run_due(args: argparse.Namespace) -> int:
 
     out = run_due(dry_run=not args.apply)
     _print(out)
-    return 0 if out.get("ok") else 1
+    if not out.get("ok"):
+        return 1
+    # 9-06 OPT-B: per-role dispatch errors must reach systemd — exit 2 makes
+    # the OnFailure alert unit fire for the F3 error-storm class, not only for
+    # hard crashes (run_due's honest envelope keeps ok=True on role errors).
+    return 2 if int(out.get("errors") or 0) > 0 else 0
 
 
 def cmd_ingest(args: argparse.Namespace) -> int:

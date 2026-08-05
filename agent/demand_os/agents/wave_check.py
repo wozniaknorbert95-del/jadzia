@@ -13,6 +13,7 @@ from __future__ import annotations
 
 from typing import Any, Dict, List
 
+from agent.demand_os.agents.heartbeat import STALE_LIMITS_H as _STALE_LIMITS_H
 from agent.demand_os.agents.registry import AGENT_REGISTRY, dispatch
 from agent.demand_os.ledger import ledger_summary
 from agent.demand_os.marketing_mode import is_marketing_parked, resolve_marketing_mode
@@ -169,15 +170,9 @@ def _state_writers_check() -> Dict[str, Any]:
     }
 
 
-# Must match worker.CADENCE — checked mechanically in tests (single contract:
-# "every cadence role has a staleness check in wave readiness").
-_STALE_LIMITS_H: Dict[str, float] = {
-    "growth_lead": 48.0,
-    "sales": 12.0,
-    "validator": 48.0,
-    "icp_brain": 48.0,
-    "cre": 48.0,
-}
+# `_STALE_LIMITS_H` (imported above) is the alias for the mechanical contract
+# test (keys == worker.CADENCE); the policy table lives in heartbeat.py as the
+# single source of truth shared with heartbeat_view (desk chip) — S10/9-02.
 
 
 def _heartbeat_staleness_check() -> Dict[str, Any]:
@@ -188,20 +183,17 @@ def _heartbeat_staleness_check() -> Dict[str, Any]:
     Limits default to 2x worker CADENCE (drift margin), overridable via
     DEMAND_OS_HB_STALE_<ROLE> env (hours).
     """
-    import os
-
-    from agent.demand_os.agents.heartbeat import heartbeat_age_days, load_heartbeats
+    from agent.demand_os.agents.heartbeat import (
+        heartbeat_age_days,
+        load_heartbeats,
+        stale_limit_hours,
+    )
     from agent.demand_os.agents.worker import CADENCE
 
     beats = load_heartbeats()
     stale: List[str] = []
     for role in sorted(CADENCE):
-        limit_h = float(
-            os.environ.get(
-                f"DEMAND_OS_HB_STALE_{role.upper()}",
-                _STALE_LIMITS_H.get(role, 48.0),
-            )
-        )
+        limit_h = stale_limit_hours(role, default_h=48.0)
         age = heartbeat_age_days(beats.get(role) or {})
         limit_d = limit_h / 24.0
         if age is None or age > limit_d:

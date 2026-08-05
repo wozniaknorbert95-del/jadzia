@@ -1,5 +1,5 @@
 {
-  "updated": "2026-08-05T09:29:38+00:00",
+  "updated": "2026-08-05T15:51:38+00:00",
   "semantic": {
     "icp_role_week": "installateur",
     "hook_nl": "witte bus · opdrachtgever ziet je niet",
@@ -10,13 +10,6 @@
     "starts_utm_total": 0,
     "weekly_improvement": "Instrument starts ingest for top planned asset (fb_hunt_w32_d1) — measure Wizard starts before any live content push",
     "history": [
-      {
-        "ts": "2026-08-02T12:13:25+00:00",
-        "top_hook_asset_id": "tt_w32_install_01",
-        "starts_utm_total": 3,
-        "paid": 1,
-        "validator_fail": 2
-      },
       {
         "ts": "2026-08-02T12:13:25+00:00",
         "top_hook_asset_id": "tt_w32_install_01",
@@ -369,6 +362,13 @@
       },
       {
         "ts": "2026-08-05T09:29:38+00:00",
+        "top_hook_asset_id": "fb_hunt_w32_d1",
+        "starts_utm_total": 0,
+        "paid": 0,
+        "validator_fail": 0
+      },
+      {
+        "ts": "2026-08-05T15:51:38+00:00",
         "top_hook_asset_id": "fb_hunt_w32_d1",
         "starts_utm_total": 0,
         "paid": 0,

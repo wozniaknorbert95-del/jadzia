@@ -34,6 +34,10 @@ sudo -u jadzia git fetch origin && sudo -u jadzia git merge --ff-only origin/mas
 
 Running git as root leaves files root-owned → `PermissionError` for the `jadzia`
 service on every later write/merge (incident cost: 114 root-owned files, 2× repeat).
+**Same rule for `git fetch` and for `pytest` on VPS** — `git status` inside tests
+refreshes `.git/index` as the invoking user (2026-08-05: root-owned index after
+root-run pytest). Run tests as the service user too:
+`sudo -u jadzia env HOME=/home/jadzia venv/bin/python -m pytest ...`
 Post-merge gate (must print `0`):
 
 ```bash
@@ -55,6 +59,21 @@ Docs-only tip sync (no restart):
 ```bash
 cd /opt/jadzia && sudo -u jadzia git pull --ff-only origin master && git rev-parse --short HEAD
 find /opt/jadzia ! -user jadzia | wc -l   # must be 0
+```
+
+## Tip pointer convention (HARD — test `tests/unit/test_sot_tip_pointer.py`)
+
+`docs/ops/demand-os/STATE.md` frontmatter `prod_tip` must equal the DEPLOYED code
+commit. Pattern: the SoT/handoff commit lands AFTER the code commit, so at any
+deployed tip: **prod_tip = HEAD~1** (the last code commit). Rule of thumb:
+
+1. Code commit → 2. deploy/verify → 3. SoT commit setting `prod_tip` to (1) →
+4. deploy the SoT commit itself (ff-only, docs-only) so VPS is never behind origin.
+Verify on both sides after every deploy:
+
+```bash
+venv/bin/python -m pytest tests/unit/test_sot_tip_pointer.py -q   # local
+cd /opt/jadzia && sudo -u jadzia env HOME=/home/jadzia venv/bin/python -m pytest tests/unit/test_sot_tip_pointer.py -q
 ```
 
 Post-checks:

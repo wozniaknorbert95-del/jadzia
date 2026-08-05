@@ -1,7 +1,7 @@
-agent.demand_os.agents.registry: 93.6% line
-agent.demand_os.agents.flow: 90.8% line
-agent.demand_os.agents.wave_check: 97.8% line
-agent.demand_os.agents.heartbeat: 92.5% line
-agent.demand_os.agents.worker: 94.7% line
-agent.demand_os.agents.wave1: 88.3% line
-floor=80.0
+agent.demand_os.agents.registry: 93.9% line (floor 80%)
+agent.demand_os.agents.flow: 90.8% line (floor 80%)
+agent.demand_os.agents.wave_check: 97.8% line (floor 80%)
+agent.demand_os.agents.heartbeat: 93.3% line (floor 80%)
+agent.demand_os.agents.worker: 100.0% line (floor 90%)
+agent.demand_os.agents.wave1: 88.3% line (floor 80%)
+floor=80.0 worker=90.0

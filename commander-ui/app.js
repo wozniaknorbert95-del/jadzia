@@ -5365,13 +5365,16 @@ function renderDemandDesk(data) {
             ? '<span class="desk-agent-chip desk-agent-chip--tool">narzędzie</span>'
             : '<span class="desk-agent-chip desk-agent-chip--gated">brama live</span>';
           const age = typeof a.age_days === "number" ? a.age_days : null;
-          const ageChip = age === null
-            ? '<span class="desk-agent-chip desk-agent-chip--stale">nigdy</span>'
-            : age <= 2
-              ? `<span class="desk-agent-chip desk-agent-chip--fresh">${age < 1 ? "dziś" : `${Math.floor(age)}d`}</span>`
-              : age <= 7
-                ? `<span class="desk-agent-chip desk-agent-chip--aging">${Math.floor(age)}d</span>`
-                : `<span class="desk-agent-chip desk-agent-chip--stale">${Math.floor(age)}d</span>`;
+          // Staleness verdict comes from the backend (single per-role policy,
+          // S10/9-02) — UI must not invent its own thresholds.
+          const stale = a.stale === true;
+          const limitTitle = typeof a.stale_limit_h === "number" ? ` title="Limit: ${a.stale_limit_h}h"` : "";
+          const ageTxt = age === null ? "nigdy" : age < 1 ? "dziś" : `${Math.floor(age)}d`;
+          const ageChip = stale
+            ? `<span class="desk-agent-chip desk-agent-chip--stale"${limitTitle}>${ageTxt}</span>`
+            : age !== null && age > 2
+              ? `<span class="desk-agent-chip desk-agent-chip--aging"${limitTitle}>${ageTxt}</span>`
+              : `<span class="desk-agent-chip desk-agent-chip--fresh"${limitTitle}>${ageTxt}</span>`;
           const last = a.last_run_at ? deskEsc(String(a.last_run_at).slice(0, 10)) : "—";
           return `<li class="desk-agent-row">
             <span class="desk-agent-wave">W${deskEsc(String(a.wave ?? "?"))}</span>

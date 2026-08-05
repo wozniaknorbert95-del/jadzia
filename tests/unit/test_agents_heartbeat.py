@@ -134,6 +134,75 @@ def test_default_path_env_override(monkeypatch: pytest.MonkeyPatch, tmp_path: Pa
     assert p.name == "AGENTS-HEARTBEAT.json"
 
 
+def test_desk_chip_uses_per_role_limits(tmp_path: Path):
+    """S10/9-02: desk chip must honor per-role limits, not global STALE_DAYS=7.
+
+    sales (12h limit) at 24h is stale even though 24h < 7d; growth_lead (48h)
+    at 24h is still fresh. Non-cadence roles keep the 7d default.
+    """
+    p = tmp_path / "hb.json"
+    day_ago = (datetime.now(timezone.utc) - timedelta(hours=24)).isoformat()
+    p.write_text(
+        json.dumps(
+            {
+                "sales": {"role": "sales", "last_run_at": day_ago, "run_count": 5},
+                "growth_lead": {"role": "growth_lead", "last_run_at": day_ago, "run_count": 5},
+            }
+        ),
+        encoding="utf-8",
+    )
+    sales = heartbeat_view("sales", path=p)
+    assert sales["stale"] is True, "24h > 12h limit for sales"
+    assert sales["stale_limit_h"] == 12.0
+    growth = heartbeat_view("growth_lead", path=p)
+    assert growth["stale"] is False, "24h < 48h limit for growth_lead"
+    assert growth["stale_limit_h"] == 48.0
+    # non-cadence role keeps the 7d default
+    assert heartbeat_view("blog", path=p)["stale_limit_h"] == 168.0
+
+
+def test_desk_chip_matches_wave_staleness(monkeypatch: pytest.MonkeyPatch, tmp_path: Path):
+    """S10/9-02 contract: chip `stale` on desk == wave-check verdict, same file."""
+    p = tmp_path / "hb.json"
+    monkeypatch.setenv("DEMAND_OS_AGENTS_HEARTBEAT", str(p))
+    now = datetime.now(timezone.utc)
+    beats = {
+        role: {"role": role, "last_run_at": (now - timedelta(hours=age)).isoformat(), "run_count": 1}
+        for role, age in {
+            "growth_lead": 5,   # fresh (<48h)
+            "sales": 24,        # stale (>12h)
+            "validator": 5,     # fresh (<48h)
+            "icp_brain": 5,     # fresh (<48h)
+            "cre": 5,           # fresh (<48h)
+        }.items()
+    }
+    p.write_text(json.dumps(beats), encoding="utf-8")
+    from agent.demand_os.agents.wave_check import wave_readiness
+
+    out = wave_readiness()
+    wave1 = next(w for w in out["waves"] if w["wave"] == 1)
+    check = next(c for c in wave1["tool_checks"] if c["check"] == "heartbeat_staleness")
+    assert check["ok"] is False and "sales" in check["detail"]
+    for role, expect_stale in {"sales": True, "growth_lead": False, "validator": False}.items():
+        assert heartbeat_view(role)["stale"] is expect_stale, role
+    # wave says only sales stale → chip must agree for every cadence role
+    for role in ("growth_lead", "validator", "icp_brain", "cre"):
+        assert heartbeat_view(role)["stale"] is False, role
+
+
+def test_stale_limit_env_override(monkeypatch: pytest.MonkeyPatch, tmp_path: Path):
+    """DEMAND_OS_HB_STALE_<ROLE> overrides both desk chip and wave-check."""
+    p = tmp_path / "hb.json"
+    two_hours = (datetime.now(timezone.utc) - timedelta(hours=2)).isoformat()
+    p.write_text(
+        json.dumps({"sales": {"role": "sales", "last_run_at": two_hours, "run_count": 1}}),
+        encoding="utf-8",
+    )
+    assert heartbeat_view("sales", path=p)["stale"] is False  # 2h < 12h default
+    monkeypatch.setenv("DEMAND_OS_HB_STALE_SALES", "1")
+    assert heartbeat_view("sales", path=p)["stale"] is True  # 2h > 1h override
+
+
 def test_list_agents_includes_heartbeat(monkeypatch: pytest.MonkeyPatch, tmp_path: Path):
     p = tmp_path / "hb.json"
     monkeypatch.setenv("DEMAND_OS_AGENTS_HEARTBEAT", str(p))

@@ -349,7 +349,28 @@ def run_doctor(*, root: Optional[Path] = None) -> DoctorReport:
         if staleness_blocking:
             errors.append("agents_staleness error (blocking mode)")
 
-    _ADVISORY = set() if staleness_blocking else {"agents_staleness"}
+    # 9-06 OPT-B: worker failure sink — systemd OnFailure alert unit appends to
+    # ALERTS.jsonl at crash time; doctor surfaces it through the same path and
+    # the same severity flag as staleness (advisory dev / blocking prod).
+    try:
+        from agent.demand_os.agents.alerts import active_alerts
+
+        act = active_alerts()
+        detail = (
+            "no active worker failures"
+            if not act
+            else f"{len(act)} failure(s) <24h, last={act[-1].get('ts')}"
+        )
+        detail += " [blocking]" if staleness_blocking else " [advisory]"
+        checks.append(_check("worker_failures", not act, detail))
+        if staleness_blocking and act:
+            errors.append("worker_failures FAIL (blocking mode)")
+    except Exception as exc:
+        checks.append(_check("worker_failures", False, str(exc)[:160]))
+        if staleness_blocking:
+            errors.append("worker_failures error (blocking mode)")
+
+    _ADVISORY = set() if staleness_blocking else {"agents_staleness", "worker_failures"}
     ok = not errors and all(c["ok"] for c in checks if c["name"] not in _ADVISORY)
     state_text = (
         (repo / "docs/ops/demand-os/STATE.md").read_text(encoding="utf-8")
