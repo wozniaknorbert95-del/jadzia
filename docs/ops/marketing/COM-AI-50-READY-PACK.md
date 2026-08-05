@@ -4,7 +4,7 @@ gate: "COM-AI-50-READY"
 updated: "2026-07-31"
 applies_from: "2026-08-02"
 legal: "Kontrolki operacyjne — nie porada prawna. Founder + doradca NL/EU."
-blast: "docs/handoffs/2026-07-31-COM-AI-50-READY-BLAST.md"
+blast: "docs/archive/handoffs/2026-07-31-COM-AI-50-READY-BLAST.md"
 ---
 
 # COM-AI-50-READY — pack HITL (po polsku)

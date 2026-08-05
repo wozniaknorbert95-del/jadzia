@@ -329,18 +329,27 @@ def run_doctor(*, root: Optional[Path] = None) -> DoctorReport:
 
     # S1: doctor surfaces worker-loop health (alias of wave-check staleness) —
     # an owner running `doctor` should see a dead/stale worker without knowing
-    # the wave-check exists. ADVISORY on purpose: wave-check is the hard gate
-    # (owner-verify), doctor also runs on dev machines with no worker loop —
-    # failing doctor there would be crying wolf. Visible, not blocking.
+    # the wave-check exists. Severity is env-aware: ADVISORY by default (dev
+    # machines have no worker loop — failing doctor there would be crying
+    # wolf). On prod, where the worker timer is LIVE, the service env sets
+    # DEMAND_OS_STALENESS_BLOCKING=1 and staleness becomes a hard gate.
+    staleness_blocking = os.environ.get("DEMAND_OS_STALENESS_BLOCKING") == "1"
     try:
         from agent.demand_os.agents.wave_check import _heartbeat_staleness_check
 
         stale = _heartbeat_staleness_check()
-        checks.append(_check("agents_staleness", bool(stale["ok"]), stale["detail"]))
+        detail = stale["detail"] + (
+            " [blocking]" if staleness_blocking else " [advisory]"
+        )
+        checks.append(_check("agents_staleness", bool(stale["ok"]), detail))
+        if staleness_blocking and not stale["ok"]:
+            errors.append("agents_staleness FAIL (blocking mode)")
     except Exception as exc:
         checks.append(_check("agents_staleness", False, str(exc)[:160]))
+        if staleness_blocking:
+            errors.append("agents_staleness error (blocking mode)")
 
-    _ADVISORY = {"agents_staleness"}  # visible in report, never blocks doctor.ok
+    _ADVISORY = set() if staleness_blocking else {"agents_staleness"}
     ok = not errors and all(c["ok"] for c in checks if c["name"] not in _ADVISORY)
     state_text = (
         (repo / "docs/ops/demand-os/STATE.md").read_text(encoding="utf-8")

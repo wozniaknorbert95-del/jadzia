@@ -13,6 +13,29 @@ import sys
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
+# Bootstrap like demand_os_hub: the canonical invocation is
+# `python tools/demand_os_owner_verify.py` — script dir (tools/), not repo
+# root, lands on sys.path, so `agent` would not import without this.
+if str(ROOT) not in sys.path:
+    sys.path.insert(0, str(ROOT))
+
+if os.environ.get("JADZIA_TEST_NO_DOTENV") != "1":
+    try:
+        from dotenv import load_dotenv
+
+        load_dotenv(ROOT / ".env")
+    except Exception:
+        pass
+
+from agent.demand_os.commander_status import build_demand_os_status  # noqa: E402
+from agent.demand_os.doctor import run_doctor  # noqa: E402
+from agent.demand_os.week_ritual import go_day_ready  # noqa: E402
+from agent.demand_os.agents.registry import (  # noqa: E402
+    _WORKER_CADENCE_ROLES,
+    all_roles,
+    list_agents,
+)
+from agent.demand_os.agents.wave_check import wave_readiness  # noqa: E402
 
 
 def _run(cmd: list[str], *, env: dict | None = None) -> subprocess.CompletedProcess[str]:
@@ -27,6 +50,11 @@ def _run(cmd: list[str], *, env: dict | None = None) -> subprocess.CompletedProc
 
 
 def main() -> int:
+    # The report embeds unicode (≠, ↑); Windows consoles default to cp1252 and
+    # would crash the final print. Subprocesses get PYTHONIOENCODING below —
+    # this covers the script's own stdout.
+    if hasattr(sys.stdout, "reconfigure"):
+        sys.stdout.reconfigure(encoding="utf-8", errors="replace")
     env = {**os.environ, "PYTHONPATH": str(ROOT)}
     if not env.get("DEMAND_OS_SET_NOW"):
         env["DEMAND_OS_SET_NOW"] = "data/demand-os/set-now-sanitized"
@@ -36,8 +64,6 @@ def main() -> int:
     report: dict = {"ok": True, "steps": []}
 
     # 1) doctor
-    from agent.demand_os.doctor import run_doctor
-
     doc = run_doctor()
     report["steps"].append(
         {"name": "doctor", "ok": doc.ok, "marketing": doc.marketing, "errors": doc.errors}
@@ -80,8 +106,6 @@ def main() -> int:
         errors.append("pytest -k demand_os FAIL")
 
     # 4) footer full
-    from agent.demand_os.commander_status import build_demand_os_status
-
     footer = build_demand_os_status(with_full_doctor=True).get("footer") or {}
     foot_ok = footer.get("doctor_scope") == "full" and isinstance(
         footer.get("doctor_ok"), bool
@@ -98,8 +122,6 @@ def main() -> int:
         errors.append("footer full check FAIL")
 
     # 5) go_day summary (artifact only)
-    from agent.demand_os.week_ritual import go_day_ready
-
     go = go_day_ready()
     report["steps"].append(
         {
@@ -113,16 +135,11 @@ def main() -> int:
     )
 
     # 6) agents registry contract + wave readiness (TARGET v5 §J tool side)
-    from agent.demand_os.agents.registry import all_roles, list_agents
-    from agent.demand_os.agents.wave_check import wave_readiness
-
     roles = all_roles()
     listing = list_agents()
     # shell marker contract: cadence (worker-driven) roles flipped to False once
     # the worker timer proved itself on prod (2026-08-05); flow/HITL-only roles
     # stay shells. The contract checks consistency, not "all shells forever".
-    from agent.demand_os.agents.registry import _WORKER_CADENCE_ROLES
-
     contract_ok = len(roles) == 9 and all(
         "live_allowed" in r
         and "heartbeat" in r

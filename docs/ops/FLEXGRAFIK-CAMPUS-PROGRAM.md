@@ -481,7 +481,7 @@ Checklist (kontrolki — **nie** porada prawna; Founder + doradca NL/EU):
 
 | Field | Value |
 |-------|-------|
-| Status | **CLOSED** — handoff `docs/handoffs/2026-07-31-INC-SSH-RECOVERY-00-CLOSE.md` |
+| Status | **CLOSED** — handoff `docs/archive/handoffs/2026-07-31-INC-SSH-RECOVERY-00-CLOSE.md` |
 | Post-fix | `/worker/health` → `ssh_connection=ok` · `status=healthy` |
 | Evidence | EV-CAMPUS-005 · EV-W2-011 (historical) |
 | Owner A | Ops/COI (Norbert) |

@@ -3,7 +3,7 @@ status: "[ACTIVE]"
 title: "VHQ Decision Instrument Scorecard — DoD SoT"
 updated: "2026-07-31"
 program: "docs/ops/FLEXGRAFIK-VIRTUAL-HQ-PROGRAM.md"
-research: "docs/handoffs/2026-07-31-VF-VHQ-DECISION-INSTRUMENT-RESEARCH.md"
+research: "docs/archive/handoffs/2026-07-31-VF-VHQ-DECISION-INSTRUMENT-RESEARCH.md"
 baseline_post_w1: "2026-07-31 after VF-VHQ-P2-SNR-00 DEPLOY"
 ---
 

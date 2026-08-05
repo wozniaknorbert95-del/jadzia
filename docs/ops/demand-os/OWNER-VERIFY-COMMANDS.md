@@ -18,6 +18,9 @@ python tools/demand_os_hub.py owner-verify
 
 Exit `0` = green. Includes: doctor · pointer tests · `pytest -k demand_os` · footer full · go_day summary.
 
+**VPS:** `python` is not on PATH on prod — use the venv:
+`cd /opt/jadzia && sudo -u jadzia env HOME=/home/jadzia venv/bin/python tools/demand_os_owner_verify.py`
+
 ## Full regression pack (N6 — tool seal claim)
 
 ```bash
@@ -45,7 +48,7 @@ python -c "from agent.demand_os.commander_status import build_demand_os_status; 
 
 | Check | Pass |
 |-------|------|
-| doctor | `ok: true` · tip check green (STATE TOOL/OPS + live P0 PARKED) · `agents_staleness` visible (advisory) |
+| doctor | `ok: true` · tip check green (STATE TOOL/OPS + live P0 PARKED) · `agents_staleness` visible — advisory local / **blocking on prod** (`DEMAND_OS_STALENESS_BLOCKING=1`, G1 2026-08-05) |
 | pointer | `4-AWAIT-UNLOCK` (or `4-UNLOCK-*` / sealed tool/ops) · no stale `2f68b64` in active pointers |
 | desk UI | `desk-dash13` in HTML/SW contracts |
 | coverage gates | desk K12 + agents modules ≥80% line (S2) |

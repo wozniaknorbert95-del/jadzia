@@ -134,6 +134,50 @@ def test_doctor_surfaces_agents_staleness(monkeypatch, tmp_path):
     assert "sales" in chk2["detail"]  # advisory, not blocking (wave-check is the hard gate)
 
 
+def test_doctor_staleness_blocking_mode(monkeypatch, tmp_path):
+    """G1: DEMAND_OS_STALENESS_BLOCKING=1 (prod env) promotes the advisory
+    staleness check to a hard gate; default stays advisory for dev machines."""
+    from datetime import datetime, timedelta, timezone
+
+    from agent.demand_os.doctor import run_doctor
+
+    hb = tmp_path / "hb.json"
+    monkeypatch.setenv("DEMAND_OS_AGENTS_HEARTBEAT", str(hb))
+    old = (datetime.now(timezone.utc) - timedelta(days=10)).isoformat()
+    fresh = datetime.now(timezone.utc).isoformat()
+    stale_payload = json.dumps(
+        {r: {"role": r, "last_run_at": old, "run_count": 1} for r in CADENCE}
+    )
+    fresh_payload = json.dumps(
+        {r: {"role": r, "last_run_at": fresh, "run_count": 1} for r in CADENCE}
+    )
+
+    # default: advisory — stale visible but never in errors
+    monkeypatch.delenv("DEMAND_OS_STALENESS_BLOCKING", raising=False)
+    hb.write_text(stale_payload, encoding="utf-8")
+    rep = run_doctor()
+    chk = next(c for c in rep.checks if c["name"] == "agents_staleness")
+    assert chk["ok"] is False
+    assert "[advisory]" in chk["detail"]
+    assert not any("agents_staleness" in e for e in rep.errors)
+
+    # blocking: stale cadence roles fail doctor
+    monkeypatch.setenv("DEMAND_OS_STALENESS_BLOCKING", "1")
+    rep2 = run_doctor()
+    chk2 = next(c for c in rep2.checks if c["name"] == "agents_staleness")
+    assert chk2["ok"] is False
+    assert "[blocking]" in chk2["detail"]
+    assert any("agents_staleness" in e for e in rep2.errors)
+    assert rep2.ok is False
+
+    # blocking + fresh: gate green again
+    hb.write_text(fresh_payload, encoding="utf-8")
+    rep3 = run_doctor()
+    chk3 = next(c for c in rep3.checks if c["name"] == "agents_staleness")
+    assert chk3["ok"] is True
+    assert not any("agents_staleness" in e for e in rep3.errors)
+
+
 def test_hub_engage_dry_reflects_go_env(tmp_path: Path, monkeypatch, capsys):
     import tools.demand_os_hub as hub
 
