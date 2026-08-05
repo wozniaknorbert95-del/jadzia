@@ -118,8 +118,16 @@ def main() -> int:
 
     roles = all_roles()
     listing = list_agents()
+    # shell marker contract: cadence (worker-driven) roles flipped to False once
+    # the worker timer proved itself on prod (2026-08-05); flow/HITL-only roles
+    # stay shells. The contract checks consistency, not "all shells forever".
+    from agent.demand_os.agents.registry import _WORKER_CADENCE_ROLES
+
     contract_ok = len(roles) == 9 and all(
-        r.get("shell") is True and "live_allowed" in r and "heartbeat" in r for r in listing
+        "live_allowed" in r
+        and "heartbeat" in r
+        and r.get("shell") is (r["role"] not in _WORKER_CADENCE_ROLES)
+        for r in listing
     )
     report["steps"].append(
         {"name": "agents_registry_contract", "ok": contract_ok, "roles": len(roles)}
