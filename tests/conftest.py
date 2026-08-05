@@ -56,6 +56,9 @@ _SEED_FROM_REPO = ("MEMORY.json", "CONTENT-CALENDAR.json")
 
 @pytest.fixture(autouse=True)
 def _demand_os_state_tmp(monkeypatch: pytest.MonkeyPatch, tmp_path: Path):
+    # Hermetic suite: prod sets DEMAND_OS_STALENESS_BLOCKING=1 (G1); tests
+    # choose severity explicitly via monkeypatch, never via inherited env.
+    monkeypatch.delenv("DEMAND_OS_STALENESS_BLOCKING", raising=False)
     for env_var, name in _STATE_ENV_FILES.items():
         target = tmp_path / name
         if name in _SEED_FROM_REPO:

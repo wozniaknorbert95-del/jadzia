@@ -59,6 +59,11 @@ def main() -> int:
     if not env.get("DEMAND_OS_SET_NOW"):
         env["DEMAND_OS_SET_NOW"] = "data/demand-os/set-now-sanitized"
     env.setdefault("PYTHONIOENCODING", "utf-8")
+    # The pytest subprocess must stay hermetic: prod env (loaded from .env
+    # above) carries DEMAND_OS_STALENESS_BLOCKING=1 — the suite sets severity
+    # per-test; inheriting prod's would break doctor assertions (G9).
+    env["JADZIA_TEST_NO_DOTENV"] = "1"
+    env.pop("DEMAND_OS_STALENESS_BLOCKING", None)
 
     errors: list[str] = []
     report: dict = {"ok": True, "steps": []}
